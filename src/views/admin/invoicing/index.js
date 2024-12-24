@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 
 // @mui
@@ -19,7 +19,7 @@ import TabFour from './InvoiceNumberFormat/index';
 import { AccountList, NewAccount } from '@/sections/account';
 import { AvatarSize } from '@/enum';
 import Avatar from '@mui/material/Avatar';
-
+import Factory from '@/utils/Factory';
 // @assets
 import { IconPlus } from '@tabler/icons-react';
 import { IconBolt } from '@tabler/icons-react';
@@ -32,30 +32,35 @@ export default function Account() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const [activeTab, setActiveTab] = useState(0);
+  const [businessDetails, setBusinessDetails] = useState({});
 
   const handleNext = () => {
     setActiveTab((prev) => (prev < 3 ? prev + 1 : prev));
   };
-
+  const getBusinessDetails = async () => {
+    const { res } = await Factory('get', '/invoicing/invoicing-profiles/', {});
+    if (res) {
+      setBusinessDetails(res.data);
+    }
+  };
   const renderTabContent = () => {
     switch (activeTab) {
       case 0:
-        return <TabOne onNext={handleNext} />;
+        return <TabOne businessDetails={businessDetails} setBusinessDetails={setBusinessDetails} onNext={handleNext} />;
       case 1:
-        return <TabTwo onNext={handleNext} />;
+        return <TabTwo businessDetails={businessDetails} setBusinessDetails={setBusinessDetails} onNext={handleNext} />;
       case 2:
-        return <TabThree onNext={handleNext} />;
+        return <TabThree businessDetails={businessDetails} setBusinessDetails={setBusinessDetails} onNext={handleNext} />;
       case 3:
-        return <TabFour onNext={handleNext} />;
+        return <TabFour businessDetails={businessDetails} setBusinessDetails={setBusinessDetails} onNext={handleNext} />;
       default:
         return null;
     }
   };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
+  useEffect(() => {
+    getBusinessDetails();
+  }, [activeTab]);
   return (
     <Grid container spacing={{ xs: 2, sm: 3 }}>
       <Grid item xs={12}>

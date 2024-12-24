@@ -3,9 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button, Grid, Box, Divider } from '@mui/material';
 import { IconX } from '@tabler/icons-react';
 import IconButton from '@mui/material/IconButton';
-
+import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import CustomInput from '@/utils/CustomInput';
-const CustomerEditDialog = ({ open, handleClose, customer, handleSave }) => {
+import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
+import Factory from '@/utils/Factory';
+const CustomerEditDialog = ({ getCustomersData, open, handleClose, customer, handleSave }) => {
   const [formData, setFormData] = useState({}); // Initialize as empty object by default
 
   // Effect to set form data when customer prop changes
@@ -24,9 +26,13 @@ const CustomerEditDialog = ({ open, handleClose, customer, handleSave }) => {
     }));
   };
 
-  const handleSubmit = () => {
-    handleSave(formData); // Save the updated data
-    handleClose(); // Close the dialog
+  const handleSubmit = async () => {
+    let url = `/invoicing/invoicing/customer_profiles/update/${formData.id}/`;
+    const { res } = await Factory('put', url, formData);
+    if (res.status_cd === 0) {
+      getCustomersData();
+      handleClose();
+    }
   };
 
   return (
@@ -43,41 +49,64 @@ const CustomerEditDialog = ({ open, handleClose, customer, handleSave }) => {
         </Box>
         <Divider />
         <DialogContent>
-          {/* Render inputs only when formData is available */}
-
           {formData && (
             <Grid container spacing={2}>
               {' '}
-              {/* Container for the grid layout */}
               <Grid item xs={12}>
                 <div style={{ paddingBottom: '5px' }}>
-                  <label htmlFor="nameofthe_business">Business Name</label>
+                  <label htmlFor="name">Name of Business</label>
+                </div>
+                <CustomInput name="name" value={formData.name || ''} onChange={handleChange} id="name" textColor="#777680" />
+              </Grid>
+              <Grid item xs={12}>
+                <div style={{ paddingBottom: '5px' }}>
+                  <label htmlFor="pan_number">PAN</label>
                 </div>
                 <CustomInput
-                  name="nameofthe_business"
-                  value={formData.nameofthe_business || ''}
+                  name="pan_number"
+                  value={formData.pan_number || ''}
                   onChange={handleChange}
-                  id="nameofthe_business"
+                  id="pan_number"
                   textColor="#777680"
                 />
               </Grid>
               <Grid item xs={12}>
                 <div style={{ paddingBottom: '5px' }}>
-                  <label htmlFor="pan">PAN</label>
+                  <label htmlFor="address_line1">Address Line 1</label>
                 </div>
-                <CustomInput name="pan" value={formData.pan || ''} onChange={handleChange} id="pan" textColor="#777680" />
+                <CustomInput
+                  name="address_line1"
+                  value={formData.pan_number || ''}
+                  onChange={handleChange}
+                  id="address_line1"
+                  textColor="#777680"
+                />
               </Grid>
               <Grid item xs={12}>
                 <div style={{ paddingBottom: '5px' }}>
-                  <label htmlFor="email">Email</label>
+                  <label htmlFor="address_line1">State</label>
                 </div>
-                <CustomInput name="email" value={formData.email || ''} onChange={handleChange} id="email" textColor="#777680" />
+
+                <CustomAutocomplete
+                  value={formData.state || ''}
+                  name="state"
+                  onChange={handleChange}
+                  options={indian_States_And_UTs}
+                  id="state"
+                  textColor="#777680"
+                />
               </Grid>
               <Grid item xs={12}>
                 <div style={{ paddingBottom: '5px' }}>
-                  <label htmlFor="mobile">Mobile</label>
+                  <label htmlFor="postal_code">Posta Code</label>
                 </div>
-                <CustomInput name="mobile" value={formData.mobile || ''} onChange={handleChange} id="mobile" textColor="#777680" />
+                <CustomInput
+                  name="postal_code"
+                  value={formData.postal_code || ''}
+                  onChange={handleChange}
+                  id="postal_code"
+                  textColor="#777680"
+                />
               </Grid>
               <Grid item xs={12}>
                 <div style={{ paddingBottom: '5px' }}>
@@ -87,13 +116,19 @@ const CustomerEditDialog = ({ open, handleClose, customer, handleSave }) => {
               </Grid>
               <Grid item xs={12}>
                 <div style={{ paddingBottom: '5px' }}>
-                  <label htmlFor="receivables_date">Receivables Date</label>
+                  <label htmlFor="email">Email</label>
+                </div>
+                <CustomInput name="email" value={formData.email || ''} onChange={handleChange} id="email" textColor="#777680" />
+              </Grid>
+              <Grid item xs={12}>
+                <div style={{ paddingBottom: '5px' }}>
+                  <label htmlFor="mobile_number">Mobile</label>
                 </div>
                 <CustomInput
-                  name="receivables_date"
-                  value={formData.receivables_date || ''}
+                  name="mobile_number"
+                  value={formData.mobile_number || ''}
                   onChange={handleChange}
-                  id="receivables_date"
+                  id="mobile_number"
                   textColor="#777680"
                 />
               </Grid>

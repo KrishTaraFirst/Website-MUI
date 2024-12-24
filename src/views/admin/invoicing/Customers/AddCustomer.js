@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Button from '@mui/material/Button';
@@ -15,65 +15,79 @@ import { IconX } from '@tabler/icons-react';
 import IconButton from '@mui/material/IconButton';
 import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
 import Factory from '@/utils/Factory';
-const AddCustomer = ({ open, onClose }) => {
+
+const AddCustomer = ({ businessDetailsData, open, onClose, getCustomersData }) => {
   const [addCustomerData] = useState([
-    { name: 'nameofthe_business', label: 'Name of the Business' },
-    { name: 'pan', label: 'PAN' },
+    { name: 'name', label: 'Name of the Business' },
+    { name: 'pan_number', label: 'PAN' },
     { name: 'gst_registered', label: 'GST Registered' },
     { name: 'gstin', label: 'GSTIN' },
-    { name: 'typeof_gst', label: 'Type of GST' },
-    { name: 'addresslane1', label: 'Address Lane 1' },
-    { name: 'addresslane2', label: 'Address Lane 2' },
+    { name: 'gst_type', label: 'Type of GST' },
+    { name: 'address_line1', label: 'Address Lane 1' },
+    { name: 'address_line2', label: 'Address Lane 2' },
+    { name: 'country', label: 'Country' },
     { name: 'state', label: 'State' },
-    { name: 'pincode', label: 'Pincode' },
+    { name: 'postal_code', label: 'Pincode' },
     { name: 'email', label: 'Email' },
-    { name: 'mobile', label: 'Mobile' },
-    { name: 'opening_balance', label: 'Opening Balance' },
-    { name: 'swift_code', label: 'SWIFT Code' }
+    { name: 'mobile_number', label: 'Mobile' },
+    { name: 'opening_balance', label: 'Opening Balance' }
+    // { name: 'swift_code', label: 'SWIFT Code' }
   ]);
 
   const formik = useFormik({
     initialValues: {
-      nameofthe_business: '',
-      pan: '',
+      name: '',
+      pan_number: '',
       gst_registered: 'No',
       gstin: '',
-      typeof_gst: '',
-      addresslane1: '',
-      addresslane2: '',
-      pincode: '',
+      gst_type: '',
+      address_line1: '',
+      address_line2: '',
+      country: 'IN',
+      state: '',
+      postal_code: '',
       email: '',
-      mobile: '',
-      opening_balance: '',
-      swift_code: ''
+      mobile_number: '',
+      opening_balance: ''
     },
     validationSchema: Yup.object({
-      nameofthe_business: Yup.string().required('Customer Name is required'),
-      pan: Yup.string()
-        .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN format')
-        .required('PAN is required'),
+      name: Yup.string().required('Customer Name is required'),
+      pan_number: Yup.string().required('PAN is required'),
       gst_registered: Yup.string().required('GST Registration status is required'),
-      gstin: Yup.string().when('gst_registered', {
-        is: 'Yes',
-        then: Yup.string().required('GSTIN is required')
-      }),
-      typeof_gst: Yup.string().required('GST Type is required'),
-      addresslane1: Yup.string().required('Address Lane 1 is required'),
-      addresslane2: Yup.string().required('Address Lane 2 is required'),
-      pincode: Yup.string().required('Pincode is required'),
+      // gstin: Yup.string().required('GSTIN is required'),
+      gst_type: Yup.string().required('GST Type is required'),
+      address_line1: Yup.string().required('Address Line 1 is required'),
+      address_line2: Yup.string().required('Address Line 2 is required'),
+      postal_code: Yup.string().required('Pincode is required'),
       email: Yup.string().email('Invalid email format').required('Email is required'),
-      mobile: Yup.string().required('Mobile is required'),
+      mobile_number: Yup.string().required('Mobile is required'),
       state: Yup.string().required('State is required'),
       country: Yup.string().required('Country is required'),
-      opening_balance: Yup.number().required('Opening Balance is required'),
-      swift_code: Yup.string().required('SWIFT Code is required')
+      opening_balance: Yup.number().required('Opening Balance is required')
     }),
-    onSubmit: (values) => {
-      console.log(values);
-      onClose();
+
+    // validateOnBlur: true, // This will trigger validation when the input loses focus
+    // validateOnChange: true, // This will trigger validation on field change
+    onSubmit: async (values) => {
+      const postData = { ...values };
+      postData.invoicing_profile = businessDetailsData.id;
+      console.log(postData);
+      let url = '/invoicing/customer_profiles/create/';
+      const { res } = await Factory('post', url, postData);
+
+      if (res.status_cd === 0) {
+        getCustomersData();
+        handleClose();
+      }
     }
   });
-  const { values, touched, errors, handleSubmit, handleChange, handleBlur } = formik;
+
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
+
+  const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue, resetForm } = formik;
 
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title" fullWidth maxWidth="sm">
@@ -83,15 +97,13 @@ const AddCustomer = ({ open, onClose }) => {
             Add New Customer
           </DialogTitle>
 
-          <IconButton variant="outlined" color="secondary" aria-label="close" onClick={onClose}>
+          <IconButton variant="outlined" color="secondary" aria-label="close" onClick={handleClose}>
             <IconX size={20} />
           </IconButton>
         </Box>
 
         <Divider />
         <DialogContent sx={{ padding: '16px' }}>
-          {' '}
-          {/* Added padding to DialogContent */}
           <Box sx={{ mb: 2 }}>
             <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
               Customer Details
@@ -104,25 +116,23 @@ const AddCustomer = ({ open, onClose }) => {
                   {item.name === 'gst_registered' ? (
                     <FormControl fullWidth>
                       <FormLabel>{item.label}</FormLabel>
-                      <RadioGroup name={item.name} value={values.gst_registered} onChange={handleChange} row>
+                      <RadioGroup name={item.name} value={values[item.name]} onChange={(e) => setFieldValue(item.name, e.target.value)} row>
                         <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
                         <FormControlLabel value="No" control={<Radio />} label="No" />
                       </RadioGroup>
                     </FormControl>
-                  ) : item.name === 'typeof_gst' || item.name === 'state' ? (
+                  ) : item.name === 'gst_type' || item.name === 'state' ? (
                     <>
                       <div style={{ paddingBottom: '5px' }}>
                         <label>{item.label}</label>
                       </div>
                       <CustomAutocomplete
                         value={values[item.name]}
-                        onChange={handleChange}
-                        options={item.name === 'typeof_gst' ? ['CGST', 'IGST'] : item.name === 'state' && indian_States_And_UTs}
+                        name={item.name}
+                        onChange={(e, newValue) => setFieldValue(item.name, newValue)}
+                        options={item.name === 'gst_type' ? ['CGST', 'IGST'] : item.name === 'state' && indian_States_And_UTs}
                         error={touched[item.name] && Boolean(errors[item.name])}
                         helperText={touched[item.name] && errors[item.name]}
-                        name={item.name}
-                        // required={values.gst_registered === 'Yes'} // Only required if GST is registered
-                        // disabled={values.gst_registered === 'No'} // Disable if GST is not registered
                       />
                     </>
                   ) : (
@@ -130,14 +140,15 @@ const AddCustomer = ({ open, onClose }) => {
                       <div style={{ paddingBottom: '5px' }}>
                         <label>{item.label}</label>
                       </div>
+
                       <CustomInput
                         name={item.name}
-                        value={item.name === 'pan' ? values[item.name].toUpperCase() : values[item.name]}
-                        onChange={handleChange}
+                        value={item.name === 'pan_number' ? values[item.name].toUpperCase() : values[item.name]}
+                        onChange={(e) => setFieldValue(item.name, e.target.value)}
                         onBlur={handleBlur}
                         error={touched[item.name] && Boolean(errors[item.name])}
                         helperText={touched[item.name] && errors[item.name]}
-                        disabled={item.name === 'gstin' && values.gst_registered === 'No'}
+                        disabled={(item.name === 'gstin' && values.gst_registered === 'No') || item.name === 'country'}
                       />
                     </>
                   )}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
@@ -9,7 +9,9 @@ import CustomInput from '@/utils/CustomInput';
 import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import Factory from '@/utils/Factory';
-export default function TabOne({ onNext }) {
+import { method } from 'lodash-es';
+
+export default function TabOne({ businessDetails, onNext }) {
   const [busineesprofileFields, setBusineesprofileFields] = useState({
     basic_details: [
       { name: 'business_name', label: 'Business Name' },
@@ -32,7 +34,6 @@ export default function TabOne({ onNext }) {
       { name: 'swift_code', label: 'Swift Code' }
     ]
   });
-
   // Formik validation schema
   const validationSchema = Yup.object({
     business_name: Yup.string().required('Business Name is required'),
@@ -70,8 +71,8 @@ export default function TabOne({ onNext }) {
       email: 'anand@gmail.com',
       pincode: '500018',
       mobile: '9182043376',
-      addresslane1: '',
-      addresslane2: '',
+      addresslane1: 'Hyd',
+      addresslane2: 'MADHAPUR',
       pan_number: '',
       bank_name: '',
       account_number: '',
@@ -80,18 +81,42 @@ export default function TabOne({ onNext }) {
     },
     validationSchema,
     onSubmit: async (values) => {
-      // Handle form submission here
-      let url = '/invoicing/invoicing-profiles/create/';
-      let postData = { ...values };
-      postData.invoice_format = {};
-      const { res, error } = await Factory('patch', url, postData);
+      const url = businessDetails.id
+        ? `/invoicing/invoicing-profiles/${businessDetails.id}/update/`
+        : '/invoicing/invoicing-profiles/create/';
+      const method = businessDetails.id ? 'put' : 'post';
 
-      console.log(values);
-      onNext();
+      const postData = {
+        pan_number: values.pan_number,
+        bank_name: values.bank_name,
+        account_number: Number(values.account_number), // Convert to number
+        ifsc_code: values.ifsc_code,
+        swift_code: values.swift_code
+      };
+
+      const { res } = await Factory(method, url, postData);
+
+      if (res) {
+        console.log('Business details updated successfully:', res);
+        onNext();
+      }
     }
   });
 
   const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue } = formik;
+
+  useEffect(() => {
+    if (businessDetails && businessDetails.id) {
+      setValues((prev) => ({
+        ...prev,
+        pan_number: businessDetails.pan_number,
+        bank_name: businessDetails.bank_name,
+        account_number: businessDetails.account_number,
+        ifsc_code: businessDetails.ifsc_code,
+        swift_code: businessDetails.swift_code
+      }));
+    }
+  }, [businessDetails]);
 
   return (
     <Stack spacing={2}>
@@ -113,8 +138,9 @@ export default function TabOne({ onNext }) {
                   <RadioGroup
                     name={item.name}
                     value={values.gst_registered}
-                    onChange={(e) => setFieldValue(item.name, e.target.value)} // Using setFieldValue
+                    // onChange={(e) => setFieldValue(item.name, e.target.value)}
                     row
+                    disabled
                   >
                     <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
                     <FormControlLabel value="No" control={<Radio />} label="No" />
@@ -132,6 +158,7 @@ export default function TabOne({ onNext }) {
                     error={touched[item.name] && Boolean(errors[item.name])}
                     helperText={touched[item.name] && errors[item.name]}
                     name={item.name}
+                    disabled
                   />
                 </>
               ) : (
@@ -142,19 +169,12 @@ export default function TabOne({ onNext }) {
                   <CustomInput
                     name={item.name}
                     value={values[item.name]}
-                    onChange={(e) => {
-                      console.log(item.name);
-                      if (item.name === 'pan_number') {
-                        setFieldValue(item.name, e.target.value.toUpperCase());
-                      } else {
-                        setFieldValue(item.name, e.target.value);
-                      }
-                    }}
+                    onChange={(e) => setFieldValue(item.name, e.target.value)}
                     onBlur={handleBlur}
                     error={touched[item.name] && Boolean(errors[item.name])}
                     helperText={touched[item.name] && errors[item.name]}
-                    required
-                    disabled={item.name === 'gstin' && values.gst_registered === 'No'}
+                    // disabled={item.name === 'gstin' && values.gst_registered === 'No'}
+                    disabled
                   />
                 </>
               )}
@@ -175,7 +195,14 @@ export default function TabOne({ onNext }) {
               <TextField
                 name={item.name}
                 value={values[item.name]}
-                onChange={(e) => setFieldValue(item.name, e.target.value)} // Using setFieldValue
+                onChange={(e) => {
+                  if (item.name === 'pan_number') {
+                    setFieldValue(item.name, e.target.value.toUpperCase());
+                  } else {
+                    setFieldValue(item.name, e.target.value);
+                  }
+                }}
+                // onChange={(e) => setFieldValue(item.name, e.target.value)} // Using setFieldValue
                 onBlur={handleBlur}
                 error={touched[item.name] && Boolean(errors[item.name])}
                 helperText={touched[item.name] && errors[item.name]}
