@@ -16,7 +16,7 @@ export default function AuthGuard({ children }) {
   const pathname = usePathname();
   const router = useRouter();
   const { isProcessing, userData } = useCurrentUser();
-
+console.log(userData)
   useEffect(() => {
     if (!isProcessing && (!userData || Object.keys(userData).length === 0)) {
       router.push('/login');

@@ -46,56 +46,74 @@ const ItemEditDialog = ({ open, handleClose, itemData, handleSave }) => {
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="item_name">Item Name</label>
                 </div>
-                <CustomInput name="item_name" value={formData.item_name || ''} onChange={handleChange} id="item_name" />
+                <CustomInput name="item_name" value={formData.item_name || ''} onChange={handleChange} id="item_name" textColor="#777680" />
               </Grid>
 
               <Grid item xs={12}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="sku">SKU</label>
                 </div>
-                <CustomInput name="sku" value={formData.sku || ''} onChange={handleChange} id="sku" />
+                <CustomInput name="sku" value={formData.sku || ''} onChange={handleChange} id="sku" textColor="#777680" />
               </Grid>
 
               <Grid item xs={12}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="units">Units</label>
                 </div>
-                <CustomInput name="units" value={formData.units || ''} onChange={handleChange} id="units" />
+                <CustomInput name="units" value={formData.units || ''} onChange={handleChange} id="units" textColor="#777680" />
               </Grid>
 
               <Grid item xs={12}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="hsn_sac">HSN/SAC</label>
                 </div>
-                <CustomInput name="hsn_sac" value={formData.hsn_sac || ''} onChange={handleChange} id="hsn_sac" />
+                <CustomInput name="hsn_sac" value={formData.hsn_sac || ''} onChange={handleChange} id="hsn_sac" textColor="#777680" />
               </Grid>
 
               <Grid item xs={12}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="gst_rate">GST Rate</label>
                 </div>
-                <CustomInput name="gst_rate" value={formData.gst_rate || ''} onChange={handleChange} id="gst_rate" />
+                <CustomInput name="gst_rate" value={formData.gst_rate || ''} onChange={handleChange} id="gst_rate" textColor="#777680" />
               </Grid>
 
               <Grid item xs={12}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="tax_preference">Tax Preference</label>
                 </div>
-                <CustomInput name="tax_preference" value={formData.tax_preference || ''} onChange={handleChange} id="tax_preference" />
+                <CustomInput
+                  name="tax_preference"
+                  value={formData.tax_preference || ''}
+                  onChange={handleChange}
+                  id="tax_preference"
+                  textColor="#777680"
+                />
               </Grid>
 
               <Grid item xs={12}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="selling_price">Selling Price</label>
                 </div>
-                <CustomInput name="selling_price" value={formData.selling_price || ''} onChange={handleChange} id="selling_price" />
+                <CustomInput
+                  name="selling_price"
+                  value={formData.selling_price || ''}
+                  onChange={handleChange}
+                  id="selling_price"
+                  textColor="#777680"
+                />
               </Grid>
 
               <Grid item xs={12}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="description">Description</label>
                 </div>
-                <CustomInput name="description" value={formData.description || ''} onChange={handleChange} id="description" />
+                <CustomInput
+                  name="description"
+                  value={formData.description || ''}
+                  onChange={handleChange}
+                  id="description"
+                  textColor="#777680"
+                />
               </Grid>
             </Grid>
           )}

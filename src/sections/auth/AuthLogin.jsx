@@ -19,9 +19,10 @@ import Link from '@mui/material/Link';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
-
+import { BASE_URL } from 'constants';
 // @third-party
 import { useForm } from 'react-hook-form';
+import { AuthRole } from '@/enum';
 
 // @project
 import { APP_DEFAULT_PATH, AUTH_USER_KEY } from '@/config';
@@ -57,21 +58,59 @@ export default function AuthLogin({ inputSx }) {
   } = useForm({ defaultValues: { email: 'super_admin@saasable.io', password: 'Super@123' } });
 
   // Handle form submission
-  const onSubmit = (formData) => {
+  const onSubmit = async(formData) => {
     setIsProcessing(true);
     setLoginError('');
 
-    axios
-      .post('/api/auth/login', formData)
-      .then((response) => {
-        setIsProcessing(false);
-        localStorage.setItem(AUTH_USER_KEY, JSON.stringify(response.data));
-        router.push(APP_DEFAULT_PATH);
-      })
-      .catch((response) => {
-        setIsProcessing(false);
-        setLoginError(response.error || 'Something went wrong');
-      });
+    // axios
+    //   .post('/api/auth/login', formData)
+    //   .then((response) => {
+    //     setIsProcessing(false);
+    //     console.log(AUTH_USER_KEY, JSON.stringify(response.data))
+    //     localStorage.setItem(AUTH_USER_KEY, JSON.stringify(response.data));
+    //     router.push(APP_DEFAULT_PATH);
+    //   })
+    //   .catch((response) => {
+    //     setIsProcessing(false);
+    //     setLoginError(response.error || 'Something went wrong');
+    //   });
+    // console.log(formData)
+    try {
+      const url = `/token_auth/`;
+      const postData = {
+        email_or_mobile: formData.email,
+        password: formData.password,
+      };
+
+      const res = await axios.post(BASE_URL + url, postData);
+console.log(res)
+
+      if (res.status === 200) {
+
+ let userDAta = {
+    id:res.data.id,
+    email: res.data.email,
+    role: AuthRole.SUPER_ADMIN,
+    contact: '123456789',
+    dialcode: '+1',
+    firstname: res.data.name,
+    lastname: '',
+    // password: 'Super@123',
+    access_token: res.data.access
+ 
+  }
+  setIsProcessing(false);
+  console.log(userDAta)
+  localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));
+  router.push(APP_DEFAULT_PATH);
+}
+    
+    } catch (error) {
+      // console.error("Login error:", error.response.data.detail);
+      console.log('error', error)
+      setIsProcessing(false);
+      // alert(error.response.data.detail);
+    }
   };
 
   const commonIconProps = { size: 16, color: theme.palette.grey[700] };

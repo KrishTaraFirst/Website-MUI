@@ -10,6 +10,7 @@ const CustomInput = ({
   maxWidth, // Default maxWidth
   width,
   autoComplete,
+  textColor,
   ...props
 }) => {
   return (
@@ -20,7 +21,8 @@ const CustomInput = ({
           fontSize: '14px'
         },
         '& .MuiInputBase-input': {
-          fontSize: '15px'
+          fontSize: '15px',
+          color: textColor || 'inherit' // Apply text color
         }
       }}
       id={id}
