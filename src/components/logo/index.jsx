@@ -13,6 +13,7 @@ import LogoMain from './LogoMain';
 import LogoIcon from './LogoIcon';
 import { APP_DEFAULT_PATH } from '@/config';
 import { generateFocusStyle } from '@/utils/generateFocusStyle';
+import { Typography } from '@mui/material';
 
 /***************************  MAIN - LOGO  ***************************/
 
@@ -22,7 +23,13 @@ export default function LogoSection({ isIcon, sx, to }) {
   return (
     <NextLink href={!to ? APP_DEFAULT_PATH : to} passHref legacyBehavior>
       <ButtonBase disableRipple sx={{ ...sx, '&:focus-visible': generateFocusStyle(theme.palette.primary.main) }} aria-label="logo">
-        {isIcon ? <LogoIcon /> : <LogoMain />}
+        {true ? (
+          <>
+            <LogoIcon /> <Typography variant='h1' color="primary">&nbsp;Tara</Typography>
+          </>
+        ) : (
+          <LogoMain />
+        )}
       </ButtonBase>
     </NextLink>
   );

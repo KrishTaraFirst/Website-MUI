@@ -28,7 +28,7 @@ const manage = {
       type: 'item',
       url: '/invoicing',
       icon: 'IconUserCog',
-      roles: [AuthRole.SUPER_ADMIN]
+      roles: [AuthRole.SUPER_ADMIN, AuthRole.USER]
     },
     // 
     {
