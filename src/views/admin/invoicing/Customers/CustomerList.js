@@ -1,96 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit'; // MUI Edit Icon
-import DeleteIcon from '@mui/icons-material/Delete'; // MUI Delete Icon
-import CustomerEditDialog from './CustomerEditDialog'; // Import the dialog component
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CustomerEditDialog from './CustomerEditDialog';
+import { ConstructionOutlined } from '@mui/icons-material';
+import Factory from '@/utils/Factory';
+const CustomerList = ({ getCustomersData, customersListData }) => {
+  const [customers, setCustomers] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
 
-// Dummy customer data
-const dummyCustomers = [
-  {
-    nameofthe_business: 'ABC Pvt Ltd',
-    pan: 'ABC1234XYZ',
-    gst_registered: 'Yes',
-    gstin: 'GSTIN123456',
-    typeof_gst: 'CGST',
-    address: '123 Main St',
-    addresslane2: 'Suite 101',
-    pincode: '123456',
-    email: 'contact@abc.com',
-    mobile: '9876543210',
-    opening_balance: '5000',
-    swift_code: 'SWIFT123',
-    receivables_date: '2024-12-31'
-  },
-  {
-    nameofthe_business: 'ABC Pvt Ltd',
-    pan: 'ABC1234XYZ',
-    gst_registered: 'Yes',
-    gstin: 'GSTIN123456',
-    typeof_gst: 'CGST',
-    address: '123 Main St',
-    addresslane2: 'Suite 101',
-    pincode: '123456',
-    email: 'contact@abc.com',
-    mobile: '9876543210',
-    opening_balance: '5000',
-    swift_code: 'SWIFT123',
-    receivables_date: '2024-12-31'
-  },
-  {
-    nameofthe_business: 'ABC Pvt Ltd',
-    pan: 'ABC1234XYZ',
-    gst_registered: 'Yes',
-    gstin: 'GSTIN123456',
-    typeof_gst: 'CGST',
-    address: '123 Main St',
-    addresslane2: 'Suite 101',
-    pincode: '123456',
-    email: 'contact@abc.com',
-    mobile: '9876543210',
-    opening_balance: '5000',
-    swift_code: 'SWIFT123',
-    receivables_date: '2024-12-31'
-  },
-  {
-    nameofthe_business: 'XYZ Inc',
-    pan: 'XYZ9876ABC',
-    gst_registered: 'No',
-    gstin: '',
-    typeof_gst: 'IGST',
-    address: '456 Second St',
-    addresslane2: 'Building A',
-    pincode: '654321',
-    email: 'info@xyz.com',
-    mobile: '9123456789',
-    opening_balance: '3000',
-    swift_code: 'SWIFT456',
-    receivables_date: '2025-01-15'
-  }
-];
-
-const CustomerList = () => {
-  const [customers, setCustomers] = useState(dummyCustomers);
-  const [selectedCustomer, setSelectedCustomer] = useState(null); // Store the selected customer for editing
-  const [openDialog, setOpenDialog] = useState(false); // Control the dialog visibility
+  useEffect(() => {
+    setCustomers(customersListData);
+  }, [customersListData]);
 
   const handleEdit = (customerIndex) => {
     setSelectedCustomer(customers[customerIndex]);
-    setOpenDialog(true); // Open dialog when Edit button is clicked
+    setOpenDialog(true);
   };
 
-  const handleDelete = (customerIndex) => {
-    const updatedCustomers = customers.filter((_, index) => index !== customerIndex);
-    setCustomers(updatedCustomers);
+  const handleDelete = async (customer) => {
+    let url = `/invoicing/customer_profiles/delete/${customer.id}`;
+    const { res } = await Factory('delete', url, {});
+    console.log(res);
+    getCustomersData();
   };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
 
-  const handleSave = (updatedCustomer) => {
-    const updatedCustomers = customers.map((customer) => (customer === selectedCustomer ? updatedCustomer : customer));
-    setCustomers(updatedCustomers);
-  };
+  // const handleSave = (updatedCustomer) => {
+  //   const updatedCustomers = customers.map((customer) => (customer === selectedCustomer ? updatedCustomer : customer));
+  //   setCustomers(updatedCustomers);
+  // };
 
   return (
     <>
@@ -108,29 +51,43 @@ const CustomerList = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {customers.map((customer, index) => (
-              <TableRow key={index}>
-                <TableCell>{customer.nameofthe_business}</TableCell>
-                <TableCell>{customer.pan}</TableCell>
-                <TableCell>{customer.gstin}</TableCell>
-                <TableCell>{customer.email}</TableCell>
-                <TableCell>{customer.mobile}</TableCell>
-                <TableCell>{customer.receivables_date}</TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleEdit(index)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton onClick={() => handleDelete(index)}>
-                    <DeleteIcon />
-                  </IconButton>
+            {customers.length > 0 ? (
+              customers.map((customer, index) => (
+                <TableRow key={index}>
+                  <TableCell>{customer.name}</TableCell>
+                  <TableCell>{customer.pan_number}</TableCell>
+                  <TableCell>{customer.gstin}</TableCell>
+                  <TableCell>{customer.email}</TableCell>
+                  <TableCell>{customer.mobile_number}</TableCell>
+                  <TableCell>{customer.receivables_date}</TableCell>
+                  <TableCell>
+                    <IconButton onClick={() => handleEdit(index)}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton onClick={() => handleDelete(customer)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} align="center">
+                  No customers available
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </TableContainer>
 
-      <CustomerEditDialog open={openDialog} handleClose={handleCloseDialog} customer={selectedCustomer} handleSave={handleSave} />
+      <CustomerEditDialog
+        open={openDialog}
+        handleClose={handleCloseDialog}
+        customer={selectedCustomer}
+        // handleSave={handleSave}
+        getCustomersData={getCustomersData}
+      />
     </>
   );
 };

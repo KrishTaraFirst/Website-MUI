@@ -2,8 +2,7 @@ import axios from 'axios';
 import { BASE_URL } from 'constants';
 
 function Factory(api, URL, payload, headers = {}) {
-  const tokens = JSON.parse(localStorage.getItem('tokens'));
-
+  const tokens = JSON.parse(localStorage.getItem('auth-user'));
   const getErrorMessage = (api) => {
     switch (api) {
       case 'put':
@@ -25,7 +24,7 @@ function Factory(api, URL, payload, headers = {}) {
     method: api,
     url: BASE_URL + URL,
     headers: {
-      Authorization: `Bearer ${tokens.access}`,
+      Authorization: `Bearer ${tokens.access_token}`,
       ...headers
     },
     data: payload
