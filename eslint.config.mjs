@@ -65,8 +65,8 @@ export default [
       'prefer-destructuring': 'off',
       'import/no-extraneous-dependencies': 'off',
       'react/display-name': 'off',
-      // 'react/no-unescaped-entities': 'off',
-      // '@next/next/no-page-custom-font': 'off',
+      'react/no-unescaped-entities': 'off',
+      '@next/next/no-page-custom-font': 'off',
 
       'import/no-unresolved': [
         'off',
@@ -81,26 +81,6 @@ export default [
           patterns: ['@mui/*/*/*', '!@mui/material/test-utils/*']
         }
       ],
-
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          vars: 'all',
-          args: 'none'
-        }
-      ],
-
-      'prettier/prettier': [
-        'warn',
-        {
-          bracketSpacing: true,
-          printWidth: 140,
-          singleQuote: true,
-          trailingComma: 'none',
-          tabWidth: 2,
-          useTabs: false
-        }
-      ]
     }
   }
 ];

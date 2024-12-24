@@ -1,0 +1,1 @@
+export { default as Integration1 } from './Integration1';

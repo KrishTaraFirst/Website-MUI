@@ -45,19 +45,19 @@ export default function AuthOtpVerification({ email, verify }) {
     setIsProcessing(true);
     setOtpError('');
 
-    const type = verificationTypes[verify] ?? verificationTypes.signup;
-    const payload = { email, otp: formData.otp, type };
+    // const type = verificationTypes[verify] ?? verificationTypes.signup;
+    // const payload = { email, otp: formData.otp, type };
 
-    axios
-      .post('/api/auth/verifyOtp', payload)
-      .then(() => {
-        setIsProcessing(false);
-        router.replace('/login');
-      })
-      .catch((response) => {
-        setIsProcessing(false);
-        setOtpError(response.error || 'Something went wrong');
-      });
+    // axios
+    //   .post('/api/auth/verifyOtp', payload)
+    //   .then(() => {
+    //     setIsProcessing(false);
+    //     router.replace('/login');
+    //   })
+    //   .catch((response) => {
+    //     setIsProcessing(false);
+    //     setOtpError(response.error || 'Something went wrong');
+    //   });
 
     // Reset focus after submission
     const activeElement = document.activeElement;

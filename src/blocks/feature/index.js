@@ -1,0 +1,1 @@
+export { default as Feature6 } from './Feature6';

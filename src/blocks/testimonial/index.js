@@ -1,0 +1,1 @@
+export { default as Testimonial2 } from './Testimonial2';

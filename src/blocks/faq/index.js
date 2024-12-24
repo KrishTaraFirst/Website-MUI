@@ -1,0 +1,1 @@
+export { default as Faq3 } from './Faq3';

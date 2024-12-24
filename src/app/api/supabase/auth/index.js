@@ -33,58 +33,35 @@ export async function login(request) {
   }
 }
 
-export async function getUser(token) {
-  try {
-    const { data, error } = await supabase.auth.getUser(token);
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
-    }
 
-    return NextResponse.json(
-      {
-        id: data.user.id,
-        email: data.user.email || '',
-        role: data.user.user_metadata.role,
-        contact: data.user.user_metadata.contact,
-        dialcode: data.user.user_metadata.dialcode,
-        firstname: data.user.user_metadata.firstname,
-        lastname: data.user.user_metadata.lastname
-      },
-      { status: 200 }
-    );
-  } catch {
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
-  }
-}
+// export async function signUp(request) {
+//   try {
+//     const body = await request.json();
 
-export async function signUp(request) {
-  try {
-    const body = await request.json();
+//     const { error } = await supabase.auth.signUp({
+//       email: body.email,
+//       password: body.password,
+//       options: {
+//         data: {
+//           firstname: body.firstname,
+//           lastname: body.lastname,
+//           dialcode: body.dialcode,
+//           contact: body.contact,
+//           role: AuthRole.USER
+//         }
+//       }
+//     });
 
-    const { error } = await supabase.auth.signUp({
-      email: body.email,
-      password: body.password,
-      options: {
-        data: {
-          firstname: body.firstname,
-          lastname: body.lastname,
-          dialcode: body.dialcode,
-          contact: body.contact,
-          role: AuthRole.USER
-        }
-      }
-    });
+//     if (error) {
+//       return NextResponse.json({ error: error.message }, { status: 400 });
+//     }
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
-    }
-
-    // Success
-    return NextResponse.json({ status: 200 });
-  } catch {
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
-  }
-}
+//     // Success
+//     return NextResponse.json({ status: 200 });
+//   } catch {
+//     return NextResponse.json({ error: 'Server error' }, { status: 500 });
+//   }
+// }
 
 export async function verifyOtp(request) {
   try {
@@ -182,6 +159,6 @@ export async function signOut() {
 }
 
 // Export as a single object for easy import
-const mockAuth = { login, getUser, signUp, verifyOtp, resend, forgotPassword, resetPassword, signOut };
+const mockAuth = { login, verifyOtp, resend, forgotPassword, resetPassword, signOut };
 
 export default mockAuth;

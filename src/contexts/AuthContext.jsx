@@ -13,25 +13,9 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isProcessing, setIsProcessing] = useState(true);
 
-  const fetchUser = async () => {
-    axios
-      .get('/api/auth/getUser')
-      .then((response) => {
-        console.log('jj',response.data)
-        setUser(response.data || {});
-        setIsProcessing(false);
-      })
-      .catch(() => {
-        setIsProcessing(false);
-        localStorage.removeItem(AUTH_USER_KEY);
-        setUser(null);
-      });
-  };
-
   const manageUserData = (localStorageData) => {
     const parsedAuthData = localStorageData ? JSON.parse(localStorageData) : null;
     if (parsedAuthData?.access_token) {
-      // fetchUser();
       setUser(parsedAuthData || {});
       setIsProcessing(false);
     } else {

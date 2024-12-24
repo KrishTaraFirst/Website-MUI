@@ -29,38 +29,15 @@ export async function login(request) {
   }
 }
 
-export async function getUser(token) {
-  try {
-    const user = mockUsers.find((user) => user.access_token === token);
-    if (!user) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 400 });
-    }
-    return NextResponse.json(
-      {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        contact: user.contact,
-        dialcode: user.dialcode,
-        firstname: user.firstname,
-        lastname: user.lastname
-      },
-      { status: 200 }
-    );
-  } catch {
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
-  }
-}
-
-export async function signUp(request) {
-  try {
-    const body = await request.json();
-    console.log(body);
-    return NextResponse.json({ status: 200 });
-  } catch {
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
-  }
-}
+// export async function signUp(request) {
+//   try {
+//     const body = await request.json();
+//     console.log(body);
+//     return NextResponse.json({ status: 200 });
+//   } catch {
+//     return NextResponse.json({ error: 'Server error' }, { status: 500 });
+//   }
+// }
 
 export async function verifyOtp(request) {
   try {
@@ -111,6 +88,6 @@ export async function signOut() {
 }
 
 // Export as a single object for easy import
-const mockAuth = { login, getUser, signUp, verifyOtp, resend, forgotPassword, resetPassword, signOut };
+const mockAuth = { login, verifyOtp, resend, forgotPassword, resetPassword, signOut };
 
 export default mockAuth;

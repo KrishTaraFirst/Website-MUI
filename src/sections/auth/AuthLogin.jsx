@@ -58,7 +58,7 @@ export default function AuthLogin({ inputSx }) {
   } = useForm({ defaultValues: { email: 'super_admin@saasable.io', password: 'Super@123' } });
 
   // Handle form submission
-  const onSubmit = async(formData) => {
+  const onSubmit = async (formData) => {
     setIsProcessing(true);
     setLoginError('');
 
@@ -79,35 +79,32 @@ export default function AuthLogin({ inputSx }) {
       const url = `/token_auth/`;
       const postData = {
         email_or_mobile: formData.email,
-        password: formData.password,
+        password: formData.password
       };
 
       const res = await axios.post(BASE_URL + url, postData);
-console.log(res)
+      console.log(res);
 
       if (res.status === 200) {
-
- let userDAta = {
-    id:res.data.id,
-    email: res.data.email,
-    role: AuthRole.SUPER_ADMIN,
-    contact: '123456789',
-    dialcode: '+1',
-    firstname: res.data.name,
-    lastname: '',
-    // password: 'Super@123',
-    access_token: res.data.access
- 
-  }
-  setIsProcessing(false);
-  console.log(userDAta)
-  localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));
-  router.push(APP_DEFAULT_PATH);
-}
-    
+        let userDAta = {
+          id: res.data.id,
+          email: res.data.email,
+          role: AuthRole.SUPER_ADMIN,
+          contact: '123456789',
+          dialcode: '+1',
+          firstname: res.data.name,
+          lastname: '',
+          // password: 'Super@123',
+          access_token: res.data.access
+        };
+        setIsProcessing(false);
+        console.log(userDAta);
+        localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));
+        router.push(APP_DEFAULT_PATH);
+      }
     } catch (error) {
       // console.error("Login error:", error.response.data.detail);
-      console.log('error', error)
+      console.log('error', error);
       setIsProcessing(false);
       // alert(error.response.data.detail);
     }
@@ -183,6 +180,7 @@ console.log(res)
           type="submit"
           color="primary"
           variant="contained"
+          fullWidth
           disabled={isProcessing}
           endIcon={isProcessing && <CircularProgress color="secondary" size={16} />}
           sx={{ minWidth: 120, mt: { xs: 1, sm: 4 }, '& .MuiButton-endIcon': { ml: 1 } }}

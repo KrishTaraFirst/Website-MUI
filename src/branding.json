@@ -1,10 +1,25 @@
 {
     "brandName": "Tara",
+    "title": "React Multipurpose UI Kit and Dashboard Template",
     "company": {
-        "name": "Tara"
+      "name": "Tara",
+      "url": "https://phoenixcoded.net",
+      "socialLink": {
+        "linkedin": "https://in.linkedin.com/company/phoenixcoded",
+        "instagram": "#",
+        "facebook": "https://www.facebook.com/Phoenixcoded/",
+        "youtube": "https://www.youtube.com/@Phoenixcoded",
+        "github": "https://github.com/phoenixcoded",
+        "dribble": "https://dribbble.com/Phoenixcoded",
+        "discord": "https://discord.com/invite/AfJqqYeG",
+        "support": "https://support.phoenixcoded.net"
+      }
     },
     "logo": {
-        "main":"",
-        "logoIcon": ""
+      "main": "",
+      "logoIcon": "",
+      "logoFab": "",
+      "logoWatermark": ""
     }
-}
+  }
+  

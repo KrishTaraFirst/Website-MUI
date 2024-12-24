@@ -1,0 +1,1 @@
+export { default as Blog3 } from './Blog3';

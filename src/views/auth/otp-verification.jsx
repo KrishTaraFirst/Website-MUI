@@ -28,8 +28,8 @@ const resendTypes = {
 
 export default function OtpVerification() {
   const searchParams = useSearchParams();
-  const email = searchParams.get('email') || '';
-  const verify = searchParams.get('verify') || 'signup';
+  // const email = searchParams.get('email') || '';
+  // const verify = searchParams.get('verify') || 'signup';
   if (!email) {
     redirect('/register');
   }
@@ -53,15 +53,15 @@ export default function OtpVerification() {
     setTimer(60); // Reset timer to 60 seconds
     setIsTimerActive(true);
 
-    const type = resendTypes[verify] ?? resendTypes.signup;
-    const payload = { email, type };
+    // const type = resendTypes[verify] ?? resendTypes.signup;
+    // const payload = { email, type };
 
-    axios
-      .post('/api/auth/resend', payload)
-      .then(() => {})
-      .catch((response) => {
-        console.log(response.error || 'Something went wrong');
-      });
+    // axios
+    //   .post('/api/auth/resend', payload)
+    //   .then(() => {})
+    //   .catch((response) => {
+    //     console.log(response.error || 'Something went wrong');
+    //   });
   };
 
   return (
