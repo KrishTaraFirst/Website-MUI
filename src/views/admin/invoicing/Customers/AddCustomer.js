@@ -13,7 +13,8 @@ import CustomInput from '@/utils/CustomInput';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import { IconX } from '@tabler/icons-react';
 import IconButton from '@mui/material/IconButton';
-
+import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
+import Factory from '@/utils/Factory';
 const AddCustomer = ({ open, onClose }) => {
   const [addCustomerData] = useState([
     { name: 'nameofthe_business', label: 'Name of the Business' },
@@ -21,8 +22,9 @@ const AddCustomer = ({ open, onClose }) => {
     { name: 'gst_registered', label: 'GST Registered' },
     { name: 'gstin', label: 'GSTIN' },
     { name: 'typeof_gst', label: 'Type of GST' },
-    { name: 'address', label: 'Address' },
+    { name: 'addresslane1', label: 'Address Lane 1' },
     { name: 'addresslane2', label: 'Address Lane 2' },
+    { name: 'state', label: 'State' },
     { name: 'pincode', label: 'Pincode' },
     { name: 'email', label: 'Email' },
     { name: 'mobile', label: 'Mobile' },
@@ -37,7 +39,7 @@ const AddCustomer = ({ open, onClose }) => {
       gst_registered: 'No',
       gstin: '',
       typeof_gst: '',
-      address: '',
+      addresslane1: '',
       addresslane2: '',
       pincode: '',
       email: '',
@@ -47,14 +49,16 @@ const AddCustomer = ({ open, onClose }) => {
     },
     validationSchema: Yup.object({
       nameofthe_business: Yup.string().required('Customer Name is required'),
-      pan: Yup.string().required('PAN is required'),
+      pan: Yup.string()
+        .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN format')
+        .required('PAN is required'),
       gst_registered: Yup.string().required('GST Registration status is required'),
       gstin: Yup.string().when('gst_registered', {
         is: 'Yes',
         then: Yup.string().required('GSTIN is required')
       }),
       typeof_gst: Yup.string().required('GST Type is required'),
-      address: Yup.string().required('Address is required'),
+      addresslane1: Yup.string().required('Address Lane 1 is required'),
       addresslane2: Yup.string().required('Address Lane 2 is required'),
       pincode: Yup.string().required('Pincode is required'),
       email: Yup.string().email('Invalid email format').required('Email is required'),
@@ -69,7 +73,6 @@ const AddCustomer = ({ open, onClose }) => {
       onClose();
     }
   });
-
   const { values, touched, errors, handleSubmit, handleChange, handleBlur } = formik;
 
   return (
@@ -106,7 +109,7 @@ const AddCustomer = ({ open, onClose }) => {
                         <FormControlLabel value="No" control={<Radio />} label="No" />
                       </RadioGroup>
                     </FormControl>
-                  ) : item.name === 'typeof_gst' ? (
+                  ) : item.name === 'typeof_gst' || item.name === 'state' ? (
                     <>
                       <div style={{ paddingBottom: '5px' }}>
                         <label>{item.label}</label>
@@ -114,7 +117,7 @@ const AddCustomer = ({ open, onClose }) => {
                       <CustomAutocomplete
                         value={values[item.name]}
                         onChange={handleChange}
-                        options={['CGST', 'IGST']}
+                        options={item.name === 'typeof_gst' ? ['CGST', 'IGST'] : item.name === 'state' && indian_States_And_UTs}
                         error={touched[item.name] && Boolean(errors[item.name])}
                         helperText={touched[item.name] && errors[item.name]}
                         name={item.name}
@@ -129,7 +132,7 @@ const AddCustomer = ({ open, onClose }) => {
                       </div>
                       <CustomInput
                         name={item.name}
-                        value={values[item.name]}
+                        value={item.name === 'pan' ? values[item.name].toUpperCase() : values[item.name]}
                         onChange={handleChange}
                         onBlur={handleBlur}
                         error={touched[item.name] && Boolean(errors[item.name])}

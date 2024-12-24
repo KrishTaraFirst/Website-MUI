@@ -10,8 +10,7 @@ const cspHeader = `
     base-uri 'self';
     form-action 'self';
     frame-ancestors 'self';
-    connect-src 'self' https://cdn.jsdelivr.net;
-`;
+ connect-src 'self' https://cdn.jsdelivr.net http://dev-backend.tarafirst.com:8000;`;
 
 const nextConfig = {
   modularizeImports: {

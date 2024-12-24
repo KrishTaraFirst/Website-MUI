@@ -17,6 +17,7 @@ export const AuthProvider = ({ children }) => {
     axios
       .get('/api/auth/getUser')
       .then((response) => {
+        console.log('jj',response.data)
         setUser(response.data || {});
         setIsProcessing(false);
       })
@@ -30,7 +31,9 @@ export const AuthProvider = ({ children }) => {
   const manageUserData = (localStorageData) => {
     const parsedAuthData = localStorageData ? JSON.parse(localStorageData) : null;
     if (parsedAuthData?.access_token) {
-      fetchUser();
+      // fetchUser();
+      setUser(parsedAuthData || {});
+      setIsProcessing(false);
     } else {
       setIsProcessing(false);
     }

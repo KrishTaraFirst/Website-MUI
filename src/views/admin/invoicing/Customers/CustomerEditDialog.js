@@ -58,31 +58,32 @@ const CustomerEditDialog = ({ open, handleClose, customer, handleSave }) => {
                   value={formData.nameofthe_business || ''}
                   onChange={handleChange}
                   id="nameofthe_business"
+                  textColor="#777680"
                 />
               </Grid>
               <Grid item xs={12}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="pan">PAN</label>
                 </div>
-                <CustomInput name="pan" value={formData.pan || ''} onChange={handleChange} id="pan" />
+                <CustomInput name="pan" value={formData.pan || ''} onChange={handleChange} id="pan" textColor="#777680" />
               </Grid>
               <Grid item xs={12}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="email">Email</label>
                 </div>
-                <CustomInput name="email" value={formData.email || ''} onChange={handleChange} id="email" />
+                <CustomInput name="email" value={formData.email || ''} onChange={handleChange} id="email" textColor="#777680" />
               </Grid>
               <Grid item xs={12}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="mobile">Mobile</label>
                 </div>
-                <CustomInput name="mobile" value={formData.mobile || ''} onChange={handleChange} id="mobile" />
+                <CustomInput name="mobile" value={formData.mobile || ''} onChange={handleChange} id="mobile" textColor="#777680" />
               </Grid>
               <Grid item xs={12}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="gstin">GSTIN</label>
                 </div>
-                <CustomInput name="gstin" value={formData.gstin || ''} onChange={handleChange} id="gstin" />
+                <CustomInput name="gstin" value={formData.gstin || ''} onChange={handleChange} id="gstin" textColor="#777680" />
               </Grid>
               <Grid item xs={12}>
                 <div style={{ paddingBottom: '5px' }}>
@@ -93,6 +94,7 @@ const CustomerEditDialog = ({ open, handleClose, customer, handleSave }) => {
                   value={formData.receivables_date || ''}
                   onChange={handleChange}
                   id="receivables_date"
+                  textColor="#777680"
                 />
               </Grid>
             </Grid>
