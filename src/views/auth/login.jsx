@@ -137,7 +137,7 @@ export default function Login() {
                   captionProps={{ variant: 'body1' }}
                 />
                 <Box sx={{ width: 1, maxWidth: { sm: 458 }, mt: { xs: 4, sm: 6 } }}>
-                  <AuthLogin inputSx={{ bgcolor: 'background.paper' }} />
+                  <AuthLogin inputSx={{ bgcolor: 'background.paper', pt: 1, pb: 1, borderRadius: '16px' }} />
                   <Typography sx={{ textAlign: 'center', mt: 2.5, color: 'text.secondary' }}>
                     Don’t have an account?{' '}
                     <Link
@@ -152,11 +152,11 @@ export default function Login() {
                       Sign Up
                     </Link>
                   </Typography>
-                  <Divider sx={{ my: { xs: 4, sm: 5 } }}>
+                  {/* <Divider sx={{ my: { xs: 4, sm: 5 } }}>
                     <Typography variant="subtitle2" sx={{ color: 'text.secondary', px: 1.25 }}>
-                      Continue 
+                      Continue
                     </Typography>
-                  </Divider>
+                  </Divider> */}
                   {/* <AuthSocial type={SocialTypes.HORIZONTAL} /> */}
                 </Box>
               </Box>

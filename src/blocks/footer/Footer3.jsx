@@ -26,7 +26,7 @@ export default function Footer3() {
       sx={{ alignItems: { xs: 'center', md: 'flex-start' }, justifyContent: 'space-between', gap: 4, height: 1, pb: { xs: 2.5, md: 0 } }}
     >
       <Stack spacing={1.75} sx={{ alignItems: { xs: 'center', md: 'flex-start' }, textAlign: { xs: 'center', md: 'left' } }}>
-        <LogoSection />
+        <LogoSection  isIcon={false}/>
         <Typography variant="body2" sx={{ maxWidth: 280 }}>
           Empower your HR team with our comprehensive platform for seamless HR management
         </Typography>

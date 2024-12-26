@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState, useRef } from 'react';
+import axios from '@/utils/axios';
 
 // @mui
 import { useTheme } from '@mui/material/styles';
@@ -7,8 +8,11 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import Button from '@mui/material/Button';
 import FormHelperText from '@mui/material/FormHelperText';
 import InputAdornment from '@mui/material/InputAdornment';
+import Slide from '@mui/material/Slide';
+import Alert from '@mui/material/Alert';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -20,6 +24,7 @@ import { useForm } from 'react-hook-form';
 import Modal from '@/components/Modal';
 import { ModalSize } from '@/enum';
 import { passwordSchema } from '@/utils/validationSchema';
+import { BASE_URL } from 'constants';
 
 // @assets
 import { IconEye, IconEyeOff } from '@tabler/icons-react';
@@ -29,6 +34,7 @@ import { IconEye, IconEyeOff } from '@tabler/icons-react';
 export default function ModalPassword({ inputSx }) {
   const theme = useTheme();
   const downSM = useMediaQuery(theme.breakpoints.down('sm'));
+  const [snackbar, setSnackbar] = useState(null);
 
   const [open, setOpen] = useState(false);
 
@@ -36,6 +42,14 @@ export default function ModalPassword({ inputSx }) {
   const [isOldOpen, setIsOldOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const iconCommonProps = { size: 16, color: theme.palette.grey[700] };
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setSnackbar((prev) => prev && { ...prev, open: false });
+  };
 
   // Initialize react-hook-form
   const {
@@ -48,9 +62,31 @@ export default function ModalPassword({ inputSx }) {
   const password = useRef({});
   password.current = watch('password', '');
 
-  const onSubmit = (data) => {
-    console.log(data);
-    setOpen(false);
+  const onSubmit = async (data) => {
+    let token = JSON.parse(localStorage.getItem('auth-user'));
+    token = token.access_token;
+    console.log;
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    };
+
+    try {
+      const url = `/user_management/change-password/`;
+      const payload = {
+        old_password: data.oldPassword,
+        new_password: data.password
+      };
+      const res = await axios.put(BASE_URL + url, payload, { headers: headers });
+      if (res.status === 200) {
+        console.log(res);
+        setSnackbar({ open: true, message: 'Password Changed Successfully', severity: 'success' });
+        setOpen(false);
+      }
+    } catch (error) {
+      setSnackbar({ open: true, message: error.old_password, severity: 'error' });
+      setOpen(false);
+    }
   };
 
   return (
@@ -156,6 +192,17 @@ export default function ModalPassword({ inputSx }) {
           </Stack>
         }
       />
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        TransitionComponent={Slide}
+        open={snackbar?.open}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert severity={snackbar?.severity} variant="filled" sx={{ width: '100%' }}>
+          {snackbar?.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
