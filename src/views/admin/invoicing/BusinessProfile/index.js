@@ -9,7 +9,6 @@ import CustomInput from '@/utils/CustomInput';
 import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import Factory from '@/utils/Factory';
-import { method } from 'lodash-es';
 
 export default function TabOne({ businessDetails, onNext }) {
   const [busineesprofileFields, setBusineesprofileFields] = useState({
@@ -34,6 +33,7 @@ export default function TabOne({ businessDetails, onNext }) {
       { name: 'swift_code', label: 'Swift Code' }
     ]
   });
+
   // Formik validation schema
   const validationSchema = Yup.object({
     business_name: Yup.string().required('Business Name is required'),
@@ -53,7 +53,6 @@ export default function TabOne({ businessDetails, onNext }) {
     pan_number: Yup.string()
       .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN format')
       .required('PAN is required'),
-
     bank_name: Yup.string().required('Bank Name is required'),
     account_number: Yup.string().required('Bank A/C No is required'),
     ifsc_code: Yup.string().required('IFSC Code is required'),
@@ -89,7 +88,7 @@ export default function TabOne({ businessDetails, onNext }) {
       const postData = {
         pan_number: values.pan_number,
         bank_name: values.bank_name,
-        account_number: Number(values.account_number), // Convert to number
+        account_number: Number(values.account_number),
         ifsc_code: values.ifsc_code,
         swift_code: values.swift_code
       };
@@ -120,28 +119,22 @@ export default function TabOne({ businessDetails, onNext }) {
 
   return (
     <Stack spacing={2}>
-      <Typography variant="h5" textAlign="center" sx={{ fontWeight: 'bold' }}>
+      <Typography variant="h5" textAlign="center" sx={{ fontWeight: 'bold', fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' } }}>
         Business Details
       </Typography>
 
-      <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+      <Typography variant="h6" sx={{ fontWeight: 'bold', pt: 3 }}>
         Basic Details
       </Typography>
 
       <Grid container spacing={2}>
         {busineesprofileFields.basic_details.map((item, index) => (
-          <Grid item xs={6} key={item.name}>
+          <Grid item xs={12} sm={6} key={item.name}>
             <FormControl fullWidth>
               {item.name === 'gst_registered' ? (
                 <>
                   <FormLabel>{item.label}</FormLabel>
-                  <RadioGroup
-                    name={item.name}
-                    value={values.gst_registered}
-                    // onChange={(e) => setFieldValue(item.name, e.target.value)}
-                    row
-                    disabled
-                  >
+                  <RadioGroup name={item.name} value={values.gst_registered} row disabled>
                     <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
                     <FormControlLabel value="No" control={<Radio />} label="No" />
                   </RadioGroup>
@@ -153,7 +146,7 @@ export default function TabOne({ businessDetails, onNext }) {
                   </div>
                   <CustomAutocomplete
                     value={values[item.name]}
-                    onChange={(e, newValue) => setFieldValue(item.name, newValue)} // Using setFieldValue for autocomplete
+                    onChange={(e, newValue) => setFieldValue(item.name, newValue)}
                     options={indian_States_And_UTs}
                     error={touched[item.name] && Boolean(errors[item.name])}
                     helperText={touched[item.name] && errors[item.name]}
@@ -173,7 +166,6 @@ export default function TabOne({ businessDetails, onNext }) {
                     onBlur={handleBlur}
                     error={touched[item.name] && Boolean(errors[item.name])}
                     helperText={touched[item.name] && errors[item.name]}
-                    // disabled={item.name === 'gstin' && values.gst_registered === 'No'}
                     disabled
                   />
                 </>
@@ -189,7 +181,7 @@ export default function TabOne({ businessDetails, onNext }) {
 
       <Grid container spacing={2}>
         {busineesprofileFields.bank_details.map((item) => (
-          <Grid item xs={6} key={item.name}>
+          <Grid item xs={12} sm={6} key={item.name}>
             <FormControl fullWidth>
               <label>{item.label}</label>
               <TextField
@@ -202,7 +194,6 @@ export default function TabOne({ businessDetails, onNext }) {
                     setFieldValue(item.name, e.target.value);
                   }
                 }}
-                // onChange={(e) => setFieldValue(item.name, e.target.value)} // Using setFieldValue
                 onBlur={handleBlur}
                 error={touched[item.name] && Boolean(errors[item.name])}
                 helperText={touched[item.name] && errors[item.name]}
@@ -214,7 +205,7 @@ export default function TabOne({ businessDetails, onNext }) {
       </Grid>
 
       <Box textAlign="center">
-        <Button variant="contained" onClick={handleSubmit}>
+        <Button variant="contained" onClick={handleSubmit} sx={{ mt: 3 }}>
           Save & Continue
         </Button>
       </Box>

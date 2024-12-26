@@ -1,71 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit'; // MUI Edit Icon
-import DeleteIcon from '@mui/icons-material/Delete'; // MUI Delete Icon
-import ItemEditDialog from './ItemEditDialog'; // Import the dialog component
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ItemEditDialog from './ItemEditDialog';
+import Factory from '@/utils/Factory';
 
-// Corrected mock data
-const mockData = [
-  {
-    type: 'Goods',
-    item_name: 'Item 1',
-    sku: 'SKU123',
-    units: 'kg',
-    hsn_sac: 'HSN123',
-    gst_rate: '18%',
-    tax_preference: 'GST',
-    selling_price: '100',
-    description: 'Description of Item 1'
-  },
-  {
-    type: 'Goods',
-    item_name: 'Item 2',
-    sku: 'SKU124',
-    units: 'pcs',
-    hsn_sac: 'HSN124',
-    gst_rate: '12%',
-    tax_preference: 'GST',
-    selling_price: '150',
-    description: 'Description of Item 2'
-  },
-  {
-    type: 'Services',
-    item_name: 'Service 1',
-    sku: 'SKU125',
-    units: 'hrs',
-    hsn_sac: 'HSN125',
-    gst_rate: '5%',
-    tax_preference: 'Service Tax',
-    selling_price: '200',
-    description: 'Description of Service 1'
-  }
-];
+const ItemList = ({ itemsData, get_Goods_and_Services_Data }) => {
+  const [itemsList, setItemsList] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
 
-const ItemList = () => {
-  const [itemsList, setItemsList] = useState(mockData); // Using correct mock data
-  const [selectedItem, setSelectedItem] = useState(null); // Store the selected item for editing
-  const [openDialog, setOpenDialog] = useState(false); // Control the dialog visibility
+  useEffect(() => {
+    setItemsList(itemsData);
+  }, [itemsData]);
 
   const handleEdit = (itemIndex) => {
-    setSelectedItem(itemsList[itemIndex]); // Get the item at the index
-    setOpenDialog(true); // Open dialog when Edit button is clicked
+    setSelectedItem(itemsList[itemIndex]);
+    setOpenDialog(true);
   };
 
-  const handleDelete = (itemIndex) => {
-    const updatedItems = itemsList.filter((_, index) => index !== itemIndex); // Delete item at the given index
-    setItemsList(updatedItems); // Update the list after deletion
+  const handleDelete = async (item) => {
+    let url = `/invoicing/goods-services/${item.id}/delete/`;
+    const { res } = await Factory('delete', url, {});
+    console.log(res);
+    get_Goods_and_Services_Data();
   };
 
   const handleCloseDialog = () => {
-    setOpenDialog(false); // Close the dialog
+    setOpenDialog(false);
   };
 
   const handleSave = (updatedItem) => {
-    const updatedItems = itemsList.map((item) => (item === selectedItem ? updatedItem : item)); // Update the specific item with the new data
-    setItemsList(updatedItems); // Update the items list
-    setOpenDialog(false); // Close the dialog after saving
+    const updatedItems = itemsList.map((item) => (item === selectedItem ? updatedItem : item));
+    setItemsList(updatedItems);
+    setOpenDialog(false);
   };
-
+  console.log(itemsList);
   return (
     <>
       <TableContainer component={Paper}>
@@ -82,29 +52,43 @@ const ItemList = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {itemsList.map((item, index) => (
-              <TableRow key={index}>
-                <TableCell>{item.item_name}</TableCell>
-                <TableCell>{item.type}</TableCell>
-                <TableCell>{item.sku}</TableCell>
-                <TableCell>{item.description}</TableCell>
-                <TableCell>{item.gst_rate}</TableCell>
-                <TableCell>{item.selling_price}</TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleEdit(index)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton onClick={() => handleDelete(index)}>
-                    <DeleteIcon />
-                  </IconButton>
+            {itemsList.length > 0 ? (
+              itemsList.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell>{item.type}</TableCell>
+                  <TableCell>{item.sku_value}</TableCell>
+                  <TableCell>{item.description}</TableCell>
+                  <TableCell>{item.gst_rate}</TableCell>
+                  <TableCell>{item.selling_price}</TableCell>
+                  <TableCell>
+                    <IconButton onClick={() => handleEdit(index)}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton onClick={() => handleDelete(item)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} align="center">
+                  No items available
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </TableContainer>
 
-      <ItemEditDialog open={openDialog} handleClose={handleCloseDialog} itemData={selectedItem} handleSave={handleSave} />
+      <ItemEditDialog
+        open={openDialog}
+        handleClose={handleCloseDialog}
+        itemData={selectedItem}
+        handleSave={handleSave}
+        get_Goods_and_Services_Data={get_Goods_and_Services_Data}
+      />
     </>
   );
 };
