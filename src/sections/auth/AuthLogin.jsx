@@ -1,53 +1,34 @@
 'use client';
 import PropTypes from 'prop-types';
 
+import { useState } from 'react';
+
 // @next
 import NextLink from 'next/link';
-import { useRouter } from 'next/navigation';
-
-import { useState } from 'react';
 
 // @mui
 import { useTheme } from '@mui/material/styles';
-import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
-import FormHelperText from '@mui/material/FormHelperText';
-import InputAdornment from '@mui/material/InputAdornment';
-import InputLabel from '@mui/material/InputLabel';
+import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
-import Box from '@mui/material/Box';
-import { BASE_URL } from 'constants';
+import Typography from '@mui/material/Typography';
+
 // @third-party
 import { useForm } from 'react-hook-form';
-import { AuthRole } from '@/enum';
 
 // @project
-import { APP_DEFAULT_PATH, AUTH_USER_KEY } from '@/config';
-import axios from '@/utils/axios';
 import { emailSchema, passwordSchema } from '@/utils/validationSchema';
 
-// @icons
-import { IconEye, IconEyeOff } from '@tabler/icons-react';
-
-// Mock user credentials
-const userCredentials = [
-  { title: 'Super Admin', email: 'super_admin@saasable.io', password: 'Super@123' },
-  { title: 'Admin', email: 'admin@saasable.io', password: 'Admin@123' },
-  { title: 'User', email: 'user@saasable.io', password: 'User@123' }
-];
+// @assets
+import { CloseEye, OpenEye } from '@/icons';
 
 /***************************  AUTH - LOGIN  ***************************/
 
 export default function AuthLogin({ inputSx }) {
-  const router = useRouter();
   const theme = useTheme();
-
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [loginError, setLoginError] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
 
   // Initialize react-hook-form
   const {
@@ -55,146 +36,76 @@ export default function AuthLogin({ inputSx }) {
     handleSubmit,
     reset,
     formState: { errors }
-  } = useForm({ defaultValues: { email: 'super_admin@saasable.io', password: 'Super@123' } });
+  } = useForm();
 
   // Handle form submission
-  const onSubmit = async (formData) => {
-    setIsProcessing(true);
-    setLoginError('');
-
-    // axios
-    //   .post('/api/auth/login', formData)
-    //   .then((response) => {
-    //     setIsProcessing(false);
-    //     console.log(AUTH_USER_KEY, JSON.stringify(response.data))
-    //     localStorage.setItem(AUTH_USER_KEY, JSON.stringify(response.data));
-    //     router.push(APP_DEFAULT_PATH);
-    //   })
-    //   .catch((response) => {
-    //     setIsProcessing(false);
-    //     setLoginError(response.error || 'Something went wrong');
-    //   });
-    // console.log(formData)
-    try {
-      const url = `/token_auth/`;
-      const postData = {
-        email_or_mobile: formData.email,
-        password: formData.password
-      };
-
-      const res = await axios.post(BASE_URL + url, postData);
-      console.log(res);
-
-      if (res.status === 200) {
-        let userDAta = {
-          id: res.data.id,
-          email: res.data.email,
-          role: AuthRole.SUPER_ADMIN,
-          contact: '123456789',
-          dialcode: '+1',
-          firstname: res.data.name,
-          lastname: '',
-          // password: 'Super@123',
-          access_token: res.data.access
-        };
-        setIsProcessing(false);
-        console.log(userDAta);
-        localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));
-        router.push(APP_DEFAULT_PATH);
-      }
-    } catch (error) {
-      // console.error("Login error:", error.response.data.detail);
-      console.log('error', error);
-      setIsProcessing(false);
-      // alert(error.response.data.detail);
-    }
+  const onSubmit = (data) => {
+    console.log(data);
+    reset();
   };
 
-  const commonIconProps = { size: 16, color: theme.palette.grey[700] };
-
   return (
-    <>
-      <Stack direction="row" sx={{ gap: 1, mb: 2 }}>
-        {userCredentials.map((credential) => (
-          <Button
-            key={credential.title}
-            variant="outlined"
-            color="secondary"
-            sx={{ flex: 1 }}
-            onClick={() => reset({ email: credential.email, password: credential.password })}
-          >
-            {credential.title}
-          </Button>
-        ))}
-      </Stack>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack gap={2}>
-          <Box>
-            <InputLabel>Email</InputLabel>
-            <OutlinedInput
-              {...register('email', emailSchema)}
-              placeholder="example@saasable.io"
-              fullWidth
-              error={Boolean(errors.email)}
-              sx={inputSx}
-            />
-            {errors.email?.message && <FormHelperText error>{errors.email.message}</FormHelperText>}
-          </Box>
-
-          <Box>
-            <InputLabel>Password</InputLabel>
-            <OutlinedInput
-              {...register('password', passwordSchema)}
-              type={isPasswordVisible ? 'text' : 'password'}
-              placeholder="Enter your password"
-              fullWidth
-              error={Boolean(errors.password)}
-              endAdornment={
-                <InputAdornment
-                  position="end"
-                  sx={{ cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
-                  onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                >
-                  {isPasswordVisible ? <IconEye {...commonIconProps} /> : <IconEyeOff {...commonIconProps} />}
-                </InputAdornment>
-              }
-              sx={inputSx}
-            />
-            <Stack direction="row" alignItems="center" justifyContent={errors.password ? 'space-between' : 'flex-end'} width={1}>
-              {errors.password?.message && <FormHelperText error>{errors.password.message}</FormHelperText>}
-              <Link
-                component={NextLink}
-                underline="hover"
-                variant="caption"
-                href="/forgot-password"
-                textAlign="right"
-                sx={{ '&:hover': { color: 'primary.dark' }, mt: 0.75 }}
-              >
-                Forgot Password?
-              </Link>
-            </Stack>
-          </Box>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Stack sx={{ gap: 2.5 }}>
+        <Stack sx={{ gap: 0.5 }}>
+          <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+            Email
+          </Typography>
+          <OutlinedInput
+            {...register('email', emailSchema)}
+            placeholder="example@gmail.com"
+            slotProps={{ input: { 'aria-label': 'Email address' } }}
+            error={errors.email && Boolean(errors.email)}
+            sx={{ ...inputSx }}
+          />
+          {errors.email?.message && (
+            <Typography variant="caption" sx={{ color: 'error.main' }}>
+              {errors.email?.message}
+            </Typography>
+          )}
         </Stack>
-
-        <Button
-          type="submit"
-          color="primary"
-          variant="contained"
-          fullWidth
-          disabled={isProcessing}
-          endIcon={isProcessing && <CircularProgress color="secondary" size={16} />}
-          sx={{ minWidth: 120, mt: { xs: 1, sm: 4 }, '& .MuiButton-endIcon': { ml: 1 } }}
-        >
+        <Stack sx={{ gap: 0.5 }}>
+          <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+            Password
+          </Typography>
+          <OutlinedInput
+            {...register('password', passwordSchema)}
+            type={isOpen ? 'text' : 'password'}
+            placeholder="Enter your password"
+            slotProps={{ input: { 'aria-label': 'Password' } }}
+            error={errors.password && Boolean(errors.password)}
+            endAdornment={
+              <IconButton onClick={() => setIsOpen(!isOpen)} rel="noopener noreferrer" aria-label="eye">
+                {isOpen ? <OpenEye color={theme.palette.grey[700]} /> : <CloseEye color={theme.palette.grey[700]} />}
+              </IconButton>
+            }
+            sx={inputSx}
+          />
+          <Stack
+            direction="row"
+            sx={{ alignItems: 'center', justifyContent: errors.password?.message ? 'space-between' : 'flex-end', width: 1 }}
+          >
+            {errors.password?.message && (
+              <Typography variant="caption" sx={{ color: 'error.main' }}>
+                {errors.password?.message}
+              </Typography>
+            )}
+            <Link
+              component={NextLink}
+              underline="hover"
+              variant="caption2"
+              href=""
+              sx={{ textAlign: 'right', '&:hover': { color: 'primary.dark' } }}
+            >
+              Forgot Password?
+            </Link>
+          </Stack>
+        </Stack>
+        <Button fullWidth type="submit" color="primary" variant="contained" sx={{ mt: { xs: 0.5, sm: 1.5 } }}>
           Sign In
         </Button>
-
-        {loginError && (
-          <Alert sx={{ mt: 2 }} severity="error" variant="filled" icon={false}>
-            {loginError}
-          </Alert>
-        )}
-      </form>
-    </>
+      </Stack>
+    </form>
   );
 }
 
