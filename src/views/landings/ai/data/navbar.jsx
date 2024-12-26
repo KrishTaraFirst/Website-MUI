@@ -10,8 +10,10 @@ export const navbar = {
   primaryBtn: { children: 'Login', href: '/login', rel: 'noopener noreferrer' },
   navItems: [
     { id: 'home', title: 'Home', link: '/' },
-    landingMegamenu,
-    { id: 'components', title: 'Blocks', link: SECTION_PATH },
+    { id: 'about', title: 'About', link: '/about' },
+    { id: 'contact', title: 'Contact', link: '/contact' },
+    // landingMegamenu,
+    // { id: 'components', title: 'Blocks', link: SECTION_PATH },
     pagesMegamenu,
     { id: 'docs', title: 'Docs', link: DOCS_URL, target: '_blank', rel: 'noopener noreferrer', icon: 'tabler-pin-invoke' }
   ]
