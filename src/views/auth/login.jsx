@@ -28,7 +28,7 @@ import ContainerWrapper from '@/components/ContainerWrapper';
 import ProfileCard3 from '@/components/cards/profile-card/ProfileCard3';
 import LogoMain from '@/components/logo/LogoMain';
 import Rating from '@/components/Rating';
-import Typeset from '@/components/Typeset';
+import Typeset from '@/components/Typeset2';
 import { generateFocusStyle } from '@/utils/generateFocusStyle';
 import { position } from 'stylis';
 
@@ -154,10 +154,10 @@ export default function Login() {
                   </Typography>
                   <Divider sx={{ my: { xs: 4, sm: 5 } }}>
                     <Typography variant="subtitle2" sx={{ color: 'text.secondary', px: 1.25 }}>
-                      Continue with email
+                      Continue 
                     </Typography>
                   </Divider>
-                  <AuthSocial type={SocialTypes.HORIZONTAL} />
+                  {/* <AuthSocial type={SocialTypes.HORIZONTAL} /> */}
                 </Box>
               </Box>
               <Box sx={{ mt: 4, display: { sm: 'none' } }}>
