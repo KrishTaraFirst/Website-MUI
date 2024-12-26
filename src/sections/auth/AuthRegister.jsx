@@ -66,16 +66,16 @@ export default function AuthRegister({ inputSx }) {
     setIsProcessing(true);
     setRegisterError('');
 
-    axios
-      .post('/api/auth/signUp', payload)
-      .then(() => {
-        setIsProcessing(false);
-        router.push(`/otp-verification?email=${formData.email}&verify=signup`);
-      })
-      .catch((response) => {
-        setIsProcessing(false);
-        setRegisterError(response.error || 'Something went wrong');
-      });
+    // axios
+    //   .post('/api/auth/signUp', payload)
+    //   .then(() => {
+    //     setIsProcessing(false);
+    //     router.push(`/otp-verification?email=${formData.email}&verify=signup`);
+    //   })
+    //   .catch((response) => {
+    //     setIsProcessing(false);
+    //     setRegisterError(response.error || 'Something went wrong');
+    //   });
   };
 
   const commonIconProps = { size: 16, color: theme.palette.grey[700] };
@@ -83,39 +83,6 @@ export default function AuthRegister({ inputSx }) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
       <Grid container rowSpacing={2.5} columnSpacing={1.5}>
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <InputLabel>First Name</InputLabel>
-          <OutlinedInput
-            {...register('firstname', firstNameSchema)}
-            placeholder="Enter first name"
-            fullWidth
-            error={Boolean(errors.firstname)}
-            sx={{ ...inputSx }}
-          />
-          {errors.firstname?.message && <FormHelperText error>{errors.firstname?.message}</FormHelperText>}
-        </Grid>
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <InputLabel>Last Name</InputLabel>
-          <OutlinedInput
-            {...register('lastname', lastNameSchema)}
-            placeholder="Enter last name"
-            fullWidth
-            error={Boolean(errors.lastname)}
-            sx={{ ...inputSx }}
-          />
-          {errors.lastname?.message && <FormHelperText error>{errors.lastname?.message}</FormHelperText>}
-        </Grid>
-        <Grid size={12}>
-          <InputLabel>Contact</InputLabel>
-          <Contact
-            fullWidth
-            dialCode={watch('dialcode')}
-            onCountryChange={(data) => setValue('dialcode', data.dialCode)}
-            control={control}
-            isError={Boolean(errors.contact)}
-          />
-          {errors.contact?.message && <FormHelperText error>{errors.contact?.message}</FormHelperText>}
-        </Grid>
         <Grid size={12}>
           <InputLabel>Email</InputLabel>
           <OutlinedInput
@@ -149,32 +116,12 @@ export default function AuthRegister({ inputSx }) {
           />
           {errors.password?.message && <FormHelperText error>{errors.password?.message}</FormHelperText>}
         </Grid>
-        <Grid size={12}>
-          <InputLabel>Confirm Password</InputLabel>
-          <OutlinedInput
-            {...register('confirmPassword', { validate: (value) => value === password.current || 'The passwords do not match' })}
-            type={isConfirmOpen ? 'text' : 'password'}
-            placeholder="Enter confirm password"
-            fullWidth
-            error={Boolean(errors.confirmPassword)}
-            endAdornment={
-              <InputAdornment
-                position="end"
-                sx={{ cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
-                onClick={() => setIsConfirmOpen(!isConfirmOpen)}
-              >
-                {isConfirmOpen ? <IconEye {...commonIconProps} /> : <IconEyeOff {...commonIconProps} />}
-              </InputAdornment>
-            }
-            sx={inputSx}
-          />
-          {errors.confirmPassword?.message && <FormHelperText error>{errors.confirmPassword?.message}</FormHelperText>}
-        </Grid>
       </Grid>
       <Button
         type="submit"
         color="primary"
         variant="contained"
+        fullWidth
         disabled={isProcessing}
         endIcon={isProcessing && <CircularProgress color="secondary" size={16} />}
         sx={{ minWidth: 120, mt: { xs: 2, sm: 4 }, '& .MuiButton-endIcon': { ml: 1 } }}

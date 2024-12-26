@@ -59,3 +59,8 @@ export const featureNameSchema = {
   required: 'Feature name is required',
   pattern: { value: /^[a-zA-Z\s]+$/, message: 'Invalid feature name' }
 };
+
+export const phoneSchema = {
+  // required: 'Phone number is required',
+  // pattern: { value: /^[0-9()-.\s]{7,15}$/, message: 'Invalid phone number' }
+};

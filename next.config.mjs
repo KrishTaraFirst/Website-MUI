@@ -1,48 +1,20 @@
 /** @type {import('next').NextConfig} */
-
-const cspHeader = `
-    default-src 'self';
-    script-src 'self' 'unsafe-eval' 'unsafe-inline';
-    style-src 'self' 'unsafe-inline';
-    img-src 'self' blob: data: https://flagcdn.com;
-    font-src 'self';
-    object-src 'self';
-    base-uri 'self';
-    form-action 'self';
-    frame-ancestors 'self';
- connect-src 'self' https://cdn.jsdelivr.net http://dev-backend.tarafirst.com:8000;`;
-
 const nextConfig = {
-  modularizeImports: {
-    '@mui/material': {
-      transform: '@mui/material/{{member}}'
-    },
-    '@mui/lab': {
-      transform: '@mui/lab/{{member}}'
-    }
-  },
+  output: "export",
+  distDir: "out",
+  reactStrictMode: true,
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'flagcdn.com',
-        pathname: '**'
-      }
-    ]
+    unoptimized: true,
   },
-  async headers() {
+  async redirects() {
     return [
       {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: cspHeader.replace(/\n/g, '')
-          }
-        ]
-      }
+        source: "/api/:path*",
+        destination: "/404", // Redirect all API routes to a 404 page
+        permanent: false,
+      },
     ];
-  }
+  },
 };
 
 export default nextConfig;
