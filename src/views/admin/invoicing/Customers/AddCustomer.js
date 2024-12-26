@@ -71,7 +71,6 @@ const AddCustomer = ({ businessDetailsData, open, onClose, getCustomersData }) =
     onSubmit: async (values) => {
       const postData = { ...values };
       postData.invoicing_profile = businessDetailsData.id;
-      console.log(postData);
       let url = '/invoicing/customer_profiles/create/';
       const { res } = await Factory('post', url, postData);
 

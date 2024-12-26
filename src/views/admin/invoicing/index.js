@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTheme } from '@mui/material/styles';
 
 // @mui
@@ -10,18 +10,13 @@ import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
-// import BoltIcon from '@mui/icons-material/Bolt';
-// @project
 import TabOne from './BusinessProfile/index';
 import TabTwo from './Customers/index';
 import TabThree from './Goods&Services/index';
 import TabFour from './InvoiceNumberFormat/index';
-import { AccountList, NewAccount } from '@/sections/account';
-import { AvatarSize } from '@/enum';
 import Avatar from '@mui/material/Avatar';
 import Factory from '@/utils/Factory';
 // @assets
-import { IconPlus } from '@tabler/icons-react';
 import { IconBolt } from '@tabler/icons-react';
 
 /***************************  ACCOUNT  ***************************/
@@ -43,6 +38,7 @@ export default function Account() {
       setBusinessDetails(res.data);
     }
   };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 0:
@@ -114,7 +110,7 @@ export default function Account() {
                   <Avatar variant="rounded" sx={{ bgcolor: 'grey.300', width: 32, height: 32 }}>
                     <IconBolt color={theme.palette.text.primary} />
                   </Avatar>
-                  <Typography variant="subtitle1">Invoice Number Format</Typography>
+                  <Typography variant="subtitle1">Invoices</Typography>
                 </Box>
               }
             />

@@ -13,12 +13,13 @@ import CustomInput from '@/utils/CustomInput';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import { IconX } from '@tabler/icons-react';
 import IconButton from '@mui/material/IconButton';
+import Factory from '@/utils/Factory';
 
-const AddItem = ({ open, onClose }) => {
+const AddItem = ({ businessDetailsData, get_Goods_and_Services_Data, open, onClose }) => {
   const [addItemData] = useState([
     { name: 'type', label: 'Type' },
-    { name: 'item_name', label: 'Name' },
-    { name: 'sku', label: 'SKU ' },
+    { name: 'name', label: 'Name' },
+    { name: 'sku_value', label: 'SKU ' },
     { name: 'units', label: 'Units' },
     { name: 'hsn_sac', label: 'HSN/SAC Code' },
     { name: 'gst_rate', label: 'GST Rate' },
@@ -30,8 +31,8 @@ const AddItem = ({ open, onClose }) => {
   const formik = useFormik({
     initialValues: {
       type: '',
-      item_name: '',
-      sku: '',
+      name: '',
+      sku_value: '',
       units: '',
       hsn_sac: '',
       gst_rate: '',
@@ -41,8 +42,8 @@ const AddItem = ({ open, onClose }) => {
     },
     validationSchema: Yup.object({
       type: Yup.string().required('Required'),
-      item_name: Yup.string().required('Required'),
-      sku: Yup.string().required('Required'),
+      name: Yup.string().required('Required'),
+      sku_value: Yup.string().required('Required'),
       units: Yup.string().required('Required'),
       hsn_sac: Yup.string().required('Required'),
       gst_rate: Yup.string().required('Required'),
@@ -50,13 +51,26 @@ const AddItem = ({ open, onClose }) => {
       selling_price: Yup.string().required('Required'),
       description: Yup.string().required('Required')
     }),
-    onSubmit: (values) => {
-      console.log(values);
-      onClose();
+    onSubmit: async (values) => {
+      const postData = { ...values };
+      postData.invoicing_profile = businessDetailsData.id;
+      postData.sku_value = Number(postData.sku_value);
+      postData.gst_rate = Number(postData.gst_rate);
+      postData.selling_price = Number(postData.selling_price);
+      console.log(postData);
+      let url = '/invoicing/api/v1/goods-services/create/';
+      const { res } = await Factory('post', url, postData);
+      if (res.status_cd === 0) {
+        get_Goods_and_Services_Data();
+        handleClose();
+      }
     }
   });
-
-  const { values, touched, errors, handleSubmit, handleChange, handleBlur } = formik;
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
+  const { values, touched, errors, handleSubmit, handleChange, handleBlur, resetForm } = formik;
 
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title" fullWidth maxWidth="sm">
@@ -66,7 +80,7 @@ const AddItem = ({ open, onClose }) => {
             Add New Item
           </DialogTitle>
 
-          <IconButton variant="outlined" color="secondary" aria-label="close" onClick={onClose}>
+          <IconButton variant="outlined" color="secondary" aria-label="close" onClick={handleClose}>
             <IconX size={20} />
           </IconButton>
         </Box>

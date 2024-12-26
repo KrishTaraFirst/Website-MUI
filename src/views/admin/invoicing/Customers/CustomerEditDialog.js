@@ -51,14 +51,13 @@ const CustomerEditDialog = ({ getCustomersData, open, handleClose, customer, han
         <DialogContent>
           {formData && (
             <Grid container spacing={2}>
-              {' '}
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="name">Name of Business</label>
                 </div>
                 <CustomInput name="name" value={formData.name || ''} onChange={handleChange} id="name" textColor="#777680" />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="pan_number">PAN</label>
                 </div>
@@ -70,23 +69,23 @@ const CustomerEditDialog = ({ getCustomersData, open, handleClose, customer, han
                   textColor="#777680"
                 />
               </Grid>
-              <Grid item xs={12}>
+
+              <Grid item xs={12} sm={6}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="address_line1">Address Line 1</label>
                 </div>
                 <CustomInput
                   name="address_line1"
-                  value={formData.pan_number || ''}
+                  value={formData.address_line1 || ''}
                   onChange={handleChange}
                   id="address_line1"
                   textColor="#777680"
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
                 <div style={{ paddingBottom: '5px' }}>
-                  <label htmlFor="address_line1">State</label>
+                  <label htmlFor="state">State</label>
                 </div>
-
                 <CustomAutocomplete
                   value={formData.state || ''}
                   name="state"
@@ -96,9 +95,10 @@ const CustomerEditDialog = ({ getCustomersData, open, handleClose, customer, han
                   textColor="#777680"
                 />
               </Grid>
-              <Grid item xs={12}>
+
+              <Grid item xs={12} sm={6}>
                 <div style={{ paddingBottom: '5px' }}>
-                  <label htmlFor="postal_code">Posta Code</label>
+                  <label htmlFor="postal_code">Postal Code</label>
                 </div>
                 <CustomInput
                   name="postal_code"
@@ -108,19 +108,20 @@ const CustomerEditDialog = ({ getCustomersData, open, handleClose, customer, han
                   textColor="#777680"
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="gstin">GSTIN</label>
                 </div>
                 <CustomInput name="gstin" value={formData.gstin || ''} onChange={handleChange} id="gstin" textColor="#777680" />
               </Grid>
-              <Grid item xs={12}>
+
+              <Grid item xs={12} sm={6}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="email">Email</label>
                 </div>
                 <CustomInput name="email" value={formData.email || ''} onChange={handleChange} id="email" textColor="#777680" />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="mobile_number">Mobile</label>
                 </div>
@@ -132,9 +133,22 @@ const CustomerEditDialog = ({ getCustomersData, open, handleClose, customer, han
                   textColor="#777680"
                 />
               </Grid>
+              <Grid item xs={12} sm={6}>
+                <div style={{ paddingBottom: '5px' }}>
+                  <label htmlFor="opening_balance">Opening Balance</label>
+                </div>
+                <CustomInput
+                  name="opening_balance"
+                  value={formData.opening_balance || ''}
+                  onChange={handleChange}
+                  id="opening_balance"
+                  textColor="#777680"
+                />
+              </Grid>
             </Grid>
           )}
         </DialogContent>
+
         <DialogActions sx={{ justifyContent: 'center', padding: 0 }}>
           <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
             <Button onClick={handleSubmit} color="primary" variant="contained">

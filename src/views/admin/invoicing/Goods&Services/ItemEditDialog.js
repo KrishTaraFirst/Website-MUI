@@ -3,8 +3,8 @@ import { Dialog, DialogActions, DialogContent, DialogTitle, Button, Grid, Box, D
 import { IconX } from '@tabler/icons-react';
 import IconButton from '@mui/material/IconButton';
 import CustomInput from '@/utils/CustomInput';
-
-const ItemEditDialog = ({ open, handleClose, itemData, handleSave }) => {
+import Factory from '@/utils/Factory';
+const ItemEditDialog = ({ open, handleClose, itemData, get_Goods_and_Services_Data }) => {
   const [formData, setFormData] = useState({});
 
   useEffect(() => {
@@ -21,9 +21,13 @@ const ItemEditDialog = ({ open, handleClose, itemData, handleSave }) => {
     }));
   };
 
-  const handleSubmit = () => {
-    handleSave(formData);
-    handleClose();
+  const handleSubmit = async () => {
+    let url = `/invoicing/goods-services/${formData.id}/update/`;
+    const { res } = await Factory('put', url, formData);
+    if (res.status_cd === 0) {
+      get_Goods_and_Services_Data();
+      handleClose();
+    }
   };
 
   return (
@@ -42,42 +46,42 @@ const ItemEditDialog = ({ open, handleClose, itemData, handleSave }) => {
         <DialogContent>
           {formData && (
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
                 <div style={{ paddingBottom: '5px' }}>
-                  <label htmlFor="item_name">Item Name</label>
+                  <label htmlFor="name">Item Name</label>
                 </div>
-                <CustomInput name="item_name" value={formData.item_name || ''} onChange={handleChange} id="item_name" textColor="#777680" />
+                <CustomInput name="name" value={formData.name || ''} onChange={handleChange} id="name" textColor="#777680" />
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
                 <div style={{ paddingBottom: '5px' }}>
-                  <label htmlFor="sku">SKU</label>
+                  <label htmlFor="sku_value">SKU</label>
                 </div>
-                <CustomInput name="sku" value={formData.sku || ''} onChange={handleChange} id="sku" textColor="#777680" />
+                <CustomInput name="sku_value" value={formData.sku_value || ''} onChange={handleChange} id="sku_value" textColor="#777680" />
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="units">Units</label>
                 </div>
                 <CustomInput name="units" value={formData.units || ''} onChange={handleChange} id="units" textColor="#777680" />
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="hsn_sac">HSN/SAC</label>
                 </div>
                 <CustomInput name="hsn_sac" value={formData.hsn_sac || ''} onChange={handleChange} id="hsn_sac" textColor="#777680" />
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="gst_rate">GST Rate</label>
                 </div>
                 <CustomInput name="gst_rate" value={formData.gst_rate || ''} onChange={handleChange} id="gst_rate" textColor="#777680" />
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="tax_preference">Tax Preference</label>
                 </div>
@@ -90,7 +94,7 @@ const ItemEditDialog = ({ open, handleClose, itemData, handleSave }) => {
                 />
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="selling_price">Selling Price</label>
                 </div>
@@ -103,7 +107,7 @@ const ItemEditDialog = ({ open, handleClose, itemData, handleSave }) => {
                 />
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6}>
                 <div style={{ paddingBottom: '5px' }}>
                   <label htmlFor="description">Description</label>
                 </div>

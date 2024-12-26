@@ -22,18 +22,12 @@ const CustomerList = ({ getCustomersData, customersListData }) => {
   const handleDelete = async (customer) => {
     let url = `/invoicing/customer_profiles/delete/${customer.id}`;
     const { res } = await Factory('delete', url, {});
-    console.log(res);
     getCustomersData();
   };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
-
-  // const handleSave = (updatedCustomer) => {
-  //   const updatedCustomers = customers.map((customer) => (customer === selectedCustomer ? updatedCustomer : customer));
-  //   setCustomers(updatedCustomers);
-  // };
 
   return (
     <>
@@ -56,10 +50,10 @@ const CustomerList = ({ getCustomersData, customersListData }) => {
                 <TableRow key={index}>
                   <TableCell>{customer.name}</TableCell>
                   <TableCell>{customer.pan_number}</TableCell>
-                  <TableCell>{customer.gstin}</TableCell>
+                  <TableCell>{customer.gstin ? customer.gstin : 'NA'}</TableCell>
                   <TableCell>{customer.email}</TableCell>
                   <TableCell>{customer.mobile_number}</TableCell>
-                  <TableCell>{customer.receivables_date}</TableCell>
+                  <TableCell>{customer.opening_balance}</TableCell>
                   <TableCell>
                     <IconButton onClick={() => handleEdit(index)}>
                       <EditIcon />
@@ -85,7 +79,6 @@ const CustomerList = ({ getCustomersData, customersListData }) => {
         open={openDialog}
         handleClose={handleCloseDialog}
         customer={selectedCustomer}
-        // handleSave={handleSave}
         getCustomersData={getCustomersData}
       />
     </>
