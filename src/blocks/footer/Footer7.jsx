@@ -14,7 +14,7 @@ import { motion } from 'framer-motion';
 
 // @project
 import branding from '@/branding.json';
-import GraphicsCard  from '@/components/cards/GraphicsCard';
+import GraphicsCard from '@/components/cards/GraphicsCard';
 import ContainerWrapper from '@/components/ContainerWrapper';
 import { Copyright, FollowUS, Sitemap } from '@/components/footer';
 import LogoSection from '@/components/logo';
@@ -129,7 +129,7 @@ const usefullLinks = [
 export default function Footer7() {
   const logoFollowContent = (
     <Stack sx={{ alignItems: 'flex-start', gap: { xs: 1.5, sm: 3 } }}>
-      <LogoSection />
+      <LogoSection isIcon={true} />
       <Typography variant="h6" sx={{ maxWidth: { sm: 280 }, mb: { xs: -1, sm: -2.5 } }}>
         {process.env.NEXT_PUBLIC_VERSION}
       </Typography>

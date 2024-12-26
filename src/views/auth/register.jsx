@@ -13,7 +13,7 @@ import Box from '@mui/material/Box';
 
 // @project
 // import { AuthLogin, AuthSocial, Copyright } from '@/components/auth';
-import AuthLogin from '@/sections/auth/AuthRegister';
+import AuthRegister from '@/sections/auth/AuthRegister';
 import AuthSocial from '@/sections/auth/AuthSocial';
 import Copyright from '@/sections/auth/Copyright';
 
@@ -90,12 +90,22 @@ export default function Login4() {
     { counter: '150', defaultUnit: '+', caption: 'Showcasing the global impact and adoption' }
   ];
   return (
-    <ContainerWrapper sx={{ py: SECTION_COMMON_PY,  }}>
-      <Grid container spacing={1.5} sx={{ml:12, mr:12}}>
+    <ContainerWrapper sx={{ py: SECTION_COMMON_PY }}>
+      <Grid container spacing={1.5} sx={{ ml: 12, mr: 12 }}>
         <Grid size={{ xs: 12, sm: 8 }}>
           <GraphicsCard sx={{ height: 1, p: { xs: 2, sm: 4, md: 5 } }}>
             <ProfileGroup2 {...reviewData} />
-            <Typography variant="h1" sx={{ mt: { xs: 2.5, sm: 5, md: 6 }, maxWidth: { xs: 300, sm: 400, md: 500 } }}>
+            <Typography
+              variant="h1"
+              sx={{
+                mt: { xs: 2.5, sm: 5, md: 6 },
+                maxWidth: { xs: 300, sm: 400, md: 500 },
+                fontSize: '57px',
+                fontWeight: 400,
+                lineHeight: '1.123',
+                letterSpacing: '-0.25px'
+              }}
+            >
               You are one step away Sign In
             </Typography>
           </GraphicsCard>
@@ -107,7 +117,7 @@ export default function Login4() {
           <GraphicsCard sx={{ p: { xs: 3, sm: 4, md: 5 } }}>
             <Box sx={{ position: 'relative' }}>
               <Stack sx={{ width: 1, maxWidth: 458, m: 'auto', position: 'relative', zIndex: 1 }}>
-                <AuthLogin inputSx={{ bgcolor: 'grey.100' }} />
+                <AuthRegister inputSx={{ bgcolor: 'grey.100', pt: 1, pb: 1, borderRadius: '16px' }} />
                 <Typography sx={{ textAlign: 'center', mt: 2.5, color: 'text.secondary' }}>
                   Already have an account ?{' '}
                   <Link
@@ -122,12 +132,12 @@ export default function Login4() {
                     Sign in
                   </Link>
                 </Typography>
-                <Divider sx={{ my: { xs: 4, sm: 5 } }}>
+                {/* <Divider sx={{ my: { xs: 4, sm: 5 } }}>
                   <Typography variant="subtitle2" sx={{ color: 'text.secondary', px: 1.25 }}>
                     Continue with email
                   </Typography>
                 </Divider>
-                <AuthSocial type={SocialTypes.HORIZONTAL} buttonSx={{ bgcolor: 'grey.100', '&:hover': { bgcolor: 'grey.100' } }} />
+                <AuthSocial type={SocialTypes.HORIZONTAL} buttonSx={{ bgcolor: 'grey.100', '&:hover': { bgcolor: 'grey.100' } }} /> */}
                 <Box sx={{ mt: { xs: 3, sm: 4, md: 5 } }}>
                   <Copyright />
                 </Box>

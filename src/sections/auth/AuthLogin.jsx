@@ -18,7 +18,6 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
 
-
 import { APP_DEFAULT_PATH, AUTH_USER_KEY } from '@/config';
 import Typography from '@mui/material/Typography';
 import { BASE_URL } from 'constants';
@@ -32,7 +31,6 @@ import { emailSchema, passwordSchema } from '@/utils/validationSchema';
 
 // @assets
 import { CloseEye, OpenEye } from '@/icons';
-
 
 export default function AuthLogin({ inputSx }) {
   const theme = useTheme();
@@ -118,7 +116,7 @@ export default function AuthLogin({ inputSx }) {
             slotProps={{ input: { 'aria-label': 'Password' } }}
             error={errors.password && Boolean(errors.password)}
             endAdornment={
-              <IconButton onClick={() => setIsOpen(!isOpen)} rel="noopener noreferrer" aria-label="eye">
+              <IconButton sx={{ height: 0 }} onClick={() => setIsOpen(!isOpen)} rel="noopener noreferrer" aria-label="eye">
                 {isOpen ? <OpenEye color={theme.palette.grey[700]} /> : <CloseEye color={theme.palette.grey[700]} />}
               </IconButton>
             }
@@ -151,7 +149,7 @@ export default function AuthLogin({ inputSx }) {
           fullWidth
           disabled={isProcessing}
           endIcon={isProcessing && <CircularProgress color="secondary" size={16} />}
-          sx={{ minWidth: 120, mt: { xs: 1, sm: 4 }, '& .MuiButton-endIcon': { ml: 1 } }}
+          sx={{ borderRadius: '32px', minWidth: 120, mt: { xs: 1, sm: 4 }, '& .MuiButton-endIcon': { ml: 1 } }}
         >
           Sign In
         </Button>

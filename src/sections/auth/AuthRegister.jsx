@@ -1,5 +1,6 @@
 'use client';
 import PropTypes from 'prop-types';
+import NextLink from 'next/link';
 
 // @next
 import { useRouter } from 'next/navigation';
@@ -11,9 +12,14 @@ import { useTheme } from '@mui/material/styles';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import { CloseEye, OpenEye } from '@/icons';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid2';
 import InputAdornment from '@mui/material/InputAdornment';
+import Link from '@mui/material/Link';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 
@@ -22,8 +28,11 @@ import { useForm } from 'react-hook-form';
 
 // @project
 import Contact from '@/components/Contact';
+import { AuthRole } from '@/enum';
+import { APP_DEFAULT_PATH, AUTH_USER_KEY } from '@/config';
+import { BASE_URL } from 'constants';
 import axios from '@/utils/axios';
-import { emailSchema, passwordSchema, firstNameSchema, lastNameSchema } from '@/utils/validationSchema';
+import { emailSchema, passwordSchema } from '@/utils/validationSchema';
 
 // @icons
 import { IconEye, IconEyeOff } from '@tabler/icons-react';
@@ -38,6 +47,7 @@ export default function AuthRegister({ inputSx }) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [registerError, setRegisterError] = useState('');
+  const [loginError, setLoginError] = useState('');
 
   // Initialize react-hook-form
   const {
@@ -47,92 +57,111 @@ export default function AuthRegister({ inputSx }) {
     control,
     setValue,
     formState: { errors }
-  } = useForm({ defaultValues: { dialcode: '+1' } });
+  } = useForm({ defaultValues: {} });
 
   const password = useRef({});
   password.current = watch('password', '');
 
   // Handle form submission
-  const onSubmit = (formData) => {
-    const payload = {
-      firstname: formData.firstname,
-      lastname: formData.lastname,
-      dialcode: formData.dialcode,
-      contact: formData.contact,
-      email: formData.email,
-      password: formData.password
-    };
-
+  const onSubmit = async (formData) => {
     setIsProcessing(true);
     setRegisterError('');
-
-    // axios
-    //   .post('/api/auth/signUp', payload)
-    //   .then(() => {
-    //     setIsProcessing(false);
-    //     router.push(`/otp-verification?email=${formData.email}&verify=signup`);
-    //   })
-    //   .catch((response) => {
-    //     setIsProcessing(false);
-    //     setRegisterError(response.error || 'Something went wrong');
-    //   });
+    console.log(formData);
+    try {
+      const url = `/user_management/register/`;
+      const payload = {
+        email: formData.email,
+        password: formData.password
+      };
+      const res = await axios.post(BASE_URL + url, payload);
+      if (res.status === 201) {
+        setIsProcessing(false);
+        alert('Activation link has been sent to given email');
+      }
+    } catch (error) {
+      alert('Something went wrong');
+      console.log('error', error);
+      setIsProcessing(false);
+    }
   };
 
   const commonIconProps = { size: 16, color: theme.palette.grey[700] };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
-      <Grid container rowSpacing={2.5} columnSpacing={1.5}>
-        <Grid size={12}>
-          <InputLabel>Email</InputLabel>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Stack sx={{ gap: 2.5 }}>
+        <Stack sx={{ gap: 0.5 }}>
+          <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+            Email
+          </Typography>
           <OutlinedInput
             {...register('email', emailSchema)}
-            placeholder="example@saasable.io"
-            fullWidth
-            error={Boolean(errors.email)}
+            placeholder="example@gmail.com"
+            slotProps={{ input: { 'aria-label': 'Email address' } }}
+            error={errors.email && Boolean(errors.email)}
             sx={{ ...inputSx }}
           />
-          {errors.email?.message && <FormHelperText error>{errors.email?.message}</FormHelperText>}
-        </Grid>
-        <Grid size={12}>
-          <InputLabel>Password</InputLabel>
+          {errors.email?.message && (
+            <Typography variant="caption" sx={{ color: 'error.main' }}>
+              {errors.email?.message}
+            </Typography>
+          )}
+        </Stack>
+        <Stack sx={{ gap: 0.5 }}>
+          <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+            Password
+          </Typography>
           <OutlinedInput
             {...register('password', passwordSchema)}
             type={isOpen ? 'text' : 'password'}
-            placeholder="Enter password"
-            fullWidth
-            autoComplete="new-password"
-            error={Boolean(errors.password)}
+            placeholder="Enter your password"
+            slotProps={{ input: { 'aria-label': 'Password' } }}
+            error={errors.password && Boolean(errors.password)}
             endAdornment={
-              <InputAdornment
-                position="end"
-                sx={{ cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}
-                onClick={() => setIsOpen(!isOpen)}
-              >
-                {isOpen ? <IconEye {...commonIconProps} /> : <IconEyeOff {...commonIconProps} />}
-              </InputAdornment>
+              <IconButton sx={{ height: 0 }} onClick={() => setIsOpen(!isOpen)} rel="noopener noreferrer" aria-label="eye">
+                {isOpen ? <OpenEye color={theme.palette.grey[700]} /> : <CloseEye color={theme.palette.grey[700]} />}
+              </IconButton>
             }
             sx={inputSx}
           />
-          {errors.password?.message && <FormHelperText error>{errors.password?.message}</FormHelperText>}
-        </Grid>
-      </Grid>
-      <Button
-        type="submit"
-        color="primary"
-        variant="contained"
-        fullWidth
-        disabled={isProcessing}
-        endIcon={isProcessing && <CircularProgress color="secondary" size={16} />}
-        sx={{ minWidth: 120, mt: { xs: 2, sm: 4 }, '& .MuiButton-endIcon': { ml: 1 } }}
-      >
-        Sign Up
-      </Button>
-      {registerError && (
-        <Alert sx={{ mt: 2 }} severity="error" variant="filled" icon={false}>
-          {registerError}
-        </Alert>
-      )}
+          <Stack
+            direction="row"
+            sx={{ alignItems: 'center', justifyContent: errors.password?.message ? 'space-between' : 'flex-end', width: 1 }}
+          >
+            {errors.password?.message && (
+              <Typography variant="caption" sx={{ color: 'error.main' }}>
+                {errors.password?.message}
+              </Typography>
+            )}
+            <Link
+              component={NextLink}
+              underline="hover"
+              variant="caption2"
+              href=""
+              sx={{ textAlign: 'right', '&:hover': { color: 'primary.dark' } }}
+            >
+              Forgot Password?
+            </Link>
+          </Stack>
+        </Stack>
+        <Button
+          type="submit"
+          color="primary"
+          variant="contained"
+          fullWidth
+          disabled={isProcessing}
+          endIcon={isProcessing && <CircularProgress color="secondary" size={16} />}
+          sx={{ borderRadius: '32px', minWidth: 120, mt: { xs: 1, sm: 4 }, '& .MuiButton-endIcon': { ml: 1 }, p: 2 }}
+        >
+          Sign Up
+        </Button>
+
+        {loginError && (
+          <Alert sx={{ mt: 2 }} severity="error" variant="filled" icon={false}>
+            {loginError}
+          </Alert>
+        )}
+      </Stack>
     </form>
   );
 }
