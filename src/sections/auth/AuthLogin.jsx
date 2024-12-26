@@ -1,7 +1,9 @@
 'use client';
 import PropTypes from 'prop-types';
+import { useRouter } from 'next/navigation';
 
 import { useState } from 'react';
+import axios from '@/utils/axios';
 
 // @next
 import NextLink from 'next/link';
@@ -11,11 +13,18 @@ import { useTheme } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
+import CircularProgress from '@mui/material/CircularProgress';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
+import Alert from '@mui/material/Alert';
+
+
+import { APP_DEFAULT_PATH, AUTH_USER_KEY } from '@/config';
 import Typography from '@mui/material/Typography';
+import { BASE_URL } from 'constants';
 
 // @third-party
+import { AuthRole } from '@/enum';
 import { useForm } from 'react-hook-form';
 
 // @project
@@ -24,11 +33,13 @@ import { emailSchema, passwordSchema } from '@/utils/validationSchema';
 // @assets
 import { CloseEye, OpenEye } from '@/icons';
 
-/***************************  AUTH - LOGIN  ***************************/
 
 export default function AuthLogin({ inputSx }) {
   const theme = useTheme();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [loginError, setLoginError] = useState('');
 
   // Initialize react-hook-form
   const {
@@ -36,11 +47,43 @@ export default function AuthLogin({ inputSx }) {
     handleSubmit,
     reset,
     formState: { errors }
-  } = useForm();
+  } = useForm({ defaultValues: { email: 'super_admin@saasable.io', password: 'Super@123' } });
 
   // Handle form submission
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (formData) => {
+    setIsProcessing(true);
+    setLoginError('');
+    try {
+      const url = `/token_auth/`;
+      const postData = {
+        email_or_mobile: formData.email,
+        password: formData.password
+      };
+
+      const res = await axios.post(BASE_URL + url, postData);
+
+      if (res.status === 200) {
+        let userDAta = {
+          id: res.data.id,
+          email: res.data.email,
+          role: AuthRole.SUPER_ADMIN,
+          contact: '123456789',
+          dialcode: '+1',
+          firstname: res.data.name,
+          lastname: '',
+          // password: 'Super@123',
+          access_token: res.data.access
+        };
+        setIsProcessing(false);
+        localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));
+        router.push(APP_DEFAULT_PATH);
+      }
+    } catch (error) {
+      // console.error("Login error:", error.response.data.detail);
+      console.log('error', error);
+      setIsProcessing(false);
+      // alert(error.response.data.detail);
+    }
     reset();
   };
 
@@ -101,9 +144,23 @@ export default function AuthLogin({ inputSx }) {
             </Link>
           </Stack>
         </Stack>
-        <Button fullWidth type="submit" color="primary" variant="contained" sx={{ mt: { xs: 0.5, sm: 1.5 } }}>
+        <Button
+          type="submit"
+          color="primary"
+          variant="contained"
+          fullWidth
+          disabled={isProcessing}
+          endIcon={isProcessing && <CircularProgress color="secondary" size={16} />}
+          sx={{ minWidth: 120, mt: { xs: 1, sm: 4 }, '& .MuiButton-endIcon': { ml: 1 } }}
+        >
           Sign In
         </Button>
+
+        {loginError && (
+          <Alert sx={{ mt: 2 }} severity="error" variant="filled" icon={false}>
+            {loginError}
+          </Alert>
+        )}
       </Stack>
     </form>
   );
