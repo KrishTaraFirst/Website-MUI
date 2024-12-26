@@ -15,11 +15,41 @@ import { IconX } from '@tabler/icons-react';
 import IconButton from '@mui/material/IconButton';
 import Factory from '@/utils/Factory';
 
+const unitsDropdown = [
+  'Kilograms (Kgs)',
+  'Grams (g)',
+  'Liters (L)',
+  'Milliliters (mL)',
+  'Meters (m)',
+  'Centimeters (cm)',
+  'Millimeters (mm)',
+  'Pieces (pcs)',
+  'Dozens (doz)',
+  'Pairs (prs)',
+  'Sets (sets)',
+  'Units (units)',
+  'Boxes (boxes)',
+  'Cartons (ctns)',
+  'Barrels (bbls)',
+  'Bottles (btls)',
+  'Rolls (rolls)',
+  'Sheets (Sheets)',
+  'Cubic Meters (CBM)',
+  'Square Meters (Sq.M)',
+  'Square Feet (Sq.Ft)',
+  'Tons (Tons)',
+  'Quintal (Quintals)',
+  'Hours (Hs)',
+  'Days (Days)',
+  'Packs (Packs)',
+  'Bundles (Bundles)'
+];
+
 const AddItem = ({ businessDetailsData, get_Goods_and_Services_Data, open, onClose }) => {
   const [addItemData] = useState([
     { name: 'type', label: 'Type' },
     { name: 'name', label: 'Name' },
-    { name: 'sku_value', label: 'SKU ' },
+    { name: 'sku_value', label: 'SKU' },
     { name: 'units', label: 'Units' },
     { name: 'hsn_sac', label: 'HSN/SAC Code' },
     { name: 'gst_rate', label: 'GST Rate' },
@@ -66,11 +96,16 @@ const AddItem = ({ businessDetailsData, get_Goods_and_Services_Data, open, onClo
       }
     }
   });
+
   const handleClose = () => {
     resetForm();
     onClose();
   };
-  const { values, touched, errors, handleSubmit, handleChange, handleBlur, resetForm } = formik;
+
+  const { values, touched, errors, handleSubmit, setFieldValue, handleBlur, resetForm } = formik;
+
+  // Determine the units options based on the type selected (Goods or Service)
+  const renderOptions = values.type === 'Goods' ? unitsDropdown : ['NA'];
 
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title" fullWidth maxWidth="sm">
@@ -98,20 +133,25 @@ const AddItem = ({ businessDetailsData, get_Goods_and_Services_Data, open, onClo
                   {item.name === 'type' ? (
                     <FormControl fullWidth>
                       <FormLabel>{item.label}</FormLabel>
-                      <RadioGroup name={item.name} value={values.gst_registered} onChange={handleChange} row>
+                      <RadioGroup
+                        name={item.name}
+                        value={values.type} // Bind the value of the radio button to the formik value
+                        onChange={(e) => setFieldValue('type', e.target.value)} // Use setFieldValue to update form value
+                        row
+                      >
                         <FormControlLabel value="Service" control={<Radio />} label="Service" />
                         <FormControlLabel value="Goods" control={<Radio />} label="Goods" />
                       </RadioGroup>
                     </FormControl>
-                  ) : item.name === 'typeof_gst' ? (
+                  ) : item.name === 'units' ? (
                     <>
                       <div style={{ paddingBottom: '5px' }}>
                         <label>{item.label}</label>
-                      </div>{' '}
+                      </div>
                       <CustomAutocomplete
                         value={values[item.name]}
-                        onChange={handleChange}
-                        options={['CGST', 'IGST']}
+                        onChange={(_, newValue) => setFieldValue(item.name, newValue)} // Use setFieldValue for units
+                        options={renderOptions}
                         error={touched[item.name] && Boolean(errors[item.name])}
                         helperText={touched[item.name] && errors[item.name]}
                         name={item.name}
@@ -121,11 +161,11 @@ const AddItem = ({ businessDetailsData, get_Goods_and_Services_Data, open, onClo
                     <>
                       <div style={{ paddingBottom: '5px' }}>
                         <label>{item.label}</label>
-                      </div>{' '}
+                      </div>
                       <CustomInput
                         name={item.name}
                         value={values[item.name]}
-                        onChange={handleChange}
+                        onChange={(e) => setFieldValue(item.name, e.target.value)} // Use setFieldValue for units
                         onBlur={handleBlur}
                         error={touched[item.name] && Boolean(errors[item.name])}
                         helperText={touched[item.name] && errors[item.name]}

@@ -111,7 +111,7 @@ const AddCustomer = ({ businessDetailsData, open, onClose, getCustomersData }) =
           <form onSubmit={handleSubmit}>
             <Grid container spacing={2}>
               {addCustomerData.map((item) => (
-                <Grid item xs={6} key={item.name}>
+                <Grid item xs={12} sm={6} key={item.name}>
                   {item.name === 'gst_registered' ? (
                     <FormControl fullWidth>
                       <FormLabel>{item.label}</FormLabel>
@@ -129,7 +129,7 @@ const AddCustomer = ({ businessDetailsData, open, onClose, getCustomersData }) =
                         value={values[item.name]}
                         name={item.name}
                         onChange={(e, newValue) => setFieldValue(item.name, newValue)}
-                        options={item.name === 'gst_type' ? ['CGST', 'IGST'] : item.name === 'state' && indian_States_And_UTs}
+                        options={item.name === 'gst_type' ? ['IGST', 'CGST', 'SGST'] : item.name === 'state' && indian_States_And_UTs}
                         error={touched[item.name] && Boolean(errors[item.name])}
                         helperText={touched[item.name] && errors[item.name]}
                       />

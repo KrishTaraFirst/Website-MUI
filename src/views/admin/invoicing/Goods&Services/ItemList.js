@@ -13,6 +13,7 @@ const ItemList = ({ itemsData, get_Goods_and_Services_Data }) => {
   useEffect(() => {
     setItemsList(itemsData);
   }, [itemsData]);
+
   const handleEdit = (itemIndex) => {
     setSelectedItem(itemsList[itemIndex]);
     setOpenDialog(true);
@@ -21,7 +22,7 @@ const ItemList = ({ itemsData, get_Goods_and_Services_Data }) => {
   const handleDelete = async (item) => {
     let url = `/invoicing/goods-services/${item.id}/delete/`;
     const { res } = await Factory('delete', url, {});
-    // console.log(res);
+    console.log(res);
     get_Goods_and_Services_Data();
   };
 
@@ -34,7 +35,7 @@ const ItemList = ({ itemsData, get_Goods_and_Services_Data }) => {
     setItemsList(updatedItems);
     setOpenDialog(false);
   };
-
+  console.log(itemsList);
   return (
     <>
       <TableContainer component={Paper}>
