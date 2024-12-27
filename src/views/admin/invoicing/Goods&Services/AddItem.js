@@ -45,6 +45,8 @@ const unitsDropdown = [
   'Bundles (Bundles)'
 ];
 
+const gstRatesDropdown = ['0', '5', '12', '18', '28'];
+
 const AddItem = ({ businessDetailsData, get_Goods_and_Services_Data, open, onClose }) => {
   const [addItemData] = useState([
     { name: 'type', label: 'Type' },
@@ -87,7 +89,6 @@ const AddItem = ({ businessDetailsData, get_Goods_and_Services_Data, open, onClo
       postData.sku_value = Number(postData.sku_value);
       postData.gst_rate = Number(postData.gst_rate);
       postData.selling_price = Number(postData.selling_price);
-      console.log(postData);
       let url = '/invoicing/api/v1/goods-services/create/';
       const { res } = await Factory('post', url, postData);
       if (res.status_cd === 0) {
@@ -133,25 +134,23 @@ const AddItem = ({ businessDetailsData, get_Goods_and_Services_Data, open, onClo
                   {item.name === 'type' ? (
                     <FormControl fullWidth>
                       <FormLabel>{item.label}</FormLabel>
-                      <RadioGroup
-                        name={item.name}
-                        value={values.type} // Bind the value of the radio button to the formik value
-                        onChange={(e) => setFieldValue('type', e.target.value)} // Use setFieldValue to update form value
-                        row
-                      >
+                      <RadioGroup name={item.name} value={values.type} onChange={(e) => setFieldValue('type', e.target.value)} row>
                         <FormControlLabel value="Service" control={<Radio />} label="Service" />
                         <FormControlLabel value="Goods" control={<Radio />} label="Goods" />
                       </RadioGroup>
                     </FormControl>
-                  ) : item.name === 'units' ? (
+                  ) : item.name === 'units' || item.name === 'gst_rate' ? (
                     <>
                       <div style={{ paddingBottom: '5px' }}>
                         <label>{item.label}</label>
                       </div>
                       <CustomAutocomplete
                         value={values[item.name]}
-                        onChange={(_, newValue) => setFieldValue(item.name, newValue)} // Use setFieldValue for units
-                        options={renderOptions}
+                        onChange={(_, newValue) => {
+                          setFieldValue(item.name, newValue);
+                        }}
+                        options={item.name === 'gst_rate' ? gstRatesDropdown : renderOptions}
+                        getOptionLabel={(option) => option} // Use option directly if it's a string
                         error={touched[item.name] && Boolean(errors[item.name])}
                         helperText={touched[item.name] && errors[item.name]}
                         name={item.name}
@@ -165,7 +164,7 @@ const AddItem = ({ businessDetailsData, get_Goods_and_Services_Data, open, onClo
                       <CustomInput
                         name={item.name}
                         value={values[item.name]}
-                        onChange={(e) => setFieldValue(item.name, e.target.value)} // Use setFieldValue for units
+                        onChange={(e) => setFieldValue(item.name, e.target.value)}
                         onBlur={handleBlur}
                         error={touched[item.name] && Boolean(errors[item.name])}
                         helperText={touched[item.name] && errors[item.name]}

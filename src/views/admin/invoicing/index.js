@@ -133,7 +133,7 @@ import { Avatar, Box, Grid, Tab, Tabs, Typography } from '@mui/material';
 import TabOne from './BusinessProfile';
 import TabTwo from './Customers';
 import TabThree from './Goods&Services';
-import TabFour from './InvoiceNumberFormat';
+import TabFour from './Invoices';
 import Factory from '@/utils/Factory';
 
 /***************************  TABS - PANEL  ***************************/
@@ -157,6 +157,7 @@ TabPanel.propTypes = {
 const BasicTabs = ({ type }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [businessDetails, setBusinessDetails] = useState({});
+  const [customers, setCustomers] = useState([]);
   const theme = useTheme();
 
   useEffect(() => {
@@ -169,19 +170,17 @@ const BasicTabs = ({ type }) => {
 
   const handleTabChange = (_event, newTabIndex) => setActiveTab(newTabIndex);
 
-  const renderTab = (label, icon, index) => (
-    <Tab
-      label={
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: theme.spacing(2) }}>
-          <Avatar variant="rounded" sx={{ bgcolor: 'grey.300', width: 32, height: 32 }}>
-            <IconBolt color={theme.palette.text.primary} />
-          </Avatar>
-          <Typography variant="subtitle1">{label}</Typography>
-        </Box>
-      }
-      {...a11yProps(index)}
-    />
-  );
+  const getCustomersData = async () => {
+    let url = '/invoicing/customer_profiles/';
+    const { res } = await Factory('get', url, {});
+    if (res.status_cd === 0) {
+      setCustomers(res.data.customer_profiles);
+    }
+  };
+
+  useEffect(() => {
+    getCustomersData();
+  }, []);
   const handleNext = () => {
     setActiveTab((prev) => (prev < 3 ? prev + 1 : prev));
   };
@@ -219,9 +218,23 @@ const BasicTabs = ({ type }) => {
         {['Business Profile', 'Customers', 'Goods & Services', 'Invoices'].map((label, index) => (
           <TabPanel key={index} value={activeTab} index={index}>
             {index === 0 && <TabOne businessDetails={businessDetails} setBusinessDetails={setBusinessDetails} onNext={handleNext} />}
-            {index === 1 && <TabTwo businessDetails={businessDetails} setBusinessDetails={setBusinessDetails} />}
+            {index === 1 && (
+              <TabTwo
+                getCustomersData={getCustomersData}
+                customers={customers}
+                businessDetails={businessDetails}
+                setBusinessDetails={setBusinessDetails}
+              />
+            )}
             {index === 2 && <TabThree businessDetails={businessDetails} setBusinessDetails={setBusinessDetails} />}
-            {index === 3 && <TabFour businessDetails={businessDetails} setBusinessDetails={setBusinessDetails} />}
+            {index === 3 && (
+              <TabFour
+                getCustomersData={getCustomersData}
+                customers={customers}
+                businessDetails={businessDetails}
+                setBusinessDetails={setBusinessDetails}
+              />
+            )}
           </TabPanel>
         ))}
       </Grid>

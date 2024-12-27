@@ -23,7 +23,6 @@ const InvoiceNumberFormatDialogue = ({ businessDetailsData, setInvoiceNumberForm
       [name]: value
     });
   };
-  console.log(businessDetailsData);
   const handleSubmit = async () => {
     const url = `/invoicing/invoicing-profiles/${businessDetailsData.id}/update/`;
 
@@ -32,9 +31,7 @@ const InvoiceNumberFormatDialogue = ({ businessDetailsData, setInvoiceNumberForm
     };
 
     const { res } = await Factory('put', url, postData);
-    console.log(res);
     if (res) {
-      console.log('Business details updated successfully:', res);
       setInvoiceNumberFormatDialogue(false);
     }
   };
