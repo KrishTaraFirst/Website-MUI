@@ -6,7 +6,7 @@ import { AuthType } from '@/enum';
 
 /***************************  THEME CONSTANT  ***************************/
 
-export const APP_DEFAULT_PATH = '/dashboard/analytics';
+export const APP_DEFAULT_PATH = '/dashboard';
 export const APP_SUPPORT_PATH = 'https://phoenixcoded.authordesk.app/';
 
 export const DRAWER_WIDTH = 254;
