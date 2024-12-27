@@ -7,24 +7,24 @@ import { IconPlus } from '@tabler/icons-react';
 import AddCustomer from './AddCustomer'; // Import the AddCustomer component
 import CustomerList from './CustomerList';
 import Factory from '@/utils/Factory';
-export default function TabTwo({ businessDetails, onNext }) {
+export default function TabTwo({ getCustomersData, customers, businessDetails, onNext }) {
   const [open, setOpen] = useState(false);
-  const [customers, setCustomers] = useState([]);
+  // const [customers, setCustomers] = useState([]);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const getCustomersData = async () => {
-    let url = '/invoicing/customer_profiles/';
-    const { res } = await Factory('get', url, {});
-    if (res.status_cd === 0) {
-      setCustomers(res.data.customer_profiles);
-    }
-  };
+  // const getCustomersData = async () => {
+  //   let url = '/invoicing/customer_profiles/';
+  //   const { res } = await Factory('get', url, {});
+  //   if (res.status_cd === 0) {
+  //     setCustomers(res.data.customer_profiles);
+  //   }
+  // };
 
-  useEffect(() => {
-    getCustomersData();
-  }, []);
+  // useEffect(() => {
+  //   getCustomersData();
+  // }, []);
   return (
     <Stack spacing={2}>
       <Grid container spacing={2}>

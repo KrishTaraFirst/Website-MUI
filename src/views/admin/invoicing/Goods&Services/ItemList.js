@@ -35,7 +35,6 @@ const ItemList = ({ itemsData, get_Goods_and_Services_Data }) => {
     setItemsList(updatedItems);
     setOpenDialog(false);
   };
-  console.log(itemsList);
   return (
     <>
       <TableContainer component={Paper}>
