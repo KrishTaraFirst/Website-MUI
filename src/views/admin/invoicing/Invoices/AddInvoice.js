@@ -90,7 +90,8 @@ const AddItem = ({ type, selctedInvoiceData, businessDetailsData, customers, ope
     initialValues: {
       customer: '', // Ensure initial value is empty string, not undefined
       terms: '', // Likewise for all fields
-      invoice_number: businessDetailsData && businessDetailsData.invoice_format.prefix + ' ' + businessDetailsData.invoice_format.suffix,
+      invoice_number:
+        businessDetailsData && businessDetailsData?.invoice_format?.prefix + ' ' + businessDetailsData?.invoice_format?.suffix,
       invoice_date: '',
       place_of_supply: '',
       due_date: '',
@@ -279,11 +280,11 @@ const AddItem = ({ type, selctedInvoiceData, businessDetailsData, customers, ope
     formik.setFieldValue('item_details', [...formik.values.item_details, newItem]);
   };
   const { values, setValues, touched, errors, handleSubmit, handleChange, handleBlur, setFieldValue } = formik;
-  useEffect(() => {
-    if ((type = 'put')) {
-      setValues(selctedInvoiceData);
-    }
-  }, [type]);
+  // useEffect(() => {
+  //   if ((type = 'put')) {
+  //     setValues(selctedInvoiceData);
+  //   }
+  // }, [type]);
   // console.log(selctedInvoiceData);
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title" fullWidth maxWidth="lg">
