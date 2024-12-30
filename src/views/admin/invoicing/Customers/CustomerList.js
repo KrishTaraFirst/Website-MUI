@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import CustomerEditDialog from './CustomerEditDialog';
-import { ConstructionOutlined } from '@mui/icons-material';
 import Factory from '@/utils/Factory';
-const CustomerList = ({ getCustomersData, customersListData }) => {
+import AddCustomer from './AddCustomer';
+const CustomerList = ({ type, setType, businessDetailsData, getCustomersData, customersListData }) => {
   const [customers, setCustomers] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -14,8 +13,9 @@ const CustomerList = ({ getCustomersData, customersListData }) => {
     setCustomers(customersListData);
   }, [customersListData]);
 
-  const handleEdit = (customerIndex) => {
-    setSelectedCustomer(customers[customerIndex]);
+  const handleEdit = (customer) => {
+    setSelectedCustomer(customer);
+    setType('edit');
     setOpenDialog(true);
   };
 
@@ -55,7 +55,7 @@ const CustomerList = ({ getCustomersData, customersListData }) => {
                   <TableCell>{customer.mobile_number}</TableCell>
                   <TableCell>{customer.opening_balance}</TableCell>
                   <TableCell>
-                    <IconButton onClick={() => handleEdit(index)}>
+                    <IconButton onClick={() => handleEdit(customer)}>
                       <EditIcon />
                     </IconButton>
                     <IconButton onClick={() => handleDelete(customer)}>
@@ -74,12 +74,14 @@ const CustomerList = ({ getCustomersData, customersListData }) => {
           </TableBody>
         </Table>
       </TableContainer>
-
-      <CustomerEditDialog
+      <AddCustomer
+        type={type}
+        setType={setType}
+        businessDetailsData={businessDetailsData}
         open={openDialog}
-        handleClose={handleCloseDialog}
-        customer={selectedCustomer}
+        onClose={handleCloseDialog}
         getCustomersData={getCustomersData}
+        selectedCustomer={selectedCustomer}
       />
     </>
   );

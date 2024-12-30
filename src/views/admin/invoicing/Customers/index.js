@@ -9,22 +9,11 @@ import CustomerList from './CustomerList';
 import Factory from '@/utils/Factory';
 export default function TabTwo({ getCustomersData, customers, businessDetails, onNext }) {
   const [open, setOpen] = useState(false);
-  // const [customers, setCustomers] = useState([]);
+  const [type, setType] = useState('');
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  // const getCustomersData = async () => {
-  //   let url = '/invoicing/customer_profiles/';
-  //   const { res } = await Factory('get', url, {});
-  //   if (res.status_cd === 0) {
-  //     setCustomers(res.data.customer_profiles);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getCustomersData();
-  // }, []);
   return (
     <Stack spacing={2}>
       <Grid container spacing={2}>
@@ -32,14 +21,27 @@ export default function TabTwo({ getCustomersData, customers, businessDetails, o
         <Grid item xs={12}>
           <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
             <Typography variant="h6">Customers</Typography>
-            <Button variant="contained" startIcon={<IconPlus size={16} />} onClick={handleOpen}>
+            <Button
+              variant="contained"
+              startIcon={<IconPlus size={16} />}
+              onClick={() => {
+                setType('add');
+                handleOpen();
+              }}
+            >
               Add Customer
             </Button>
             <AddCustomer businessDetailsData={businessDetails} open={open} onClose={handleClose} getCustomersData={getCustomersData} />
           </Stack>
         </Grid>
         <Grid item xs={12}>
-          <CustomerList customersListData={customers} getCustomersData={getCustomersData} />
+          <CustomerList
+            type={type}
+            setType={setType}
+            businessDetailsData={businessDetails}
+            customersListData={customers}
+            getCustomersData={getCustomersData}
+          />
         </Grid>
       </Grid>
     </Stack>

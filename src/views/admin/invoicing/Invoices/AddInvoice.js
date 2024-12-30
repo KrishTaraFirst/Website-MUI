@@ -19,7 +19,7 @@ import dayjs from 'dayjs'; // Import dayjs
 import CustomDatePicker from '@/utils/CustomDateInput';
 import Factory from '@/utils/Factory';
 import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
-const AddItem = ({ type, selctedInvoiceData, businessDetailsData, customers, open, onClose }) => {
+const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, businessDetailsData, customers, open, onClose }) => {
   const [addInvoiceData] = useState({
     invoice_data: [
       { name: 'customer', label: 'Customer Name' },
@@ -91,7 +91,12 @@ const AddItem = ({ type, selctedInvoiceData, businessDetailsData, customers, ope
       customer: '', // Ensure initial value is empty string, not undefined
       terms: '', // Likewise for all fields
       invoice_number:
-        businessDetailsData && businessDetailsData?.invoice_format?.prefix + ' ' + businessDetailsData?.invoice_format?.suffix,
+        businessDetailsData &&
+        businessDetailsData?.invoice_format?.prefix +
+          '-' +
+          businessDetailsData?.invoice_format?.startingNumber +
+          '-' +
+          businessDetailsData?.invoice_format?.suffix,
       invoice_date: '',
       place_of_supply: '',
       due_date: '',
@@ -130,8 +135,8 @@ const AddItem = ({ type, selctedInvoiceData, businessDetailsData, customers, ope
       let url = '/invoicing/invoice-create';
       const { res } = await Factory('post', url, postData);
       if (res.status_cd === 0) {
-        // get_Goods_and_Services_Data();
-        // handleClose();
+        getInvoicesList();
+        onClose();
       }
     }
   });
@@ -144,26 +149,10 @@ const AddItem = ({ type, selctedInvoiceData, businessDetailsData, customers, ope
     }
   };
 
-  useEffect(() => {
-    get_Goods_and_Services_Data();
-  }, []);
-
-  const calculateTax = (gstRate, placeOfSupply, billingState) => {
-    const rate = parseFloat(gstRate.replace('%', '')) || 0;
-    if (placeOfSupply === billingState) {
-      return { cgst: rate / 2, sgst: rate / 2, igst: 0 };
-    } else {
-      return { cgst: 0, sgst: 0, igst: rate };
-    }
-  };
-
   // Function to render fields for Invoice, Billing, or Shipping sections
-  const renderField = (item, section) => {
-    const fieldName = `${section ? section + '.' : ''}${item.name}`;
+  const renderField = (item) => {
+    const fieldName = `${item.name}`;
     if (item.name === 'place_of_supply' || item.name === 'state' || item.name === 'customer') {
-      const uniqueOptions =
-        item.name === 'customer' ? [...new Set(customers.map((customer) => customer.name))] : [...new Set(indian_States_And_UTs)];
-
       return (
         <CustomAutocomplete
           value={formik.values[fieldName] || null}
@@ -182,7 +171,7 @@ const AddItem = ({ type, selctedInvoiceData, businessDetailsData, customers, ope
             }
             formik.setFieldValue(fieldName, newValue);
           }}
-          options={uniqueOptions} // Ensure options are unique
+          options={item.name === 'customer' ? customers?.map((customer) => customer.name) : indian_States_And_UTs} // Ensure options are unique
           error={formik.touched[fieldName] && Boolean(formik.errors[fieldName])}
           helperText={formik.touched[fieldName] && formik.errors[fieldName]}
           name={fieldName}
@@ -279,13 +268,53 @@ const AddItem = ({ type, selctedInvoiceData, businessDetailsData, customers, ope
     };
     formik.setFieldValue('item_details', [...formik.values.item_details, newItem]);
   };
-  const { values, setValues, touched, errors, handleSubmit, handleChange, handleBlur, setFieldValue } = formik;
-  // useEffect(() => {
-  //   if ((type = 'put')) {
-  //     setValues(selctedInvoiceData);
-  //   }
-  // }, [type]);
-  // console.log(selctedInvoiceData);
+  const { values, setValues, touched, errors, handleSubmit, handleChange, handleBlur, setFieldValue, resetForm } = formik;
+
+  useEffect(() => {
+    get_Goods_and_Services_Data();
+  }, []);
+  useEffect(() => {
+    if (type === 'edit') {
+      setValues({
+        customer: selctedInvoiceData.customer,
+        terms: selctedInvoiceData.terms,
+        invoice_number:
+          businessDetailsData?.invoice_format?.prefix +
+          '-' +
+          businessDetailsData?.invoice_format?.startingNumber +
+          '-' +
+          businessDetailsData?.invoice_format?.suffix,
+        invoice_date: selctedInvoiceData.invoice_date,
+        place_of_supply: selctedInvoiceData.place_of_supply,
+        due_date: '', // Adjust based on your data source
+        sales_person: '', // Adjust based on your data source
+        financial_year: selctedInvoiceData.financial_year,
+        order_number: selctedInvoiceData.order_number, // Adjust based on your data source
+        billing_address: { ...selctedInvoiceData.billing_address },
+        shipping_address: { ...selctedInvoiceData.shipping_address },
+        item_details: selctedInvoiceData.item_details.map((item) => ({
+          item: item.name || '',
+          quantity: Number(item.quantity),
+          rate: item.unitPrice || 0,
+          discount: Number(item.discount),
+          amount: Number(item.amount),
+          taxamount: 0, // Calculate based on your logic
+          tax: 0, // Calculate based on your logic
+          total_amount: Number(item.amount) // Update based on your calculation
+        })),
+        amount_invoiced: selctedInvoiceData.amount_invoiced,
+        cgst_amount: selctedInvoiceData.cgst_amount,
+        igst_amount: selctedInvoiceData.igst_amount,
+        notes: selctedInvoiceData.notes,
+        pending_amount: selctedInvoiceData.pending_amount,
+        sgst_amount: selctedInvoiceData.sgst_amount,
+        shipping_amount: selctedInvoiceData.shipping_amount,
+        subtotal_amount: selctedInvoiceData.subtotal_amount,
+        terms_and_conditions: selctedInvoiceData.terms_and_conditions,
+        total_amount: selctedInvoiceData.total_amount
+      });
+    }
+  }, [type]);
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title" fullWidth maxWidth="lg">
       <Box sx={{ m: 2 }}>
@@ -318,38 +347,44 @@ const AddItem = ({ type, selctedInvoiceData, businessDetailsData, customers, ope
               ))}
             </Grid>
 
-            {/* Billing Section */}
-            <Box sx={{ mb: 2, mt: 2 }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                Billing Information
-              </Typography>
-            </Box>
-            <Grid container spacing={2}>
-              {addInvoiceData.billing.map((item) => (
-                <Grid item xs={6} key={item.name}>
-                  <div style={{ paddingBottom: '5px' }}>
-                    <label>{item.label}</label>
-                  </div>
-                  {renderField2(item, 'billing_address')}
+            <Grid container spacing={4}>
+              {/* Billing Section */}
+              <Grid item xs={12} md={6}>
+                <Box sx={{ mb: 2, mt: 2 }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                    Billing Information
+                  </Typography>
+                </Box>
+                <Grid container spacing={2}>
+                  {addInvoiceData.billing.map((item) => (
+                    <Grid item xs={12} key={item.name}>
+                      <div style={{ paddingBottom: '5px' }}>
+                        <label>{item.label}</label>
+                      </div>
+                      {renderField2(item, 'billing_address')}
+                    </Grid>
+                  ))}
                 </Grid>
-              ))}
-            </Grid>
+              </Grid>
 
-            {/* Shipping Section */}
-            <Box sx={{ mb: 2, mt: 2 }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                Shipping Information
-              </Typography>
-            </Box>
-            <Grid container spacing={2}>
-              {addInvoiceData.shipping.map((item) => (
-                <Grid item xs={6} key={item.name}>
-                  <div style={{ paddingBottom: '5px' }}>
-                    <label>{item.label}</label>
-                  </div>
-                  {renderField2(item, 'shipping_address')}
+              {/* Shipping Section */}
+              <Grid item xs={12} md={6}>
+                <Box sx={{ mb: 2, mt: 2 }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                    Shipping Information
+                  </Typography>
+                </Box>
+                <Grid container spacing={2}>
+                  {addInvoiceData.shipping.map((item) => (
+                    <Grid item xs={12} key={item.name}>
+                      <div style={{ paddingBottom: '5px' }}>
+                        <label>{item.label}</label>
+                      </div>
+                      {renderField2(item, 'shipping_address')}
+                    </Grid>
+                  ))}
                 </Grid>
-              ))}
+              </Grid>
             </Grid>
 
             {/* Item Details Section (Table) */}

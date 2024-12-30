@@ -16,9 +16,10 @@ import IconButton from '@mui/material/IconButton';
 import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
 import Factory from '@/utils/Factory';
 
-const AddCustomer = ({ businessDetailsData, open, onClose, getCustomersData }) => {
+let gst_Types = ['Registered Business - Regular', 'Registered Business - Composition', 'unregistered Business', 'Consumer'];
+const AddCustomer = ({ type, selectedCustomer, businessDetailsData, open, onClose, getCustomersData }) => {
   const [addCustomerData] = useState([
-    { name: 'name', label: 'Name of the Business' },
+    { name: 'name', label: 'Name of the Customer' },
     { name: 'pan_number', label: 'PAN' },
     { name: 'gst_registered', label: 'GST Registered' },
     { name: 'gstin', label: 'GSTIN' },
@@ -52,7 +53,9 @@ const AddCustomer = ({ businessDetailsData, open, onClose, getCustomersData }) =
     },
     validationSchema: Yup.object({
       name: Yup.string().required('Customer Name is required'),
-      pan_number: Yup.string().required('PAN is required'),
+      pan_number: Yup.string()
+        .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN format')
+        .required('PAN is required'),
       gst_registered: Yup.string().required('GST Registration status is required'),
       // gstin: Yup.string().required('GSTIN is required'),
       gst_type: Yup.string().required('GST Type is required'),
@@ -70,9 +73,13 @@ const AddCustomer = ({ businessDetailsData, open, onClose, getCustomersData }) =
     // validateOnChange: true, // This will trigger validation on field change
     onSubmit: async (values) => {
       const postData = { ...values };
-      postData.invoicing_profile = businessDetailsData.id;
-      let url = '/invoicing/customer_profiles/create/';
-      const { res } = await Factory('post', url, postData);
+      postData.invoicing_profile = businessDetailsData?.id;
+      let post_url = '/invoicing/customer_profiles/create/';
+      let put_url = `/invoicing/invoicing/customer_profiles/update/${selectedCustomer?.id}/`;
+
+      let url = type === 'edit' ? put_url : post_url;
+      let method = type === 'edit' ? 'put' : 'post';
+      const { res } = await Factory(method, url, postData);
 
       if (res.status_cd === 0) {
         getCustomersData();
@@ -80,20 +87,37 @@ const AddCustomer = ({ businessDetailsData, open, onClose, getCustomersData }) =
       }
     }
   });
-
   const handleClose = () => {
     resetForm();
     onClose();
   };
+  useEffect(() => {
+    if (type === 'edit' && selectedCustomer) {
+      setValues({
+        name: selectedCustomer.name || '',
+        pan_number: selectedCustomer.pan_number || '',
+        gst_registered: selectedCustomer.gst_registered || 'No',
+        gstin: selectedCustomer.gstin || '',
+        gst_type: selectedCustomer.gst_type || '',
+        address_line1: selectedCustomer.address_line1 || '',
+        address_line2: selectedCustomer.address_line2 || '',
+        country: selectedCustomer.country || 'IN',
+        state: selectedCustomer.state || '',
+        postal_code: selectedCustomer.postal_code || '',
+        email: selectedCustomer.email || '',
+        mobile_number: selectedCustomer.mobile_number || '',
+        opening_balance: selectedCustomer.opening_balance || ''
+      });
+    }
+  }, [type, selectedCustomer]);
 
   const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue, resetForm } = formik;
-
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title" fullWidth maxWidth="sm">
       <Box sx={{ m: 2 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <DialogTitle id="form-dialog-title" sx={{ fontWeight: 'bold' }}>
-            Add New Customer
+            {type === 'edit' ? 'Edit Customer' : 'Add New Customer'}
           </DialogTitle>
 
           <IconButton variant="outlined" color="secondary" aria-label="close" onClick={handleClose}>
@@ -129,9 +153,10 @@ const AddCustomer = ({ businessDetailsData, open, onClose, getCustomersData }) =
                         value={values[item.name]}
                         name={item.name}
                         onChange={(e, newValue) => setFieldValue(item.name, newValue)}
-                        options={item.name === 'gst_type' ? ['IGST', 'CGST', 'SGST'] : item.name === 'state' && indian_States_And_UTs}
+                        options={item.name === 'gst_type' ? gst_Types : item.name === 'state' && indian_States_And_UTs}
                         error={touched[item.name] && Boolean(errors[item.name])}
                         helperText={touched[item.name] && errors[item.name]}
+                        // textColor={type === 'edit' ? '#777680' : inherit}
                       />
                     </>
                   ) : (
@@ -143,7 +168,10 @@ const AddCustomer = ({ businessDetailsData, open, onClose, getCustomersData }) =
                       <CustomInput
                         name={item.name}
                         value={item.name === 'pan_number' ? values[item.name].toUpperCase() : values[item.name]}
-                        onChange={(e) => setFieldValue(item.name, e.target.value)}
+                        onChange={(e) => {
+                          const value = item.name === 'pan_number' ? e.target.value.toUpperCase() : e.target.value;
+                          setFieldValue(item.name, value);
+                        }}
                         onBlur={handleBlur}
                         error={touched[item.name] && Boolean(errors[item.name])}
                         helperText={touched[item.name] && errors[item.name]}
@@ -156,7 +184,7 @@ const AddCustomer = ({ businessDetailsData, open, onClose, getCustomersData }) =
             </Grid>
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, mb: 3, gap: 5 }}>
               <Button variant="contained" type="submit">
-                Add Customer
+                {type === 'edit' ? 'Update Customer' : 'Add Customer'}
               </Button>
             </Box>
           </form>

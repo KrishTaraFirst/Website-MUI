@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Button from '@mui/material/Button';
@@ -47,7 +47,7 @@ const unitsDropdown = [
 
 const gstRatesDropdown = ['0', '5', '12', '18', '28'];
 
-const AddItem = ({ businessDetailsData, get_Goods_and_Services_Data, open, onClose }) => {
+const AddItem = ({ type, setType, selectedItem, businessDetailsData, get_Goods_and_Services_Data, open, onClose }) => {
   const [addItemData] = useState([
     { name: 'type', label: 'Type' },
     { name: 'name', label: 'Name' },
@@ -75,7 +75,7 @@ const AddItem = ({ businessDetailsData, get_Goods_and_Services_Data, open, onClo
     validationSchema: Yup.object({
       type: Yup.string().required('Required'),
       name: Yup.string().required('Required'),
-      sku_value: Yup.string().required('Required'),
+      sku_value: Yup.number().required('SKU is required').integer('SKU must be an integer'),
       units: Yup.string().required('Required'),
       hsn_sac: Yup.string().required('Required'),
       gst_rate: Yup.string().required('Required'),
@@ -89,8 +89,13 @@ const AddItem = ({ businessDetailsData, get_Goods_and_Services_Data, open, onClo
       postData.sku_value = Number(postData.sku_value);
       postData.gst_rate = Number(postData.gst_rate);
       postData.selling_price = Number(postData.selling_price);
-      let url = '/invoicing/api/v1/goods-services/create/';
-      const { res } = await Factory('post', url, postData);
+      let post_url = '/invoicing/api/v1/goods-services/create/';
+      const put_url = `/invoicing/goods-services/${selectedItem.id}/update/`;
+
+      let url = type === 'edit' ? put_url : post_url;
+      let method = type === 'edit' ? 'put' : 'post';
+
+      const { res } = await Factory(method, url, postData);
       if (res.status_cd === 0) {
         get_Goods_and_Services_Data();
         handleClose();
@@ -103,9 +108,25 @@ const AddItem = ({ businessDetailsData, get_Goods_and_Services_Data, open, onClo
     onClose();
   };
 
-  const { values, touched, errors, handleSubmit, setFieldValue, handleBlur, resetForm } = formik;
+  const { values, setValues, touched, errors, handleSubmit, setFieldValue, handleBlur, resetForm } = formik;
 
-  // Determine the units options based on the type selected (Goods or Service)
+  useEffect(() => {
+    if (type === 'edit' && selectedItem) {
+      setValues((prevValues) => ({
+        ...prevValues, // Retain other values in the form
+        type: selectedItem.type || prevValues.type,
+        name: selectedItem.name || '',
+        sku_value: selectedItem.sku_value || '',
+        units: selectedItem.units || '',
+        hsn_sac: selectedItem.hsn_sac || '',
+        gst_rate: selectedItem.gst_rate || '',
+        tax_preference: selectedItem.tax_preference || '',
+        selling_price: selectedItem.selling_price || '',
+        description: selectedItem.description || ''
+      }));
+    }
+  }, [type, selectedItem]);
+
   const renderOptions = values.type === 'Goods' ? unitsDropdown : ['NA'];
 
   return (
@@ -113,9 +134,8 @@ const AddItem = ({ businessDetailsData, get_Goods_and_Services_Data, open, onClo
       <Box sx={{ m: 2 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <DialogTitle id="form-dialog-title" sx={{ fontWeight: 'bold' }}>
-            Add New Item
+            {type === 'edit' ? 'Edit Item' : ' Add New Item'}
           </DialogTitle>
-
           <IconButton variant="outlined" color="secondary" aria-label="close" onClick={handleClose}>
             <IconX size={20} />
           </IconButton>
@@ -130,7 +150,7 @@ const AddItem = ({ businessDetailsData, get_Goods_and_Services_Data, open, onClo
           <form onSubmit={handleSubmit}>
             <Grid container spacing={2}>
               {addItemData.map((item) => (
-                <Grid item xs={6} key={item.name}>
+                <Grid item xs={12} sm={6} key={item.name}>
                   {item.name === 'type' ? (
                     <FormControl fullWidth>
                       <FormLabel>{item.label}</FormLabel>
@@ -176,7 +196,7 @@ const AddItem = ({ businessDetailsData, get_Goods_and_Services_Data, open, onClo
             </Grid>
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, mb: 3, gap: 5 }}>
               <Button variant="contained" type="submit">
-                Add Item
+                {type === 'edit' ? 'Update Item' : 'Add Item'}
               </Button>
             </Box>
           </form>
