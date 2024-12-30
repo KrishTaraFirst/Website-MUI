@@ -45,7 +45,7 @@ export default function AuthLogin({ inputSx }) {
     handleSubmit,
     reset,
     formState: { errors }
-  } = useForm({ defaultValues: { email: 'super_admin@saasable.io', password: 'Super@123' } });
+  } = useForm({ defaultValues: { email: '', password: '' } });
 
   // Handle form submission
   const onSubmit = async (formData) => {
@@ -80,7 +80,6 @@ export default function AuthLogin({ inputSx }) {
       // console.error("Login error:", error.response.data.detail);
       console.log('error', error);
       setIsProcessing(false);
-      // alert(error.response.data.detail);
     }
     reset();
   };

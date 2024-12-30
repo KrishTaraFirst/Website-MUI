@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import Locales from '@/components/Locales';
 import RTLLayout from '@/components/RTLLayout';
 import { ConfigProvider } from '@/contexts/ConfigContext';
+import { SnackbarProvider } from '@/components/CustomSnackbar';
 import ThemeCustomization from '@/themes';
 
 // @types
@@ -14,11 +15,13 @@ import ThemeCustomization from '@/themes';
 export default function ProviderWrapper({ children }) {
   return (
     <ConfigProvider>
-      <ThemeCustomization>
-        <RTLLayout>
-          <Locales>{children}</Locales>
-        </RTLLayout>
-      </ThemeCustomization>
+      <SnackbarProvider>
+        <ThemeCustomization>
+          <RTLLayout>
+            <Locales>{children}</Locales>
+          </RTLLayout>
+        </ThemeCustomization>
+      </SnackbarProvider>
     </ConfigProvider>
   );
 }

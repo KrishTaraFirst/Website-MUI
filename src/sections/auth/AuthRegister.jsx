@@ -28,6 +28,7 @@ import { useForm } from 'react-hook-form';
 
 // @project
 import Contact from '@/components/Contact';
+import { useSnackbar } from '@/components/CustomSnackbar';
 import { AuthRole } from '@/enum';
 import { APP_DEFAULT_PATH, AUTH_USER_KEY } from '@/config';
 import { BASE_URL } from 'constants';
@@ -41,7 +42,7 @@ import { IconEye, IconEyeOff } from '@tabler/icons-react';
 
 export default function AuthRegister({ inputSx }) {
   const router = useRouter();
-
+  const { showSnackbar } = useSnackbar();
   const theme = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -76,11 +77,11 @@ export default function AuthRegister({ inputSx }) {
       const res = await axios.post(BASE_URL + url, payload);
       if (res.status === 201) {
         setIsProcessing(false);
-        alert('Activation link has been sent to given email');
+        showSnackbar('Activation link has been sent to given email', 'success');
       }
     } catch (error) {
-      alert('Something went wrong');
-      console.log('error', error);
+      // CustomSnackbar
+      showSnackbar(JSON.stringify(error), 'error');
       setIsProcessing(false);
     }
   };

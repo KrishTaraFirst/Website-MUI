@@ -73,9 +73,9 @@ export default function OverviewCard({ clientListData }) {
       {
         title: 'Pending',
         href: 'pending',
-        value: clientListData.pending,
+        value: clientListData.pending || 0,
         compare: 'Compare to last week',
-        data: clientListData.in_progress_data,
+        data: clientListData.in_progress_data || [],
         buttonLable: 'View',
         chip: {
           label: '20.5%',
@@ -85,9 +85,9 @@ export default function OverviewCard({ clientListData }) {
       {
         title: 'In Progress',
         href: 'in_progress',
-        value: clientListData.in_progress,
+        value: clientListData.in_progress || 0,
         compare: 'Compare to last week',
-        data: clientListData.in_progress_data,
+        data: clientListData.in_progress_data || [],
         buttonLable: 'View',
         chip: {
           label: '20.5%',
@@ -98,9 +98,9 @@ export default function OverviewCard({ clientListData }) {
       {
         title: 'Completed',
         href: 'completed',
-        value: clientListData.completed,
+        value: clientListData.completed || 0,
         compare: 'Compare to last week',
-        data: clientListData.completed_data,
+        data: clientListData.completed_data || [],
         buttonLable: 'View',
         chip: {
           label: '24.5%',
@@ -112,10 +112,11 @@ export default function OverviewCard({ clientListData }) {
   }, [clientListData]);
 
   const handleChange = (val) => {
-    router.replace({
-      pathname: `/dashboard/user/${val}`,
-      query: { state: JSON.stringify(clientListData) } // Pass state data as query
-    });
+    // router.replace({
+    //   pathname: `/dashboard/user/${val}`,
+    //   query: { state: JSON.stringify(clientListData) } // Pass state data as query
+    // });
+    router.replace(`/dashboard/user/${val}`);
   };
 
   return (

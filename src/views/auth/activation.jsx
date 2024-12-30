@@ -84,7 +84,7 @@ export default function SmallHero6({ tagline = data.tagline, list = data.list, p
   useEffect(() => {
     async function fetchData() {
       try {
-        const url = `/user_management/activate/?uid=${UID}&token=${token}`;
+        const url = `/user_management/activate?uid=${UID}&token=${token}`;
         const res = await axios.get(BASE_URL + url, {});
         console.log(res);
         if (res.status === 200) {
