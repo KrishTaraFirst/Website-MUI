@@ -7,13 +7,15 @@ import { IconPlus } from '@tabler/icons-react';
 import AddItem from './AddItem'; // Import the AddCustomer component
 import ItemList from './ItemList';
 import Factory from '@/utils/Factory';
-import InvoiceNumberFormatDialogue from './InvoiceNumberFormatDialogue';
 export default function TabThree({ businessDetails, onNext }) {
   const [open, setOpen] = useState(false);
-  const [invoiceNumberFormatDialogue, setInvoiceNumberFormatDialogue] = useState(false);
   const [items, setItems] = useState([]);
+  const [type, setType] = useState('');
 
-  const handleOpen = () => setOpen(true);
+  const handleOpen = () => {
+    setType('add');
+    setOpen(true);
+  };
   const handleClose = () => setOpen(false);
 
   const get_Goods_and_Services_Data = async () => {
@@ -36,15 +38,6 @@ export default function TabThree({ businessDetails, onNext }) {
             <Typography variant="h6">Items</Typography>
 
             <Box>
-              <Button
-                variant="contained"
-                startIcon={<IconPlus size={16} />}
-                onClick={() => setInvoiceNumberFormatDialogue(true)}
-                sx={{ mr: 2 }}
-              >
-                Invoice Number Format
-              </Button>
-
               <Button variant="contained" startIcon={<IconPlus size={16} />} onClick={handleOpen}>
                 Add Item
               </Button>
@@ -54,16 +47,17 @@ export default function TabThree({ businessDetails, onNext }) {
                 onClose={handleClose}
                 get_Goods_and_Services_Data={get_Goods_and_Services_Data}
               />
-              <InvoiceNumberFormatDialogue
-                businessDetailsData={businessDetails}
-                invoiceNumberFormatDialogue={invoiceNumberFormatDialogue}
-                setInvoiceNumberFormatDialogue={setInvoiceNumberFormatDialogue}
-              />
             </Box>
           </Stack>
         </Grid>
         <Grid item xs={12}>
-          <ItemList itemsData={items} get_Goods_and_Services_Data={get_Goods_and_Services_Data} />
+          <ItemList
+            type={type}
+            setType={setType}
+            businessDetailsData={businessDetails}
+            itemsData={items}
+            get_Goods_and_Services_Data={get_Goods_and_Services_Data}
+          />
         </Grid>
       </Grid>
     </Stack>

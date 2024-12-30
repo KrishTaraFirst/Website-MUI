@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import ItemEditDialog from './ItemEditDialog';
 import Factory from '@/utils/Factory';
-
-const ItemList = ({ itemsData, get_Goods_and_Services_Data }) => {
+import AddItem from './AddItem';
+const ItemList = ({ type, setType, businessDetailsData, itemsData, get_Goods_and_Services_Data }) => {
   const [itemsList, setItemsList] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -14,15 +13,15 @@ const ItemList = ({ itemsData, get_Goods_and_Services_Data }) => {
     setItemsList(itemsData);
   }, [itemsData]);
 
-  const handleEdit = (itemIndex) => {
-    setSelectedItem(itemsList[itemIndex]);
+  const handleEdit = (item) => {
+    setSelectedItem(item);
+    setType('edit');
     setOpenDialog(true);
   };
 
   const handleDelete = async (item) => {
     let url = `/invoicing/goods-services/${item.id}/delete/`;
     const { res } = await Factory('delete', url, {});
-    console.log(res);
     get_Goods_and_Services_Data();
   };
 
@@ -61,7 +60,7 @@ const ItemList = ({ itemsData, get_Goods_and_Services_Data }) => {
                   <TableCell>{item.gst_rate}</TableCell>
                   <TableCell>{item.selling_price}</TableCell>
                   <TableCell>
-                    <IconButton onClick={() => handleEdit(index)}>
+                    <IconButton onClick={() => handleEdit(item)}>
                       <EditIcon />
                     </IconButton>
                     <IconButton onClick={() => handleDelete(item)}>
@@ -80,13 +79,14 @@ const ItemList = ({ itemsData, get_Goods_and_Services_Data }) => {
           </TableBody>
         </Table>
       </TableContainer>
-
-      <ItemEditDialog
+      <AddItem
+        businessDetailsData={businessDetailsData}
         open={openDialog}
-        handleClose={handleCloseDialog}
-        itemData={selectedItem}
-        handleSave={handleSave}
+        onClose={handleCloseDialog}
         get_Goods_and_Services_Data={get_Goods_and_Services_Data}
+        selectedItem={selectedItem}
+        type={type}
+        setType={setType}
       />
     </>
   );

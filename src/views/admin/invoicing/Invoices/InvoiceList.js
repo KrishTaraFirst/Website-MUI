@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit'; // MUI Edit Icon
 import DeleteIcon from '@mui/icons-material/Delete'; // MUI Delete Icon
-import InvoiceEditDialog from './InvoiceEditDialog'; // Import the dialog component
 import AddInvoice from './AddInvoice'; // Import the AddCustomer component
-
-const InvoiceList = ({ businessDetailsData, customers, open, onClose, invoicesList, handleOpen }) => {
+import Factory from '@/utils/Factory';
+const InvoiceList = ({ businessDetailsData, customers, type, setType, invoicesList, getInvoicesList }) => {
   const [invoices, setInvoices] = useState([]); // Local state for storing invoices
   const [selectedItem, setSelectedItem] = useState(null); // Selected item for editing
   const [openDialog, setOpenDialog] = useState(false); // Control dialog visibility
@@ -18,13 +17,15 @@ const InvoiceList = ({ businessDetailsData, customers, open, onClose, invoicesLi
   // Handle the edit action by opening the dialog with the selected item
   const handleEdit = (item) => {
     setSelectedItem(item);
-    handleOpen(); // Open the edit dialog
+    setType('edit');
+    setOpenDialog(true); // Open the edit dialog
   };
 
   // Handle the delete action by removing the item from the invoices list
-  const handleDelete = (itemIndex) => {
-    const updatedInvoices = invoices.filter((_, index) => index !== itemIndex);
-    setInvoices(updatedInvoices); // Update the invoices list after deletion
+  const handleDelete = async (item) => {
+    let url = `/invoicing/invoice-delete/${item.id}/`;
+    const { res } = await Factory('delete', url, {});
+    getInvoicesList();
   };
 
   // Close the edit dialog
@@ -63,10 +64,10 @@ const InvoiceList = ({ businessDetailsData, customers, open, onClose, invoicesLi
                   <TableCell>{item.total_amount}</TableCell>
                   <TableCell>{item.payment_status}</TableCell>
                   <TableCell>
-                    <IconButton onClick={() => handleEdit(item)} title="Edit">
+                    <IconButton onClick={() => handleEdit(item)}>
                       <EditIcon />
                     </IconButton>
-                    <IconButton onClick={() => handleDelete(index)} title="Delete">
+                    <IconButton onClick={() => handleDelete(item)}>
                       <DeleteIcon />
                     </IconButton>
                   </TableCell>
@@ -83,15 +84,15 @@ const InvoiceList = ({ businessDetailsData, customers, open, onClose, invoicesLi
         </Table>
       </TableContainer>
 
-      {/* <InvoiceEditDialog open={openDialog} handleClose={handleCloseDialog} item={selectedItem} handleSave={handleSave} /> */}
       <AddInvoice
-        type="put"
         businessDetailsData={businessDetailsData}
         customers={customers}
-        handleOpen={handleOpen}
-        onClose={onClose}
-        open={open}
+        handleOpen={openDialog}
+        onClose={handleCloseDialog}
+        open={openDialog}
         selctedInvoiceData={selectedItem}
+        type={type}
+        setType={setType}
       />
     </>
   );

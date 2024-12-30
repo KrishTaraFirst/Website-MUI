@@ -55,8 +55,7 @@ export default function TabOne({ businessDetails, onNext }) {
       .required('PAN is required'),
     bank_name: Yup.string().required('Bank Name is required'),
     account_number: Yup.string().required('Bank A/C No is required'),
-    ifsc_code: Yup.string().required('IFSC Code is required'),
-    swift_code: Yup.string().required('Swift Code is required')
+    ifsc_code: Yup.string().required('IFSC Code is required')
   });
 
   const formik = useFormik({
@@ -123,8 +122,8 @@ export default function TabOne({ businessDetails, onNext }) {
         Business Details
       </Typography>
 
-      <Typography variant="h6" sx={{ fontWeight: 'bold', pt: 3 }}>
-        Basic Details
+      <Typography variant="h6" sx={{ fontWeight: 'bold', pt: 1 }}>
+        Business Details
       </Typography>
 
       <Grid container spacing={2}>
