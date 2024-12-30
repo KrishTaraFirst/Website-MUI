@@ -18,7 +18,7 @@ const manage = {
       id: 'dashboard',
       title: <FormattedMessage id="dashboard" />,
       type: 'item',
-      url: '/dashboard/analytics',
+      url: '/dashboard/user',
       icon: 'IconLayoutGrid'
     },
     // anand
@@ -27,10 +27,10 @@ const manage = {
       title: <FormattedMessage id="invoicing" />,
       type: 'item',
       url: '/invoicing',
-      icon: 'IconUserCog',
+      icon: 'IconInvoice',
       roles: [AuthRole.SUPER_ADMIN, AuthRole.USER]
     },
-    // 
+    //
     {
       id: 'account',
       title: <FormattedMessage id="account" />,

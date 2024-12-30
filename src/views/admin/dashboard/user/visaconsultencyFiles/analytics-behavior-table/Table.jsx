@@ -20,7 +20,13 @@ import HeaderCell from '@/components/third-party/table/HeaderCell';
 
 /***************************  TABLE - CARD  ***************************/
 
-export default function TableCard({ table, onGlobalSearch }) {
+export default function TableCard({ clientListData, tab, table, onGlobalSearch }) {
+  const data =
+    tab === 'completed'
+      ? clientListData.completed_data
+      : tab === 'in_progress'
+        ? clientListData.in_progress_data
+        : tab === 'pending' && clientListData.pending_data;
   return (
     <MainCard sx={{ p: 0 }}>
       <Toolbar table={table} onGlobalSearch={onGlobalSearch} />

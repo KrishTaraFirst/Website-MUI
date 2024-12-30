@@ -135,7 +135,7 @@ export default function ProfileSection() {
                       </ListItemIcon>
                       <ListItemText primary="Dark Theme" />
                     </ListItem>
-                    <ListItem
+                    {/* <ListItem
                       secondaryAction={
                         <Switch
                           size="small"
@@ -151,7 +151,7 @@ export default function ProfileSection() {
                         <IconTextDirectionLtr size={16} />
                       </ListItemIcon>
                       <ListItemText primary="RTL" />
-                    </ListItem>
+                    </ListItem> */}
                     <ListItemButton sx={buttonStyle} onClick={handleInnerActionClick}>
                       <ListItemIcon>
                         <IconLanguage size={16} />

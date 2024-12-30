@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 // @project
 import OverviewCard from './user/OverviewCard';
 import Services from './user/Services';
+import { useSnackbar } from '@/components/CustomSnackbar';
 import AnalyticsTopRef from './user/AnalyticsTopRef';
 
 /***************************  ANALYTICS - OVERVIEW  ***************************/
@@ -15,6 +16,7 @@ export default function AnalyticsOverview() {
   //   const { user } = useAuth();
   const chipDefaultProps = { color: 'black', variant: 'text', size: 'small' };
   const [clientListData, setClientListData] = useState({});
+  const { showSnackbar } = useSnackbar();
 
   const getClientsData = async () => {
     const url = '/user_management/visa-clients/dashboard-status/';
@@ -27,7 +29,7 @@ export default function AnalyticsOverview() {
     } catch (error) {
       // Catch any errors during the request
       console.error('Error:', error);
-      alert('Something went wrong. Please try again.');
+      showSnackbar(JSON.stringify(error), 'error');
     }
   };
 

@@ -43,12 +43,13 @@
 // DashboardAnalytics.propTypes = { tab: PropTypes.string };
 
 'use client';
-import { useMemo, useState } from 'react';
 
 // @mui
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import Factory from '@/utils/Factory';
+import { useMemo, useState, useEffect } from 'react';
 
 // @third-party
 import { getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
@@ -58,18 +59,35 @@ import Table from './analytics-behavior-table/Table';
 import ActionCell from './analytics-behavior-table/ActionCell';
 import { analyticsBehaviorTableData } from './analytics-behavior-table/behavior-table-data';
 import Profile from '@/components/Profile';
+import { useSnackbar } from '@/components/CustomSnackbar';
 import { useRouter } from 'next/navigation';
 
 /***************************  COMPONENT - TABLE  ***************************/
 
-export default function AnalyticsBehaviorTable({ tab, clientListData }) {
-  const router = useRouter();
-  const { state } = router.query;
-
-  console.log(state);
+export default function AnalyticsBehaviorTable({ tab }) {
   const [data, setData] = useState([...analyticsBehaviorTableData]);
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState([]);
+  const [clientListData, setClientListData] = useState({});
+
+  const getClientsData = async () => {
+    const url = '/user_management/visa-clients/dashboard-status/';
+    try {
+      const { res, error } = await Factory('get', url, {});
+      console.log(res.data);
+      if (res.status_cd === 0) {
+        setClientListData(res.data);
+      }
+    } catch (error) {
+      // Catch any errors during the request
+      console.error('Error:', error);
+      showSnackbar(JSON.stringify(error), 'error');
+    }
+  };
+
+  useEffect(() => {
+    getClientsData(); // Load client list on component mount
+  }, []);
 
   const columns = useMemo(
     () => [
@@ -161,5 +179,5 @@ export default function AnalyticsBehaviorTable({ tab, clientListData }) {
     setGlobalFilter(globalFilter);
   };
 
-  return <Table table={table} onGlobalSearch={onGlobalSearch} />;
+  return <Table table={table} clientListData={clientListData} tab={tab} onGlobalSearch={onGlobalSearch} />;
 }

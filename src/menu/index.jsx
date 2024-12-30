@@ -7,7 +7,8 @@ import other from './other';
 /***************************  MENU ITEMS  ***************************/
 
 const menuItems = {
-  items: [manage, other]
+  // items: [manage, other]
+  items: [manage]
 };
 
 export default menuItems;
