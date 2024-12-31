@@ -11,7 +11,15 @@ import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import DialogDelete from '@/components/dialog/DialogDelete'; // Assuming this is a confirmation dialog
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import MessyDoodle from '@/images/illustration/MessyDoodle';
 
 /**
  * ActionCell Component - Handles Edit and Delete actions
@@ -29,6 +37,7 @@ import DialogDelete from '@/components/dialog/DialogDelete'; // Assuming this is
 export default function ActionCell({ row, open, onClose, onEdit, onDelete, deleteDialogData }) {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null); // Anchor for Popper
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // Delete dialog state
 
   // Popper (action menu) state
   const isOpen = Boolean(anchorEl);
@@ -40,8 +49,6 @@ export default function ActionCell({ row, open, onClose, onEdit, onDelete, delet
   };
 
   // Delete Dialog Handling
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-
   const handleDeleteDialogOpen = () => {
     setOpenDeleteDialog(true);
   };
@@ -97,9 +104,41 @@ export default function ActionCell({ row, open, onClose, onEdit, onDelete, delet
         )}
       </Popper>
 
-      {deleteDialogData && (
-        <DialogDelete {...deleteDialogData} open={openDeleteDialog} onClose={handleDeleteDialogClose} onDelete={handleDialogDelete} />
-      )}
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={handleDeleteDialogClose}
+        disableRestoreFocus
+        aria-labelledby="delete-dialog-title"
+        aria-describedby="delete-dialog-description"
+        maxWidth="xs"
+      >
+        <DialogTitle id="delete-dialog-title">{deleteDialogData?.title || 'Delete'}</DialogTitle>
+        <DialogContent dividers>
+          <Stack sx={{ gap: 2.5, alignItems: 'center' }}>
+            <Box sx={{ height: 170, width: 230 }}>
+              <MessyDoodle />
+            </Box>
+            <Stack sx={{ gap: 1, textAlign: 'center', alignItems: 'center' }}>
+              <Typography id="delete-dialog-description" variant="h5" sx={{ color: 'text.primary' }}>
+                {deleteDialogData?.heading || 'Are you sure you want to delete?'}
+              </Typography>
+              <Typography variant="body1" color="grey.700" sx={{ width: '90%' }}>
+                {deleteDialogData?.description || 'This action cannot be undone.'}
+              </Typography>
+            </Stack>
+          </Stack>
+        </DialogContent>
+
+        <DialogActions sx={{ justifyContent: 'space-between' }}>
+          <Button variant="outlined" color="secondary" onClick={handleDeleteDialogClose} autoFocus>
+            Cancel
+          </Button>
+          <Button variant="contained" color="error" onClick={handleDialogDelete}>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

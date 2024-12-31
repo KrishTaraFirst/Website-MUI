@@ -9,6 +9,7 @@ import CustomInput from '@/utils/CustomInput';
 import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import Factory from '@/utils/Factory';
+import { useSnackbar } from '@/components/CustomSnackbar';
 
 export default function TabOne({ businessDetails, onNext }) {
   const [busineesprofileFields, setBusineesprofileFields] = useState({
@@ -33,6 +34,7 @@ export default function TabOne({ businessDetails, onNext }) {
       { name: 'swift_code', label: 'Swift Code' }
     ]
   });
+  const { showSnackbar } = useSnackbar();
 
   // Formik validation schema
   const validationSchema = Yup.object({
@@ -52,10 +54,21 @@ export default function TabOne({ businessDetails, onNext }) {
     addresslane2: Yup.string().required('Address Lane 2 is required'),
     pan_number: Yup.string()
       .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN format')
-      .required('PAN is required'),
-    bank_name: Yup.string().required('Bank Name is required'),
-    account_number: Yup.string().required('Bank A/C No is required'),
-    ifsc_code: Yup.string().required('IFSC Code is required')
+      .required('PAN is required')
+    // bank_name: Yup.string().required('Bank Name is required'),
+    // account_number: Yup.number()
+    //   .typeError('Account Number must be an integer')
+    //   .required('Account Number is required')
+    //   .integer('Account Number must be an integer'),
+    // ifsc_code: Yup.string()
+    //   .required('IFSC Code is required')
+    //   .matches(/^[A-Za-z]{4}0\d{6}$/, 'IFSC Code must be 11 characters: first 4 letters, a 0, followed by 6 digits')
+    // swift_code: Yup.string()
+    //   .required('SWIFT Code is required')
+    //   .matches(
+    //     /^[A-Za-z]{4}[A-Za-z]{2}[A-Za-z0-9]{2}([A-Za-z0-9]{3})?$/,
+    //     'SWIFT Code must be 8 or 11 characters: 4 letters, 2 letters, 2 alphanumeric, and optionally 3 alphanumeric'
+    //   )
   });
 
   const formik = useFormik({
@@ -93,9 +106,10 @@ export default function TabOne({ businessDetails, onNext }) {
       };
 
       const { res } = await Factory(method, url, postData);
-
-      if (res) {
-        console.log('Business details updated successfully:', res);
+      if (res.status_cd === 1) {
+        showSnackbar(JSON.stringify(res.data.data), 'error');
+      } else {
+        showSnackbar('Data Updated Successfully', 'success');
         onNext();
       }
     }

@@ -15,6 +15,7 @@ import { IconX } from '@tabler/icons-react';
 import IconButton from '@mui/material/IconButton';
 import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
 import Factory from '@/utils/Factory';
+import { useSnackbar } from '@/components/CustomSnackbar';
 
 let gstTypes = [
   'Registered Business - Regular',
@@ -45,6 +46,7 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
     { name: 'opening_balance', label: 'Opening Balance' }
     // { name: 'swift_code', label: 'SWIFT Code' }
   ]);
+  const { showSnackbar } = useSnackbar();
 
   const formik = useFormik({
     initialValues: {
@@ -80,12 +82,27 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
       gst_type: Yup.string().required('GST Type is required'),
       address_line1: Yup.string().required('Address Line 1 is required'),
       address_line2: Yup.string().required('Address Line 2 is required'),
-      postal_code: Yup.string().required('Pincode is required'),
+      postal_code: Yup.number()
+        .typeError('Pincode must be an integer')
+        .required('Pincode is required')
+        .integer('Pincode must be an integer')
+        .min(100000, 'Pincode must be at least 6 digits')
+        .max(999999, 'Pincode must be at most 6 digits'),
+
       email: Yup.string().email('Invalid email format').required('Email is required'),
-      mobile_number: Yup.string().required('Mobile is required'),
+      mobile_number: Yup.number()
+        .typeError('Mobile Number must be an integer')
+        .required('Mobile Number is required')
+        .integer('Mobile Number must be an integer')
+        .min(1000000000, 'Mobile Number must be 10 digits')
+        .max(9999999999, 'Mobile Number must be 10 digits'),
+
       state: Yup.string().required('State is required'),
       country: Yup.string().required('Country is required'),
-      opening_balance: Yup.number().required('Opening Balance is required')
+      opening_balance: Yup.number()
+        .typeError('Opening Balance must be an integer')
+        .required('Opening Balance is required')
+        .integer('Opening Balance must be an integer')
     }),
 
     onSubmit: async (values) => {
@@ -96,13 +113,19 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
 
       let url = type === 'edit' ? put_url : post_url;
       let method = type === 'edit' ? 'put' : 'post';
-      const { res } = await Factory(method, url, postData);
 
-      if (res.status_cd === 0) {
-        getCustomersData();
-        setType('');
-        resetForm();
-        handleClose();
+      try {
+        const { res, error } = await Factory(method, url, postData);
+        if (res.status_cd === 0) {
+          getCustomersData();
+          setType('');
+          resetForm();
+          handleClose();
+          showSnackbar(type === 'edit' ? 'Data Updated Successfully' : 'Data Added Successfully', 'success');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showSnackbar(JSON.stringify(error), 'error');
       }
     }
   });
@@ -201,6 +224,7 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
                         error={touched[item.name] && Boolean(errors[item.name])}
                         helperText={touched[item.name] && errors[item.name]}
                         disabled={(item.name === 'gstin' && values.gst_registered === 'No') || item.name === 'country'}
+                        textColor={type === 'edit' && '#776080'}
                       />
                     </>
                   )}

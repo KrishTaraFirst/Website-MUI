@@ -3,11 +3,13 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import Factory from '@/utils/Factory';
 import AddCustomer from './AddCustomer';
 import ActionCell from '../../../../utils/ActionCell';
+import { useSnackbar } from '@/components/CustomSnackbar';
 
 const CustomerList = ({ type, open, handleOpen, handleClose, setType, businessDetailsData, getCustomersData, customersListData }) => {
   const [customers, setCustomers] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   // const [openDialog, setOpenDialog] = useState(false);
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     setCustomers(customersListData);
@@ -22,7 +24,12 @@ const CustomerList = ({ type, open, handleOpen, handleClose, setType, businessDe
   const handleDelete = async (customer) => {
     let url = `/invoicing/customer_profiles/delete/${customer.id}`;
     const { res } = await Factory('delete', url, {});
-    getCustomersData();
+    if (res.status_cd === 1) {
+      showSnackbar(res.data.message, 'error');
+    } else {
+      showSnackbar('Data Deleted Successfully', 'success');
+      getCustomersData();
+    }
   };
 
   return (
