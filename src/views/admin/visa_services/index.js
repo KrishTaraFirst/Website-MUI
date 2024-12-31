@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 // @project
 import Services from '../dashboard/user/Services';
 import { useSnackbar } from '@/components/CustomSnackbar';
+import OverviewCard from '../dashboard/user/OverviewCard';
 import AnalyticsTopRef from '../dashboard/user/AnalyticsTopRef';
 
 /***************************  ANALYTICS - OVERVIEW  ***************************/
@@ -39,11 +40,14 @@ export default function AnalyticsOverview() {
   return (
     <Grid container spacing={{ xs: 2, md: 3 }}>
       <Grid size={12}>
-        <Services />
+        <OverviewCard clientListData={clientListData} />
       </Grid>
       <Grid size={12}>
-        <AnalyticsTopRef />
+        <Services />
       </Grid>
+      {/* <Grid size={12}>
+        <AnalyticsTopRef />
+      </Grid> */}
     </Grid>
   );
 }
