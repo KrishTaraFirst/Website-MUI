@@ -20,7 +20,6 @@ export default function ProfileCard2({ avatar, name, role, background, sx }) {
         ...sx
       }}
     >
-      {console.log(avatar)}
       <Avatar src={GetImagePath(avatar)} sx={{ width: 55, height: 55 }} alt="Avatar" imgProps={{ loading: 'lazy' }} />
       <Stack sx={{ gap: 0.5, justifyContent: 'center' }}>
         <Typography variant="h5">{name}</Typography>

@@ -5,7 +5,7 @@ import { SECTION_PATH, ADMIN_PATH, BUY_NOW_URL, DOCS_URL, FREEBIES_URL } from '@
 
 /***************************  DEFAULT - NAVBAR  ***************************/
 
-const linkProps = { target: '_blank', rel: 'noopener noreferrer' };
+const linkProps = { rel: 'noopener noreferrer' };
 // export const navbar = {
 //   customization: true,
 //   secondaryBtn: {

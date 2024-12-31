@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 // @project
-import { Footer3 } from '@/blocks/footer';
+import { Footer7 } from '@/blocks/footer';
 import { Navbar10 } from '@/blocks/navbar';
 import { NavbarContent10 } from '@/blocks/navbar/navbar-content';
 import ThemeCustomization from './theme';
@@ -24,7 +24,7 @@ export default function AILayout({ children }) {
         {children}
 
         {/* footer section */}
-        <Footer3 />
+        <Footer7 />
       </>
     </ThemeCustomization>
   );

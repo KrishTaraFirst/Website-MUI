@@ -11,7 +11,7 @@ import { Themes } from '@/config';
 import { MegaMenuType } from '@/enum';
 import { ADMIN_PATH, BUY_NOW_URL, DOCS_URL, LANDING_PATH, PAGE_PATH, PRIVIEW_PATH } from '@/path';
 
-const linkProps = { target: '_blank', rel: 'noopener noreferrer' };
+const linkProps = { rel: 'noopener noreferrer' };
 
 /***************************  MEGAMENU 4 - FOOTER  ***************************/
 
@@ -166,7 +166,7 @@ export const pagesMegamenu = {
           { title: 'Career', link: { href: PAGE_PATH.careerPage, ...linkProps } },
           { title: 'Privacy Policy', link: { href: PAGE_PATH.privacyPolicyPage, ...linkProps } },
           { title: 'Contact Us', link: { href: PAGE_PATH.contactPage, ...linkProps } },
-          { title: 'FAQs', link: { href: PAGE_PATH.faqPage, ...linkProps } },
+          // { title: 'FAQs', link: { href: PAGE_PATH.faqPage, ...linkProps } },
           { title: 'Pricing', link: { href: PAGE_PATH.pricingPage, ...linkProps } }
         ]
       },

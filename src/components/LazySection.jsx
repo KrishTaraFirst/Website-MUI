@@ -11,6 +11,7 @@ import Loader from '@/components/PageLoader';
 
 export default function LazySection({ sections, fallback = <Loader />, offset = '0px', placeholderHeight = 400 }) {
   const sectionList = useMemo(() => (Array.isArray(sections) ? sections : [sections]), [sections]);
+  console.log(sectionList);
   const [isVisible, setIsVisible] = useState(false);
   const [loadedComponents, setLoadedComponents] = useState(Array(sectionList.length).fill(null));
   const ref = useRef(null);
