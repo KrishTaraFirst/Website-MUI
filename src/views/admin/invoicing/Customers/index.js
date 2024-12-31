@@ -18,7 +18,7 @@ export default function TabTwo({ getCustomersData, customers, businessDetails, o
     setOpen(false);
   };
   return (
-    <Stack spacing={2}>
+    <>
       <Grid container spacing={2}>
         {' '}
         <Grid item xs={12}>
@@ -50,6 +50,6 @@ export default function TabTwo({ getCustomersData, customers, businessDetails, o
           />
         </Grid>
       </Grid>
-    </Stack>
+    </>
   );
 }

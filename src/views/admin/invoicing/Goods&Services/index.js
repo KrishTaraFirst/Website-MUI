@@ -31,7 +31,7 @@ export default function TabThree({ businessDetails, onNext }) {
     get_Goods_and_Services_Data();
   }, []);
   return (
-    <Stack spacing={2}>
+    <>
       <Grid container spacing={2}>
         {' '}
         <Grid item xs={12}>
@@ -66,6 +66,6 @@ export default function TabThree({ businessDetails, onNext }) {
           />
         </Grid>
       </Grid>
-    </Stack>
+    </>
   );
 }

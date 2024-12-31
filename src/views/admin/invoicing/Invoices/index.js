@@ -29,7 +29,7 @@ export default function TabFour({ getCustomersData, customers, businessDetails, 
     getInvoicesList();
   }, []);
   return (
-    <Stack spacing={2}>
+    <>
       {/* <Grid container spacing={2}>
         {' '}
         <Grid item xs={12}>
@@ -81,6 +81,6 @@ export default function TabFour({ getCustomersData, customers, businessDetails, 
         </Grid>
       </Grid> */}
       <InvoiceNumberFormatDialogue businessDetailsData={businessDetails} setInvoiceNumberFormatDialogue={setInvoiceNumberFormatDialogue} />
-    </Stack>
+    </>
   );
 }
