@@ -65,45 +65,45 @@ export default function Chip(theme) {
             },
             {
               props: { variant: 'light' }, // Variant for light Chip
-              style: ({ ownerState }) => {
-                const paletteColor = theme.palette[ownerState.color];
-                return {
-                  ...(paletteColor && {
-                    color: paletteColor.main,
-                    backgroundColor: paletteColor.lighter,
-                    ...theme.applyStyles('dark', { backgroundColor: alpha(paletteColor.lighter, 0.4) })
-                  }),
-                  '& .MuiChip-label': {
-                    padding: '2px 8px' // Padding for the label
-                  },
-                  '& .MuiChip-icon': {
-                    marginLeft: 2,
-                    marginRight: -8 // Adjust margins for the icon
-                  },
-                  '& .MuiChip-avatar': {
-                    margin: 4,
-                    marginRight: -4,
-                    ...(paletteColor && {
-                      color: paletteColor.lighter,
-                      backgroundColor: paletteColor.main,
-                      ...theme.applyStyles('dark', { color: paletteColor.main, backgroundColor: paletteColor.lighter })
-                    })
-                  },
-                  '& .MuiChip-deleteIcon': {
-                    margin: 4,
-                    marginLeft: -4,
-                    ...(paletteColor && {
-                      color: paletteColor.main,
-                      backgroundColor: paletteColor.lighter,
-                      '&:hover': { color: paletteColor.dark },
-                      ...theme.applyStyles('dark', { backgroundColor: 'transparent', '&:hover': { color: paletteColor.darker } })
-                    })
-                  },
-                  '&.Mui-focusVisible': {
-                    ...(paletteColor && { backgroundColor: paletteColor.main })
-                  }
-                };
-              }
+              // style: ({ ownerState }) => {
+              //   const paletteColor = theme.palette[ownerState.color];
+              //   return {
+              //     ...(paletteColor && {
+              //       color: paletteColor.main,
+              //       backgroundColor: paletteColor.lighter,
+              //       ...theme.applyStyles('dark', { backgroundColor: alpha(paletteColor.lighter, 0.4) })
+              //     }),
+              //     '& .MuiChip-label': {
+              //       padding: '2px 8px' // Padding for the label
+              //     },
+              //     '& .MuiChip-icon': {
+              //       marginLeft: 2,
+              //       marginRight: -8 // Adjust margins for the icon
+              //     },
+              //     '& .MuiChip-avatar': {
+              //       margin: 4,
+              //       marginRight: -4,
+              //       ...(paletteColor && {
+              //         color: paletteColor.lighter,
+              //         backgroundColor: paletteColor.main,
+              //         ...theme.applyStyles('dark', { color: paletteColor.main, backgroundColor: paletteColor.lighter })
+              //       })
+              //     },
+              //     '& .MuiChip-deleteIcon': {
+              //       margin: 4,
+              //       marginLeft: -4,
+              //       ...(paletteColor && {
+              //         color: paletteColor.main,
+              //         backgroundColor: paletteColor.lighter,
+              //         '&:hover': { color: paletteColor.dark },
+              //         ...theme.applyStyles('dark', { backgroundColor: 'transparent', '&:hover': { color: paletteColor.darker } })
+              //       })
+              //     },
+              //     '&.Mui-focusVisible': {
+              //       ...(paletteColor && { backgroundColor: paletteColor.main })
+              //     }
+              //   };
+              // }
             },
             {
               props: { variant: 'filled' }, // Variant for filled Chip

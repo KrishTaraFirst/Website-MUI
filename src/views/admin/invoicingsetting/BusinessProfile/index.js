@@ -122,7 +122,7 @@ export default function TabOne({ businessDetails, onNext }) {
         Business Details
       </Typography>
 
-      <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+      <Typography variant="h6" sx={{ fontWeight: 'bold', pt: 1 }}>
         Business Details
       </Typography>
 
