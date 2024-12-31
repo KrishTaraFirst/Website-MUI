@@ -131,7 +131,7 @@ export default function TabOne({ businessDetails, onNext }) {
   }, [businessDetails]);
 
   return (
-    <Stack spacing={2}>
+    <>
       <Typography variant="h5" textAlign="center" sx={{ fontWeight: 'bold', fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' } }}>
         Business Details
       </Typography>
@@ -222,6 +222,6 @@ export default function TabOne({ businessDetails, onNext }) {
           Save & Continue
         </Button>
       </Box>
-    </Stack>
+    </>
   );
 }
