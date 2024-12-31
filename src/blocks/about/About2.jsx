@@ -15,9 +15,9 @@ import { motion } from 'framer-motion';
 // @project
 import ButtonAnimationWrapper from '@/components/ButtonAnimationWrapper';
 import ContainerWrapper from '@/components/ContainerWrapper';
-import GraphicsCard  from '@/components/cards/GraphicsCard';
+import GraphicsCard from '@/components/cards/GraphicsCard';
 import GraphicsImage from '@/components/GraphicsImage';
-import Typeset from '@/components/Typeset';
+import Typeset from '@/components/Typeset2';
 
 import { ThemeDirection } from '@/config';
 import { SECTION_COMMON_PY } from '@/utils/constant';

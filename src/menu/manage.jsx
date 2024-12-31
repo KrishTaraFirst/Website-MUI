@@ -30,6 +30,14 @@ const manage = {
       icon: 'IconInvoice',
       roles: [AuthRole.SUPER_ADMIN, AuthRole.USER]
     },
+    {
+      id: 'visaServices',
+      title: <FormattedMessage id="visaServices" />,
+      type: 'item',
+      url: '/visa_services',
+      icon: 'IconSubtask',
+      roles: [AuthRole.SUPER_ADMIN]
+    },
     //
     {
       id: 'account',

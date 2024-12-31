@@ -15,7 +15,6 @@ import GetImagePath from '@/utils/GetImagePath';
 /***************************  IMAGE - TYPE IDENTIFY ***************************/
 
 function isImageComponentProps(value) {
-  console.log(value)
   return value.light !== undefined && value.dark !== undefined;
 }
 

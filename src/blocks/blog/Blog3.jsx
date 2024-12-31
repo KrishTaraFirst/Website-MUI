@@ -18,7 +18,7 @@ import GraphicsCard from '@/components/cards/GraphicsCard';
 import ProfileCard2 from '@/components/cards/profile-card/ProfileCard2';
 import ContainerWrapper from '@/components/ContainerWrapper';
 import SvgIcon from '@/components/SvgIcon';
-import Typeset from '@/components/Typeset';
+import Typeset from '@/components/Typeset2';
 import { SECTION_COMMON_PY } from '@/utils/constant';
 
 // @types

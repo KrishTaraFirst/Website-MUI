@@ -20,11 +20,11 @@ import Typography from '@mui/material/Typography';
 import { motion } from 'framer-motion';
 
 // @project
-import GraphicsCard  from '@/components/cards/GraphicsCard';
+import GraphicsCard from '@/components/cards/GraphicsCard';
 import ContainerWrapper from '@/components/ContainerWrapper';
 import FaqDetails from '@/components/faq/FaqDetails';
 import SvgIcon from '@/components/SvgIcon';
-import Typeset from '@/components/Typeset';
+import Typeset from '@/components/Typeset2';
 
 import useFocusWithin from '@/hooks/useFocusWithin';
 import { generateFocusVisibleStyles } from '@/utils/CommonFocusStyle';
