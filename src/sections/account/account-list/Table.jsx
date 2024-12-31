@@ -55,7 +55,7 @@ export default function TableCard({ table, onDelete, onGlobalSearch }) {
                         </TableCell>
                       ))}
                     </TableRow>
-                    {row.getIsExpanded() && (
+                    {/* {row.getIsExpanded() && (
                       <TableRow>
                         <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }} />
                         <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }} />
@@ -63,7 +63,7 @@ export default function TableCard({ table, onDelete, onGlobalSearch }) {
                           <RowDetails data={row.original} />
                         </TableCell>
                       </TableRow>
-                    )}
+                    )} */}
                   </Fragment>
                 );
               })
