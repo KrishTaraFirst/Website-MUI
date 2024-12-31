@@ -14,6 +14,7 @@ import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import { IconX } from '@tabler/icons-react';
 import IconButton from '@mui/material/IconButton';
 import Factory from '@/utils/Factory';
+import { useSnackbar } from '@/components/CustomSnackbar';
 
 const unitsDropdown = [
   'Kilograms (Kgs)',
@@ -66,6 +67,7 @@ const AddItem = ({ type, setType, open, handleOpen, handleClose, selectedItem, b
     { name: 'selling_price', label: 'Selling Price' },
     { name: 'description', label: 'Description' }
   ]);
+  const { showSnackbar } = useSnackbar();
 
   const formik = useFormik({
     initialValues: {
@@ -106,12 +108,19 @@ const AddItem = ({ type, setType, open, handleOpen, handleClose, selectedItem, b
       let url = type === 'edit' ? put_url : post_url;
       let method = type === 'edit' ? 'put' : 'post';
 
-      const { res } = await Factory(method, url, postData);
-      if (res.status_cd === 0) {
-        get_Goods_and_Services_Data();
-        setType('');
-        resetForm();
-        handleClose();
+      try {
+        const { res, error } = await Factory(method, url, postData);
+
+        if (res.status_cd === 0) {
+          get_Goods_and_Services_Data();
+          setType('');
+          resetForm();
+          handleClose();
+          showSnackbar(type === 'edit' ? 'Data Updated Successfully' : 'Data Added Successfully', 'success');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showSnackbar(JSON.stringify(error), 'error');
       }
     }
   });
@@ -212,6 +221,7 @@ const AddItem = ({ type, setType, open, handleOpen, handleClose, selectedItem, b
                         onBlur={handleBlur}
                         error={touched[item.name] && Boolean(errors[item.name])}
                         helperText={touched[item.name] && errors[item.name]}
+                        textColor={type === 'edit' && '#776080'}
                       />
                     </>
                   )}
