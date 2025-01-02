@@ -39,7 +39,16 @@ export default function AnalyticsOverview() {
       }
     }
   };
-
+  useEffect(() => {
+    const fetchBusinessDetails = async () => {
+      const { res } = await Factory('get', '/invoicing/invoicing-profiles/', {});
+      if (res) {
+        const businessData = { ...res.data, state: 'Telangana' };
+        setBusinessDetails(businessData);
+      }
+    };
+    fetchBusinessDetails();
+  }, []);
   useEffect(() => {
     // getInvoicesList(); // Load invoice list on component mount
   }, []);
