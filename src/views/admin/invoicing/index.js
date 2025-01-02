@@ -1,10 +1,89 @@
 'use client';
-import React, { useState } from 'react';
-import InvoicingComponent from './InvoicingComponent';
-import InvoiceSettings from './InvoiceSettings';
-function index() {
-  const [isValid, setIsValid] = useState(true);
-  return <div>{isValid ? <InvoicingComponent isValid={isValid} setIsValid={setIsValid} /> : <InvoiceSettings />}</div>;
-}
+import Grid from '@mui/material/Grid2';
+import { usePathname, useRouter } from 'next/navigation';
 
-export default index;
+import Factory from '@/utils/Factory';
+import { useState, useEffect } from 'react';
+
+// @project
+import { useSnackbar } from '@/components/CustomSnackbar';
+import OverviewCard from './InvoiceCards/OverviewCard';
+import { Button, Stack, Typography } from '@mui/material';
+import { IconSparkles, IconSettings2 } from '@tabler/icons-react';
+import AddInvoice from './InvoicingComponent/AddInvoice';
+
+/***************************  ANALYTICS - OVERVIEW  ***************************/
+
+export default function AnalyticsOverview() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const [businessDetails, setBusinessDetails] = useState({});
+  const [customers, setCustomers] = useState([]);
+  const [invoicesList, setInvoicesList] = useState([]);
+  const chipDefaultProps = { color: 'black', variant: 'text', size: 'small' };
+  const { showSnackbar } = useSnackbar();
+  const [clientListData, setClientListData] = useState({});
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleOpen = () => setOpen(true);
+
+  const getInvoicesList = async () => {
+    if (businessDetails?.id) {
+      let url = `/invoicing/invoice-retrieve/${businessDetails?.id}`;
+      const { res } = await Factory('get', url, {});
+      if (res.status_cd === 0) {
+        setInvoicesList(res.data.invoices);
+      }
+    }
+  };
+
+  useEffect(() => {
+    // getInvoicesList(); // Load invoice list on component mount
+  }, []);
+
+  return (
+    <Stack sx={{ gap: 3 }}>
+      <Stack direction="row" sx={{ alignItems: 'end', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
+        <Stack direction="column" sx={{ gap: 0.5 }}>
+          <Typography variant="h4" sx={{ fontWeight: 400 }}>
+            Invoicing
+          </Typography>
+          <Typography variant="caption" sx={{ color: 'grey.700' }}>
+            Some text tagline regarding invoicing.
+          </Typography>
+        </Stack>
+        <Stack direction="row" sx={{ gap: 1.5 }}>
+          <Button
+            variant="outlined"
+            onClick={() => {
+              router.push(`${pathname}/settings`);
+            }}
+            startIcon={<IconSettings2 size={18} />}
+          >
+            Invoice Settings
+          </Button>
+          <Button variant="contained" onClick={handleOpen} startIcon={<IconSparkles size={16} />}>
+            New Invoice
+          </Button>
+        </Stack>
+      </Stack>
+      <Grid container spacing={{ xs: 2, md: 3 }}>
+        <Grid size={12}>
+          <OverviewCard clientListData={clientListData} />
+        </Grid>
+        <Grid size={12}>{/* <Services /> */}</Grid>
+      </Grid>
+      <AddInvoice
+        invoicesList={invoicesList}
+        businessDetailsData={businessDetails}
+        customers={customers}
+        open={open}
+        onClose={handleClose}
+        getInvoicesList={getInvoicesList}
+      />
+    </Stack>
+  );
+}

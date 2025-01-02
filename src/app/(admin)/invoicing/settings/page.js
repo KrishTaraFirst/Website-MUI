@@ -2,7 +2,7 @@
 import dynamic from 'next/dynamic';
 
 // @project
-const Settings = dynamic(() => import('@/views/admin/invoicing/settings'));
+const Settings = dynamic(() => import('@/views/admin/invoicing/InvoiceSettings'));
 
 /***************************  ACCOUNT  ***************************/
 
