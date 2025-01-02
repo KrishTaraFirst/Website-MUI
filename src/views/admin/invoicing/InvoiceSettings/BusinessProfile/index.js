@@ -57,9 +57,14 @@ export default function TabOne({ businessDetails, onNext }) {
       .required('PAN is required'),
     bank_name: Yup.string().required('Bank Name is required'),
     account_number: Yup.number()
-      .typeError('Account Number must be an integer')
+      .typeError('Account Number must be a number')
       .required('Account Number is required')
-      .integer('Account Number must be an integer'),
+      .test(
+        'length',
+        'Account Number must be between 9 and 18 digits',
+        (value) => value && value.toString().length >= 9 && value.toString().length <= 18
+      ),
+
     ifsc_code: Yup.string()
       .required('IFSC Code is required')
       .matches(/^[A-Za-z]{4}0\d{6}$/, 'IFSC Code must be 11 characters: first 4 letters, a 0, followed by 6 digits')
@@ -201,7 +206,7 @@ export default function TabOne({ businessDetails, onNext }) {
                 name={item.name}
                 value={values[item.name]}
                 onChange={(e) => {
-                  if (item.name === 'pan_number') {
+                  if (item.name === 'pan_number' || item.name === 'ifsc_code') {
                     setFieldValue(item.name, e.target.value.toUpperCase());
                   } else {
                     setFieldValue(item.name, e.target.value);
