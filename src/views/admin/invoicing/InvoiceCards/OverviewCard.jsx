@@ -178,6 +178,16 @@ export default function OverviewCard() {
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const { showSnackbar } = useSnackbar();
 
+  const getInvoices = async () => {
+    // let url = `/invoicing/invoices/${business_id}`;
+    // const { res } = await Factory('get', url, {});
+    // if (res.status_cd === 1) {
+    //   showSnackbar(res.data.message, 'error');
+    // } else {
+    //   showSnackbar('Invoice Deleted Successfully', 'success');
+    // }
+  };
+
   const handleEdit = (invoice) => {
     setSelectedInvoice(invoice);
     setType('edit');
@@ -192,11 +202,12 @@ export default function OverviewCard() {
       showSnackbar(res.data.message, 'error');
     } else {
       showSnackbar('Invoice Deleted Successfully', 'success');
-      getInvoicesData();
     }
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    getInvoices();
+  }, []);
 
   const handleChange = (val) => {
     router.replace(`/dashboard/user/${val}`);
@@ -228,7 +239,7 @@ export default function OverviewCard() {
                   <DynamicIcon name={'IconBolt'} size={26} stroke={1} />
                 </Avatar>
               </div>{' '}
-              <Stack sx={{ gap: 2 }}>
+              <Stack sx={{ gap: 1.5 }}>
                 <Typography variant="subtitle1">{item.title}</Typography>
                 <Stack sx={{ gap: 0.5 }}>
                   <Typography variant="h3">{item.value}</Typography>
@@ -251,7 +262,7 @@ export default function OverviewCard() {
                   <DynamicIcon name={'IconBolt'} size={26} stroke={1} />
                 </Avatar>
               </div>
-              <Stack sx={{ gap: 2 }}>
+              <Stack sx={{ gap: 1.5 }}>
                 <Typography variant="subtitle1">{item.title}</Typography>
                 <Stack sx={{ gap: 0.5 }}>
                   <Typography variant="h3">{item.value}</Typography>
