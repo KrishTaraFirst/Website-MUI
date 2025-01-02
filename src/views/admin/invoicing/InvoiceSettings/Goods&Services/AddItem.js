@@ -179,7 +179,20 @@ const AddItem = ({ type, setType, open, handleOpen, handleClose, selectedItem, b
                   {item.name === 'type' ? (
                     <FormControl fullWidth>
                       <FormLabel>{item.label}</FormLabel>
-                      <RadioGroup name={item.name} value={values.type} onChange={(e) => setFieldValue('type', e.target.value)} row>
+                      <RadioGroup
+                        name={item.name}
+                        value={values.type}
+                        onChange={(e) => {
+                          setFieldValue('type', e.target.value);
+                          if (e.target.value === 'Service') {
+                            setFieldValue('units', 'NA');
+                          }
+                          if (e.target.value === 'Goods') {
+                            setFieldValue('units', '');
+                          }
+                        }}
+                        row
+                      >
                         <FormControlLabel value="Service" control={<Radio />} label="Service" />
                         <FormControlLabel value="Goods" control={<Radio />} label="Goods" />
                       </RadioGroup>

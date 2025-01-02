@@ -188,7 +188,14 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
                   {item.name === 'gst_registered' ? (
                     <FormControl fullWidth>
                       <FormLabel>{item.label}</FormLabel>
-                      <RadioGroup name={item.name} value={values[item.name]} onChange={(e) => setFieldValue(item.name, e.target.value)} row>
+                      <RadioGroup
+                        name={item.name}
+                        value={values[item.name]}
+                        onChange={(e) => {
+                          setFieldValue(item.name, e.target.value);
+                        }}
+                        row
+                      >
                         <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
                         <FormControlLabel value="No" control={<Radio />} label="No" />
                       </RadioGroup>
