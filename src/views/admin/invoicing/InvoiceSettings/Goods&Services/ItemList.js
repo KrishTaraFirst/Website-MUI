@@ -4,10 +4,13 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Factory from '@/utils/Factory';
 import AddItem from './AddItem';
-import ActionCell from '../../../../utils/ActionCell';
+import ActionCell from '@/utils/ActionCell';
+import { useSnackbar } from '@/components/CustomSnackbar';
+
 const ItemList = ({ type, setType, handleClose, handleOpen, open, businessDetailsData, itemsData, get_Goods_and_Services_Data }) => {
   const [itemsList, setItemsList] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     setItemsList(itemsData);
@@ -22,7 +25,12 @@ const ItemList = ({ type, setType, handleClose, handleOpen, open, businessDetail
   const handleDelete = async (item) => {
     let url = `/invoicing/goods-services/${item.id}/delete/`;
     const { res } = await Factory('delete', url, {});
-    get_Goods_and_Services_Data();
+    if (res.status_cd === 1) {
+      showSnackbar(res.data.message, 'error');
+    } else {
+      showSnackbar('Data Deleted Successfully', 'success');
+      get_Goods_and_Services_Data();
+    }
   };
 
   return (

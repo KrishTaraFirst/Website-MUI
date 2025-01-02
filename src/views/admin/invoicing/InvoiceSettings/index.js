@@ -12,7 +12,7 @@ import TabOne from './BusinessProfile';
 import TabTwo from './Customers';
 import TabThree from './Goods&Services';
 import TabFour from './Invoices';
-
+import MainCard from '@/components/MainCard';
 /***************************  NAVIGATION - TABS  ***************************/
 
 // TabPanel component for rendering content based on active tab
@@ -108,7 +108,7 @@ const BasicTabs = ({ type }) => {
 
       {/* Tab content with PresentationCard and ComponentsWrapper */}
       <Grid item xs={12}>
-        <PresentationCard>
+        <MainCard>
           {tabLabels.map((_, index) => (
             <TabPanel key={index} value={activeTab} index={index}>
               {index === 0 && <TabOne businessDetails={businessDetails} setBusinessDetails={setBusinessDetails} onNext={handleNext} />}
@@ -131,7 +131,7 @@ const BasicTabs = ({ type }) => {
               )}
             </TabPanel>
           ))}
-        </PresentationCard>
+        </MainCard>
       </Grid>
     </Grid>
   );
