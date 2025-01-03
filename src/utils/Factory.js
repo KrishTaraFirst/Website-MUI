@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { BASE_URL } from 'constants';
+import { logout } from '@/utils/api';
 
 function Factory(api, URL, payload, headers = {}) {
   const tokens = JSON.parse(localStorage.getItem('auth-user'));
@@ -56,7 +57,11 @@ function Factory(api, URL, payload, headers = {}) {
       }
     })
     .catch((e) => {
-      if (e?.response?.status == 404) {
+      if (e?.response?.status == 401) {
+        if (e?.response?.data.code === 'token_not_valid') {
+          logout();
+        }
+      } else if (e?.response?.status == 404) {
         if (e?.response?.data.status_cd === 2) {
           return {
             res: { status_cd: 2, ...e.response },
