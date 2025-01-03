@@ -53,7 +53,7 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
       name: '',
       pan_number: '',
       gst_registered: 'No',
-      gstin: '',
+      gstin: 'NA',
       gst_type: '',
       address_line1: '',
       address_line2: '',
@@ -71,12 +71,12 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
         .required('PAN is required'),
       gst_registered: Yup.string().required('GST Registration status is required'),
       gstin: Yup.string().when('gst_registered', {
-        is: 'Yes', // If GST Registered is Yes
+        is: 'Yes',
         then: () =>
           Yup.string()
             .required('GSTIN is required')
             .matches(/^[0-9A-Z]{15}$/, 'Invalid GSTIN format'),
-        otherwise: () => Yup.string().notRequired() // If GST Registered is No, GSTIN is not required
+        otherwise: () => Yup.string().oneOf(['NA'], 'GSTIN must be "NA" when GST Registered is "No"') // Ensure "NA" for "No"
       }),
 
       gst_type: Yup.string().required('GST Type is required'),
@@ -192,7 +192,16 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
                         name={item.name}
                         value={values[item.name]}
                         onChange={(e) => {
-                          setFieldValue(item.name, e.target.value);
+                          const value = e.target.value;
+                          setFieldValue(item.name, value);
+
+                          if (value === 'No') {
+                            setFieldValue('gstin', 'NA'); // Set GSTIN to NA
+                            formik.setFieldTouched('gstin', false); // Clear any existing validation error
+                            formik.setFieldError('gstin', ''); // Clear error message
+                          } else if (value === 'Yes') {
+                            setFieldValue('gstin', ''); // Reset GSTIN field for "Yes"
+                          }
                         }}
                         row
                       >
