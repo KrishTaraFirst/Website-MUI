@@ -197,7 +197,8 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
       shipping_amount: 0,
       subtotal_amount: 0,
       terms_and_conditions: '',
-      total: 0
+      total: 0,
+      shipping_amount_with_tax: 0
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -431,7 +432,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
     // Update Formik fields with new values
     formik.setFieldValue('item_details', newItemDetails); // Update item details
     formik.setFieldValue('subtotal_amount', subtotal); // Update subtotal
-    formik.setFieldValue('total', totalAmountAllItems); // Update total amount after tax
+    formik.setFieldValue('total', totalAmountAllItems + formik.values.shipping_amount_with_tax); // Update total amount after tax
     formik.setFieldValue('cgst_amount', totalCGST); // Update CGST total
     formik.setFieldValue('sgst_amount', totalSGST); // Update SGST total
     formik.setFieldValue('igst_amount', totalIGST); // Update IGST total
@@ -489,7 +490,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
     // Update Formik fields with new values
     formik.setFieldValue('item_details', newItemDetails); // Update item details
     formik.setFieldValue('subtotal_amount', subtotal); // Update subtotal
-    formik.setFieldValue('total', totalAmountAllItems); // Update total amount after tax
+    formik.setFieldValue('total', totalAmountAllItems + formik.values.shipping_amount_with_tax); // Update total amount after tax
     formik.setFieldValue('cgst_amount', totalCGST); // Update CGST total
     formik.setFieldValue('sgst_amount', totalSGST); // Update SGST total
     formik.setFieldValue('igst_amount', totalIGST); // Update IGST total
@@ -556,7 +557,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
     // Update Formik fields with new values
     formik.setFieldValue('item_details', newItemDetails); // Update item details
     formik.setFieldValue('subtotal_amount', subtotal); // Update subtotal
-    formik.setFieldValue('total', totalAmountAllItems); // Update subtotal
+    formik.setFieldValue('total', totalAmountAllItems + formik.values.shipping_amount_with_tax); // Update subtotal
     formik.setFieldValue('cgst_amount', totalCGST); // Update total CGST
     formik.setFieldValue('sgst_amount', totalSGST); // Update total SGST
     formik.setFieldValue('igst_amount', totalIGST); // Update total IGST
