@@ -84,16 +84,19 @@ const AddItem = ({ type, setType, open, handleOpen, handleClose, selectedItem, b
     validationSchema: Yup.object({
       type: Yup.string().required('Required'),
       name: Yup.string().required('Required'),
-      sku_value: Yup.number().typeError('SKU Value must be an integer').required('SKU is required').integer('SKU must be an integer'),
-      units: Yup.string().required('Required'),
-      hsn_sac: Yup.string().required('Required'),
-      gst_rate: Yup.string().required('Required'),
-      tax_preference: Yup.string().required('Required'),
+      sku_value: Yup.number()
+        .typeError('SKU Value must be an integer')
+        .required('SKU Value is required')
+        .integer('SKU Value must be an integer'),
+      units: Yup.string().required('Units is Required'),
+      hsn_sac: Yup.string().required('HSN/SAC Code is Required'),
+      gst_rate: Yup.string().required('GST Rate is Required'),
+      tax_preference: Yup.string().required(' Tax Preference is Required'),
       selling_price: Yup.number()
         .typeError('Selling Price must be an integer')
         .required('Selling Price is required')
         .integer('Selling Price must be an integer'),
-      description: Yup.string().required('Required')
+      description: Yup.string().required('Selling Price Required')
     }),
     onSubmit: async (values) => {
       const postData = { ...values };

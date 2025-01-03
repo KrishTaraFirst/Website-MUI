@@ -52,7 +52,16 @@ export default function AnalyticsOverview() {
   useEffect(() => {
     // getInvoicesList(); // Load invoice list on component mount
   }, []);
+  const getCustomersData = async () => {
+    const { res } = await Factory('get', '/invoicing/customer_profiles/', {});
+    if (res.status_cd === 0) {
+      setCustomers(res.data.customer_profiles);
+    }
+  };
 
+  useEffect(() => {
+    getCustomersData();
+  }, []);
   return (
     <Stack sx={{ gap: 3 }}>
       <Stack direction="row" sx={{ alignItems: 'end', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>

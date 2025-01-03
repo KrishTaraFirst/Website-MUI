@@ -90,7 +90,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
     }
     formik.setFieldValue('shipping_amount_with_tax', totalAmount);
 
-    formik.setFieldValue('total_amount', totalAmount); // Update the total amount
+    formik.setFieldValue('total', totalAmount); // Update the total amount
   };
   const handleApplyTaxChange = (e) => {
     setApplyTax(e.target.checked); // Update the state for Apply Tax checkbox
@@ -98,7 +98,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
       formik.setFieldValue('shipping_tax', 0); // If tax is not applied, reset shipping tax
       setSelectedGSTRate(0);
       formik.setFieldValue(
-        'total_amount',
+        'total',
         formik.values.subtotal_amount +
           formik.values.cgst_amount +
           formik.values.sgst_amount +
@@ -130,14 +130,14 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
 
       // Recalculate the total amount after adding the shipping tax
       const totalAmount = subtotal + cgstTotal + sgstTotal + igstTotal + totalShippingWithTax;
-      formik.setFieldValue('total_amount', totalAmount);
+      formik.setFieldValue('total', totalAmount);
     } else {
       // If tax is not applied, set shipping amount without tax
       formik.setFieldValue('shipping_amount_with_tax', shippingCharges);
 
       // Recalculate the total amount without shipping tax
       const totalAmount = subtotal + cgstTotal + sgstTotal + igstTotal + shippingCharges;
-      formik.setFieldValue('total_amount', totalAmount);
+      formik.setFieldValue('total', totalAmount);
     }
   };
 
@@ -197,7 +197,8 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
       shipping_amount: 0,
       subtotal_amount: 0,
       terms_and_conditions: '',
-      total: 0
+      total: 0,
+      shipping_amount_with_tax: 0
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -245,17 +246,16 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
               const newPlaceOfSupply = newValue;
               const newItemDetails = [...formik.values.item_details];
 
-              // Recalculate taxes for all items based on new place_of_supply
-              let cgstTotal = 0;
-              let sgstTotal = 0;
-              let igstTotal = 0;
+              // Recalculate subtotal, CGST, SGST, and IGST totals
+              let totalCGST = 0;
+              let totalSGST = 0;
+              let totalIGST = 0;
 
-              // Recalculate subtotal, total amount, and CGST/SGST/IGST for all items
               const subtotal = newItemDetails.reduce((acc, item) => {
-                const { amount, rate, discount, tax } = item;
+                const { quantity, rate, discount, tax } = item;
 
                 // Recalculate amount for each item
-                let itemAmount = rate * item.quantity * (1 - discount / 100);
+                let itemAmount = quantity * rate * (1 - discount / 100);
                 item.amount = itemAmount;
 
                 // Recalculate tax amount for each item
@@ -266,32 +266,31 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                 const totalAmount = itemAmount + taxAmount;
                 item.total_amount = totalAmount;
 
-                // Calculate CGST, SGST, IGST based on place_of_supply
-                const { cgstAmount, sgstAmount, igstAmount } = calculateGST(itemAmount, newPlaceOfSupply);
-                item.cgst_amount = cgstAmount;
-                item.sgst_amount = sgstAmount;
-                item.igst_amount = igstAmount;
+                // Accumulate CGST, SGST, and IGST based on place of supply
+                if (newPlaceOfSupply === businessDetailsData.state) {
+                  // Intra-state supply
+                  totalCGST += taxAmount / 2;
+                  totalSGST += taxAmount / 2;
+                } else {
+                  // Inter-state supply
+                  totalIGST += taxAmount;
+                }
 
-                // Accumulate CGST, SGST, IGST totals
-                cgstTotal += cgstAmount;
-                sgstTotal += sgstAmount;
-                igstTotal += igstAmount;
-
-                // Accumulate subtotal and total amount for the entire invoice
+                // Accumulate subtotal
                 acc += itemAmount;
                 return acc;
               }, 0);
 
-              // Recalculate total amount for all items (sum of all total amounts)
+              // Recalculate total amount for all items
               const totalAmountAllItems = newItemDetails.reduce((acc, item) => acc + item.total_amount, 0);
 
               // Update Formik fields
               formik.setFieldValue('item_details', newItemDetails); // Update item details
               formik.setFieldValue('subtotal_amount', subtotal); // Update subtotal
-              formik.setFieldValue('total_amount', totalAmountAllItems); // Update total amount after tax
-              formik.setFieldValue('cgst_amount', cgstTotal); // Update CGST total
-              formik.setFieldValue('sgst_amount', sgstTotal); // Update SGST total
-              formik.setFieldValue('igst_amount', igstTotal); // Update IGST total
+              formik.setFieldValue('total_amount', totalAmountAllItems); // Update total amount
+              formik.setFieldValue('cgst_amount', totalCGST); // Update CGST total
+              formik.setFieldValue('sgst_amount', totalSGST); // Update SGST total
+              formik.setFieldValue('igst_amount', totalIGST); // Update IGST total
             }
             formik.setFieldValue(fieldName, newValue);
           }}
@@ -344,6 +343,38 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
       );
     }
   };
+  // Function to render fields for Billing or Shipping Address sections
+  const renderField2 = (item, section) => {
+    const fieldName = `${section}.${item.name}`; // Concatenate the section name with the field name
+
+    if (item.name === 'place_of_supply' || item.name === 'state') {
+      return (
+        <CustomAutocomplete
+          value={formik.values[section][item.name]}
+          onChange={(_, newValue) => {
+            setFieldValue(fieldName, newValue);
+          }}
+          options={indian_States_And_UTs} // Example options
+          onBlur={formik.handleBlur}
+          error={formik.touched[section]?.[item.name] && Boolean(formik.errors[section]?.[item.name])}
+          helperText={formik.touched[section]?.[item.name] && formik.errors[section]?.[item.name]}
+          name={fieldName}
+        />
+      );
+    } else {
+      return (
+        <CustomInput
+          name={fieldName}
+          value={formik.values[section][item.name]}
+          onChange={(e) => setFieldValue(fieldName, e.target.value)}
+          onBlur={formik.handleBlur}
+          error={formik.touched[section]?.[item.name] && Boolean(formik.errors[section]?.[item.name])}
+          helperText={formik.touched[section]?.[item.name] && formik.errors[section]?.[item.name]}
+          disabled={item.name === 'invoice_number' || item.name === 'country'}
+        />
+      );
+    }
+  };
 
   const handleAddItemRow = () => {
     const newItem = { item: '', quantity: 1, rate: 0, discount: 0, amount: 0, tax: 0, taxamount: 0, total_amount: 0 };
@@ -352,21 +383,21 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
 
   // Handle Quantity Blur: Recalculate amount, tax and total when quantity changes
   const handleQuantityBlur = (index, value) => {
-    const newQuantity = Number(value);
+    const newQuantity = Number(value) || 0; // Default to 0 if the input is invalid
     const newItemDetails = [...formik.values.item_details];
 
     // Update quantity in item details
     newItemDetails[index].quantity = newQuantity;
 
-    const rate = Number(newItemDetails[index].rate);
-    const discount = Number(newItemDetails[index].discount);
+    const rate = Number(newItemDetails[index].rate) || 0;
+    const discount = Number(newItemDetails[index].discount) || 0;
 
     // Recalculate amount for the item
     let amount = newQuantity * rate * (1 - discount / 100);
     newItemDetails[index].amount = amount;
 
     // Recalculate tax amount based on the amount and tax rate
-    const taxRate = Number(newItemDetails[index].tax);
+    const taxRate = Number(newItemDetails[index].tax) || 0;
     const taxAmount = (amount * taxRate) / 100;
     newItemDetails[index].taxamount = taxAmount;
 
@@ -380,28 +411,31 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
     // Recalculate total amount for the entire invoice (sum of all item totals after tax)
     const totalAmountAllItems = newItemDetails.reduce((acc, item) => acc + item.total_amount, 0);
 
-    // Recalculate CGST, SGST, IGST for the entire invoice (based on all items)
-    let cgstTotal = 0;
-    let sgstTotal = 0;
-    let igstTotal = 0;
+    // Recalculate CGST, SGST, IGST totals
+    let totalCGST = 0;
+    let totalSGST = 0;
+    let totalIGST = 0;
 
-    // Loop through each item and calculate its respective CGST, SGST, and IGST
     newItemDetails.forEach((item) => {
-      const { cgstAmount, sgstAmount, igstAmount } = calculateGST(item.amount, formik.values.place_of_supply);
-      cgstTotal += cgstAmount;
-      sgstTotal += sgstAmount;
-      igstTotal += igstAmount;
+      const itemTaxAmount = (item.amount * item.tax) / 100;
+
+      if (formik.values.place_of_supply === businessDetailsData.state) {
+        // Intra-state supply: Split GST into CGST and SGST
+        totalCGST += itemTaxAmount / 2;
+        totalSGST += itemTaxAmount / 2;
+      } else {
+        // Inter-state supply: Apply IGST
+        totalIGST += itemTaxAmount;
+      }
     });
 
     // Update Formik fields with new values
     formik.setFieldValue('item_details', newItemDetails); // Update item details
     formik.setFieldValue('subtotal_amount', subtotal); // Update subtotal
-    formik.setFieldValue('total_amount', totalAmountAllItems); // Update total amount after tax
-
-    // Update CGST, SGST, IGST totals
-    formik.setFieldValue('cgst_amount', cgstTotal);
-    formik.setFieldValue('sgst_amount', sgstTotal);
-    formik.setFieldValue('igst_amount', igstTotal);
+    formik.setFieldValue('total', totalAmountAllItems + formik.values.shipping_amount_with_tax); // Update total amount after tax
+    formik.setFieldValue('cgst_amount', totalCGST); // Update CGST total
+    formik.setFieldValue('sgst_amount', totalSGST); // Update SGST total
+    formik.setFieldValue('igst_amount', totalIGST); // Update IGST total
   };
 
   // Handle Discount Change: Recalculate amount, tax and total when discount changes
@@ -435,48 +469,33 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
     // Recalculate total amount for the entire invoice (sum of all item totals after tax)
     const totalAmountAllItems = newItemDetails.reduce((acc, item) => acc + item.total_amount, 0);
 
-    // Recalculate CGST, SGST, IGST for the entire invoice (based on all items)
-    let cgstTotal = 0;
-    let sgstTotal = 0;
-    let igstTotal = 0;
+    // Recalculate CGST, SGST, IGST totals
+    let totalCGST = 0;
+    let totalSGST = 0;
+    let totalIGST = 0;
 
-    // Loop through each item and calculate its respective CGST, SGST, and IGST
     newItemDetails.forEach((item) => {
-      const { cgstAmount, sgstAmount, igstAmount } = calculateGST(item.amount, formik.values.place_of_supply);
-      cgstTotal += cgstAmount;
-      sgstTotal += sgstAmount;
-      igstTotal += igstAmount;
+      const itemTaxAmount = (item.amount * item.tax) / 100;
+
+      if (formik.values.place_of_supply === businessDetailsData.state) {
+        // Intra-state supply: Split GST into CGST and SGST
+        totalCGST += itemTaxAmount / 2;
+        totalSGST += itemTaxAmount / 2;
+      } else {
+        // Inter-state supply: Apply IGST
+        totalIGST += itemTaxAmount;
+      }
     });
 
     // Update Formik fields with new values
     formik.setFieldValue('item_details', newItemDetails); // Update item details
     formik.setFieldValue('subtotal_amount', subtotal); // Update subtotal
-    formik.setFieldValue('total_amount', totalAmountAllItems); // Update total amount after tax
-
-    // Update CGST, SGST, IGST totals
-    formik.setFieldValue('cgst_amount', cgstTotal);
-    formik.setFieldValue('sgst_amount', sgstTotal);
-    formik.setFieldValue('igst_amount', igstTotal);
+    formik.setFieldValue('total', totalAmountAllItems + formik.values.shipping_amount_with_tax); // Update total amount after tax
+    formik.setFieldValue('cgst_amount', totalCGST); // Update CGST total
+    formik.setFieldValue('sgst_amount', totalSGST); // Update SGST total
+    formik.setFieldValue('igst_amount', totalIGST); // Update IGST total
   };
 
-  // Helper function to calculate CGST, SGST, IGST based on place of supply and tax rate
-  const calculateGST = (amount, placeOfSupply) => {
-    const gstRate = 18; // Example rate, you should fetch it based on your actual requirement
-    let cgstAmount = 0;
-    let sgstAmount = 0;
-    let igstAmount = 0;
-
-    if (placeOfSupply === businessDetailsData.state) {
-      // Intra-state supply, split CGST and SGST
-      cgstAmount = (amount * gstRate) / 200; // 50% of GST for CGST
-      sgstAmount = (amount * gstRate) / 200; // 50% of GST for SGST
-    } else {
-      // Inter-state supply, apply IGST
-      igstAmount = (amount * gstRate) / 100;
-    }
-
-    return { cgstAmount, sgstAmount, igstAmount };
-  };
   const handleItemChange = (index, newValue) => {
     const newItemDetails = [...formik.values.item_details];
 
@@ -499,9 +518,6 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
     // Total amount (amount after discount + tax amount)
     const totalAmount = amount + taxAmount;
 
-    // Calculate CGST, SGST, IGST based on place of supply for the current item
-    const { cgstAmount, sgstAmount, igstAmount } = calculateGST(amount, formik.values.place_of_supply);
-
     // Update the current item's details
     newItemDetails[index] = {
       ...newItemDetails[index],
@@ -512,40 +528,39 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
       tax: gstRate,
       amount: amount,
       taxamount: taxAmount,
-      total_amount: totalAmount,
-      cgst_amount: cgstAmount,
-      sgst_amount: sgstAmount,
-      igst_amount: igstAmount
+      total_amount: totalAmount
     };
 
-    // Recalculate the subtotal (sum of all item amounts before tax)
-    const subtotal = newItemDetails.reduce((acc, item) => acc + item.amount, 0); // Sum of all item amounts before tax
+    // Initialize CGST, SGST, IGST amounts
+    let totalCGST = 0;
+    let totalSGST = 0;
+    let totalIGST = 0;
 
-    // Recalculate total amount for the entire invoice (sum of all item totals after tax)
+    // Iterate over all items to calculate total taxes
+    newItemDetails.forEach((item) => {
+      const itemTaxAmount = (item.amount * item.tax) / 100;
+
+      if (formik.values.place_of_supply === businessDetailsData.state) {
+        // Intra-state supply: Split GST into CGST and SGST
+        totalCGST += itemTaxAmount / 2;
+        totalSGST += itemTaxAmount / 2;
+      } else {
+        // Inter-state supply: Apply IGST
+        totalIGST += itemTaxAmount;
+      }
+    });
     const totalAmountAllItems = newItemDetails.reduce((acc, item) => acc + item.total_amount, 0);
 
-    // Recalculate CGST, SGST, IGST for the entire invoice (based on all items)
-    let cgstTotal = 0;
-    let sgstTotal = 0;
-    let igstTotal = 0;
-
-    // Loop through each item and calculate its respective CGST, SGST, and IGST
-    newItemDetails.forEach((item) => {
-      const { cgstAmount, sgstAmount, igstAmount } = calculateGST(item.amount, formik.values.place_of_supply);
-      cgstTotal += cgstAmount;
-      sgstTotal += sgstAmount;
-      igstTotal += igstAmount;
-    });
+    // Recalculate the subtotal (sum of all item amounts before tax)
+    const subtotal = newItemDetails.reduce((acc, item) => acc + item.amount, 0);
 
     // Update Formik fields with new values
     formik.setFieldValue('item_details', newItemDetails); // Update item details
     formik.setFieldValue('subtotal_amount', subtotal); // Update subtotal
-    formik.setFieldValue('total_amount', totalAmountAllItems); // Update total amount after tax
-
-    // Update CGST, SGST, IGST totals
-    formik.setFieldValue('cgst_amount', cgstTotal);
-    formik.setFieldValue('sgst_amount', sgstTotal);
-    formik.setFieldValue('igst_amount', igstTotal);
+    formik.setFieldValue('total', totalAmountAllItems + formik.values.shipping_amount_with_tax); // Update subtotal
+    formik.setFieldValue('cgst_amount', totalCGST); // Update total CGST
+    formik.setFieldValue('sgst_amount', totalSGST); // Update total SGST
+    formik.setFieldValue('igst_amount', totalIGST); // Update total IGST
   };
 
   useEffect(() => {
@@ -597,7 +612,45 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                 </Grid>
               ))}
             </Grid>
+            <Grid container spacing={4}>
+              {/* Billing Section */}
+              <Grid item xs={12} md={6}>
+                <Box sx={{ mb: 2, mt: 2 }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                    Billing Information
+                  </Typography>
+                </Box>
+                <Grid container spacing={2}>
+                  {addInvoiceData.billing.map((item) => (
+                    <Grid item xs={12} key={item.name}>
+                      <div style={{ paddingBottom: '5px' }}>
+                        <label>{item.label}</label>
+                      </div>
+                      {renderField2(item, 'billing_address')}
+                    </Grid>
+                  ))}
+                </Grid>
+              </Grid>
 
+              {/* Shipping Section */}
+              <Grid item xs={12} md={6}>
+                <Box sx={{ mb: 2, mt: 2 }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                    Shipping Information
+                  </Typography>
+                </Box>
+                <Grid container spacing={2}>
+                  {addInvoiceData.shipping.map((item) => (
+                    <Grid item xs={12} key={item.name}>
+                      <div style={{ paddingBottom: '5px' }}>
+                        <label>{item.label}</label>
+                      </div>
+                      {renderField2(item, 'shipping_address')}
+                    </Grid>
+                  ))}
+                </Grid>
+              </Grid>
+            </Grid>
             {/* Item Details Section (Table) */}
             <Box sx={{ mt: 3, mb: 3 }}>
               <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
@@ -795,7 +848,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                     Total:
                   </Typography>
                   <Typography variant="h6" fontWeight="bold" sx={{ ml: 2 }}>
-                    {formik.values.total_amount}
+                    {formik.values.total}
                   </Typography>{' '}
                   {/* Added left margin */}
                 </Box>
