@@ -25,7 +25,8 @@ import {
   Typography,
   Select,
   MenuItem,
-  InputLabel
+  InputLabel,
+  Autocomplete
 } from '@mui/material';
 import { IconX } from '@tabler/icons-react';
 import IconButton from '@mui/material/IconButton';
@@ -41,10 +42,10 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
       { name: 'place_of_supply', label: 'Place of Supply' },
       { name: 'invoice_number', label: 'Invoice Number' },
       { name: 'invoice_date', label: 'Invoice Date' },
-      { name: 'order_number', label: 'Order Number' },
       { name: 'terms', label: 'Terms' },
-      { name: 'financial_year', label: 'Financial Year' },
+      // { name: 'financial_year', label: 'Financial Year' },
       { name: 'due_date', label: 'Due Date' },
+      { name: 'order_number', label: 'Order Number' },
       { name: 'sales_person', label: 'Sales Person' }
     ],
     billing: [
@@ -62,82 +63,50 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
   });
 
   const [itemsList, setItemsList] = useState([]);
-  const [invoiceDate, setInvoiceDate] = useState(dayjs());
-  const [dueDate, setDueDate] = useState(dayjs());
-  const [applyTax, setApplyTax] = useState(false); // State for Apply Tax checkbox
-  const [selectedGSTRate, setSelectedGSTRate] = useState(0); // State for selected GST rate on shipping charges
   const [bulkItemsDialogue, setBulkItemsDialogue] = useState(false); // State for Apply Tax checkbox
 
-  // Dummy GST rates for dropdown (18%, 5%, etc.)
+  let termsDropdown = ['NET 15', 'NET 30', 'NET 45', 'NET 60', 'Due end of the MONTH', 'Due end of next MONTH', 'Due on Receipt', 'Custom'];
+
   const gstRates = [0, 5, 12, 18, 28]; // Example GST rates
 
   const handleShippingAmountChange = (e) => {
     const shippingCharges = parseFloat(e.target.value) || 0; // Ensure value is a number (default to 0 if invalid)
     formik.setFieldValue('shipping_amount', shippingCharges);
 
-    // Recalculate the total amount (item totals + taxes + shipping)
-    const subtotal = formik.values.subtotal_amount || 0;
-    const cgstTotal = formik.values.cgst_amount || 0;
-    const sgstTotal = formik.values.sgst_amount || 0;
-    const igstTotal = formik.values.igst_amount || 0;
-    let totalAmount = subtotal + cgstTotal + sgstTotal + igstTotal + shippingCharges;
-
     // If Apply Tax checkbox is checked, calculate tax on shipping charges
-    if (applyTax && selectedGSTRate > 0) {
-      const taxOnShipping = (shippingCharges * selectedGSTRate) / 100;
+    const taxOnShipping = (shippingCharges * formik.values.selected_gst_rate) / 100;
+    let totalAmount = shippingCharges;
+
+    if (formik.values.applied_tax && formik.values.selected_gst_rate > 0) {
       totalAmount += taxOnShipping;
       formik.setFieldValue('shipping_tax', taxOnShipping); // Store the calculated shipping tax
     }
-    formik.setFieldValue('shipping_amount_with_tax', totalAmount);
-
-    formik.setFieldValue('total', totalAmount); // Update the total amount
+    formik.setFieldValue('shipping_amount_with_tax', shippingCharges + taxOnShipping);
   };
   const handleApplyTaxChange = (e) => {
-    setApplyTax(e.target.checked); // Update the state for Apply Tax checkbox
+    setFieldValue('applied_tax', e.target.checked);
     if (!e.target.checked) {
       formik.setFieldValue('shipping_tax', 0); // If tax is not applied, reset shipping tax
-      setSelectedGSTRate(0);
-      formik.setFieldValue(
-        'total',
-        formik.values.subtotal_amount +
-          formik.values.cgst_amount +
-          formik.values.sgst_amount +
-          formik.values.igst_amount +
-          formik.values.shipping_amount
-      ); // Recalculate total without tax
+      setFieldValue('selected_gst_rate', 0);
     }
   };
 
   const handleGSTRateChange = (e) => {
     const gstRate = e.target.value; // Get the newly selected GST rate
-    setSelectedGSTRate(gstRate); // Update the selected GST rate in state
-
+    setFieldValue('selected_gst_rate', gstRate);
+    // Update the selected GST rate in state
     let shippingCharges = formik.values.shipping_amount;
-    const subtotal = formik.values.subtotal_amount || 0;
-    const cgstTotal = formik.values.cgst_amount || 0;
-    const sgstTotal = formik.values.sgst_amount || 0;
-    const igstTotal = formik.values.igst_amount || 0;
 
-    if (applyTax) {
+    if (formik.values.applied_tax) {
       // If tax is applied, calculate tax on shipping charges
       const taxOnShipping = (shippingCharges * gstRate) / 100;
       formik.setFieldValue('shipping_tax', taxOnShipping);
-
       // Calculate total shipping with tax
       const totalShippingWithTax = shippingCharges + taxOnShipping;
-
       formik.setFieldValue('shipping_amount_with_tax', totalShippingWithTax);
-
-      // Recalculate the total amount after adding the shipping tax
-      const totalAmount = subtotal + cgstTotal + sgstTotal + igstTotal + totalShippingWithTax;
-      formik.setFieldValue('total', totalAmount);
     } else {
       // If tax is not applied, set shipping amount without tax
       formik.setFieldValue('shipping_amount_with_tax', shippingCharges);
-
-      // Recalculate the total amount without shipping tax
-      const totalAmount = subtotal + cgstTotal + sgstTotal + igstTotal + shippingCharges;
-      formik.setFieldValue('total', totalAmount);
     }
   };
 
@@ -168,11 +137,11 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
   const formik = useFormik({
     initialValues: {
       customer: '',
-      terms: '',
-      invoice_number: '',
-      invoice_date: '',
       place_of_supply: '',
-      due_date: '',
+      invoice_number: '',
+      invoice_date: dayjs().format('YYYY-MM-DD'),
+      terms: 'Due on Receipt',
+      due_date: dayjs().format('YYYY-MM-DD'),
       sales_person: '',
       order_number: '',
       billing_address: {
@@ -187,24 +156,44 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
         state: '',
         postal_code: ''
       },
-      item_details: [{ item: '', quantity: 1, rate: 0, discount: 0, amount: 0, tax: 0, taxamount: 0, total_amount: 0 }],
+      item_details: [
+        {
+          item: '',
+          quantity: 1,
+          rate: 0,
+          discount_type: '%',
+          discount: 0,
+          amount: 0,
+          tax: 0,
+          taxamount: 0,
+          total_amount: 0,
+          cgst_amount: 0,
+          sgst_amount: 0,
+          igst_amount: 0
+        }
+      ],
       amount_invoiced: 0,
-      cgst_amount: 0,
-      sgst_amount: 0,
-      igst_amount: 0,
+      total_cgst_amount: 0,
+      total_sgst_amount: 0,
+      total_igst_amount: 0,
       notes: '',
       pending_amount: 0,
       shipping_amount: 0,
       subtotal_amount: 0,
       terms_and_conditions: '',
       total: 0,
-      shipping_amount_with_tax: 0
+      shipping_amount_with_tax: 0,
+      applied_tax: false,
+      same_address: false,
+      selected_gst_rate: 0,
+      not_applicablefor_shipping: false,
+      shipping_tax: 0
     },
     validationSchema,
     onSubmit: async (values) => {
       const postData = { ...values };
       postData.invoicing_profile = businessDetailsData.id;
-      postData.financial_year = '';
+      postData.financial_year = '2024-25';
       console.log(postData);
       // let url = '/invoicing/invoice-create';
       // const { res } = await Factory('post', url, postData);
@@ -214,7 +203,32 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
       // }
     }
   });
+  const sameAddressFunction = (e) => {
+    setFieldValue('same_address', e.target.checked);
+    if (e.target.checked === true) {
+      setFieldValue('not_applicablefor_shipping', false);
 
+      formik.setFieldValue('shipping_address.address_line1', values.billing_address.address_line1);
+      formik.setFieldValue('shipping_address.state', values.billing_address.state);
+      formik.setFieldValue('shipping_address.country', values.billing_address.country);
+      formik.setFieldValue('shipping_address.postal_code', values.billing_address.postal_code);
+    } else {
+      formik.setFieldValue('shipping_address.address_line1', '');
+      formik.setFieldValue('shipping_address.state', '');
+      formik.setFieldValue('shipping_address.postal_code', '');
+    }
+  };
+  const notApplicablefor_shippingFunction = (e) => {
+    setFieldValue('not_applicablefor_shipping', e.target.checked);
+
+    if (e.target.checked === true) {
+      setFieldValue('same_address', false);
+      formik.setFieldValue('shipping_address.address_line1', 'NA');
+      formik.setFieldValue('shipping_address.state', 'NA');
+      formik.setFieldValue('shipping_address.country', 'NA');
+      formik.setFieldValue('shipping_address.postal_code', 'NA');
+    }
+  };
   const get_Goods_and_Services_Data = async () => {
     let url = `/invoicing/goods-services/${businessDetailsData.id}`;
     const { res } = await Factory('get', url, {});
@@ -225,7 +239,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
   };
   const renderField = (item) => {
     const fieldName = `${item.name}`;
-    if (item.name === 'place_of_supply' || item.name === 'state' || item.name === 'customer') {
+    if (item.name === 'place_of_supply' || item.name === 'state' || item.name === 'customer' || item.name === 'terms') {
       return (
         <CustomAutocomplete
           value={formik.values[fieldName] || null}
@@ -233,91 +247,131 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
             if (newValue === null) return;
 
             if (item.name === 'customer') {
+              setValues({
+                ...values,
+                invoice_date: dayjs().format('YYYY-MM-DD'),
+                terms: 'Due on Receipt',
+                due_date: dayjs().format('YYYY-MM-DD'),
+                sales_person: '',
+                order_number: '',
+                item_details: [
+                  {
+                    item: '',
+                    quantity: 1,
+                    rate: 0,
+                    discount_type: '%',
+                    discount: 0,
+                    amount: 0,
+                    tax: 0,
+                    taxamount: 0,
+                    total_amount: 0,
+                    cgst_amount: 0,
+                    sgst_amount: 0,
+                    igst_amount: 0
+                  }
+                ],
+                amount_invoiced: 0,
+                total_cgst_amount: 0,
+                total_sgst_amount: 0,
+                total_igst_amount: 0,
+                notes: '',
+                pending_amount: 0,
+                shipping_amount: 0,
+                subtotal_amount: 0,
+                terms_and_conditions: '',
+                total: 0,
+                shipping_amount_with_tax: 0
+              });
               const selectedCustomer = customers?.find((customer) => customer.name === newValue);
               formik.setFieldValue('customer', newValue);
               formik.setFieldValue('place_of_supply', selectedCustomer.state);
-              formik.setFieldValue('billing_address.address_line1', selectedCustomer.address_line1);
-              formik.setFieldValue('billing_address.state', selectedCustomer.state);
-              formik.setFieldValue('billing_address.country', selectedCustomer.country);
-              formik.setFieldValue('billing_address.postal_code', selectedCustomer.postal_code);
+
+              if (formik.values.same_address) {
+                formik.setFieldValue('shipping_address.address_line1', selectedCustomer.address_line1);
+                formik.setFieldValue('shipping_address.state', selectedCustomer.state);
+                formik.setFieldValue('shipping_address.country', selectedCustomer.country);
+                formik.setFieldValue('shipping_address.postal_code', selectedCustomer.postal_code);
+
+                formik.setFieldValue('billing_address.address_line1', selectedCustomer.address_line1);
+                formik.setFieldValue('billing_address.state', selectedCustomer.state);
+                formik.setFieldValue('billing_address.country', selectedCustomer.country);
+                formik.setFieldValue('billing_address.postal_code', selectedCustomer.postal_code);
+              } else {
+                formik.setFieldValue('billing_address.address_line1', selectedCustomer.address_line1);
+                formik.setFieldValue('billing_address.state', selectedCustomer.state);
+                formik.setFieldValue('billing_address.country', selectedCustomer.country);
+                formik.setFieldValue('billing_address.postal_code', selectedCustomer.postal_code);
+              }
             }
             if (item.name === 'place_of_supply') {
-              // Recalculate taxes and totals when place_of_supply changes
-              const newPlaceOfSupply = newValue;
-              const newItemDetails = [...formik.values.item_details];
+              formik.setFieldValue('place_of_supply', newValue); // Update item details
+            }
+            if (item.name === 'terms') {
+              // Calculate due_date based on selected terms
+              let newDueDate = null;
 
-              // Recalculate subtotal, CGST, SGST, and IGST totals
-              let totalCGST = 0;
-              let totalSGST = 0;
-              let totalIGST = 0;
+              switch (newValue) {
+                case 'NET 15':
+                  newDueDate = dayjs(formik.values.invoice_date).add(15, 'days');
+                  break;
+                case 'NET 30':
+                  newDueDate = dayjs(formik.values.invoice_date).add(30, 'days');
+                  break;
+                case 'NET 45':
+                  newDueDate = dayjs(formik.values.invoice_date).add(45, 'days');
+                  break;
+                case 'NET 60':
+                  newDueDate = dayjs(formik.values.invoice_date).add(60, 'days');
+                  break;
+                case 'Due end of the MONTH':
+                  newDueDate = dayjs(formik.values.invoice_date).endOf('month');
+                  break;
+                case 'Due end of next MONTH':
+                  newDueDate = dayjs(formik.values.invoice_date).add(1, 'month').endOf('month');
+                  break;
+                case 'Due on Receipt': // Added case for "Due on Receipt"
+                  newDueDate = dayjs(formik.values.invoice_date); // Set due date as the invoice date
+                  break;
+                default:
+                  break;
+              }
 
-              const subtotal = newItemDetails.reduce((acc, item) => {
-                const { quantity, rate, discount, tax } = item;
-
-                // Recalculate amount for each item
-                let itemAmount = quantity * rate * (1 - discount / 100);
-                item.amount = itemAmount;
-
-                // Recalculate tax amount for each item
-                const taxAmount = (itemAmount * tax) / 100;
-                item.taxamount = taxAmount;
-
-                // Recalculate total amount for each item (amount + tax)
-                const totalAmount = itemAmount + taxAmount;
-                item.total_amount = totalAmount;
-
-                // Accumulate CGST, SGST, and IGST based on place of supply
-                if (newPlaceOfSupply === businessDetailsData.state) {
-                  // Intra-state supply
-                  totalCGST += taxAmount / 2;
-                  totalSGST += taxAmount / 2;
-                } else {
-                  // Inter-state supply
-                  totalIGST += taxAmount;
-                }
-
-                // Accumulate subtotal
-                acc += itemAmount;
-                return acc;
-              }, 0);
-
-              // Recalculate total amount for all items
-              const totalAmountAllItems = newItemDetails.reduce((acc, item) => acc + item.total_amount, 0);
-
-              // Update Formik fields
-              formik.setFieldValue('item_details', newItemDetails); // Update item details
-              formik.setFieldValue('subtotal_amount', subtotal); // Update subtotal
-              formik.setFieldValue('total_amount', totalAmountAllItems); // Update total amount
-              formik.setFieldValue('cgst_amount', totalCGST); // Update CGST total
-              formik.setFieldValue('sgst_amount', totalSGST); // Update SGST total
-              formik.setFieldValue('igst_amount', totalIGST); // Update IGST total
+              formik.setFieldValue('due_date', newDueDate ? newDueDate.format('YYYY-MM-DD') : '');
             }
             formik.setFieldValue(fieldName, newValue);
           }}
-          options={item.name === 'customer' ? customers?.map((customer) => customer.name) : indian_States_And_UTs}
+          options={
+            item.name === 'customer'
+              ? customers?.map((customer) => customer.name)
+              : item.name === 'terms'
+                ? termsDropdown
+                : indian_States_And_UTs
+          }
           error={formik.touched[fieldName] && Boolean(formik.errors[fieldName])}
           helperText={formik.touched[fieldName] && formik.errors[fieldName]}
           name={fieldName}
         />
       );
     } else if (item.name === 'invoice_date' || item.name === 'due_date') {
-      const dateValue = item.name === 'invoice_date' ? invoiceDate : dueDate;
+      const dateValue = item.name === 'invoice_date' ? formik.values.invoice_date : formik.values.due_date;
 
       return (
         <CustomDatePicker
           views={['year', 'month', 'day']}
-          value={dateValue}
+          value={dateValue ? dayjs(dateValue) : null} // If empty, it should be null
           onChange={(newDate) => {
             const formattedDate = dayjs(newDate).format('YYYY-MM-DD');
-
             if (item.name === 'invoice_date') {
-              setInvoiceDate(dayjs(newDate));
-              formik.setFieldValue(fieldName, formattedDate);
+              formik.setFieldValue(fieldName, formattedDate); // Set invoice date in Formik
             } else if (item.name === 'due_date') {
-              setDueDate(dayjs(newDate));
-              formik.setFieldValue(fieldName, formattedDate);
+              formik.setFieldValue('due_date', formattedDate); // Set due date in formik
+              // If the user manually selects a due date, set terms to "custom"
+              if (formik.values.terms !== 'Custom') {
+                formik.setFieldValue('terms', 'Custom'); // Set terms to 'custom' if a manual due date is selected
+              }
             }
           }}
+          minDate={dayjs()}
           sx={{
             width: '100%',
             '& .MuiInputBase-root': {
@@ -325,8 +379,8 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
               height: '40px'
             }
           }}
-          error={formik.touched[fieldName] && Boolean(formik.errors[fieldName])}
-          helperText={formik.touched[fieldName] && formik.errors[fieldName]}
+          error={formik.touched[fieldName] && Boolean(formik.errors[fieldName])} // Show error if field touched and has error
+          helperText={formik.touched[fieldName] && formik.errors[fieldName]} // Display error message if field touched
         />
       );
     } else {
@@ -375,130 +429,128 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
       );
     }
   };
-
   const handleAddItemRow = () => {
-    const newItem = { item: '', quantity: 1, rate: 0, discount: 0, amount: 0, tax: 0, taxamount: 0, total_amount: 0 };
-    formik.setFieldValue('item_details', [...formik.values.item_details, newItem]);
+    const newItemDetails = [
+      ...formik.values.item_details,
+      {
+        item: '',
+        quantity: 1,
+        rate: 0,
+        discount_type: '%',
+        discount: 0,
+        amount: 0,
+        tax: 0,
+        taxamount: 0,
+        total_amount: 0,
+        cgst_amount: 0,
+        sgst_amount: 0,
+        igst_amount: 0
+      }
+    ];
+
+    // Update Formik state with new item details
+    formik.setFieldValue('item_details', newItemDetails);
   };
 
-  // Handle Quantity Blur: Recalculate amount, tax and total when quantity changes
-  const handleQuantityBlur = (index, value) => {
-    const newQuantity = Number(value) || 0; // Default to 0 if the input is invalid
-    const newItemDetails = [...formik.values.item_details];
+  const recalculateTotals = () => {
+    let subtotalAmount = 0;
+    let totalCGSTAmount = 0;
+    let totalSGSTAmount = 0;
+    let totalIGSTAmount = 0;
+    let totalAmount = 0;
 
-    // Update quantity in item details
+    formik.values.item_details.forEach((item) => {
+      // Ensure all values are numbers before performing calculations
+      const rate = Number(item.rate) || 0; // Default to 0 if invalid
+      const quantity = Number(item.quantity) || 0; // Default to 0 if invalid
+      const discount = Number(item.discount) || 0; // Default to 0 if invalid
+      const tax = Number(item.tax) || 0; // Default to 0 if invalid
+      const discountType = item.discount_type || ''; // Empty string if invalid
+
+      // Calculate taxable amount: rate * quantity
+      const taxableAmount = rate * quantity;
+
+      // Calculate discount based on discount type
+      let discountAmount = 0;
+      if (discountType === '%') {
+        discountAmount = (taxableAmount * discount) / 100;
+      } else if (discountType === '₹') {
+        discountAmount = discount;
+      }
+
+      // Calculate amount after discount
+      const amountAfterDiscount = taxableAmount - discountAmount;
+
+      // Calculate tax amount based on the GST rate (assuming GST rate is available on the item)
+      const taxAmount = (amountAfterDiscount * tax) / 100;
+
+      // Update item details with recalculated values
+      item.amount = amountAfterDiscount;
+      item.taxamount = taxAmount;
+      item.total_amount = amountAfterDiscount + taxAmount;
+
+      // Update CGST, SGST, IGST amounts based on place of supply logic
+      if (values.place_of_supply === businessDetailsData.state) {
+        // If place of supply is same, CGST and SGST
+        item.cgst_amount = taxAmount / 2;
+        item.sgst_amount = taxAmount / 2;
+        item.igst_amount = 0;
+        totalCGSTAmount += item.cgst_amount;
+        totalSGSTAmount += item.sgst_amount;
+      } else {
+        // If place of supply is different, IGST
+        item.cgst_amount = 0;
+        item.sgst_amount = 0;
+        item.igst_amount = taxAmount;
+        totalIGSTAmount += item.igst_amount;
+      }
+
+      // Add to the overall totals
+      subtotalAmount += amountAfterDiscount;
+      totalAmount += item.total_amount;
+    });
+    // Update the Formik state with the calculated totals
+    formik.setFieldValue('amount_invoiced', totalAmount);
+    formik.setFieldValue('total_cgst_amount', totalCGSTAmount);
+    formik.setFieldValue('total_sgst_amount', totalSGSTAmount);
+    formik.setFieldValue('total_igst_amount', totalIGSTAmount);
+    formik.setFieldValue('subtotal_amount', subtotalAmount);
+    formik.setFieldValue('total', totalAmount + (formik.values.shipping_amount_with_tax || 0)); // Include shipping if applicable
+  };
+
+  const handleDiscountTypeChange = (index, newDiscountType) => {
+    const newItemDetails = [...formik.values.item_details];
+    newItemDetails[index].discount_type = newDiscountType;
+
+    formik.setFieldValue('item_details', newItemDetails);
+    recalculateTotals();
+  };
+
+  const handleQuantityChange = (index, value) => {
+    const newQuantity = Number(value) || 0;
+    const newItemDetails = [...formik.values.item_details];
     newItemDetails[index].quantity = newQuantity;
 
-    const rate = Number(newItemDetails[index].rate) || 0;
-    const discount = Number(newItemDetails[index].discount) || 0;
-
-    // Recalculate amount for the item
-    let amount = newQuantity * rate * (1 - discount / 100);
-    newItemDetails[index].amount = amount;
-
-    // Recalculate tax amount based on the amount and tax rate
-    const taxRate = Number(newItemDetails[index].tax) || 0;
-    const taxAmount = (amount * taxRate) / 100;
-    newItemDetails[index].taxamount = taxAmount;
-
-    // Recalculate total amount for the item (amount + tax)
-    const totalAmount = amount + taxAmount;
-    newItemDetails[index].total_amount = totalAmount;
-
-    // Recalculate subtotal for the entire invoice (sum of all item amounts before tax)
-    const subtotal = newItemDetails.reduce((acc, item) => acc + item.amount, 0);
-
-    // Recalculate total amount for the entire invoice (sum of all item totals after tax)
-    const totalAmountAllItems = newItemDetails.reduce((acc, item) => acc + item.total_amount, 0);
-
-    // Recalculate CGST, SGST, IGST totals
-    let totalCGST = 0;
-    let totalSGST = 0;
-    let totalIGST = 0;
-
-    newItemDetails.forEach((item) => {
-      const itemTaxAmount = (item.amount * item.tax) / 100;
-
-      if (formik.values.place_of_supply === businessDetailsData.state) {
-        // Intra-state supply: Split GST into CGST and SGST
-        totalCGST += itemTaxAmount / 2;
-        totalSGST += itemTaxAmount / 2;
-      } else {
-        // Inter-state supply: Apply IGST
-        totalIGST += itemTaxAmount;
-      }
-    });
-
-    // Update Formik fields with new values
-    formik.setFieldValue('item_details', newItemDetails); // Update item details
-    formik.setFieldValue('subtotal_amount', subtotal); // Update subtotal
-    formik.setFieldValue('total', totalAmountAllItems + formik.values.shipping_amount_with_tax); // Update total amount after tax
-    formik.setFieldValue('cgst_amount', totalCGST); // Update CGST total
-    formik.setFieldValue('sgst_amount', totalSGST); // Update SGST total
-    formik.setFieldValue('igst_amount', totalIGST); // Update IGST total
+    formik.setFieldValue('item_details', newItemDetails);
+    recalculateTotals();
   };
-
-  // Handle Discount Change: Recalculate amount, tax and total when discount changes
-  const handleDiscountChange = (index, value) => {
-    const newDiscount = Number(value) || 0; // If the input is invalid, default to 0
+  const handleRateChange = (index, value) => {
+    const newRate = Number(value) || 0;
     const newItemDetails = [...formik.values.item_details];
+    newItemDetails[index].rate = newRate;
 
-    // Update discount in item details
+    // formik.setFieldValue('item_details', newItemDetails);
+    recalculateTotals();
+  };
+  const handleDiscountChange = (index, value) => {
+    const newDiscount = Number(value) || 0;
+    const newItemDetails = [...formik.values.item_details];
     newItemDetails[index].discount = newDiscount;
 
-    const quantity = Number(newItemDetails[index].quantity) || 0;
-    const rate = Number(newItemDetails[index].rate) || 0;
-    const taxRate = Number(newItemDetails[index].tax) || 0;
-
-    // Recalculate amount for the item
-    let amount = quantity * rate;
-    amount *= 1 - newDiscount / 100; // Apply percentage discount
-    newItemDetails[index].amount = amount;
-
-    // Recalculate tax amount for the item
-    const taxAmount = (amount * taxRate) / 100;
-    newItemDetails[index].taxamount = taxAmount;
-
-    // Recalculate total amount for the item (amount + tax)
-    const totalAmount = amount + taxAmount;
-    newItemDetails[index].total_amount = totalAmount;
-
-    // Recalculate subtotal for the entire invoice (sum of all item amounts before tax)
-    const subtotal = newItemDetails.reduce((acc, item) => acc + item.amount, 0);
-
-    // Recalculate total amount for the entire invoice (sum of all item totals after tax)
-    const totalAmountAllItems = newItemDetails.reduce((acc, item) => acc + item.total_amount, 0);
-
-    // Recalculate CGST, SGST, IGST totals
-    let totalCGST = 0;
-    let totalSGST = 0;
-    let totalIGST = 0;
-
-    newItemDetails.forEach((item) => {
-      const itemTaxAmount = (item.amount * item.tax) / 100;
-
-      if (formik.values.place_of_supply === businessDetailsData.state) {
-        // Intra-state supply: Split GST into CGST and SGST
-        totalCGST += itemTaxAmount / 2;
-        totalSGST += itemTaxAmount / 2;
-      } else {
-        // Inter-state supply: Apply IGST
-        totalIGST += itemTaxAmount;
-      }
-    });
-
-    // Update Formik fields with new values
-    formik.setFieldValue('item_details', newItemDetails); // Update item details
-    formik.setFieldValue('subtotal_amount', subtotal); // Update subtotal
-    formik.setFieldValue('total', totalAmountAllItems + formik.values.shipping_amount_with_tax); // Update total amount after tax
-    formik.setFieldValue('cgst_amount', totalCGST); // Update CGST total
-    formik.setFieldValue('sgst_amount', totalSGST); // Update SGST total
-    formik.setFieldValue('igst_amount', totalIGST); // Update IGST total
+    formik.setFieldValue('item_details', newItemDetails);
   };
-
   const handleItemChange = (index, newValue) => {
     const newItemDetails = [...formik.values.item_details];
-
     // Fetch the selected item from the items list
     const selectedItem = itemsList.find((i) => i.name === newValue) || {};
     const gstRate = selectedItem.gst_rate ? parseFloat(selectedItem.gst_rate) : 0;
@@ -531,38 +583,19 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
       total_amount: totalAmount
     };
 
-    // Initialize CGST, SGST, IGST amounts
-    let totalCGST = 0;
-    let totalSGST = 0;
-    let totalIGST = 0;
-
-    // Iterate over all items to calculate total taxes
-    newItemDetails.forEach((item) => {
-      const itemTaxAmount = (item.amount * item.tax) / 100;
-
-      if (formik.values.place_of_supply === businessDetailsData.state) {
-        // Intra-state supply: Split GST into CGST and SGST
-        totalCGST += itemTaxAmount / 2;
-        totalSGST += itemTaxAmount / 2;
-      } else {
-        // Inter-state supply: Apply IGST
-        totalIGST += itemTaxAmount;
-      }
-    });
-    const totalAmountAllItems = newItemDetails.reduce((acc, item) => acc + item.total_amount, 0);
-
-    // Recalculate the subtotal (sum of all item amounts before tax)
-    const subtotal = newItemDetails.reduce((acc, item) => acc + item.amount, 0);
-
     // Update Formik fields with new values
-    formik.setFieldValue('item_details', newItemDetails); // Update item details
-    formik.setFieldValue('subtotal_amount', subtotal); // Update subtotal
-    formik.setFieldValue('total', totalAmountAllItems + formik.values.shipping_amount_with_tax); // Update subtotal
-    formik.setFieldValue('cgst_amount', totalCGST); // Update total CGST
-    formik.setFieldValue('sgst_amount', totalSGST); // Update total SGST
-    formik.setFieldValue('igst_amount', totalIGST); // Update total IGST
+    formik.setFieldValue('item_details', newItemDetails); // Set the updated item details
   };
-
+  useEffect(() => {
+    recalculateTotals();
+  }, [
+    formik.values.item_details,
+    formik.values.shipping_amount,
+    formik.values.shipping_amount_with_tax,
+    formik.values.applied_tax,
+    formik.values.selected_gst_rate,
+    formik.values.place_of_supply
+  ]);
   useEffect(() => {
     if (open) {
       get_Goods_and_Services_Data();
@@ -580,7 +613,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
     }
   }, [open]);
   const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue } = formik;
-  // console.log(values);
+  console.log(values);
 
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title" fullWidth maxWidth="lg">
@@ -597,6 +630,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
         <DialogContent>
           <form onSubmit={formik.handleSubmit}>
             {/* Invoice Data Section */}
+
             <Box sx={{ mb: 2 }}>
               <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                 Invoice Details
@@ -604,7 +638,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
             </Box>
             <Grid container spacing={2}>
               {addInvoiceData.invoice_data.map((item) => (
-                <Grid item xs={6} key={item.name}>
+                <Grid item xs={12} sm={6} key={item.name}>
                   <div style={{ paddingBottom: '5px' }}>
                     <label>{item.label}</label>
                   </div>
@@ -612,15 +646,16 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                 </Grid>
               ))}
             </Grid>
-            <Grid container spacing={4}>
+
+            <Grid container spacing={4} sx={{ mt: 3 }}>
               {/* Billing Section */}
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} sm={6}>
                 <Box sx={{ mb: 2, mt: 2 }}>
                   <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                     Billing Information
                   </Typography>
                 </Box>
-                <Grid container spacing={2}>
+                <Grid container spacing={2} sx={{ mt: 2 }}>
                   {addInvoiceData.billing.map((item) => (
                     <Grid item xs={12} key={item.name}>
                       <div style={{ paddingBottom: '5px' }}>
@@ -634,12 +669,30 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
 
               {/* Shipping Section */}
               <Grid item xs={12} md={6}>
-                <Box sx={{ mb: 2, mt: 2 }}>
+                <Box sx={{ mb: 2, mt: 2, display: 'flex', gap: 2 }}>
                   <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                     Shipping Information
                   </Typography>
+                  <Box sx={{ mt: -1 }}>
+                    <FormControlLabel
+                      control={<Checkbox checked={formik.values.same_address} onChange={sameAddressFunction} name="same_address" />}
+                      label="Same as Billing Address"
+                    />
+                  </Box>
+                  <Box sx={{ mt: -1 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={formik.values.not_applicablefor_shipping}
+                          onChange={notApplicablefor_shippingFunction}
+                          name="not_applicablefor_shipping"
+                        />
+                      }
+                      label="Not applicable for Shipping"
+                    />
+                  </Box>
                 </Box>
-                <Grid container spacing={2}>
+                <Grid container spacing={2} sx={{ mt: -1 }}>
                   {addInvoiceData.shipping.map((item) => (
                     <Grid item xs={12} key={item.name}>
                       <div style={{ paddingBottom: '5px' }}>
@@ -651,92 +704,100 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                 </Grid>
               </Grid>
             </Grid>
+
             {/* Item Details Section (Table) */}
-            <Box sx={{ mt: 3, mb: 3 }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                Item Details
-              </Typography>
+            <Grid item xs={12} md={6}>
+              <Box sx={{ mt: 3, mb: 3 }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                  Item Details
+                </Typography>
 
-              <TableContainer component={Paper}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Item</TableCell>
-                      <TableCell>Quantity</TableCell>
-                      <TableCell>Rate</TableCell>
-                      <TableCell>Discount</TableCell>
-                      <TableCell>Amount</TableCell>
-                      <TableCell sx={{ whiteSpace: 'nowrap' }}>Tax %</TableCell>
-                      <TableCell sx={{ whiteSpace: 'nowrap' }}>Tax Amount</TableCell>
-                      <TableCell sx={{ whiteSpace: 'nowrap' }}>Total Amount</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {formik.values.item_details.map((item, index) => (
-                      <TableRow key={index}>
-                        <TableCell>
-                          <CustomAutocomplete
-                            size="small"
-                            options={itemsList.map((item) => item.name)}
-                            value={item.item || null}
-                            onChange={(event, newValue) => handleItemChange(index, newValue)}
-                            style={{ minWidth: 250, maxWidth: 250 }}
-                            renderInput={(params) => <TextField {...params} />}
-                          />
-                        </TableCell>
-
-                        <TableCell>
-                          <CustomInput
-                            name={`item_details[${index}].quantity`}
-                            value={item.quantity}
-                            onBlur={() => handleQuantityBlur(index, item.quantity)}
-                            onChange={(e) => handleQuantityBlur(index, e.target.value)}
-                          />
-                        </TableCell>
-
-                        <TableCell>{item.rate}</TableCell>
-
-                        {/* <TableCell>
-                          <CustomAutocomplete
-                            options={['%', '₹']}
-                            value={item.discount_type || ''} // Ensure the value is never undefined or null
-                            onChange={(event, newValue) => {
-                              handleDiscountChange(index, item.discount, newValue); // Handle discount change based on newValue
-                            }}
-                            renderInput={(params) => <TextField {...params} />}
-                          />
-                        </TableCell> */}
-
-                        <TableCell sx={{ dispaly: 'flex' }}>
-                          <CustomInput
-                            name={`item_details[${index}].discount`}
-                            value={item.discount}
-                            onChange={(e) => handleDiscountChange(index, e.target.value)}
-                          />
-                        </TableCell>
-
-                        <TableCell>{item.amount}</TableCell>
-
-                        <TableCell>{item.tax}</TableCell>
-
-                        <TableCell>{item.taxamount} </TableCell>
-
-                        <TableCell>{item.total_amount} </TableCell>
+                <TableContainer component={Paper}>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Item</TableCell>
+                        <TableCell>Quantity</TableCell>
+                        <TableCell>Rate</TableCell>
+                        <TableCell>Discount type</TableCell>
+                        <TableCell>Discount</TableCell>
+                        <TableCell>Amount</TableCell>
+                        <TableCell sx={{ whiteSpace: 'nowrap' }}>Tax %</TableCell>
+                        <TableCell sx={{ whiteSpace: 'nowrap' }}>Tax Amount</TableCell>
+                        <TableCell sx={{ whiteSpace: 'nowrap' }}>Total Amount</TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                    </TableHead>
+                    <TableBody>
+                      {formik.values.item_details.map((item, index) => (
+                        <TableRow key={index}>
+                          <TableCell>
+                            <CustomAutocomplete
+                              size="small"
+                              options={itemsList.map((item) => item.name)}
+                              value={item.item || null}
+                              onChange={(event, newValue) => handleItemChange(index, newValue)}
+                              style={{ minWidth: 250, maxWidth: 250 }}
+                              renderInput={(params) => <TextField {...params} />}
+                            />
+                          </TableCell>
 
-              <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
-                <Button variant="contained" startIcon={<IconPlus size={16} />} onClick={handleAddItemRow}>
-                  Add New Row
-                </Button>
-                {/* <Button variant="contained" startIcon={<IconPlus size={16} />} onClick={() => setBulkItemsDialogue(true)}>
+                          <TableCell>
+                            <CustomInput
+                              name={`item_details[${index}].quantity`}
+                              value={item.quantity}
+                              onChange={(e) => handleQuantityChange(index, e.target.value)}
+                            />
+                          </TableCell>
+
+                          <TableCell>
+                            <CustomInput
+                              name={`item_details[${index}].rate`}
+                              value={item.rate}
+                              onChange={(e) => handleRateChange(index, e.target.value)}
+                            />
+                          </TableCell>
+
+                          <TableCell>
+                            <CustomAutocomplete
+                              options={['%', '₹']}
+                              value={item.discount_type || ''}
+                              onChange={(event, newDiscountType) => handleDiscountTypeChange(index, newDiscountType)} // Call the handler
+                              renderInput={(params) => <TextField {...params} />}
+                            />
+                          </TableCell>
+
+                          <TableCell>
+                            <CustomInput
+                              name={`item_details[${index}].discount`}
+                              value={item.discount}
+                              onChange={(e) => handleDiscountChange(index, e.target.value)}
+                            />
+                          </TableCell>
+
+                          <TableCell>{item.amount.toFixed(2)}</TableCell>
+
+                          <TableCell>{item.tax}</TableCell>
+
+                          <TableCell>{item.taxamount.toFixed(2)}</TableCell>
+
+                          <TableCell>{item.total_amount.toFixed(2)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+
+                <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
+                  <Button variant="contained" startIcon={<IconPlus size={16} />} onClick={handleAddItemRow}>
+                    Add New Row
+                  </Button>
+                  {/* <Button variant="contained" startIcon={<IconPlus size={16} />} onClick={() => setBulkItemsDialogue(true)}>
                   Add Items in Bulk
                 </Button> */}
+                </Box>
               </Box>
-            </Box>
+            </Grid>
+
             {/* Customer Notes & Terms Section */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
               <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 3 }}>
@@ -772,7 +833,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Typography variant="body1">Sub Total:</Typography>
                   <Typography variant="body1" sx={{ ml: 2 }}>
-                    {formik.values.subtotal_amount}
+                    {formik.values.subtotal_amount.toFixed(2)}
                   </Typography>{' '}
                   {/* Added left margin */}
                 </Box>
@@ -790,21 +851,21 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                       sx={{ mt: -1, ml: 2 }}
                     />
                     <Typography variant="body1" sx={{ ml: 2 }}>
-                      {formik.values.shipping_amount}
+                      {formik.values.shipping_amount.toFixed(2)}
                     </Typography>
                   </Box>
 
                   {/* Apply Tax on Shipping Charges */}
                   <FormControlLabel
-                    control={<Checkbox checked={applyTax} onChange={handleApplyTaxChange} name="apply_tax_on_shipping" />}
+                    control={<Checkbox checked={formik.values.applied_tax} onChange={handleApplyTaxChange} name="apply_tax_on_shipping" />}
                     label="Apply Tax on Shipping Charge"
                   />
 
                   {/* Show GST Dropdown if Apply Tax is selected */}
-                  {applyTax && (
+                  {formik.values.applied_tax && (
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <InputLabel>GST Rate</InputLabel>
-                      <Select value={selectedGSTRate} onChange={handleGSTRateChange} sx={{ minWidth: 120 }}>
+                      <Select value={formik.values.selected_gst_rate} onChange={handleGSTRateChange} sx={{ minWidth: 120 }}>
                         {gstRates.map((rate) => (
                           <MenuItem key={rate} value={rate}>
                             {rate}%
@@ -815,40 +876,58 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                   )}
 
                   {/* Shipping Amount with Tax */}
-                  {applyTax && (
+                  {formik.values.applied_tax && (
                     <Typography variant="body2" sx={{ mt: 1 }}>
-                      Shipping Amount (With Tax): {formik.values.shipping_amount_with_tax}
+                      Shipping Amount (With Tax): {formik.values.shipping_amount_with_tax.toFixed(2)}
                     </Typography>
                   )}
                 </Box>
 
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="body1">CGST:</Typography>
-                  <Typography variant="body1" sx={{ ml: 2 }}>
-                    {formik.values.cgst_amount}
-                  </Typography>{' '}
-                  {/* Added left margin */}
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="body1">SGST:</Typography>
-                  <Typography variant="body1" sx={{ ml: 2 }}>
-                    {formik.values.sgst_amount}
-                  </Typography>{' '}
-                  {/* Added left margin */}
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="body1">IGST:</Typography>
-                  <Typography variant="body1" sx={{ ml: 2 }}>
-                    {formik.values.igst_amount}
-                  </Typography>{' '}
-                  {/* Added left margin */}
-                </Box>
+                {formik.values.total_cgst_amount > 0 && (
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="body1">CGST:</Typography>
+                    <Typography variant="body1" sx={{ ml: 2 }}>
+                      {formik.values.total_cgst_amount.toFixed(2)}
+                    </Typography>{' '}
+                    {/* Added left margin */}
+                  </Box>
+                )}
+
+                {formik.values.total_sgst_amount > 0 && (
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="body1">SGST:</Typography>
+                    <Typography variant="body1" sx={{ ml: 2 }}>
+                      {formik.values.total_sgst_amount.toFixed(2)}
+                    </Typography>{' '}
+                    {/* Added left margin */}
+                  </Box>
+                )}
+
+                {formik.values.total_igst_amount > 0 && (
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="body1">IGST:</Typography>
+                    <Typography variant="body1" sx={{ ml: 2 }}>
+                      {formik.values.total_igst_amount.toFixed(2)}
+                    </Typography>{' '}
+                    {/* Added left margin */}
+                  </Box>
+                )}
+                {formik.values.applied_tax && (
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="body1"> Tax on Shipping:</Typography>
+                    <Typography variant="body1" sx={{ ml: 2 }}>
+                      {formik.values.shipping_tax.toFixed(2)}
+                    </Typography>{' '}
+                    {/* Added left margin */}
+                  </Box>
+                )}
+
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Typography variant="h6" fontWeight="bold">
                     Total:
                   </Typography>
                   <Typography variant="h6" fontWeight="bold" sx={{ ml: 2 }}>
-                    {formik.values.total}
+                    {formik.values.total.toFixed(2)}
                   </Typography>{' '}
                   {/* Added left margin */}
                 </Box>
