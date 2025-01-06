@@ -11,6 +11,7 @@ import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import FormHelperText from '@mui/material/FormHelperText';
+import { BASE_URL } from 'constants';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 
@@ -54,7 +55,7 @@ export default function AuthForgotPassword({ inputSx }) {
   } = useForm();
 
   // Handle form submission
-  const onSubmit = (formData) => {
+  const onSubmit = async (formData) => {
     if (!baseUrl) return;
 
     setIsProcessing(true);
@@ -64,17 +65,34 @@ export default function AuthForgotPassword({ inputSx }) {
     const redirectTo = `${baseUrl}/password-recovery`;
     const payload = { email: formData.email, redirectTo };
 
-    axios
-      .post('/api/auth/forgotPassword', payload)
-      .then(() => {
+    // axios
+    //   .post('/api/auth/forgotPassword', payload)
+    //   .then(() => {
+    //     setIsProcessing(false);
+    //     reset();
+    //     setMailSent(true);
+    //   })
+    //   .catch((response) => {
+    //     setIsProcessing(false);
+    //     setForgotPasswordError(response.error || 'Something went wrong');
+    //   });
+
+    try {
+      const url = `/user_management/forgot-password/`;
+      const payload = {
+        email: formData.email
+      };
+      const res = await axios.post(BASE_URL + url, payload);
+      if (res.status === 200) {
         setIsProcessing(false);
-        reset();
         setMailSent(true);
-      })
-      .catch((response) => {
-        setIsProcessing(false);
-        setForgotPasswordError(response.error || 'Something went wrong');
-      });
+        reset();
+      }
+    } catch (error) {
+      // CustomSnackbar
+      showSnackbar(JSON.stringify(error), 'error');
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -82,7 +100,7 @@ export default function AuthForgotPassword({ inputSx }) {
       <InputLabel>Email</InputLabel>
       <OutlinedInput
         {...register('email', emailSchema)}
-        placeholder="example@saasable.io"
+        placeholder="example@tarafirst.com"
         fullWidth
         error={Boolean(errors.email)}
         sx={{ ...inputSx }}

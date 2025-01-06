@@ -134,7 +134,7 @@ export default function AuthLogin({ inputSx }) {
               component={NextLink}
               underline="hover"
               variant="caption2"
-              href=""
+              href="/forgot-password"
               sx={{ textAlign: 'right', '&:hover': { color: 'primary.dark' } }}
             >
               Forgot Password?

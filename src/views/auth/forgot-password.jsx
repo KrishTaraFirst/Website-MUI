@@ -12,7 +12,7 @@ import Copyright from '@/sections/auth/Copyright';
 export default function ForgotPassword() {
   return (
     <Stack sx={{ height: 1, gap: 3 }}>
-      <Box sx={{ width: 1, maxWidth: 458, m: 'auto' }}>
+      <Box sx={{ width: 1, maxWidth: 458, m: 'auto', pt: 10 }}>
         <Stack sx={{ gap: { xs: 1, sm: 1.5 }, textAlign: 'center', mb: { xs: 3, sm: 8 } }}>
           <Typography variant="h1">Forgot Password</Typography>
           <Typography variant="body1" color="text.secondary">
