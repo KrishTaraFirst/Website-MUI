@@ -7,11 +7,10 @@ import Factory from '@/utils/Factory';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import { usePathname, useRouter } from 'next/navigation';
 
-const InvoiceNumberFormatDialogue = ({ businessDetailsData }) => {
+const InvoiceNumberFormat = ({ businessDetailsData }) => {
   // State for invoice format data to be manually updated
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
-  const pathname = usePathname();
   const [invoiceFormatData, setInvoiceFormatData] = useState({
     startingNumber: '',
     prefix: '',
@@ -154,4 +153,4 @@ const InvoiceNumberFormatDialogue = ({ businessDetailsData }) => {
   );
 };
 
-export default InvoiceNumberFormatDialogue;
+export default InvoiceNumberFormat;

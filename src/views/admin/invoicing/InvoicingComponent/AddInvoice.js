@@ -11,6 +11,8 @@ import Box from '@mui/material/Box';
 import CustomInput from '@/utils/CustomInput';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import { IconPlus } from '@tabler/icons-react';
+import { IconTrash } from '@tabler/icons-react';
+
 import {
   Table,
   TableBody,
@@ -26,7 +28,10 @@ import {
   Select,
   MenuItem,
   InputLabel,
-  Autocomplete
+  Autocomplete,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText
 } from '@mui/material';
 import { IconX } from '@tabler/icons-react';
 import IconButton from '@mui/material/IconButton';
@@ -37,7 +42,7 @@ import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
 import BulkItems from './BulkItems';
 import { useSnackbar } from '@/components/CustomSnackbar';
 
-const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, businessDetailsData, customers, open, onClose }) => {
+const AddItem = ({ getInvoicesList, invoicesList, type, selectedInvoice, businessDetailsData, customers, open, onClose }) => {
   const [addInvoiceData] = useState({
     invoice_data: [
       { name: 'customer', label: 'Customer Name' },
@@ -67,7 +72,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
 
   const [itemsList, setItemsList] = useState([]);
   const [bulkItemsDialogue, setBulkItemsDialogue] = useState(false); // State for Apply Tax checkbox
-
+  const [invoice_number_format, set_Invoice_number_format] = useState('');
   let termsDropdown = ['NET 15', 'NET 30', 'NET 45', 'NET 60', 'Due end of the MONTH', 'Due end of next MONTH', 'Due on Receipt', 'Custom'];
 
   const gstRates = [0, 5, 12, 18, 28]; // Example GST rates
@@ -112,7 +117,6 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
       formik.setFieldValue('shipping_amount_with_tax', shippingCharges);
     }
   };
-
   const validationSchema = Yup.object({
     customer: Yup.string().required('Customer name is required'),
     terms: Yup.string().required('Terms are required'),
@@ -137,11 +141,12 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
     //   postal_code: Yup.string().required('Shipping postal_code is required')
     // })
   });
-  const formik = useFormik({
-    initialValues: {
+
+  const fillFieldValues = () => {
+    return {
       customer: '',
       place_of_supply: '',
-      invoice_number: '',
+      invoice_number: invoice_number_format,
       invoice_date: dayjs().format('YYYY-MM-DD'),
       terms: 'Due on Receipt',
       due_date: dayjs().format('YYYY-MM-DD'),
@@ -160,26 +165,26 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
         postal_code: ''
       },
       item_details: [
-        {
-          item: '',
-          quantity: 1,
-          rate: 0,
-          discount_type: '%',
-          discount: 0,
-          amount: 0,
-          tax: 0,
-          taxamount: 0,
-          total_amount: 0,
-          cgst_amount: 0,
-          sgst_amount: 0,
-          igst_amount: 0
-        }
+        // {
+        //   item: '',
+        //   quantity: 1,
+        //   rate: 0,
+        //   discount_type: '%',
+        //   discount: 0,
+        //   amount: 0,
+        //   tax: 0,
+        //   taxamount: 0,
+        //   total_amount: 0,
+        //   cgst_amount: 0,
+        //   sgst_amount: 0,
+        //   igst_amount: 0
+        // }
       ],
       amount_invoiced: 0,
 
       total_sgst_amount: 0,
       total_igst_amount: 0,
-      notes: '',
+      notes: 'anand',
       pending_amount: 0,
       shipping_amount: 0,
       subtotal_amount: 0,
@@ -191,13 +196,16 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
       selected_gst_rate: 0,
       not_applicablefor_shipping: false,
       shipping_tax: 0
-    },
+    };
+  };
+  console.log(type);
+  const formik = useFormik({
+    initialValues: type === 'edit' ? { notes: 'krishna' } : fillFieldValues(),
     validationSchema,
     onSubmit: async (values) => {
       const postData = { ...values };
       postData.invoicing_profile = businessDetailsData.id;
       postData.financial_year = '2024-25';
-      console.log(postData);
       let url = '/invoicing/invoice-create';
       const { res } = await Factory('post', url, postData);
       if (res.status_cd === 0) {
@@ -242,6 +250,15 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
       setItemsList(res.data.goods_and_services);
     }
   };
+  const getinvoice_format = async () => {
+    let url = `/invoicing/latest/${businessDetailsData.id}/`;
+    const { res } = await Factory('get', url, {});
+    if (res.status_cd === 0) {
+      set_Invoice_number_format(res.data.latest_invoice_number);
+      formik.setFieldValue('invoice_number', res.data.latest_invoice_number);
+    }
+  };
+
   const renderField = (item) => {
     const fieldName = `${item.name}`;
     if (item.name === 'place_of_supply' || item.name === 'state' || item.name === 'customer' || item.name === 'terms') {
@@ -260,20 +277,20 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                 sales_person: '',
                 order_number: '',
                 item_details: [
-                  {
-                    item: '',
-                    quantity: 1,
-                    rate: 0,
-                    discount_type: '%',
-                    discount: 0,
-                    amount: 0,
-                    tax: 0,
-                    taxamount: 0,
-                    total_amount: 0,
-                    cgst_amount: 0,
-                    sgst_amount: 0,
-                    igst_amount: 0
-                  }
+                  // {
+                  //   item: '',
+                  //   quantity: 1,
+                  //   rate: 0,
+                  //   discount_type: '%',
+                  //   discount: 0,
+                  //   amount: 0,
+                  //   tax: 0,
+                  //   taxamount: 0,
+                  //   total_amount: 0,
+                  //   cgst_amount: 0,
+                  //   sgst_amount: 0,
+                  //   igst_amount: 0
+                  // }
                 ],
                 amount_invoiced: 0,
                 total_cgst_amount: 0,
@@ -604,25 +621,53 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
   useEffect(() => {
     if (open) {
       get_Goods_and_Services_Data();
+      getinvoice_format();
     }
   }, [open, businessDetailsData]);
   useEffect(() => {
     if (businessDetailsData) {
-      console.log(businessDetailsData);
-      const { prefix, startingNumber, suffix } = businessDetailsData.invoice_format || {};
-      const generatedInvoiceNumber = `${prefix}-${startingNumber}-${suffix}`;
-      const currentInvoiceDate = dayjs().format('YYYY-MM-DD');
-
-      formik.setFieldValue('invoice_number', generatedInvoiceNumber);
-      formik.setFieldValue('invoice_date', currentInvoiceDate); // Set the current date or other logic if needed
+      // const { prefix, startingNumber, suffix } = businessDetailsData.invoice_format || {};
+      // const generatedInvoiceNumber = `${prefix}-${startingNumber}-${suffix}`;
+      // const currentInvoiceDate = dayjs().format('YYYY-MM-DD');
+      // formik.setFieldValue('invoice_number', generatedInvoiceNumber);
+      // formik.setFieldValue('invoice_date', currentInvoiceDate); // Set the current date or other logic if needed
     }
   }, [open]);
-  const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue, resetForm } = formik;
 
   const bulkItemSave = (data) => {
-    console.log(data);
-    formik.setFieldValue('item_details', data);
+    formik.setFieldValue('item_details', [...formik.values.item_details, ...data]);
+    recalculateTotals();
   };
+  const handleDeleteItem = (index) => {
+    let newItemDetails = [...formik.values.item_details];
+
+    newItemDetails.splice(index, 1);
+
+    formik.setFieldValue('item_details', newItemDetails);
+  };
+
+  useEffect(() => {
+    console.log(type);
+    if (type === 'edit' && selectedInvoice) {
+      formik.setValues({
+        ...selectedInvoice,
+        invoice_date: selectedInvoice.invoice_date,
+        due_date: selectedInvoice.due_date,
+        billing_address: {
+          ...selectedInvoice.billing_address
+        },
+        shipping_address: {
+          ...selectedInvoice.shipping_address
+        },
+        item_details: [...selectedInvoice.item_details],
+        same_address: false,
+        not_applicablefor_shipping: false
+      });
+    }
+  }, [type, selectedInvoice]);
+
+  const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue, resetForm } = formik;
+
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title" fullWidth maxWidth="lg">
       <Box sx={{ m: 2 }}>
@@ -630,7 +675,15 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
           <DialogTitle id="form-dialog-title" sx={{ fontWeight: 'bold' }}>
             Add Invoice
           </DialogTitle>
-          <IconButton variant="outlined" color="secondary" aria-label="close" onClick={onClose}>
+          <IconButton
+            variant="outlined"
+            color="secondary"
+            aria-label="close"
+            onClick={() => {
+              resetForm();
+              onClose();
+            }}
+          >
             <IconX size={20} />
           </IconButton>
         </Box>
@@ -733,6 +786,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                         <TableCell sx={{ whiteSpace: 'nowrap' }}>Tax %</TableCell>
                         <TableCell sx={{ whiteSpace: 'nowrap' }}>Tax Amount</TableCell>
                         <TableCell sx={{ whiteSpace: 'nowrap' }}>Total Amount</TableCell>
+                        <TableCell sx={{ whiteSpace: 'nowrap' }}>Action</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -769,7 +823,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                             <CustomAutocomplete
                               options={['%', '₹']}
                               value={item.discount_type || ''}
-                              onChange={(event, newDiscountType) => handleDiscountTypeChange(index, newDiscountType)} // Call the handler
+                              onChange={(event, newDiscountType) => handleDiscountTypeChange(index, newDiscountType)}
                               renderInput={(params) => <TextField {...params} />}
                             />
                           </TableCell>
@@ -789,6 +843,15 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                           <TableCell>{item.taxamount.toFixed(2)}</TableCell>
 
                           <TableCell>{item.total_amount.toFixed(2)}</TableCell>
+                          <TableCell>
+                            <ListItemButton sx={{ color: '#d32f2f' }} onClick={() => handleDeleteItem(index)}>
+                              {' '}
+                              {/* Example red color */}
+                              <ListItemIcon>
+                                <IconTrash size={16} style={{ color: '#d32f2f' }} /> {/* Apply color with inline style */}
+                              </ListItemIcon>
+                            </ListItemButton>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -799,7 +862,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                   <Button variant="contained" startIcon={<IconPlus size={16} />} onClick={handleAddItemRow}>
                     Add New Row
                   </Button>
-                  {/* <Button
+                  <Button
                     variant="contained"
                     startIcon={<IconPlus size={16} />}
                     onClick={() => {
@@ -807,15 +870,13 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                     }}
                   >
                     Add Items in Bulk
-                  </Button> */}
+                  </Button>
                 </Box>
               </Box>
             </Grid>
 
-            {/* Customer Notes & Terms Section */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
               <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 3 }}>
-                {/* Customer Notes Field */}
                 <Box>
                   <Typography variant="subtitle2" gutterBottom>
                     Customer Notes
@@ -830,7 +891,6 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                   />
                 </Box>
 
-                {/* Terms & Conditions Field */}
                 <Box>
                   <Typography variant="subtitle2" gutterBottom>
                     Terms & Conditions
@@ -847,16 +907,13 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
               </Box>
 
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {/* Display Calculated Values with names on the left and values on the right */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Typography variant="body1">Sub Total:</Typography>
                   <Typography variant="body1" sx={{ ml: 2 }}>
                     {formik.values.subtotal_amount.toFixed(2)}
                   </Typography>{' '}
-                  {/* Added left margin */}
                 </Box>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  {/* Shipping Charges */}
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Typography variant="body1" sx={{ whiteSpace: 'nowrap' }}>
                       Shipping Charges:
@@ -873,13 +930,11 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                     </Typography>
                   </Box>
 
-                  {/* Apply Tax on Shipping Charges */}
                   <FormControlLabel
                     control={<Checkbox checked={formik.values.applied_tax} onChange={handleApplyTaxChange} name="apply_tax_on_shipping" />}
                     label="Apply Tax on Shipping Charge"
                   />
 
-                  {/* Show GST Dropdown if Apply Tax is selected */}
                   {formik.values.applied_tax && (
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <InputLabel>GST Rate</InputLabel>
@@ -893,7 +948,6 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                     </Box>
                   )}
 
-                  {/* Shipping Amount with Tax */}
                   {formik.values.applied_tax && (
                     <Typography variant="body2" sx={{ mt: 1 }}>
                       Shipping Amount (With Tax): {formik.values.shipping_amount_with_tax.toFixed(2)}
@@ -907,7 +961,6 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                     <Typography variant="body1" sx={{ ml: 2 }}>
                       {formik.values.total_cgst_amount.toFixed(2)}
                     </Typography>{' '}
-                    {/* Added left margin */}
                   </Box>
                 )}
 
@@ -917,7 +970,6 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                     <Typography variant="body1" sx={{ ml: 2 }}>
                       {formik.values.total_sgst_amount.toFixed(2)}
                     </Typography>{' '}
-                    {/* Added left margin */}
                   </Box>
                 )}
 
@@ -927,7 +979,6 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                     <Typography variant="body1" sx={{ ml: 2 }}>
                       {formik.values.total_igst_amount.toFixed(2)}
                     </Typography>{' '}
-                    {/* Added left margin */}
                   </Box>
                 )}
                 {formik.values.applied_tax && (
@@ -936,7 +987,6 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                     <Typography variant="body1" sx={{ ml: 2 }}>
                       {formik.values.shipping_tax.toFixed(2)}
                     </Typography>{' '}
-                    {/* Added left margin */}
                   </Box>
                 )}
 
@@ -947,7 +997,6 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                   <Typography variant="h6" fontWeight="bold" sx={{ ml: 2 }}>
                     {formik.values.total_amount.toFixed(2)}
                   </Typography>{' '}
-                  {/* Added left margin */}
                 </Box>
               </Box>
             </Box>

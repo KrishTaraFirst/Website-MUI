@@ -22,7 +22,7 @@ import { useRouter, usePathname } from 'next/navigation';
 // @project
 import MainCard from '@/components/MainCard';
 import { getRadiusStyles } from '@/utils/getRadiusStyles';
-
+import AddInvoice from '../InvoicingComponent/AddInvoice';
 // @assets
 import { IconArrowUp, IconFilter, IconReload } from '@tabler/icons-react';
 import { Autocomplete, Box, Button, FormHelperText, InputLabel, TextField, Avatar } from '@mui/material';
@@ -142,7 +142,17 @@ const titles = {
   total_recievables: 'Total Receivable'
 };
 
-export default function OverviewCard() {
+export default function OverviewCard({
+  invoicesList,
+  businessDetailsData,
+  customers,
+  open,
+  onClose,
+  getInvoicesList,
+  type,
+  setType,
+  handleOpen
+}) {
   const theme = useTheme();
   const router = useRouter();
   const chipDefaultProps = { color: 'success', variant: 'text', size: 'small' };
@@ -164,7 +174,6 @@ export default function OverviewCard() {
         showSnackbar('Data Not found', 'error');
       }
     } else {
-      console.log(res.data);
       setInvoices(res.data);
     }
   };
@@ -199,25 +208,24 @@ export default function OverviewCard() {
         showSnackbar('Data Not found', 'error');
       }
     } else {
-      console.log(res.data);
       setInvoices(res.data.invoices);
     }
   };
 
   const handleEdit = (invoice) => {
     setSelectedInvoice(invoice);
-    setType('edit');
     handleOpen();
   };
 
   // Handle delete action
-  const handleDelete = async (invoice) => {
-    let url = `/invoicing/invoices/delete/${invoice.id}`;
+  const handleDelete = async (id) => {
+    let url = `/invoicing/invoice-delete/${id}/`;
     const { res } = await Factory('delete', url, {});
     if (res.status_cd === 1) {
-      showSnackbar(res.data.message, 'error');
+      showSnackbar(JSON.stringify(res.data), 'error');
     } else {
       showSnackbar('Invoice Deleted Successfully', 'success');
+      getInvoices(1);
     }
   };
 
@@ -266,7 +274,6 @@ export default function OverviewCard() {
     }
 
     if (res.status_cd !== 1) {
-      console.log(res.data); // Debugging: Log binary data
       console.log(typeof res.data);
       var file = new Blob([res.data], { type: 'application/pdf' });
       var fileURL = URL.createObjectURL(file);
@@ -464,11 +471,16 @@ export default function OverviewCard() {
                     <TableCell>{invoice.pending_amount}</TableCell>
                     <TableCell>
                       <ActionCell
-                        row={invoice} // Pass the row data
-                        onEdit={() => showSnackbar('coming soon', 'success')} // Edit handler
+                        row={invoice} // Pass the customer row data
+                        onEdit={() => {
+                          setType('edit');
+                          handleEdit(invoice);
+                        }} // Edit handler
                         onDelete={() => {
-                          showSnackbar('coming soon', 'success');
+                          handleDelete(invoice.id);
                         }}
+                        open={open}
+                        onClose={onClose}
                         onDownload={() => {
                           downloadInvoice(invoice.id);
                         }}
@@ -494,6 +506,16 @@ export default function OverviewCard() {
         </TableContainer>
       </Grid>
       <FilterDialog filterDialog={filterDialog} setFilterDialog={setFilterDialog} />
+      <AddInvoice
+        invoicesList={invoicesList}
+        businessDetailsData={businessDetailsData}
+        customers={customers}
+        open={open}
+        onClose={onClose}
+        getInvoicesList={getInvoicesList}
+        selectedInvoice={selectedInvoice}
+        type={type}
+      />
     </Box>
   );
 }
