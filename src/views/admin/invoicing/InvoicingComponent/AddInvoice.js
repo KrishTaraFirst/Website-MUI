@@ -146,7 +146,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selectedInvoice, busines
     return {
       customer: '',
       place_of_supply: '',
-      invoice_number: invoice_number_format,
+      invoice_number: '',
       invoice_date: dayjs().format('YYYY-MM-DD'),
       terms: 'Due on Receipt',
       due_date: dayjs().format('YYYY-MM-DD'),
@@ -198,16 +198,29 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selectedInvoice, busines
       shipping_tax: 0
     };
   };
-  console.log(type);
   const formik = useFormik({
     initialValues: type === 'edit' ? { notes: 'krishna' } : fillFieldValues(),
     validationSchema,
     onSubmit: async (values) => {
+      const currentDate = new Date();
+
+      let financialYearStart = currentDate.getFullYear();
+      let financialYearEnd = currentDate.getFullYear() + 1;
+
+      if (currentDate.getMonth() < 3) {
+        financialYearStart -= 1;
+        financialYearEnd -= 1;
+      }
+      const financialYear = `${financialYearStart}-${financialYearEnd.toString().slice(2)}`;
+
       const postData = { ...values };
       postData.invoicing_profile = businessDetailsData.id;
-      postData.financial_year = '2024-25';
-      let url = '/invoicing/invoice-create';
-      const { res } = await Factory('post', url, postData);
+      postData.financial_year = financialYear;
+      let put_url = ` /invoicing/invoice-update/${selectedInvoice?.id}/`;
+      let post_url = '/invoicing/invoice-create';
+      let method = type === 'edit' ? 'put' : 'post';
+      let url = type === 'edit' ? put_url : post_url;
+      const { res } = await Factory(method, url, postData);
       if (res.status_cd === 0) {
         getInvoicesList();
         onClose();
@@ -647,20 +660,26 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selectedInvoice, busines
   };
 
   useEffect(() => {
-    console.log(type);
     if (type === 'edit' && selectedInvoice) {
+      console.log(selectedInvoice);
+
       formik.setValues({
         ...selectedInvoice,
         invoice_date: selectedInvoice.invoice_date,
         due_date: selectedInvoice.due_date,
-        billing_address: {
-          ...selectedInvoice.billing_address
-        },
-        shipping_address: {
-          ...selectedInvoice.shipping_address
-        },
-        item_details: [...selectedInvoice.item_details],
-        same_address: false,
+        billing_address: selectedInvoice.billing_address ? { ...selectedInvoice.billing_address } : {},
+        shipping_address: selectedInvoice.shipping_address ? { ...selectedInvoice.shipping_address } : {},
+        item_details: Array.isArray(selectedInvoice.item_details) ? [...selectedInvoice.item_details] : [],
+        same_address:
+          selectedInvoice.shipping_address &&
+          selectedInvoice.billing_address &&
+          selectedInvoice.shipping_address.address_line1 === selectedInvoice.billing_address.address_line1 &&
+          selectedInvoice.shipping_address.country === selectedInvoice.billing_address.country &&
+          selectedInvoice.shipping_address.state === selectedInvoice.billing_address.state &&
+          selectedInvoice.shipping_address.postal_code === selectedInvoice.billing_address.postal_code
+            ? true
+            : false,
+
         not_applicablefor_shipping: false
       });
     }
