@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 // @mui
 import { useTheme } from '@mui/material/styles';
@@ -140,6 +141,7 @@ const titles = {
   due_within_30_days: 'Due with in 30 days',
   total_recievables: 'Total Receivable'
 };
+
 export default function OverviewCard() {
   const theme = useTheme();
   const router = useRouter();
@@ -225,71 +227,137 @@ export default function OverviewCard() {
 
   useEffect(() => {
     // setBusinessData(res.data);
-    if (businessData.id) getDashboardData(1);
+    if (businessData.id) {
+      getInvoices(1);
+      getDashboardData(1);
+    }
   }, [financialYear]);
 
   const handleChange = (val) => {
     router.replace(`/dashboard/user/${val}`);
   };
 
+  // const downloadInvoice = async (id) => {
+  //   let url = `/invoicing/create-pdf/${id}/`;
+  //   const { res } = await Factory('get', url, {});
+  //   if (res.status_cd === 1) {
+  //     if (res.status === 404) {
+  //       showSnackbar('Data Not found', 'error');
+  //     }
+  //   } else {
+  //     console.log(res.data);
+  //     const binaryData = new Uint8Array([res.data]);
+  //     const blob = new Blob([binaryData], { type: 'application/pdf' });
+  //     const url = URL.createObjectURL(blob);
+  //     window.open(url, '_blank');
+  //     setTimeout(() => {
+  //       URL.revokeObjectURL(url);
+  //     }, 10000); // Clean up after 10 seconds
+  //   }
+  // };
+
+  const downloadInvoice = async (id) => {
+    let url = `/invoicing/create-pdf/${id}`;
+    const { res } = await Factory('get', url, {});
+
+    if (res.status === 404) {
+      showSnackbar('Data Not Found', 'error');
+      return;
+    }
+
+    if (res.status_cd !== 1) {
+      console.log(res.data); // Debugging: Log binary data
+      console.log(typeof res.data);
+      var file = new Blob([res.data], { type: 'application/pdf' });
+      var fileURL = URL.createObjectURL(file);
+      window.open(fileURL);
+    } else {
+      showSnackbar('Invalid response from server', 'error');
+    }
+  };
+
   return (
     <Box>
-      <Box sx={{ py: { xs: 1, sm: 2 } }}>
-        <Autocomplete
-          options={['2021-22', '2022-23', '2023-24', '2024-25']}
-          value={financialYear}
-          onChange={(e, val) => {
-            setFinancialYear(val);
-          }}
-          disableClearable
-          renderOption={({ key: optionKey, ...optionProps }, option) => (
-            <li key={optionKey} {...optionProps}>
-              {option}
-            </li>
-          )}
-          renderInput={(params) => <TextField {...params} slotProps={{ htmlInput: { ...params.inputProps, 'aria-label': 'language' } }} />}
-          sx={{ width: 250 }}
-        />
-        <FormHelperText>&nbsp;Select financial year to get yearly stats</FormHelperText>
-      </Box>
       <Grid container sx={{ borderRadius: 4, boxShadow: theme.customShadows.section, ...applyBorderWithRadius(16, theme), mb: 3 }}>
         {yearlyStats.map((item, index) => (
-          <Grid key={index} size={{ xs: 6, sm: 6, md: 2.4 }}>
-            <MainCard
-              onClick={() => {
-                getStatsData(item.id);
-              }}
-              sx={{
-                border: 'none',
-                borderRadius: 0,
-                boxShadow: 'none',
-                textAlign: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease-in-out',
-                '&:hover': {
-                  bgcolor: 'grey.300'
-                }
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 5 }}>
-                <Avatar variant="rounded" sx={{ bgcolor: 'grey.300', width: 38, height: 36 }}>
-                  <DynamicIcon name={'IconBolt'} size={26} stroke={1} />
-                </Avatar>
-              </div>
-              <Stack sx={{ gap: 1.5 }}>
-                <Typography variant="subtitle1">{item.title}</Typography>
-                <Stack sx={{ gap: 0.5 }}>
-                  <Typography variant="h3">{dashboardData[item.id] || 0}</Typography>
-                  {/* <Typography variant="caption" color="grey.700">
+          <React.Fragment key={'fragment' + index}>
+            {index === 0 && (
+              <Grid key={'filter' + index} size={{ xs: 6, sm: 6, md: 2 }}>
+                <MainCard
+                  sx={{
+                    border: 'none',
+                    borderRadius: 0,
+                    boxShadow: 'none'
+                  }}
+                >
+                  <Stack sx={{ gap: 1.5 }}>
+                    <Autocomplete
+                      options={['2021-22', '2022-23', '2023-24', '2024-25']}
+                      value={financialYear}
+                      onChange={(e, val) => {
+                        setFinancialYear(val);
+                      }}
+                      disableClearable
+                      renderOption={({ key: optionKey, ...optionProps }, option) => (
+                        <li key={optionKey} {...optionProps}>
+                          {option}
+                        </li>
+                      )}
+                      renderInput={(params) => (
+                        <TextField {...params} slotProps={{ htmlInput: { ...params.inputProps, 'aria-label': 'language' } }} />
+                      )}
+                      // sx={{ width: 250 }}
+                    />
+                    <Stack sx={{ gap: 0.5 }}>
+                      <Typography variant="caption" color="grey.700">
+                        Select financial year to get yearly stats
+                      </Typography>
+                      {/* <Typography variant="caption" color="grey.700">
                     Tagline para
                   </Typography> */}
+                    </Stack>
+                  </Stack>
+                </MainCard>
+              </Grid>
+            )}
+            <Grid key={index} size={{ xs: 6, sm: 6, md: 2 }}>
+              <MainCard
+                onClick={() => {
+                  getStatsData(item.id);
+                }}
+                sx={{
+                  border: 'none',
+                  borderRadius: 0,
+                  boxShadow: 'none',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease-in-out',
+                  '&:hover': {
+                    bgcolor: 'grey.300'
+                  },
+                  minHeight: '100%'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 5 }}>
+                  <Avatar variant="rounded" sx={{ bgcolor: 'grey.300', width: 38, height: 36 }}>
+                    <DynamicIcon name={'IconBolt'} size={26} stroke={1} />
+                  </Avatar>
+                </div>
+                <Stack sx={{ gap: 1.5 }}>
+                  <Typography variant="subtitle1">{item.title}</Typography>
+                  <Stack sx={{ gap: 0.5 }}>
+                    <Typography variant="h3">{dashboardData[item.id] || 0}</Typography>
+                    {/* <Typography variant="caption" color="grey.700">
+                    Tagline para
+                  </Typography> */}
+                  </Stack>
                 </Stack>
-              </Stack>
-            </MainCard>
-          </Grid>
+              </MainCard>
+            </Grid>
+          </React.Fragment>
         ))}
       </Grid>
-      <Grid container sx={{ borderRadius: 4, boxShadow: theme.customShadows.section, ...applyBorderWithRadius(16, theme), mb: 3 }}>
+      <Grid container sx={{ borderRadius: 4, boxShadow: theme.customShadows.section, ...applyBorderWithRadius(16, theme), mb: 4 }}>
         {overallStats.map((item, index) => (
           <Grid key={index} size={{ xs: 6, sm: 6, md: 3 }}>
             <MainCard
@@ -330,6 +398,9 @@ export default function OverviewCard() {
         <Grid container>
           <Grid size={{ xs: 6 }}>
             <Typography variant="h6">{title}</Typography>
+            <Typography variant="caption" color="grey.700">
+              FY: {financialYear}
+            </Typography>
           </Grid>
           <Grid size={{ xs: 6 }} sx={{ textAlign: 'right' }}>
             <Button
@@ -374,7 +445,6 @@ export default function OverviewCard() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {console.log(invoices)}
               {invoices.length > 0 ? (
                 invoices.map((invoice, index) => (
                   <TableRow key={index}>
@@ -394,16 +464,19 @@ export default function OverviewCard() {
                     <TableCell>{invoice.pending_amount}</TableCell>
                     <TableCell>
                       <ActionCell
-                        row={invoice} // Pass the customer row data
+                        row={invoice} // Pass the row data
                         onEdit={() => showSnackbar('coming soon', 'success')} // Edit handler
-                        onDelete={() => showSnackbar('coming soon', 'success')} // Delete handler
-                        // open={open}
-                        // onClose={handleClose}
+                        onDelete={() => {
+                          showSnackbar('coming soon', 'success');
+                        }}
+                        onDownload={() => {
+                          downloadInvoice(invoice.id);
+                        }}
                         deleteDialogData={{
-                          title: 'Delete Customer',
-                          heading: 'Are you sure you want to delete this customer?',
-                          description: `This action will remove this from the list.`,
-                          successMessage: 'Customer has been deleted.'
+                          title: 'Delete record',
+                          heading: 'Are you sure you want to delete this record?',
+                          description: `This action will permanantely remove this record from the list.`,
+                          successMessage: 'Record has been deleted.'
                         }}
                       />
                     </TableCell>

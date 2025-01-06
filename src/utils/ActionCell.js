@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import Popper from '@mui/material/Popper';
-import { IconDotsVertical, IconEdit, IconTrash } from '@tabler/icons-react';
+import { IconDotsVertical, IconEdit, IconTrash, IconDownload } from '@tabler/icons-react';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Fade from '@mui/material/Fade';
 import List from '@mui/material/List';
@@ -34,7 +34,7 @@ import MessyDoodle from '@/images/illustration/MessyDoodle';
  *
  * @returns {JSX.Element} - The rendered ActionCell component.
  */
-export default function ActionCell({ row, open, onClose, onEdit, onDelete, deleteDialogData }) {
+export default function ActionCell({ row, open, onClose, onEdit, onDelete, deleteDialogData, onDownload }) {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null); // Anchor for Popper
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // Delete dialog state
@@ -82,6 +82,19 @@ export default function ActionCell({ row, open, onClose, onEdit, onDelete, delet
             >
               <ClickAwayListener onClickAway={() => setAnchorEl(null)}>
                 <List disablePadding>
+                  {/* download icon */}
+                  {onDownload && (
+                    <ListItemButton
+                      onClick={() => {
+                        onDownload();
+                      }}
+                    >
+                      <ListItemIcon>
+                        <IconDownload size={16} />
+                      </ListItemIcon>
+                      <ListItemText>View</ListItemText>
+                    </ListItemButton>
+                  )}
                   {/* Edit Action */}
                   <ListItemButton onClick={onEdit}>
                     <ListItemIcon>

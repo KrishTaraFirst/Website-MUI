@@ -34,11 +34,11 @@ export default function AnalyticsOverview() {
                 justifyContent: 'center'
               }}
             >
-              <Typography variant="h3">Hello Krishna Sai,</Typography>
+              <Typography variant="h3">Hello, User!</Typography>
               <Typography variant="h4">Welcom Back</Typography>
-              <Typography sx={{ color: '#c9c9c9', mt: 2 }} variant="subtitle1">
-                simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever
-                simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever
+              <Typography color="grey.600" sx={{ mt: 2 }} variant="subtitle1">
+                Tara gives you the power to handle taxes, incorporate your business, stay compliant, run payroll, and create invoices – all
+                in a few clicks. Let us help you focus on your wellbeing while we take care of the rest!
               </Typography>
             </Grid>
             <Grid size={4}>
