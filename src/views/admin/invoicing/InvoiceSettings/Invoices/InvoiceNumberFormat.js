@@ -5,11 +5,13 @@ import * as Yup from 'yup';
 import CustomInput from '@/utils/CustomInput';
 import Factory from '@/utils/Factory';
 import { useSnackbar } from '@/components/CustomSnackbar';
+import { usePathname, useRouter } from 'next/navigation';
 
 const InvoiceNumberFormatDialogue = ({ businessDetailsData }) => {
   // State for invoice format data to be manually updated
   const { showSnackbar } = useSnackbar();
-
+  const router = useRouter();
+  const pathname = usePathname();
   const [invoiceFormatData, setInvoiceFormatData] = useState({
     startingNumber: '',
     prefix: '',
@@ -46,6 +48,7 @@ const InvoiceNumberFormatDialogue = ({ businessDetailsData }) => {
         const { res } = await Factory('put', url, postData);
         if (res.status_cd === 0) {
           showSnackbar('Data Updated Successfully', 'success');
+          router.push(`/invoicing`);
         } else {
           // Handle failure scenario based on status_cd (if needed)
           showSnackbar('Failed to update data', 'error');

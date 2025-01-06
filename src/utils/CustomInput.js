@@ -11,6 +11,9 @@ const CustomInput = ({
   width,
   autoComplete,
   textColor,
+  multiline,
+  maxRows,
+  rows,
   ...props
 }) => {
   return (
@@ -35,6 +38,9 @@ const CustomInput = ({
       error={Boolean(touched && errors)} // Shows error when `touched` and `errors` are true
       helperText={touched && errors ? <span style={{ color: 'red' }}>{errors}</span> : null} // Custom red error text
       InputProps={InputProps}
+      multiline={multiline} // Pass multiline prop here
+      rows={rows} // Optionally set rows for default visible rows
+      maxRows={maxRows}
       {...props}
     />
   );

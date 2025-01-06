@@ -21,7 +21,7 @@ export default function Account() {
   const handleOpen = () => setOpen(true);
 
   const handleClose = () => {
-    setOpen(false);
+    setOpen(false); 
   };
 
   return (

@@ -35,6 +35,8 @@ import CustomDatePicker from '@/utils/CustomDateInput';
 import Factory from '@/utils/Factory';
 import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
 import BulkItems from './BulkItems';
+import { useSnackbar } from '@/components/CustomSnackbar';
+
 const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, businessDetailsData, customers, open, onClose }) => {
   const [addInvoiceData] = useState({
     invoice_data: [
@@ -61,6 +63,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
       { name: 'postal_code', label: 'Pincode' }
     ]
   });
+  const { showSnackbar } = useSnackbar();
 
   const [itemsList, setItemsList] = useState([]);
   const [bulkItemsDialogue, setBulkItemsDialogue] = useState(false); // State for Apply Tax checkbox
@@ -101,7 +104,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
       // If tax is applied, calculate tax on shipping charges
       const taxOnShipping = (shippingCharges * gstRate) / 100;
       formik.setFieldValue('shipping_tax', taxOnShipping);
-      // Calculate total shipping with tax
+      // Calculate total_amount shipping with tax
       const totalShippingWithTax = shippingCharges + taxOnShipping;
       formik.setFieldValue('shipping_amount_with_tax', totalShippingWithTax);
     } else {
@@ -173,7 +176,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
         }
       ],
       amount_invoiced: 0,
-      total_cgst_amount: 0,
+
       total_sgst_amount: 0,
       total_igst_amount: 0,
       notes: '',
@@ -181,7 +184,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
       shipping_amount: 0,
       subtotal_amount: 0,
       terms_and_conditions: '',
-      total: 0,
+      total_amount: 0,
       shipping_amount_with_tax: 0,
       applied_tax: false,
       same_address: false,
@@ -195,12 +198,14 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
       postData.invoicing_profile = businessDetailsData.id;
       postData.financial_year = '2024-25';
       console.log(postData);
-      // let url = '/invoicing/invoice-create';
-      // const { res } = await Factory('post', url, postData);
-      // if (res.status_cd === 0) {
-      //   getInvoicesList();
-      //   onClose();
-      // }
+      let url = '/invoicing/invoice-create';
+      const { res } = await Factory('post', url, postData);
+      if (res.status_cd === 0) {
+        getInvoicesList();
+        onClose();
+        resetForm();
+        showSnackbar('Data Added Successfully', 'success');
+      }
     }
   });
   const sameAddressFunction = (e) => {
@@ -279,7 +284,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                 shipping_amount: 0,
                 subtotal_amount: 0,
                 terms_and_conditions: '',
-                total: 0,
+                total_amount: 0,
                 shipping_amount_with_tax: 0
               });
               const selectedCustomer = customers?.find((customer) => customer.name === newValue);
@@ -515,7 +520,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
     formik.setFieldValue('total_sgst_amount', totalSGSTAmount);
     formik.setFieldValue('total_igst_amount', totalIGSTAmount);
     formik.setFieldValue('subtotal_amount', subtotalAmount);
-    formik.setFieldValue('total', totalAmount + (formik.values.shipping_amount_with_tax || 0)); // Include shipping if applicable
+    formik.setFieldValue('total_amount', totalAmount + (formik.values.shipping_amount_with_tax || 0)); // Include shipping if applicable
   };
 
   const handleDiscountTypeChange = (index, newDiscountType) => {
@@ -612,9 +617,12 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
       formik.setFieldValue('invoice_date', currentInvoiceDate); // Set the current date or other logic if needed
     }
   }, [open]);
-  const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue } = formik;
-  console.log(values);
+  const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue, resetForm } = formik;
 
+  const bulkItemSave = (data) => {
+    console.log(data);
+    formik.setFieldValue('item_details', data);
+  };
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title" fullWidth maxWidth="lg">
       <Box sx={{ m: 2 }}>
@@ -791,9 +799,15 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                   <Button variant="contained" startIcon={<IconPlus size={16} />} onClick={handleAddItemRow}>
                     Add New Row
                   </Button>
-                  {/* <Button variant="contained" startIcon={<IconPlus size={16} />} onClick={() => setBulkItemsDialogue(true)}>
-                  Add Items in Bulk
-                </Button> */}
+                  {/* <Button
+                    variant="contained"
+                    startIcon={<IconPlus size={16} />}
+                    onClick={() => {
+                      setBulkItemsDialogue(true);
+                    }}
+                  >
+                    Add Items in Bulk
+                  </Button> */}
                 </Box>
               </Box>
             </Grid>
@@ -808,6 +822,8 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                   </Typography>
                   <CustomInput
                     multiline
+                    rows={4}
+                    maxRows={6}
                     name="notes" // Assuming 'notes' is the key in your initialValues
                     value={formik.values.notes}
                     onChange={(e) => formik.setFieldValue('notes', e.target.value)}
@@ -821,6 +837,8 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                   </Typography>
                   <CustomInput
                     multiline
+                    rows={4}
+                    maxRows={6}
                     name="terms_and_conditions" // Assuming 'terms_and_conditions' is the key in your initialValues
                     value={formik.values.terms_and_conditions}
                     onChange={(e) => formik.setFieldValue('terms_and_conditions', e.target.value)}
@@ -927,7 +945,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
                     Total:
                   </Typography>
                   <Typography variant="h6" fontWeight="bold" sx={{ ml: 2 }}>
-                    {formik.values.total.toFixed(2)}
+                    {formik.values.total_amount.toFixed(2)}
                   </Typography>{' '}
                   {/* Added left margin */}
                 </Box>
@@ -942,7 +960,16 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selctedInvoiceData, busi
           </form>
         </DialogContent>
       </Box>
-      <BulkItems bulkItemsDialogue={bulkItemsDialogue} setBulkItemsDialogue={setBulkItemsDialogue} itemsList={itemsList} />
+
+      <BulkItems
+        bulkItemsDialogue={bulkItemsDialogue}
+        setBulkItemsDialogue={setBulkItemsDialogue}
+        itemsList={itemsList}
+        aria-labelledby="form-dialog-title"
+        fullWidth
+        maxWidth="xl"
+        bulkItemSave={bulkItemSave}
+      />
     </Dialog>
   );
 };
