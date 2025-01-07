@@ -75,7 +75,7 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
         then: () =>
           Yup.string()
             .required('GSTIN is required')
-            .matches(/^[0-9A-Z]{15}$/, 'Invalid GSTIN format'),
+            .matches(/^[0-9A-Z]{15}$/, 'Invalid GSTIN, Format must be: 22AAAAA0000A1Z5'),
         otherwise: () => Yup.string().oneOf(['NA'], 'GSTIN must be "NA" when GST Registered is "No"') // Ensure "NA" for "No"
       }),
 

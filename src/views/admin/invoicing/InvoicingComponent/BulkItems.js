@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import { IconX } from '@tabler/icons-react';
 import { CheckCircle, Add, Remove } from '@mui/icons-material';
+import CustomInput from '@/utils/CustomInput';
 
 const BulkItems = ({ bulkItemsDialogue, setBulkItemsDialogue, itemsList, bulkItemSave }) => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -57,7 +58,16 @@ const BulkItems = ({ bulkItemsDialogue, setBulkItemsDialogue, itemsList, bulkIte
       return updatedItems;
     });
   };
-
+  const handleQuantityInput = (index, value) => {
+    const quantity = value === '' ? '' : parseInt(value, 10);
+    if (!isNaN(quantity) || value === '') {
+      setSelectedItems((prevSelectedItems) => {
+        const updatedItems = [...prevSelectedItems];
+        updatedItems[index].quantity = quantity;
+        return updatedItems;
+      });
+    }
+  };
   // Prepare item data for saving
   useEffect(() => {
     const updatedItems = selectedItems
@@ -196,16 +206,18 @@ const BulkItems = ({ bulkItemsDialogue, setBulkItemsDialogue, itemsList, bulkIte
                     <IconButton onClick={() => handleQuantityChange(item.name, -1)}>
                       <Remove />
                     </IconButton>
-                    <Typography
-                      sx={{
-                        mx: 2,
-                        fontWeight: 'bold',
-                        minWidth: '32px',
-                        textAlign: 'center'
+
+                    <TextField
+                      name={item.name}
+                      value={item.quantity}
+                      type="text"
+                      onChange={(e) => handleQuantityInput(index, e.target.value)} // Calls handleQuantityInput
+                      InputProps={{
+                        inputProps: {
+                          style: { textAlign: 'center' }
+                        }
                       }}
-                    >
-                      {item.quantity}
-                    </Typography>
+                    />
                     <IconButton onClick={() => handleQuantityChange(item.name, 1)}>
                       <Add />
                     </IconButton>
