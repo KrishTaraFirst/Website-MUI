@@ -24,11 +24,14 @@ export default function AnalyticsOverview() {
   const chipDefaultProps = { color: 'black', variant: 'text', size: 'small' };
   const { showSnackbar } = useSnackbar();
   const [clientListData, setClientListData] = useState({});
-
+  const [type, setType] = useState('');
   const handleClose = () => {
     setOpen(false);
   };
-  const handleOpen = () => setOpen(true);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
 
   const getInvoicesList = async () => {
     if (businessDetails?.id) {
@@ -49,9 +52,7 @@ export default function AnalyticsOverview() {
     };
     fetchBusinessDetails();
   }, []);
-  useEffect(() => {
-    // getInvoicesList(); // Load invoice list on component mount
-  }, []);
+
   const getCustomersData = async () => {
     const { res } = await Factory('get', '/invoicing/customer_profiles/', {});
     if (res.status_cd === 0) {
@@ -83,25 +84,43 @@ export default function AnalyticsOverview() {
           >
             Invoice Settings
           </Button>
-          <Button variant="contained" onClick={handleOpen} startIcon={<IconSparkles size={16} />}>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setType('add');
+              handleOpen();
+            }}
+            startIcon={<IconSparkles size={16} />}
+          >
             New Invoice
           </Button>
         </Stack>
       </Stack>
       <Grid container spacing={{ xs: 2, md: 3 }}>
         <Grid size={12}>
-          <OverviewCard clientListData={clientListData} />
+          <OverviewCard
+            invoicesList={invoicesList}
+            businessDetailsData={businessDetails}
+            customers={customers}
+            open={open}
+            onClose={handleClose}
+            getInvoicesList={getInvoicesList}
+            clientListData={clientListData}
+            type={type}
+            setType={setType}
+            handleOpen={handleOpen}
+          />
         </Grid>
         <Grid size={12}>{/* <Services /> */}</Grid>
       </Grid>
-      <AddInvoice
+      {/* <AddInvoice
         invoicesList={invoicesList}
         businessDetailsData={businessDetails}
         customers={customers}
         open={open}
         onClose={handleClose}
         getInvoicesList={getInvoicesList}
-      />
+      /> */}
     </Stack>
   );
 }
