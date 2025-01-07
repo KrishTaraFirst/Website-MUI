@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-
+import axios from 'axios';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Grid2';
@@ -27,6 +27,7 @@ import AddInvoice from '../InvoicingComponent/AddInvoice';
 import { IconArrowUp, IconFilter, IconReload } from '@tabler/icons-react';
 import { Autocomplete, Box, Button, FormHelperText, InputLabel, TextField, Avatar } from '@mui/material';
 import DynamicIcon from '@/components/DynamicIcon';
+import { BASE_URL } from 'constants';
 
 /***************************  CARDS - BORDER WITH RADIUS  ***************************/
 
@@ -55,10 +56,6 @@ export function applyBorderWithRadius(radius, theme) {
     }
   };
 }
-
-/***************************   OVERVIEW CARD -DATA  ***************************/
-
-/***************************   OVERVIEW - CARDS  ***************************/
 
 const yearlyStats = [
   {
@@ -162,13 +159,12 @@ export default function OverviewCard({
   const [filterDialog, setFilterDialog] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [dashboardData, setDashboardData] = useState({});
-  const [businessData, setBusinessData] = useState({});
   const { showSnackbar } = useSnackbar();
 
   const getStatsData = async (type) => {
-    if (businessData.id) {
+    if (businessDetailsData.id) {
       setTitle(titles[type]);
-      let url = `/invoicing/detail-invoice?invoicing_profile_id=${businessData.id}&&filter_type=${type}&&financial_year=${financialYear}`;
+      let url = `/invoicing/detail-invoice?invoicing_profile_id=${businessDetailsData.id}&&filter_type=${type}&&financial_year=${financialYear}`;
       const { res } = await Factory('get', url, {});
       if (res.status_cd === 1) {
         if (res.status === 404) {
@@ -179,16 +175,6 @@ export default function OverviewCard({
       }
     } else {
       showSnackbar('Business data not found', 'error');
-    }
-  };
-
-  const fetchBusinessDetails = async () => {
-    const { res } = await Factory('get', '/invoicing/invoicing-profiles/', {});
-    if (res) {
-      setBusinessData(res.data);
-      getDashboardData(res.data.id);
-      getInvoices(res.data.id);
-      getDashboardData(res.data.id);
     }
   };
 
@@ -229,60 +215,42 @@ export default function OverviewCard({
       showSnackbar(JSON.stringify(res.data), 'error');
     } else {
       showSnackbar('Invoice Deleted Successfully', 'success');
-      getInvoices(businessData.id);
+      getInvoices(businessDetailsData.id);
     }
   };
 
   useEffect(() => {
-    fetchBusinessDetails();
-  }, []);
-
-  useEffect(() => {
-    // setBusinessData(res.data);
-    if (businessData.id) {
-      getInvoices(businessData.id);
-      getDashboardData(businessData.id);
+    if (businessDetailsData.id && financialYear) {
+      getInvoices(businessDetailsData.id);
+      getDashboardData(businessDetailsData.id);
     }
-  }, [financialYear]);
+  }, [financialYear, businessDetailsData]);
 
   const handleChange = (val) => {
     router.replace(`/dashboard/user/${val}`);
   };
 
-  // const downloadInvoice = async (id) => {
-  //   let url = `/invoicing/create-pdf/${id}/`;
-  //   const { res } = await Factory('get', url, {});
-  //   if (res.status_cd === 1) {
-  //     if (res.status === 404) {
-  //       showSnackbar('Data Not found', 'error');
-  //     }
-  //   } else {
-  //     console.log(res.data);
-  //     const binaryData = new Uint8Array([res.data]);
-  //     const blob = new Blob([binaryData], { type: 'application/pdf' });
-  //     const url = URL.createObjectURL(blob);
-  //     window.open(url, '_blank');
-  //     setTimeout(() => {
-  //       URL.revokeObjectURL(url);
-  //     }, 10000); // Clean up after 10 seconds
-  //   }
-  // };
-
   const downloadInvoice = async (id) => {
-    let url = `/invoicing/create-pdf/${id}`;
-    const { res } = await Factory('get', url, {});
-
-    if (res.status === 404) {
-      showSnackbar('Data Not Found', 'error');
-      return;
-    }
-
-    if (res.status_cd !== 1) {
-      console.log(typeof res.data);
-      var file = new Blob([res.data], { type: 'application/pdf' });
-      var fileURL = URL.createObjectURL(file);
-      window.open(fileURL);
-    } else {
+    try {
+      const tokens = JSON.parse(localStorage.getItem('auth-user'));
+      const response = await axios.get(`${BASE_URL}/invoicing/create-pdf/${id}`, {
+        responseType: 'arraybuffer',
+        headers: {
+          Authorization: `Bearer ${tokens.access_token}`
+        }
+      });
+      if (response.data.byteLength > 0) {
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+        }, 10000);
+      } else {
+        showSnackbar('Invalid response from server', 'error');
+      }
+    } catch (error) {
+      console.error('Error fetching PDF:', error);
       showSnackbar('Invalid response from server', 'error');
     }
   };
@@ -409,9 +377,11 @@ export default function OverviewCard({
         <Grid container>
           <Grid size={{ xs: 6 }}>
             <Typography variant="h6">{title}</Typography>
-            {/* <Typography variant="caption" color="grey.700">
-              FY: {financialYear}
-            </Typography> */}
+            {!['Over due', 'Due today', 'Due with in 30 days', 'Total Receivable'].includes(title) && (
+              <Typography variant="caption" color="grey.700">
+                FY: {financialYear}
+              </Typography>
+            )}
           </Grid>
           <Grid size={{ xs: 6 }} sx={{ textAlign: 'right' }}>
             <Button
@@ -420,7 +390,7 @@ export default function OverviewCard({
               startIcon={<IconReload size={16} />}
               sx={{ minWidth: 78, mr: 1 }}
               onClick={() => {
-                getInvoices(businessData.id);
+                getInvoices(businessDetailsData.id);
                 setTitle('Over All Financial Year Invoices');
               }}
             >
@@ -467,8 +437,8 @@ export default function OverviewCard({
                       <Chip
                         size="small"
                         variant="outlined"
-                        label={invoice.payment_status === 'Unpaid' ? 'Pendind' : 'Paid'}
-                        color={invoice.payment_status === 'Unpaid' ? 'warning' : 'error'}
+                        label={invoice.payment_status}
+                        color={invoice.payment_status === 'Pending' ? 'warning' : 'success'}
                       />
                     </TableCell>
                     <TableCell>{invoice.due_date}</TableCell>
@@ -509,7 +479,15 @@ export default function OverviewCard({
           </Table>
         </TableContainer>
       </Grid>
-      <FilterDialog filterDialog={filterDialog} setFilterDialog={setFilterDialog} />
+      <FilterDialog
+        financialYear={financialYear}
+        businessData={businessDetailsData}
+        filterDialog={filterDialog}
+        setFilterDialog={setFilterDialog}
+        invoices={invoices}
+        setInvoices={setInvoices}
+        setTitle={setTitle}
+      />
       <AddInvoice
         invoicesList={invoicesList}
         businessDetailsData={businessDetailsData}
