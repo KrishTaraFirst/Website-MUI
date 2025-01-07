@@ -14,7 +14,8 @@ const InvoiceNumberFormat = ({ businessDetailsData }) => {
   const [invoiceFormatData, setInvoiceFormatData] = useState({
     startingNumber: '',
     prefix: '',
-    suffix: ''
+    suffix: '',
+    format_version: ''
   });
 
   // Initialize formik hook
@@ -22,7 +23,8 @@ const InvoiceNumberFormat = ({ businessDetailsData }) => {
     initialValues: {
       startingNumber: '',
       prefix: '',
-      suffix: ''
+      suffix: '',
+      format_version: ''
     },
     validationSchema: Yup.object({
       startingNumber: Yup.number()
@@ -39,10 +41,11 @@ const InvoiceNumberFormat = ({ businessDetailsData }) => {
         invoice_format: {
           startingNumber: values.startingNumber,
           prefix: values.prefix,
-          suffix: values.suffix
+          suffix: values.suffix,
+          format_version: Number(values.format_version) + 1
         }
       };
-
+      console.log(postData);
       try {
         const { res } = await Factory('put', url, postData);
         if (res.status_cd === 0) {
@@ -64,11 +67,11 @@ const InvoiceNumberFormat = ({ businessDetailsData }) => {
   useEffect(() => {
     if (businessDetailsData?.invoice_format) {
       setInvoiceFormatData(businessDetailsData.invoice_format);
-
       // Using setFieldValue to update formik values on first render or when data changes
       formik.setFieldValue('startingNumber', businessDetailsData.invoice_format.startingNumber || '');
       formik.setFieldValue('prefix', businessDetailsData.invoice_format.prefix || '');
       formik.setFieldValue('suffix', businessDetailsData.invoice_format.suffix || '');
+      formik.setFieldValue('format_version', Number(businessDetailsData.invoice_format.format_version) || '');
     }
   }, [businessDetailsData, formik.setFieldValue]); // Ensure this runs when `businessDetailsData` changes
 

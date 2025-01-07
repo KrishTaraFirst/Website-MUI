@@ -519,6 +519,7 @@ export default function OverviewCard({
         getInvoicesList={getInvoices}
         selectedInvoice={selectedInvoice}
         type={type}
+        setType={setType}
       />
     </Box>
   );

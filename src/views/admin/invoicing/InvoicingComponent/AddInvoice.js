@@ -42,7 +42,7 @@ import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
 import BulkItems from './BulkItems';
 import { useSnackbar } from '@/components/CustomSnackbar';
 
-const AddItem = ({ getInvoicesList, type, selectedInvoice, businessDetailsData, customers, open, onClose }) => {
+const AddItem = ({ getInvoicesList, type, setType, selectedInvoice, businessDetailsData, customers, open, onClose }) => {
   const [addInvoiceData] = useState({
     invoice_data: [
       { name: 'customer', label: 'Customer Name' },
@@ -56,13 +56,15 @@ const AddItem = ({ getInvoicesList, type, selectedInvoice, businessDetailsData, 
       { name: 'sales_person', label: 'Sales Person' }
     ],
     billing: [
-      { name: 'address_line1', label: 'Address' },
+      { name: 'address_line1', label: 'Address Line 1' },
+      { name: 'address_line2', label: 'Address Line 2' },
       { name: 'country', label: 'Country' },
       { name: 'state', label: 'State' },
       { name: 'postal_code', label: 'Pincode' }
     ],
     shipping: [
-      { name: 'address_line1', label: 'Address' },
+      { name: 'address_line1', label: 'Address Line 1' },
+      { name: 'address_line2', label: 'Address Line 2' },
       { name: 'country', label: 'Country' },
       { name: 'state', label: 'State' },
       { name: 'postal_code', label: 'Pincode' }
@@ -129,16 +131,18 @@ const AddItem = ({ getInvoicesList, type, selectedInvoice, businessDetailsData, 
     sales_person: Yup.string().required('Sales Person is required')
 
     // billing_address: Yup.object({
-    //   address_line1: Yup.string().required('Billing address is required'),
-    //   country: Yup.string().required('Billing country is required'),
-    //   state: Yup.string().required('Billing state is required'),
-    //   postal_code: Yup.string().required('Billing postal_code is required')
+    //   address_line1: Yup.string().required('Address Line 1 is required'),
+    //   address_line2: Yup.string().required('Address Line 2 is required'),
+    //   country: Yup.string().required('Country is required'),
+    //   state: Yup.string().required('State is required'),
+    //   postal_code: Yup.string().required('Postal Code is required')
     // }),
     // shipping_address: Yup.object({
-    //   address_line1: Yup.string().required('Shipping address is required'),
-    //   country: Yup.string().required('Shipping country is required'),
-    //   state: Yup.string().required('Shipping state is required'),
-    //   postal_code: Yup.string().required('Shipping postal_code is required')
+    //   address_line1: Yup.string().required('Address Line 1 is required'),
+    //   address_line2: Yup.string().required('Address Line 2 is required'),
+    //   country: Yup.string().required('Country is required'),
+    //   state: Yup.string().required('State is required'),
+    //   postal_code: Yup.string().required('Postal Code is required')
     // })
   });
 
@@ -154,12 +158,14 @@ const AddItem = ({ getInvoicesList, type, selectedInvoice, businessDetailsData, 
       order_number: '',
       billing_address: {
         address_line1: '',
+        address_line2: '',
         country: 'IN',
         state: '',
         postal_code: ''
       },
       shipping_address: {
         address_line1: '',
+        address_line2: '',
         country: 'IN',
         state: '',
         postal_code: ''
@@ -184,18 +190,19 @@ const AddItem = ({ getInvoicesList, type, selectedInvoice, businessDetailsData, 
 
       total_sgst_amount: 0,
       total_igst_amount: 0,
-      notes: 'anand',
+      notes: '',
       pending_amount: 0,
       shipping_amount: 0,
       subtotal_amount: 0,
       terms_and_conditions: '',
       total_amount: 0,
       shipping_amount_with_tax: 0,
+      shipping_tax: 0,
       applied_tax: false,
+
       same_address: false,
       selected_gst_rate: 0,
-      not_applicablefor_shipping: false,
-      shipping_tax: 0
+      not_applicablefor_shipping: false
     };
   };
   const formik = useFormik({
@@ -214,12 +221,16 @@ const AddItem = ({ getInvoicesList, type, selectedInvoice, businessDetailsData, 
       const financialYear = `${financialYearStart}-${financialYearEnd.toString().slice(2)}`;
 
       const postData = { ...values };
-      postData.invoicing_profile = businessDetailsData.id;
+      postData.invoicing_profile = businessDetailsData?.id;
       postData.financial_year = financialYear;
-      let put_url = ` /invoicing/invoice-update/${selectedInvoice?.id}/`;
+      postData.format_version = Number(businessDetailsData.invoice_format.format_version);
+
+      let put_url = `/invoicing/invoice-update/${selectedInvoice?.id}/`;
+
       let post_url = '/invoicing/invoice-create';
       let method = type === 'edit' ? 'put' : 'post';
       let url = type === 'edit' ? put_url : post_url;
+      console.log(postData);
       const { res } = await Factory(method, url, postData);
       if (res.status_cd === 0) {
         onClose();
@@ -235,11 +246,13 @@ const AddItem = ({ getInvoicesList, type, selectedInvoice, businessDetailsData, 
       setFieldValue('not_applicablefor_shipping', false);
 
       formik.setFieldValue('shipping_address.address_line1', values.billing_address.address_line1);
+      formik.setFieldValue('shipping_address.address_line2', values.billing_address.address_line2);
       formik.setFieldValue('shipping_address.state', values.billing_address.state);
       formik.setFieldValue('shipping_address.country', values.billing_address.country);
       formik.setFieldValue('shipping_address.postal_code', values.billing_address.postal_code);
     } else {
       formik.setFieldValue('shipping_address.address_line1', '');
+      formik.setFieldValue('shipping_address.address_line2', '');
       formik.setFieldValue('shipping_address.state', '');
       formik.setFieldValue('shipping_address.postal_code', '');
     }
@@ -250,9 +263,17 @@ const AddItem = ({ getInvoicesList, type, selectedInvoice, businessDetailsData, 
     if (e.target.checked === true) {
       setFieldValue('same_address', false);
       formik.setFieldValue('shipping_address.address_line1', 'NA');
+      formik.setFieldValue('shipping_address.address_line2', 'NA');
       formik.setFieldValue('shipping_address.state', 'NA');
       formik.setFieldValue('shipping_address.country', 'NA');
       formik.setFieldValue('shipping_address.postal_code', 'NA');
+    } else {
+      setFieldValue('same_address', false);
+      formik.setFieldValue('shipping_address.address_line1', '');
+      formik.setFieldValue('shipping_address.address_line2', '');
+      formik.setFieldValue('shipping_address.state', '');
+      formik.setFieldValue('shipping_address.country', 'IN');
+      formik.setFieldValue('shipping_address.postal_code', '');
     }
   };
   const get_Goods_and_Services_Data = async () => {
@@ -271,7 +292,6 @@ const AddItem = ({ getInvoicesList, type, selectedInvoice, businessDetailsData, 
       formik.setFieldValue('invoice_number', res.data.latest_invoice_number);
     }
   };
-
   const renderField = (item) => {
     const fieldName = `${item.name}`;
     if (item.name === 'place_of_supply' || item.name === 'state' || item.name === 'customer' || item.name === 'terms') {
@@ -323,16 +343,19 @@ const AddItem = ({ getInvoicesList, type, selectedInvoice, businessDetailsData, 
 
               if (formik.values.same_address) {
                 formik.setFieldValue('shipping_address.address_line1', selectedCustomer.address_line1);
+                formik.setFieldValue('shipping_address.address_line2', selectedCustomer.address_line2);
                 formik.setFieldValue('shipping_address.state', selectedCustomer.state);
                 formik.setFieldValue('shipping_address.country', selectedCustomer.country);
                 formik.setFieldValue('shipping_address.postal_code', selectedCustomer.postal_code);
 
                 formik.setFieldValue('billing_address.address_line1', selectedCustomer.address_line1);
+                formik.setFieldValue('billing_address.address_line2', selectedCustomer.address_line2);
                 formik.setFieldValue('billing_address.state', selectedCustomer.state);
                 formik.setFieldValue('billing_address.country', selectedCustomer.country);
                 formik.setFieldValue('billing_address.postal_code', selectedCustomer.postal_code);
               } else {
                 formik.setFieldValue('billing_address.address_line1', selectedCustomer.address_line1);
+                formik.setFieldValue('billing_address.address_line2', selectedCustomer.address_line2);
                 formik.setFieldValue('billing_address.state', selectedCustomer.state);
                 formik.setFieldValue('billing_address.country', selectedCustomer.country);
                 formik.setFieldValue('billing_address.postal_code', selectedCustomer.postal_code);
@@ -580,7 +603,8 @@ const AddItem = ({ getInvoicesList, type, selectedInvoice, businessDetailsData, 
     recalculateTotals();
   };
   const handleDiscountChange = (index, value) => {
-    const newDiscount = Number(value) || 0;
+    const newDiscount = value;
+    console.log(newDiscount);
     const newItemDetails = [...formik.values.item_details];
     newItemDetails[index].discount = newDiscount;
 
@@ -636,19 +660,14 @@ const AddItem = ({ getInvoicesList, type, selectedInvoice, businessDetailsData, 
   useEffect(() => {
     if (open) {
       get_Goods_and_Services_Data();
-      getinvoice_format();
+      recalculateTotals();
     }
   }, [open, businessDetailsData]);
   useEffect(() => {
-    if (businessDetailsData) {
-      // const { prefix, startingNumber, suffix } = businessDetailsData.invoice_format || {};
-      // const generatedInvoiceNumber = `${prefix}-${startingNumber}-${suffix}`;
-      // const currentInvoiceDate = dayjs().format('YYYY-MM-DD');
-      // formik.setFieldValue('invoice_number', generatedInvoiceNumber);
-      // formik.setFieldValue('invoice_date', currentInvoiceDate); // Set the current date or other logic if needed
+    if (open && type === 'add') {
+      getinvoice_format();
     }
-  }, [open]);
-
+  }, [open, businessDetailsData]);
   const bulkItemSave = (data) => {
     formik.setFieldValue('item_details', [...formik.values.item_details, ...data]);
     recalculateTotals();
@@ -676,13 +695,22 @@ const AddItem = ({ getInvoicesList, type, selectedInvoice, businessDetailsData, 
           selectedInvoice.shipping_address &&
           selectedInvoice.billing_address &&
           selectedInvoice.shipping_address.address_line1 === selectedInvoice.billing_address.address_line1 &&
+          selectedInvoice.shipping_address.address_line2 === selectedInvoice.billing_address.address_line2 &&
           selectedInvoice.shipping_address.country === selectedInvoice.billing_address.country &&
           selectedInvoice.shipping_address.state === selectedInvoice.billing_address.state &&
           selectedInvoice.shipping_address.postal_code === selectedInvoice.billing_address.postal_code
             ? true
             : false,
 
-        not_applicablefor_shipping: false
+        not_applicablefor_shipping:
+          selectedInvoice.billing_address &&
+          selectedInvoice.shipping_address.address_line1 === 'NA' &&
+          selectedInvoice.shipping_address.address_line2 === 'NA' &&
+          selectedInvoice.shipping_address.country === 'NA' &&
+          selectedInvoice.shipping_address.state === 'NA' &&
+          selectedInvoice.shipping_address.postal_code === 'NA'
+            ? true
+            : false
       });
     }
   }, [type, selectedInvoice]);
@@ -702,6 +730,7 @@ const AddItem = ({ getInvoicesList, type, selectedInvoice, businessDetailsData, 
             aria-label="close"
             onClick={() => {
               resetForm();
+              setType('add');
               onClose();
             }}
           >
@@ -819,7 +848,7 @@ const AddItem = ({ getInvoicesList, type, selectedInvoice, businessDetailsData, 
                               options={itemsList.map((item) => item.name)}
                               value={item.item || null}
                               onChange={(event, newValue) => handleItemChange(index, newValue)}
-                              style={{ minWidth: 250, maxWidth: 250 }}
+                              style={{ minWidth: 230, maxWidth: 230 }}
                               renderInput={(params) => <TextField {...params} />}
                             />
                           </TableCell>
@@ -828,6 +857,7 @@ const AddItem = ({ getInvoicesList, type, selectedInvoice, businessDetailsData, 
                             <CustomInput
                               name={`item_details[${index}].quantity`}
                               value={item.quantity}
+                              style={{ minWidth: 100, maxWidth: 100 }}
                               onChange={(e) => handleQuantityChange(index, e.target.value)}
                             />
                           </TableCell>
@@ -836,6 +866,7 @@ const AddItem = ({ getInvoicesList, type, selectedInvoice, businessDetailsData, 
                             <CustomInput
                               name={`item_details[${index}].rate`}
                               value={item.rate}
+                              style={{ minWidth: 120, maxWidth: 120 }}
                               onChange={(e) => handleRateChange(index, e.target.value)}
                             />
                           </TableCell>
@@ -853,6 +884,7 @@ const AddItem = ({ getInvoicesList, type, selectedInvoice, businessDetailsData, 
                             <CustomInput
                               name={`item_details[${index}].discount`}
                               value={item.discount}
+                              style={{ minWidth: 100, maxWidth: 100 }}
                               onChange={(e) => handleDiscountChange(index, e.target.value)}
                             />
                           </TableCell>
@@ -867,7 +899,6 @@ const AddItem = ({ getInvoicesList, type, selectedInvoice, businessDetailsData, 
                           <TableCell>
                             <ListItemButton sx={{ color: '#d32f2f' }} onClick={() => handleDeleteItem(index)}>
                               {' '}
-                              {/* Example red color */}
                               <ListItemIcon>
                                 <IconTrash size={16} style={{ color: '#d32f2f' }} /> {/* Apply color with inline style */}
                               </ListItemIcon>
