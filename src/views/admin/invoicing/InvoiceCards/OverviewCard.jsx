@@ -166,15 +166,19 @@ export default function OverviewCard({
   const { showSnackbar } = useSnackbar();
 
   const getStatsData = async (type) => {
-    setTitle(titles[type]);
-    let url = `/invoicing/detail-invoice?invoicing_profile_id=1&&filter_type=${type}&&financial_year=${financialYear}`;
-    const { res } = await Factory('get', url, {});
-    if (res.status_cd === 1) {
-      if (res.status === 404) {
-        showSnackbar('Data Not found', 'error');
+    if (businessData.id) {
+      setTitle(titles[type]);
+      let url = `/invoicing/detail-invoice?invoicing_profile_id=${businessData.id}&&filter_type=${type}&&financial_year=${financialYear}`;
+      const { res } = await Factory('get', url, {});
+      if (res.status_cd === 1) {
+        if (res.status === 404) {
+          showSnackbar('Data Not found', 'error');
+        }
+      } else {
+        setInvoices(res.data);
       }
     } else {
-      setInvoices(res.data);
+      showSnackbar('Business data not found', 'error');
     }
   };
 
@@ -182,9 +186,9 @@ export default function OverviewCard({
     const { res } = await Factory('get', '/invoicing/invoicing-profiles/', {});
     if (res) {
       setBusinessData(res.data);
-      // getDashboardData(res.data.id);
-      getInvoices(1);
-      getDashboardData(1);
+      getDashboardData(res.data.id);
+      getInvoices(res.data.id);
+      getDashboardData(res.data.id);
     }
   };
 
@@ -225,7 +229,7 @@ export default function OverviewCard({
       showSnackbar(JSON.stringify(res.data), 'error');
     } else {
       showSnackbar('Invoice Deleted Successfully', 'success');
-      getInvoices(1);
+      getInvoices(businessData.id);
     }
   };
 
@@ -236,8 +240,8 @@ export default function OverviewCard({
   useEffect(() => {
     // setBusinessData(res.data);
     if (businessData.id) {
-      getInvoices(1);
-      getDashboardData(1);
+      getInvoices(businessData.id);
+      getDashboardData(businessData.id);
     }
   }, [financialYear]);
 
@@ -405,9 +409,9 @@ export default function OverviewCard({
         <Grid container>
           <Grid size={{ xs: 6 }}>
             <Typography variant="h6">{title}</Typography>
-            <Typography variant="caption" color="grey.700">
+            {/* <Typography variant="caption" color="grey.700">
               FY: {financialYear}
-            </Typography>
+            </Typography> */}
           </Grid>
           <Grid size={{ xs: 6 }} sx={{ textAlign: 'right' }}>
             <Button
@@ -416,7 +420,7 @@ export default function OverviewCard({
               startIcon={<IconReload size={16} />}
               sx={{ minWidth: 78, mr: 1 }}
               onClick={() => {
-                getInvoices(1);
+                getInvoices(businessData.id);
                 setTitle('Over All Financial Year Invoices');
               }}
             >
