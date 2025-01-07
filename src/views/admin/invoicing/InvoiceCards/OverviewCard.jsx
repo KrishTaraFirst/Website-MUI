@@ -516,7 +516,7 @@ export default function OverviewCard({
         customers={customers}
         open={open}
         onClose={onClose}
-        getInvoicesList={getInvoicesList}
+        getInvoicesList={getInvoices}
         selectedInvoice={selectedInvoice}
         type={type}
       />
