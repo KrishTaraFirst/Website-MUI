@@ -35,7 +35,7 @@ export default function AnalyticsOverview() {
               }}
             >
               <Typography variant="h3">Hello, User!</Typography>
-              <Typography variant="h4">Welcom Back</Typography>
+              <Typography variant="h5">Welcome back to Tara First</Typography>
               <Typography color="grey.600" sx={{ mt: 2 }} variant="subtitle1">
                 Tara gives you the power to handle taxes, incorporate your business, stay compliant, run payroll, and create invoices – all
                 in a few clicks. Let us help you focus on your wellbeing while we take care of the rest!
@@ -62,13 +62,6 @@ export default function AnalyticsOverview() {
           </MainCard>
         </Grid>
       </Grid>
-
-      {/* <Grid size={12}>
-        <Services />
-      </Grid> */}
-      {/* <Grid size={12}>
-        <AnalyticsTopRef />
-      </Grid> */}
     </Grid>
   );
 }
