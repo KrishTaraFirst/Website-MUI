@@ -42,7 +42,7 @@ import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
 import BulkItems from './BulkItems';
 import { useSnackbar } from '@/components/CustomSnackbar';
 
-const AddItem = ({ getInvoicesList, invoicesList, type, selectedInvoice, businessDetailsData, customers, open, onClose }) => {
+const AddItem = ({ getInvoicesList, type, selectedInvoice, businessDetailsData, customers, open, onClose }) => {
   const [addInvoiceData] = useState({
     invoice_data: [
       { name: 'customer', label: 'Customer Name' },
@@ -199,7 +199,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selectedInvoice, busines
     };
   };
   const formik = useFormik({
-    initialValues: type === 'edit' ? { notes: 'krishna' } : fillFieldValues(),
+    initialValues: fillFieldValues(),
     validationSchema,
     onSubmit: async (values) => {
       const currentDate = new Date();
@@ -222,10 +222,10 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selectedInvoice, busines
       let url = type === 'edit' ? put_url : post_url;
       const { res } = await Factory(method, url, postData);
       if (res.status_cd === 0) {
-        getInvoicesList();
         onClose();
         resetForm();
         showSnackbar('Data Added Successfully', 'success');
+        getInvoicesList(businessDetailsData?.id);
       }
     }
   });
@@ -448,6 +448,7 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selectedInvoice, busines
           error={formik.touched[section]?.[item.name] && Boolean(formik.errors[section]?.[item.name])}
           helperText={formik.touched[section]?.[item.name] && formik.errors[section]?.[item.name]}
           name={fieldName}
+          disabled={formik.values.same_address || formik.values.not_applicablefor_shipping}
         />
       );
     } else {
@@ -459,7 +460,8 @@ const AddItem = ({ getInvoicesList, invoicesList, type, selectedInvoice, busines
           onBlur={formik.handleBlur}
           error={formik.touched[section]?.[item.name] && Boolean(formik.errors[section]?.[item.name])}
           helperText={formik.touched[section]?.[item.name] && formik.errors[section]?.[item.name]}
-          disabled={item.name === 'invoice_number' || item.name === 'country'}
+          textColor={type === 'edit' && '#776080'}
+          disabled={item.name === 'country' || formik.values.same_address || formik.values.not_applicablefor_shipping}
         />
       );
     }
