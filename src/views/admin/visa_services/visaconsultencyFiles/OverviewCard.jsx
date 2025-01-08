@@ -116,7 +116,8 @@ export default function OverviewCard({ clientListData }) {
     //   pathname: `/dashboard/user/${val}`,
     //   query: { state: JSON.stringify(clientListData) } // Pass state data as query
     // });
-    router.replace(`/dashboard/user/${val}`);
+    // router.replace(`/visa_services/${val}`);
+    router.push(`/visa_services/${val}`);
   };
 
   return (

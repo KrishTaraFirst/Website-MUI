@@ -26,7 +26,7 @@ export default function ModalPhoneNumber() {
     control,
     setValue,
     formState: { errors }
-  } = useForm({ defaultValues: { dialcode: '+1' } });
+  } = useForm({ defaultValues: { dialcode: '+91' } });
 
   const onSubmit = (data) => {
     console.log(data);
