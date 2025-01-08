@@ -32,7 +32,16 @@ export default function FilterDialog({ financialYear, businessData, filterDialog
     control,
     setValue,
     formState: { errors }
-  } = useForm({ defaultValues: {} });
+  } = useForm({
+    defaultValues: {
+      date: '',
+      status: '',
+      invoiceNumber: '',
+      customer: '',
+      amount: '',
+      dueDate: ''
+    }
+  });
   const { showSnackbar } = useSnackbar();
 
   // const handleSubmit = async () => {
@@ -64,7 +73,7 @@ export default function FilterDialog({ financialYear, businessData, filterDialog
       setInvoices(res.data);
       setFilterDialog(false);
     }
-    reset({ status: '' });
+    reset({ status: '', date: '', status: '', invoiceNumber: '', customer: '', amount: '', dueDate: '' });
     setValue('status', '');
   };
 
@@ -134,6 +143,7 @@ export default function FilterDialog({ financialYear, businessData, filterDialog
                   <OutlinedInput
                     {...register('amount')}
                     placeholder="Rs."
+                    type="number"
                     slotProps={{ input: { 'aria-label': 'Amount' } }}
                     error={errors.amount && Boolean(errors.amount)}
                     // sx={{ ...inputSx }}

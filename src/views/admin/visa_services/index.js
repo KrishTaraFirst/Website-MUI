@@ -5,10 +5,10 @@ import Factory from '@/utils/Factory';
 import { useState, useEffect } from 'react';
 
 // @project
-import Services from '../dashboard/user/Services';
+import Services from './visaconsultencyFiles/Services';
 import { useSnackbar } from '@/components/CustomSnackbar';
-import OverviewCard from '../dashboard/user/OverviewCard';
-import AnalyticsTopRef from '../dashboard/user/AnalyticsTopRef';
+import OverviewCard from './visaconsultencyFiles/OverviewCard';
+import AnalyticsTopRef from './visaconsultencyFiles/AnalyticsTopRef';
 
 /***************************  ANALYTICS - OVERVIEW  ***************************/
 

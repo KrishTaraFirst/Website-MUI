@@ -29,7 +29,7 @@ export default function TableCard({ clientListData, tab, table, onGlobalSearch }
         : tab === 'pending' && clientListData.pending_data;
   return (
     <MainCard sx={{ p: 0 }}>
-      <Toolbar table={table} onGlobalSearch={onGlobalSearch} />
+      {/* <Toolbar table={table} onGlobalSearch={onGlobalSearch} /> */}
       <TableContainer>
         <Table>
           <TableHead>
