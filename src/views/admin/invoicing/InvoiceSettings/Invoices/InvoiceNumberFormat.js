@@ -9,6 +9,8 @@ import { usePathname, useRouter } from 'next/navigation';
 
 const InvoiceNumberFormat = ({ businessDetailsData }) => {
   // State for invoice format data to be manually updated
+  const pathname = usePathname();
+
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
   const [invoiceFormatData, setInvoiceFormatData] = useState({
@@ -50,9 +52,8 @@ const InvoiceNumberFormat = ({ businessDetailsData }) => {
         const { res } = await Factory('put', url, postData);
         if (res.status_cd === 0) {
           showSnackbar('Data Updated Successfully', 'success');
-          router.push(`/invoicing`);
+          // router.push(`/invoicing`);
         } else {
-          // Handle failure scenario based on status_cd (if needed)
           showSnackbar('Failed to update data', 'error');
         }
       } catch (error) {
@@ -146,9 +147,19 @@ const InvoiceNumberFormat = ({ businessDetailsData }) => {
       </DialogContent>
 
       <DialogActions sx={{ justifyContent: 'center', padding: 0 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, gap: 2 }}>
           <Button onClick={formik.handleSubmit} color="primary" variant="contained">
             Save
+          </Button>
+          <Button
+            onClick={() => {
+              router.push(`/invoicing/generateInvoice`);
+            }}
+            color="primary"
+            variant="contained"
+            type="button"
+          >
+            New Invoice
           </Button>
         </Box>
       </DialogActions>

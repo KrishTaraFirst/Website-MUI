@@ -66,6 +66,11 @@ export default function TabThree({ businessDetails, onNext }) {
           />
         </Grid>
       </Grid>
+      <Box textAlign="center">
+        <Button variant="contained" onClick={onNext} sx={{ mt: 3 }}>
+          Next
+        </Button>
+      </Box>
     </>
   );
 }

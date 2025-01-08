@@ -232,6 +232,7 @@ const AddItem = ({ type, setType, open, handleOpen, handleClose, selectedItem, b
                       </div>
                       <CustomInput
                         name={item.name}
+                        placeholder={item.name === 'selling_price' ? '₹' : ''}
                         value={values[item.name]}
                         onChange={(e) => setFieldValue(item.name, e.target.value)}
                         onBlur={handleBlur}

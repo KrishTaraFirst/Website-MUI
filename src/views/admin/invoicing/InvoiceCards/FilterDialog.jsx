@@ -133,7 +133,7 @@ export default function FilterDialog({ financialYear, businessData, filterDialog
                   </Typography>
                   <OutlinedInput
                     {...register('amount')}
-                    placeholder="Rs."
+                    placeholder="₹"
                     slotProps={{ input: { 'aria-label': 'Amount' } }}
                     error={errors.amount && Boolean(errors.amount)}
                     // sx={{ ...inputSx }}

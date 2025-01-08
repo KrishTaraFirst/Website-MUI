@@ -418,9 +418,9 @@ export default function OverviewCard({
                 <TableCell>Date</TableCell>
                 <TableCell>Invoice Number</TableCell>
                 <TableCell>Customer</TableCell>
-                <TableCell>Amount</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Due Date</TableCell>
+                <TableCell>Amount</TableCell>
                 <TableCell>Balance Due</TableCell>
                 <TableCell>Action</TableCell>
               </TableRow>
@@ -432,7 +432,6 @@ export default function OverviewCard({
                     <TableCell>{invoice.invoice_date}</TableCell>
                     <TableCell>{invoice.invoice_number}</TableCell>
                     <TableCell>{invoice.customer}</TableCell>
-                    <TableCell>{invoice.total_amount}</TableCell>
                     <TableCell>
                       <Chip
                         size="small"
@@ -442,12 +441,14 @@ export default function OverviewCard({
                       />
                     </TableCell>
                     <TableCell>{invoice.due_date}</TableCell>
+                    <TableCell>{invoice.total_amount}</TableCell>
                     <TableCell>{invoice.pending_amount}</TableCell>
                     <TableCell>
                       <ActionCell
                         row={invoice} // Pass the customer row data
                         onEdit={() => {
                           setType('edit');
+                          router.push(`/invoicing/generateInvoice?id=${invoice.id}`);
                           handleEdit(invoice);
                         }} // Edit handler
                         onDelete={() => {
@@ -488,7 +489,7 @@ export default function OverviewCard({
         setInvoices={setInvoices}
         setTitle={setTitle}
       />
-      <AddInvoice
+      {/* <AddInvoice
         invoicesList={invoicesList}
         businessDetailsData={businessDetailsData}
         customers={customers}
@@ -498,7 +499,7 @@ export default function OverviewCard({
         selectedInvoice={selectedInvoice}
         type={type}
         setType={setType}
-      />
+      /> */}
     </Box>
   );
 }

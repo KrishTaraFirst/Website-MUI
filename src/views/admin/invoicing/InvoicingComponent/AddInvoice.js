@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import Button from '@mui/material/Button';
+import { Button } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -31,7 +34,8 @@ import {
   Autocomplete,
   ListItemButton,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Stack
 } from '@mui/material';
 import { IconX } from '@tabler/icons-react';
 import IconButton from '@mui/material/IconButton';
@@ -42,7 +46,7 @@ import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
 import BulkItems from './BulkItems';
 import { useSnackbar } from '@/components/CustomSnackbar';
 
-const AddItem = ({ getInvoicesList, type, setType, selectedInvoice, businessDetailsData, customers, open, onClose }) => {
+const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, businessDetailsData, customers, open, onClose, itemsList }) => {
   const [addInvoiceData] = useState({
     invoice_data: [
       { name: 'customer', label: 'Customer Name' },
@@ -71,10 +75,10 @@ const AddItem = ({ getInvoicesList, type, setType, selectedInvoice, businessDeta
     ]
   });
   const { showSnackbar } = useSnackbar();
+  const router = useRouter();
 
-  const [itemsList, setItemsList] = useState([]);
   const [bulkItemsDialogue, setBulkItemsDialogue] = useState(false); // State for Apply Tax checkbox
-  const [invoice_number_format, set_Invoice_number_format] = useState('');
+  // const [invoice_number_format, set_Invoice_number_format] = useState('');
   let termsDropdown = ['NET 15', 'NET 30', 'NET 45', 'NET 60', 'Due end of the MONTH', 'Due end of next MONTH', 'Due on Receipt', 'Custom'];
 
   const gstRates = [0, 5, 12, 18, 28]; // Example GST rates
@@ -122,13 +126,14 @@ const AddItem = ({ getInvoicesList, type, setType, selectedInvoice, businessDeta
   const validationSchema = Yup.object({
     customer: Yup.string().required('Customer name is required'),
     terms: Yup.string().required('Terms are required'),
-    // financial_year: Yup.string().required('Financial year is required'),
     invoice_number: Yup.string().required('Invoice number is required'),
     invoice_date: Yup.date().required('Invoice date is required'),
     place_of_supply: Yup.string().required('Place of supply is required'),
     due_date: Yup.date().required('Due date is required'),
     order_number: Yup.string().required('Order number is required'),
     sales_person: Yup.string().required('Sales Person is required')
+
+    // not_applicablefor_shipping: Yup.boolean(),
 
     // billing_address: Yup.object({
     //   address_line1: Yup.string().required('Address Line 1 is required'),
@@ -142,12 +147,18 @@ const AddItem = ({ getInvoicesList, type, setType, selectedInvoice, businessDeta
     //   address_line2: Yup.string().required('Address Line 2 is required'),
     //   country: Yup.string().required('Country is required'),
     //   state: Yup.string().required('State is required'),
-    //   postal_code: Yup.string().required('Postal Code is required')
+
+    //   postal_code: Yup.string().when('not_applicablefor_shipping', {
+    //     is: false,
+    //     then: () => Yup.string().required('Postal code is required'),
+
+    //     otherwise: Yup.string().oneOf(['NA'], 'Postal code must be "NA" when shipping is not applicable') // Ensure "NA" for "No"
+    //   })
     // })
   });
 
-  const fillFieldValues = () => {
-    return {
+  const formik = useFormik({
+    initialValues: {
       customer: '',
       place_of_supply: '',
       invoice_number: '',
@@ -199,15 +210,13 @@ const AddItem = ({ getInvoicesList, type, setType, selectedInvoice, businessDeta
       shipping_amount_with_tax: 0,
       shipping_tax: 0,
       applied_tax: false,
-
+      invoice_status: 'Created',
       same_address: false,
       selected_gst_rate: 0,
       not_applicablefor_shipping: false
-    };
-  };
-  const formik = useFormik({
-    initialValues: fillFieldValues(),
+    },
     validationSchema,
+
     onSubmit: async (values) => {
       const currentDate = new Date();
 
@@ -226,17 +235,15 @@ const AddItem = ({ getInvoicesList, type, setType, selectedInvoice, businessDeta
       postData.format_version = Number(businessDetailsData.invoice_format.format_version);
 
       let put_url = `/invoicing/invoice-update/${selectedInvoice?.id}/`;
-
       let post_url = '/invoicing/invoice-create';
-      let method = type === 'edit' ? 'put' : 'post';
-      let url = type === 'edit' ? put_url : post_url;
+      let method = selectedInvoice ? 'put' : 'post';
+      let url = selectedInvoice ? put_url : post_url;
       console.log(postData);
       const { res } = await Factory(method, url, postData);
       if (res.status_cd === 0) {
-        onClose();
         resetForm();
         showSnackbar('Data Added Successfully', 'success');
-        getInvoicesList(businessDetailsData?.id);
+        router.push(`/invoicing`);
       }
     }
   });
@@ -276,22 +283,7 @@ const AddItem = ({ getInvoicesList, type, setType, selectedInvoice, businessDeta
       formik.setFieldValue('shipping_address.postal_code', '');
     }
   };
-  const get_Goods_and_Services_Data = async () => {
-    let url = `/invoicing/goods-services/${businessDetailsData.id}`;
-    const { res } = await Factory('get', url, {});
 
-    if (res.status_cd === 0) {
-      setItemsList(res.data.goods_and_services);
-    }
-  };
-  const getinvoice_format = async () => {
-    let url = `/invoicing/latest/${businessDetailsData.id}/`;
-    const { res } = await Factory('get', url, {});
-    if (res.status_cd === 0) {
-      set_Invoice_number_format(res.data.latest_invoice_number);
-      formik.setFieldValue('invoice_number', res.data.latest_invoice_number);
-    }
-  };
   const renderField = (item) => {
     const fieldName = `${item.name}`;
     if (item.name === 'place_of_supply' || item.name === 'state' || item.name === 'customer' || item.name === 'terms') {
@@ -429,7 +421,7 @@ const AddItem = ({ getInvoicesList, type, setType, selectedInvoice, businessDeta
               }
             }
           }}
-          minDate={dayjs()}
+          // minDate={  dayjs()}
           sx={{
             width: '100%',
             '& .MuiInputBase-root': {
@@ -483,7 +475,7 @@ const AddItem = ({ getInvoicesList, type, setType, selectedInvoice, businessDeta
           onBlur={formik.handleBlur}
           error={formik.touched[section]?.[item.name] && Boolean(formik.errors[section]?.[item.name])}
           helperText={formik.touched[section]?.[item.name] && formik.errors[section]?.[item.name]}
-          textColor={type === 'edit' && '#776080'}
+          textColor={selectedInvoice && '#776080'}
           disabled={item.name === 'country' || formik.values.same_address || formik.values.not_applicablefor_shipping}
         />
       );
@@ -658,16 +650,14 @@ const AddItem = ({ getInvoicesList, type, setType, selectedInvoice, businessDeta
     formik.values.place_of_supply
   ]);
   useEffect(() => {
-    if (open) {
-      get_Goods_and_Services_Data();
-      recalculateTotals();
-    }
-  }, [open, businessDetailsData]);
+    recalculateTotals();
+  }, []);
+
   useEffect(() => {
-    if (open && type === 'add') {
-      getinvoice_format();
+    if (invoice_number_format) {
+      formik.setFieldValue('invoice_number', invoice_number_format);
     }
-  }, [open, businessDetailsData]);
+  }, [invoice_number_format]);
   const bulkItemSave = (data) => {
     formik.setFieldValue('item_details', [...formik.values.item_details, ...data]);
     recalculateTotals();
@@ -681,7 +671,7 @@ const AddItem = ({ getInvoicesList, type, setType, selectedInvoice, businessDeta
   };
 
   useEffect(() => {
-    if (type === 'edit' && selectedInvoice) {
+    if (selectedInvoice) {
       console.log(selectedInvoice);
 
       formik.setValues({
@@ -713,14 +703,26 @@ const AddItem = ({ getInvoicesList, type, setType, selectedInvoice, businessDeta
             : false
       });
     }
-  }, [type, selectedInvoice]);
+  }, [selectedInvoice]);
 
   const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue, resetForm } = formik;
 
   return (
-    <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title" fullWidth maxWidth="lg">
-      <Box sx={{ m: 2 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Stack sx={{ gap: 3 }}>
+      <Stack direction="row" sx={{ alignItems: 'end', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
+        <Stack direction="column" sx={{ gap: 0.5 }}>
+          <Typography variant="h4" sx={{ fontWeight: 400 }}>
+            Create Invoice
+          </Typography>
+          <Typography variant="caption" sx={{ color: 'grey.700' }}>
+            Some text tagline regarding invoicing.
+          </Typography>
+        </Stack>
+        <Stack direction="row" sx={{ gap: 1.5 }}></Stack>
+      </Stack>
+
+      <Box sx={{}}>
+        {/* <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <DialogTitle id="form-dialog-title" sx={{ fontWeight: 'bold' }}>
             Add Invoice
           </DialogTitle>
@@ -736,10 +738,14 @@ const AddItem = ({ getInvoicesList, type, setType, selectedInvoice, businessDeta
           >
             <IconX size={20} />
           </IconButton>
-        </Box>
-        <Divider />
+        </Box> */}
         <DialogContent>
-          <form onSubmit={formik.handleSubmit}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              formik.handleSubmit(); // Calls Formik's submission logic
+            }}
+          >
             {/* Invoice Data Section */}
 
             <Box sx={{ mb: 2 }}>
@@ -747,6 +753,7 @@ const AddItem = ({ getInvoicesList, type, setType, selectedInvoice, businessDeta
                 Invoice Details
               </Typography>
             </Box>
+
             <Grid container spacing={2}>
               {addInvoiceData.invoice_data.map((item) => (
                 <Grid item xs={12} sm={6} key={item.name}>
@@ -758,61 +765,61 @@ const AddItem = ({ getInvoicesList, type, setType, selectedInvoice, businessDeta
               ))}
             </Grid>
 
-            <Grid container spacing={4} sx={{ mt: 3 }}>
-              {/* Billing Section */}
+            {/* Billing and Shipping Section - side by side */}
+            <Box sx={{ mb: 2, mt: 2 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                Billing & Shipping Information
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                <FormControlLabel
+                  control={<Checkbox checked={formik.values.same_address} onChange={sameAddressFunction} name="same_address" />}
+                  label="Same as Billing Address"
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={formik.values.not_applicablefor_shipping}
+                      onChange={notApplicablefor_shippingFunction}
+                      name="not_applicablefor_shipping"
+                    />
+                  }
+                  label="Not applicable for Shipping"
+                />
+              </Box>
+            </Box>
+
+            {/* Grid for Billing and Shipping Information */}
+            <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <Box sx={{ mb: 2, mt: 2 }}>
+                <Box sx={{ mb: 2 }}>
                   <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                     Billing Information
                   </Typography>
                 </Box>
-                <Grid container spacing={2} sx={{ mt: 2 }}>
-                  {addInvoiceData.billing.map((item) => (
-                    <Grid item xs={12} key={item.name}>
-                      <div style={{ paddingBottom: '5px' }}>
-                        <label>{item.label}</label>
-                      </div>
-                      {renderField2(item, 'billing_address')}
-                    </Grid>
-                  ))}
-                </Grid>
+                {addInvoiceData.billing.map((item) => (
+                  <Grid item xs={12} key={item.name} style={{ paddingBottom: '10px' }}>
+                    <div style={{ paddingBottom: '5px' }}>
+                      <label>{item.label}</label>
+                    </div>
+                    {renderField2(item, 'billing_address')}
+                  </Grid>
+                ))}
               </Grid>
 
-              {/* Shipping Section */}
-              <Grid item xs={12} md={6}>
-                <Box sx={{ mb: 2, mt: 2, display: 'flex', gap: 2 }}>
+              <Grid item xs={12} sm={6}>
+                <Box sx={{ mb: 2 }}>
                   <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                     Shipping Information
                   </Typography>
-                  <Box sx={{ mt: -1 }}>
-                    <FormControlLabel
-                      control={<Checkbox checked={formik.values.same_address} onChange={sameAddressFunction} name="same_address" />}
-                      label="Same as Billing Address"
-                    />
-                  </Box>
-                  <Box sx={{ mt: -1 }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={formik.values.not_applicablefor_shipping}
-                          onChange={notApplicablefor_shippingFunction}
-                          name="not_applicablefor_shipping"
-                        />
-                      }
-                      label="Not applicable for Shipping"
-                    />
-                  </Box>
                 </Box>
-                <Grid container spacing={2} sx={{ mt: -1 }}>
-                  {addInvoiceData.shipping.map((item) => (
-                    <Grid item xs={12} key={item.name}>
-                      <div style={{ paddingBottom: '5px' }}>
-                        <label>{item.label}</label>
-                      </div>
-                      {renderField2(item, 'shipping_address')}
-                    </Grid>
-                  ))}
-                </Grid>
+                {addInvoiceData.shipping.map((item) => (
+                  <Grid item xs={12} key={item.name} style={{ paddingBottom: '10px' }}>
+                    <div style={{ paddingBottom: '5px' }}>
+                      <label>{item.label}</label>
+                    </div>
+                    {renderField2(item, 'shipping_address')}
+                  </Grid>
+                ))}
               </Grid>
             </Grid>
 
@@ -935,7 +942,7 @@ const AddItem = ({ getInvoicesList, type, setType, selectedInvoice, businessDeta
                   </Typography>
                   <CustomInput
                     multiline
-                    rows={4}
+                    minRows={4}
                     maxRows={6}
                     name="notes" // Assuming 'notes' is the key in your initialValues
                     value={formik.values.notes}
@@ -949,7 +956,7 @@ const AddItem = ({ getInvoicesList, type, setType, selectedInvoice, businessDeta
                   </Typography>
                   <CustomInput
                     multiline
-                    rows={4}
+                    minRows={4}
                     maxRows={6}
                     name="terms_and_conditions" // Assuming 'terms_and_conditions' is the key in your initialValues
                     value={formik.values.terms_and_conditions}
@@ -971,8 +978,8 @@ const AddItem = ({ getInvoicesList, type, setType, selectedInvoice, businessDeta
                       Shipping Charges:
                     </Typography>
                     <CustomInput
-                      multiline
                       name="shipping_amount"
+                      placeholder="₹"
                       value={formik.values.shipping_amount}
                       onChange={handleShippingAmountChange}
                       sx={{ mt: -1, ml: 2 }}
@@ -1057,6 +1064,17 @@ const AddItem = ({ getInvoicesList, type, setType, selectedInvoice, businessDeta
               <Button variant="contained" type="submit">
                 Save
               </Button>
+              <Button
+                variant="contained"
+                type="button"
+                onClick={() => {
+                  formik.setFieldValue('invoice_status', 'Draft'); // 'Draft' should be a string
+                  formik.handleSubmit();
+                }}
+                disabled={formik.values.invoice_status === 'Draft'}
+              >
+                Save as Draft
+              </Button>
             </Box>
           </form>
         </DialogContent>
@@ -1071,7 +1089,7 @@ const AddItem = ({ getInvoicesList, type, setType, selectedInvoice, businessDeta
         maxWidth="xl"
         bulkItemSave={bulkItemSave}
       />
-    </Dialog>
+    </Stack>
   );
 };
 

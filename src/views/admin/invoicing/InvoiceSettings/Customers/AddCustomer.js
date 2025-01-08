@@ -231,6 +231,7 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
 
                       <CustomInput
                         name={item.name}
+                        placeholder={item.name === 'opening_balance' ? '₹' : ''}
                         value={item.name === 'pan_number' ? values[item.name].toUpperCase() : values[item.name]}
                         onChange={(e) => {
                           const value = item.name === 'pan_number' ? e.target.value.toUpperCase() : e.target.value;
