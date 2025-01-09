@@ -28,8 +28,7 @@ import { IconArrowUp, IconFilter, IconReload } from '@tabler/icons-react';
 import { Autocomplete, Box, Button, FormHelperText, InputLabel, TextField, Avatar } from '@mui/material';
 import DynamicIcon from '@/components/DynamicIcon';
 import { BASE_URL } from 'constants';
-
-/***************************  CARDS - BORDER WITH RADIUS  ***************************/
+import { indianCurrency } from '../../../../utils/CurrencyToggle'; /***************************  CARDS - BORDER WITH RADIUS  ***************************/
 
 export function applyBorderWithRadius(radius, theme) {
   return {
@@ -139,17 +138,7 @@ const titles = {
   total_recievables: 'Total Receivable'
 };
 
-export default function OverviewCard({
-  invoicesList,
-  businessDetailsData,
-  customers,
-  open,
-  onClose,
-  getInvoicesList,
-  type,
-  setType,
-  handleOpen
-}) {
+export default function OverviewCard({ businessDetailsData, open, onClose }) {
   const theme = useTheme();
   const router = useRouter();
   const chipDefaultProps = { color: 'success', variant: 'text', size: 'small' };
@@ -200,11 +189,6 @@ export default function OverviewCard({
     } else {
       setInvoices(res.data.invoices);
     }
-  };
-
-  const handleEdit = (invoice) => {
-    setSelectedInvoice(invoice);
-    handleOpen();
   };
 
   // Handle delete action
@@ -325,7 +309,9 @@ export default function OverviewCard({
                 <Stack sx={{ gap: 1.5 }}>
                   <Typography variant="subtitle1">{item.title}</Typography>
                   <Stack sx={{ gap: 0.5 }}>
-                    <Typography variant="h3">{dashboardData[item.id] || 0}</Typography>
+                    <Typography variant="h3">
+                      {indianCurrency}&nbsp;{dashboardData[item.id] || 0}
+                    </Typography>
                     {/* <Typography variant="caption" color="grey.700">
                     Tagline para
                   </Typography> */}
@@ -363,7 +349,10 @@ export default function OverviewCard({
               <Stack sx={{ gap: 1.5 }}>
                 <Typography variant="subtitle1">{item.title}</Typography>
                 <Stack sx={{ gap: 0.5 }}>
-                  <Typography variant="h3">{dashboardData[item.id] || 0}</Typography>
+                  <Typography variant="h3">
+                    {indianCurrency}&nbsp;
+                    {dashboardData[item.id] || 0}
+                  </Typography>
                   {/* <Typography variant="caption" color="grey.700">
                     Tagline
                   </Typography> */}
@@ -418,7 +407,8 @@ export default function OverviewCard({
                 <TableCell>Date</TableCell>
                 <TableCell>Invoice Number</TableCell>
                 <TableCell>Customer</TableCell>
-                <TableCell>Status</TableCell>
+                <TableCell> Payment Status</TableCell>
+                <TableCell> Invoice Status</TableCell>
                 <TableCell>Due Date</TableCell>
                 <TableCell>Amount</TableCell>
                 <TableCell>Balance Due</TableCell>
@@ -440,19 +430,38 @@ export default function OverviewCard({
                         color={invoice.payment_status === 'Pending' ? 'warning' : 'success'}
                       />
                     </TableCell>
+                    <TableCell>
+                      <Chip
+                        size="small"
+                        variant="outlined"
+                        label={invoice.invoice_status}
+                        color={invoice.payment_status === 'Approved' ? 'success' : 'warning'}
+                      />
+                    </TableCell>
                     <TableCell>{invoice.due_date}</TableCell>
-                    <TableCell>{invoice.total_amount}</TableCell>
-                    <TableCell>{invoice.pending_amount}</TableCell>
+                    <TableCell>
+                      {indianCurrency}&nbsp;{invoice.total_amount}
+                    </TableCell>
+
+                    <TableCell>
+                      {' '}
+                      {indianCurrency}&nbsp;{invoice.pending_amount}
+                    </TableCell>
                     <TableCell>
                       <ActionCell
+                        fromComponent="invoice"
                         row={invoice} // Pass the customer row data
                         onEdit={() => {
-                          setType('edit');
                           router.push(`/invoicing/generateInvoice?id=${invoice.id}`);
-                          handleEdit(invoice);
-                        }} // Edit handler
+                        }}
                         onDelete={() => {
                           handleDelete(invoice.id);
+                        }}
+                        onRecordPayment={() => {
+                          router.push(`/invoicing/recordpayment?id=${invoice.id}`);
+                        }}
+                        onPaymentHistory={() => {
+                          router.push(`/invoicing/paymenthistory?id=${invoice.id}`);
                         }}
                         open={open}
                         onClose={onClose}
@@ -489,17 +498,6 @@ export default function OverviewCard({
         setInvoices={setInvoices}
         setTitle={setTitle}
       />
-      {/* <AddInvoice
-        invoicesList={invoicesList}
-        businessDetailsData={businessDetailsData}
-        customers={customers}
-        open={open}
-        onClose={onClose}
-        getInvoicesList={getInvoices}
-        selectedInvoice={selectedInvoice}
-        type={type}
-        setType={setType}
-      /> */}
     </Box>
   );
 }

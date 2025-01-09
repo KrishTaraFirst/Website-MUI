@@ -31,10 +31,23 @@ import MessyDoodle from '@/images/illustration/MessyDoodle';
  * @param {Function} props.onEdit - Callback function for editing the entity.
  * @param {Function} props.onDelete - Callback function for deleting the entity.
  * @param {Object} props.deleteDialogData - Custom data for the delete confirmation dialog.
+ * @param {Object} props.onRecordPayment
+ * @param {Object} props.onPaymentHistory
  *
  * @returns {JSX.Element} - The rendered ActionCell component.
  */
-export default function ActionCell({ row, open, onClose, onEdit, onDelete, deleteDialogData, onDownload }) {
+export default function ActionCell({
+  row,
+  onRecordPayment,
+  onPaymentHistory,
+  fromComponent,
+  open,
+  onClose,
+  onEdit,
+  onDelete,
+  deleteDialogData,
+  onDownload
+}) {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null); // Anchor for Popper
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // Delete dialog state
@@ -103,7 +116,22 @@ export default function ActionCell({ row, open, onClose, onEdit, onDelete, delet
                     </ListItemIcon>
                     <ListItemText>Edit</ListItemText>
                   </ListItemButton>
-
+                  {fromComponent === 'invoice' && (
+                    <ListItemButton onClick={onRecordPayment}>
+                      <ListItemIcon>
+                        <IconEdit size={16} />
+                      </ListItemIcon>
+                      <ListItemText>Record Payment</ListItemText>
+                    </ListItemButton>
+                  )}
+                  {fromComponent === 'invoice' && (
+                    <ListItemButton onClick={onPaymentHistory}>
+                      <ListItemIcon>
+                        <IconEdit size={16} />
+                      </ListItemIcon>
+                      <ListItemText>Payment History</ListItemText>
+                    </ListItemButton>
+                  )}
                   {/* Delete Action */}
                   <ListItemButton sx={{ color: 'error.main' }} onClick={handleDeleteDialogOpen}>
                     <ListItemIcon>
