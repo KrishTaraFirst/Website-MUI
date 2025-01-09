@@ -17,6 +17,7 @@ import { analyticsBehaviorTableData } from './analytics-behavior-table/behavior-
 import Profile from '@/components/Profile';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import { useRouter } from 'next/navigation';
+import { titles } from './data';
 
 /***************************  COMPONENT - TABLE  ***************************/
 
@@ -175,15 +176,12 @@ export default function AnalyticsBehaviorTable({ tab }) {
   const onGlobalSearch = (globalFilter) => {
     setGlobalFilter(globalFilter);
   };
-  function capitalizeFirstLetter(val) {
-    return String(val).charAt(0).toUpperCase() + String(val).slice(1);
-  }
 
   return (
     <Box>
-      <Typography variant="h5">{capitalizeFirstLetter(tab)}</Typography>
+      <Typography variant="h5">{titles[tab]}</Typography>
       <Typography variant="caption" color={'grey.700'} sx={{ mb: 3 }}>
-        Tasks {tab}
+        Tasks {titles[tab]}
       </Typography>
       <Typography variant="h2" color={'grey.700'} sx={{ mb: 3 }}></Typography>
       <Table sx={{ mt: 3 }} table={table} clientListData={clientListData} tab={tab} onGlobalSearch={onGlobalSearch} />

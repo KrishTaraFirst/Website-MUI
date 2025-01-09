@@ -61,9 +61,9 @@ export default function OverviewCard({ clientListData }) {
     let overview = [
       {
         title: 'Requests',
-        href: '',
+        href: 'create-new',
         value: '23,876',
-        compare: 'Compare to last week',
+        compare: 'Tagline content',
         buttonLable: 'Create New',
         chip: {
           label: '24.5%',
@@ -74,7 +74,7 @@ export default function OverviewCard({ clientListData }) {
         title: 'Pending',
         href: 'pending',
         value: clientListData.pending || 0,
-        compare: 'Compare to last week',
+        compare: 'Tagline content',
         data: clientListData.in_progress_data || [],
         buttonLable: 'View',
         chip: {
@@ -86,7 +86,7 @@ export default function OverviewCard({ clientListData }) {
         title: 'In Progress',
         href: 'in_progress',
         value: clientListData.in_progress || 0,
-        compare: 'Compare to last week',
+        compare: 'Tagline content',
         data: clientListData.in_progress_data || [],
         buttonLable: 'View',
         chip: {
@@ -99,7 +99,7 @@ export default function OverviewCard({ clientListData }) {
         title: 'Completed',
         href: 'completed',
         value: clientListData.completed || 0,
-        compare: 'Compare to last week',
+        compare: 'Tagline content',
         data: clientListData.completed_data || [],
         buttonLable: 'View',
         chip: {
@@ -112,12 +112,7 @@ export default function OverviewCard({ clientListData }) {
   }, [clientListData]);
 
   const handleChange = (val) => {
-    // router.replace({
-    //   pathname: `/dashboard/user/${val}`,
-    //   query: { state: JSON.stringify(clientListData) } // Pass state data as query
-    // });
-    // router.replace(`/visa_services/${val}`);
-    router.push(`/visa_services/${val}`);
+    router.push(`/visa-services/${val}`);
   };
 
   return (
@@ -127,7 +122,7 @@ export default function OverviewCard({ clientListData }) {
           {/* <OverviewCard {...{ ...item, cardProps: { sx: { border: 'none', borderRadius: 0, boxShadow: 'none' } } }} /> */}
 
           <MainCard sx={{ border: 'none', borderRadius: 0, boxShadow: 'none' }}>
-            <Stack sx={{ gap: 4 }}>
+            <Stack sx={{ gap: 2 }}>
               <Stack direction="row" sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                 <Typography variant="subtitle1">{item.title}</Typography>
                 <Button color="primary" onClick={() => handleChange(item.href)}>
@@ -137,7 +132,7 @@ export default function OverviewCard({ clientListData }) {
               <Stack sx={{ gap: 0.5 }}>
                 <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
                   <Typography variant="h4">{item.value}</Typography>
-                  <Chip {...{ ...chipDefaultProps, ...item.chip }} />
+                  {/* <Chip {...{ ...chipDefaultProps, ...item.chip }} /> */}
                 </Stack>
                 <Typography variant="caption" color="grey.700">
                   {item.compare}

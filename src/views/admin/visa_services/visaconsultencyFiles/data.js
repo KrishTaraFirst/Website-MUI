@@ -25,55 +25,95 @@ export const quickaccessCards = [
   }
 ];
 
-export const ServicesCards = [
+export const ServicesData = [
   {
     id: 1,
     title: 'ITR',
-    icon: ''
+    icon: '',
+    href: 'itr'
   },
   {
     id: 2,
     title: 'Networth',
-    icon: ''
+    icon: '',
+    href: 'networth'
   },
   {
     id: 3,
     title: 'Business Proof',
-    icon: ' '
+    icon: ' ',
+    href: 'business-proof'
   },
   {
     id: 4,
     title: 'Loans',
-    icon: ''
+    icon: '',
+    href: 'loans'
   },
   {
     id: 5,
     title: 'Visa Fund',
-    icon: ''
+    icon: '',
+    href: 'visa-fund'
   },
   {
     id: 6,
     title: 'Forex Payments',
-    icon: ''
+    icon: '',
+    href: 'forex-payments'
   },
   {
     id: 7,
     title: 'Insurance',
-    icon: ''
+    icon: '',
+    href: 'insurance'
   },
   {
     id: 8,
     title: 'Travel Booking',
-    icon: ''
+    icon: '',
+    href: 'travel-booking'
   },
   {
     id: 9,
     title: 'Visa Slot',
-    icon: ''
+    icon: '',
+    href: 'visa-slot'
   },
   {
     id: 10,
     title: 'Passport Application',
-    icon: ''
+    icon: '',
+    href: 'passport-application'
   }
 ];
+
+export const ServicesRoute = {
+  ITR: 'itr',
+  Networth: 'networth',
+  'Business Proof': 'business-proof',
+  Loans: 'loans',
+  'Visa Fund': 'visa-fund',
+  'Forex Payments': 'forex-payments',
+  Insurance: 'insurance',
+  'Travel Booking': 'travel-booking',
+  'Visa Slot': 'visa-slot',
+  'Passport Application': 'passport-application'
+};
+
+export const titles = {
+  in_progress: 'In Progress',
+  completed: 'Completed',
+  pending: 'Pending',
+  'create-new': 'Create New Request',
+  itr: 'ITR',
+  networth: 'Networth',
+  'business-proof': 'Business Proof',
+  loans: 'Loans',
+  'visa-fund': 'Visa Fund',
+  'forex-payments': 'Forex Payments',
+  insurance: 'Insurance',
+  'travel-booking': 'Travel Booking',
+  'visa-slot': 'Visa Slot',
+  'passport-application': 'Passport Application'
+};
