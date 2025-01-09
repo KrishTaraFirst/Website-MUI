@@ -87,6 +87,7 @@ export default function ActionCell({ row, open, onClose, onEdit, onDelete, delet
                     <ListItemButton
                       onClick={() => {
                         onDownload();
+                        setAnchorEl(null);
                       }}
                     >
                       <ListItemIcon>

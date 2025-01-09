@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import dynamic from 'next/dynamic';
 
 // @project
-const QuickAccess = dynamic(() => import('@/views/admin/dashboard/user/visaconsultencyFiles/quickAccess'));
+const QuickAccess = dynamic(() => import('@/views/admin/visa_services/visaconsultencyFiles/quickAccess'));
 
 export default async function Dashboard({ params }) {
   const { tab } = await params;

@@ -53,7 +53,7 @@ export default function ActionCell({ row, onDelete }) {
   };
 
   const handleDialogDelete = (id) => {
-    onDelete(row.id);
+    // onDelete(row.id);
     console.log('User deleted', id, row);
     handleDeleteDialogClose();
   };
@@ -76,19 +76,7 @@ export default function ActionCell({ row, onDelete }) {
                     <ListItemIcon>
                       <IconDownload size={iconSize} />
                     </ListItemIcon>
-                    <ListItemText>Download</ListItemText>
-                  </ListItemButton>
-                  <ListItemButton sx={{ ...buttonStyle }}>
-                    <ListItemIcon sx={{ color: 'inherit' }}>
-                      <IconPrinter size={iconSize} />
-                    </ListItemIcon>
-                    <ListItemText sx={{ color: 'inherit' }}>Print</ListItemText>
-                  </ListItemButton>
-                  <ListItemButton sx={{ ...buttonStyle }}>
-                    <ListItemIcon sx={{ color: 'inherit' }}>
-                      <IconShare size={iconSize} />
-                    </ListItemIcon>
-                    <ListItemText sx={{ color: 'inherit' }}>Share</ListItemText>
+                    <ListItemText>Edit</ListItemText>
                   </ListItemButton>
                   <ListItemButton
                     onClick={handleDeleteDialogOpen}

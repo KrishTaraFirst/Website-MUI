@@ -11,7 +11,7 @@ import Grid from '@mui/material/Grid2';
 
 // @project
 import MainCard from '@/components/MainCard';
-import { ServicesCards } from '../data';
+import { ServicesCards } from './data';
 
 export default function Services() {
   const theme = useTheme();
