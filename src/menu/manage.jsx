@@ -34,7 +34,7 @@ const manage = {
       id: 'visaServices',
       title: <FormattedMessage id="visaServices" />,
       type: 'item',
-      url: '/visa_services',
+      url: '/visa-services',
       icon: 'IconSubtask',
       roles: [AuthRole.SUPER_ADMIN]
     },

@@ -1,47 +1,3 @@
-// 'use client';
-// import PropTypes from 'prop-types';
-
-// import { useEffect } from 'react';
-
-// // @next
-// import { useRouter, usePathname } from 'next/navigation';
-
-// //  @mui
-// import Stack from '@mui/material/Stack';
-// import Tabs from '@mui/material/Tabs';
-// import Tab from '@mui/material/Tab';
-// import Box from '@mui/material/Box';
-
-// // @project
-// import { handlerActiveItem, useGetMenuMaster } from '@/states/menu';
-
-// /***************************  DASHBOARD - ANALYTICS  ***************************/
-
-// export default function DashboardAnalytics({ tab = 'pending' }) {
-//   const router = useRouter();
-//   const pathname = usePathname();
-//   const { menuMaster } = useGetMenuMaster();
-
-//   const handleChange = (event, newValue) => {
-//     router.replace(`/dashboard/analytics/${newValue}`);
-//   };
-
-//   useEffect(() => {
-//     if (menuMaster.openedItem !== 'dashboard') handlerActiveItem('dashboard');
-//     // eslint-disable-next-line
-//   }, [pathname]);
-
-//   return (
-//     <Stack sx={{ gap: 4 }}>
-//       <Box>
-//         <h1>{tab}</h1>
-//       </Box>
-//     </Stack>
-//   );
-// }
-
-// DashboardAnalytics.propTypes = { tab: PropTypes.string };
-
 'use client';
 
 // @mui
@@ -61,6 +17,7 @@ import { analyticsBehaviorTableData } from './analytics-behavior-table/behavior-
 import Profile from '@/components/Profile';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import { useRouter } from 'next/navigation';
+import { titles } from './data';
 
 /***************************  COMPONENT - TABLE  ***************************/
 
@@ -77,6 +34,14 @@ export default function AnalyticsBehaviorTable({ tab }) {
       console.log(res.data);
       if (res.status_cd === 0) {
         setClientListData(res.data);
+        const tableData =
+          tab === 'completed'
+            ? res.data.completed_data
+            : tab === 'in_progress'
+              ? res.data.in_progress_data
+              : tab === 'pending' && res.data.pending_data;
+
+        setData(tableData);
       }
     } catch (error) {
       // Catch any errors during the request
@@ -92,44 +57,32 @@ export default function AnalyticsBehaviorTable({ tab }) {
   const columns = useMemo(
     () => [
       {
-        id: 'user',
-        accessorKey: 'user',
-        header: 'User',
+        id: 'taskId',
+        accessorKey: 'service_id',
+        header: 'Task ID',
         cell: ({ row }) => (
-          <Profile
-            {...{
-              ...row.original.user,
-              avatar: { src: row.original.user.src },
-              title: row.original.user.name,
-              sx: { gap: 1.5 }
-            }}
-          />
+          <Typography variant="body2" color="text.secondary">
+            {row.original.service_id}
+          </Typography>
+          // <Profile
+          //   {...{
+          //     ...row.original.user,
+          //     avatar: { src: row.original.user.src || '/assets/images/users/avatar-2.png' },
+          //     title: row.original.service_id,
+          //     sx: { gap: 1.5 }
+          //   }}
+          // />
         )
       },
       {
-        id: 'amount',
-        accessorKey: 'amount',
-        header: 'Amount',
+        id: 'service',
+        accessorKey: 'service_name',
+        header: 'Service Name',
         cell: (info) => (
           <Typography variant="body2" color="text.secondary">
-            {info.row.original.amount} USD
+            {info.row.original.service_name}
           </Typography>
         )
-      },
-      {
-        id: 'status',
-        accessorKey: 'status',
-        header: 'Status',
-        cell: ({ getValue }) => {
-          switch (getValue()) {
-            case 'success':
-              return <Chip label="Success" color="success" />;
-            case 'cancel':
-              return <Chip label="Cancel" color="error" />;
-            default:
-              return <Chip label="Success" color="success" />;
-          }
-        }
       },
       {
         id: 'date',
@@ -138,16 +91,61 @@ export default function AnalyticsBehaviorTable({ tab }) {
         cell: (info) => (
           <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'start' }}>
             <Typography variant="body2" color="text.secondary">
-              {info.row.original.dateTime.date}
-            </Typography>
-            <Typography variant="caption" color="text.disabled">
-              {info.row.original.dateTime.time}
+              {info.row.original.date}
             </Typography>
           </Box>
         )
       },
       {
+        id: 'destination_country',
+        accessorKey: 'destination_country',
+        header: 'Destination Country',
+        cell: (info) => (
+          <Typography variant="body2" color="text.secondary">
+            {info.row.original.destination_country}
+          </Typography>
+        )
+      },
+      {
+        id: 'quantity',
+        accessorKey: 'quantity',
+        header: 'Quantity',
+        cell: (info) => (
+          <Typography variant="body2" color="text.secondary">
+            {info.row.original.quantity}
+          </Typography>
+        )
+      },
+      {
+        id: 'status',
+        accessorKey: 'status',
+        header: 'Status',
+        cell: (info) => {
+          switch (info.row.original.status) {
+            case 'pending':
+              return <Chip label="Pending" color="warning" />;
+            case 'completed':
+              return <Chip label="Completed" color="success" />;
+            case 'in progress':
+              return <Chip label="In Progress" color="warning" />;
+            default:
+              return <Chip label="Success" color="success" />;
+          }
+        }
+      },
+      {
+        id: 'comments',
+        accessorKey: 'comments',
+        header: 'Comments'
+        // cell: (info) => (
+        //   <Typography variant="body2" color="text.secondary">
+        //     {info.row.original.amount} USD
+        //   </Typography>
+        // )
+      },
+      {
         id: 'action',
+        header: 'Action',
         cell: ({ row }) => <ActionCell row={row.original} onDelete={(id) => onDeleteRow(id)} />
       }
     ], // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -179,5 +177,14 @@ export default function AnalyticsBehaviorTable({ tab }) {
     setGlobalFilter(globalFilter);
   };
 
-  return <Table table={table} clientListData={clientListData} tab={tab} onGlobalSearch={onGlobalSearch} />;
+  return (
+    <Box>
+      <Typography variant="h5">{titles[tab]}</Typography>
+      <Typography variant="caption" color={'grey.700'} sx={{ mb: 3 }}>
+        Tasks {titles[tab]}
+      </Typography>
+      <Typography variant="h2" color={'grey.700'} sx={{ mb: 3 }}></Typography>
+      <Table sx={{ mt: 3 }} table={table} clientListData={clientListData} tab={tab} onGlobalSearch={onGlobalSearch} />
+    </Box>
+  );
 }

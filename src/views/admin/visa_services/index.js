@@ -5,11 +5,10 @@ import Factory from '@/utils/Factory';
 import { useState, useEffect } from 'react';
 
 // @project
-import Services from '../dashboard/user/Services';
+import Services from './visaconsultencyFiles/Services';
 import { useSnackbar } from '@/components/CustomSnackbar';
-import OverviewCard from '../dashboard/user/OverviewCard';
-import AnalyticsTopRef from '../dashboard/user/AnalyticsTopRef';
-
+import OverviewCard from './visaconsultencyFiles/OverviewCard';
+import { useAuth } from '@/contexts/AuthContext';
 /***************************  ANALYTICS - OVERVIEW  ***************************/
 
 export default function AnalyticsOverview() {
@@ -17,12 +16,13 @@ export default function AnalyticsOverview() {
   const chipDefaultProps = { color: 'black', variant: 'text', size: 'small' };
   const [clientListData, setClientListData] = useState({});
   const { showSnackbar } = useSnackbar();
+  const { user, tokens, logout } = useAuth();
+  console.log(user);
 
   const getClientsData = async () => {
     const url = '/user_management/visa-clients/dashboard-status/';
     try {
       const { res, error } = await Factory('get', url, {});
-      console.log(res.data);
       if (res.status_cd === 0) {
         setClientListData(res.data);
       }
@@ -45,9 +45,6 @@ export default function AnalyticsOverview() {
       <Grid size={12}>
         <Services />
       </Grid>
-      {/* <Grid size={12}>
-        <AnalyticsTopRef />
-      </Grid> */}
     </Grid>
   );
 }

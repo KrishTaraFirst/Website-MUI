@@ -100,6 +100,7 @@ export default function ActionCell({
                     <ListItemButton
                       onClick={() => {
                         onDownload();
+                        setAnchorEl(null);
                       }}
                     >
                       <ListItemIcon>
