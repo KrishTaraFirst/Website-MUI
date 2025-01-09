@@ -7,6 +7,7 @@ import { IconPlus } from '@tabler/icons-react';
 import AddCustomer from './AddCustomer'; // Import the AddCustomer component
 import CustomerList from './CustomerList';
 import Factory from '@/utils/Factory';
+import { Box } from '@mui/material';
 export default function TabTwo({ getCustomersData, customers, businessDetails, onNext }) {
   const [open, setOpen] = useState(false);
   const [type, setType] = useState('');
@@ -50,6 +51,11 @@ export default function TabTwo({ getCustomersData, customers, businessDetails, o
           />
         </Grid>
       </Grid>
+      <Box textAlign="center">
+        <Button variant="contained" onClick={onNext} sx={{ mt: 3 }}>
+          Next
+        </Button>
+      </Box>
     </>
   );
 }

@@ -88,7 +88,8 @@ export default function AnalyticsOverview() {
             variant="contained"
             onClick={() => {
               setType('add');
-              handleOpen();
+              // handleOpen();
+              router.push(`${pathname}/generateInvoice`);
             }}
             startIcon={<IconSparkles size={16} />}
           >

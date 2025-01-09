@@ -118,9 +118,10 @@ const BasicTabs = ({ type }) => {
                   customers={customers}
                   businessDetails={businessDetails}
                   setBusinessDetails={setBusinessDetails}
+                  onNext={handleNext}
                 />
               )}
-              {index === 2 && <TabThree businessDetails={businessDetails} setBusinessDetails={setBusinessDetails} />}
+              {index === 2 && <TabThree businessDetails={businessDetails} setBusinessDetails={setBusinessDetails} onNext={handleNext} />}
               {index === 3 && (
                 <TabFour
                   getCustomersData={getCustomersData}
