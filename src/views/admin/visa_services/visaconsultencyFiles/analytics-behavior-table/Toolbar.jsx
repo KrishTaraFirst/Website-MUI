@@ -28,16 +28,16 @@ export default function Toolbar({ onGlobalSearch }) {
         width: 1
       }}
     >
-      {/* <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap, minWidth: { xs: 1, sm: 'fit-content' } }}>
+      <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap, minWidth: { xs: 1, sm: 'fit-content' } }}>
         <Stack direction="row" sx={{ alignItems: 'center', gap }}>
           <DebouncedInput placeholder="Search here" value="" onValueChange={(data) => onGlobalSearch(data)} borderless />
         </Stack>
         <IconButton color="secondary" aria-label="view" sx={{ display: { xs: 'inline-flex', sm: 'none' } }}>
           <IconLink size={16} />
         </IconButton>
-      </Stack> */}
+      </Stack>
 
-      {/* <Stack
+      <Stack
         direction="row"
         sx={{ alignItems: 'center', gap, width: { xs: 1, sm: 'calc(100% - 263px)' }, justifyContent: 'flex-end', display: { xs: 'flex' } }}
       >
@@ -45,7 +45,7 @@ export default function Toolbar({ onGlobalSearch }) {
         <Button variant="text" color="secondary" sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
           View All
         </Button>
-      </Stack> */}
+      </Stack>
     </Stack>
   );
 }
