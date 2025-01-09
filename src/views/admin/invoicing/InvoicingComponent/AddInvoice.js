@@ -15,6 +15,7 @@ import CustomInput from '@/utils/CustomInput';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import { IconPlus } from '@tabler/icons-react';
 import { IconTrash } from '@tabler/icons-react';
+import { indianCurrency } from '../../../../utils/CurrencyToggle';
 
 import {
   Table,
@@ -198,7 +199,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
         // }
       ],
       amount_invoiced: 0,
-
+      total_cgst_amount: 0,
       total_sgst_amount: 0,
       total_igst_amount: 0,
       notes: '',
@@ -210,7 +211,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
       shipping_amount_with_tax: 0,
       shipping_tax: 0,
       applied_tax: false,
-      invoice_status: 'Created',
+      invoice_status: 'Pending Approval',
       same_address: false,
       selected_gst_rate: 0,
       not_applicablefor_shipping: false
@@ -668,6 +669,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
     newItemDetails.splice(index, 1);
 
     formik.setFieldValue('item_details', newItemDetails);
+    recalculateTotals();
   };
 
   useEffect(() => {
@@ -700,7 +702,8 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
           selectedInvoice.shipping_address.state === 'NA' &&
           selectedInvoice.shipping_address.postal_code === 'NA'
             ? true
-            : false
+            : false,
+        invoice_status: selectedInvoice.invoice_status
       });
     }
   }, [selectedInvoice]);
@@ -722,27 +725,11 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
       </Stack>
 
       <Box sx={{}}>
-        {/* <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <DialogTitle id="form-dialog-title" sx={{ fontWeight: 'bold' }}>
-            Add Invoice
-          </DialogTitle>
-          <IconButton
-            variant="outlined"
-            color="secondary"
-            aria-label="close"
-            onClick={() => {
-              resetForm();
-              setType('add');
-              onClose();
-            }}
-          >
-            <IconX size={20} />
-          </IconButton>
-        </Box> */}
         <DialogContent>
           <form
             onSubmit={(e) => {
               e.preventDefault();
+              formik.setFieldValue('invoice_status', 'Pending Approval');
               formik.handleSubmit(); // Calls Formik's submission logic
             }}
           >
@@ -875,6 +862,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
                               value={item.rate}
                               style={{ minWidth: 120, maxWidth: 120 }}
                               onChange={(e) => handleRateChange(index, e.target.value)}
+                              placeholder={indianCurrency}
                             />
                           </TableCell>
 
@@ -896,13 +884,20 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
                             />
                           </TableCell>
 
-                          <TableCell>{item.amount.toFixed(2)}</TableCell>
+                          <TableCell>
+                            {indianCurrency}&nbsp;{item.amount.toFixed(2)}
+                          </TableCell>
 
                           <TableCell>{item.tax}</TableCell>
 
-                          <TableCell>{item.taxamount.toFixed(2)}</TableCell>
+                          <TableCell>
+                            {indianCurrency}&nbsp;{item.taxamount.toFixed(2)}
+                          </TableCell>
 
-                          <TableCell>{item.total_amount.toFixed(2)}</TableCell>
+                          <TableCell>
+                            {' '}
+                            {indianCurrency}&nbsp;{item.total_amount.toFixed(2)}
+                          </TableCell>
                           <TableCell>
                             <ListItemButton sx={{ color: '#d32f2f' }} onClick={() => handleDeleteItem(index)}>
                               {' '}
@@ -969,7 +964,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Typography variant="body1">Sub Total:</Typography>
                   <Typography variant="body1" sx={{ ml: 2 }}>
-                    {formik.values.subtotal_amount.toFixed(2)}
+                    {indianCurrency}&nbsp; {formik.values.subtotal_amount.toFixed(2)}
                   </Typography>{' '}
                 </Box>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -979,13 +974,13 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
                     </Typography>
                     <CustomInput
                       name="shipping_amount"
-                      placeholder="₹"
+                      placeholder={indianCurrency}
                       value={formik.values.shipping_amount}
                       onChange={handleShippingAmountChange}
                       sx={{ mt: -1, ml: 2 }}
                     />
                     <Typography variant="body1" sx={{ ml: 2 }}>
-                      {formik.values.shipping_amount.toFixed(2)}
+                      {indianCurrency}&nbsp; {formik.values.shipping_amount.toFixed(2)}
                     </Typography>
                   </Box>
 
@@ -1009,7 +1004,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
 
                   {formik.values.applied_tax && (
                     <Typography variant="body2" sx={{ mt: 1 }}>
-                      Shipping Amount (With Tax): {formik.values.shipping_amount_with_tax.toFixed(2)}
+                      Shipping Amount (With Tax): {indianCurrency}&nbsp;{formik.values.shipping_amount_with_tax.toFixed(2)}
                     </Typography>
                   )}
                 </Box>
@@ -1027,7 +1022,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Typography variant="body1">SGST:</Typography>
                     <Typography variant="body1" sx={{ ml: 2 }}>
-                      {formik.values.total_sgst_amount.toFixed(2)}
+                      {indianCurrency}&nbsp; {formik.values.total_sgst_amount.toFixed(2)}
                     </Typography>{' '}
                   </Box>
                 )}
@@ -1036,7 +1031,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Typography variant="body1">IGST:</Typography>
                     <Typography variant="body1" sx={{ ml: 2 }}>
-                      {formik.values.total_igst_amount.toFixed(2)}
+                      {indianCurrency}&nbsp; {formik.values.total_igst_amount.toFixed(2)}
                     </Typography>{' '}
                   </Box>
                 )}
@@ -1044,7 +1039,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Typography variant="body1"> Tax on Shipping:</Typography>
                     <Typography variant="body1" sx={{ ml: 2 }}>
-                      {formik.values.shipping_tax.toFixed(2)}
+                      {indianCurrency}&nbsp; {formik.values.shipping_tax.toFixed(2)}
                     </Typography>{' '}
                   </Box>
                 )}
@@ -1054,7 +1049,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
                     Total:
                   </Typography>
                   <Typography variant="h6" fontWeight="bold" sx={{ ml: 2 }}>
-                    {formik.values.total_amount.toFixed(2)}
+                    {indianCurrency}&nbsp; {formik.values.total_amount.toFixed(2)}
                   </Typography>{' '}
                 </Box>
               </Box>

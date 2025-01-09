@@ -98,7 +98,6 @@ function Index() {
       customers={customers}
       invoice_number_format={invoiceNumberFormat}
       itemsList={itemsList}
-      //   getInvoicesList={getInvoices}
       selectedInvoice={selectedInvoice}
     />
   );
