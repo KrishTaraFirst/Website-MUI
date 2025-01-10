@@ -20,6 +20,7 @@ import ContainerWrapper from '@/components/ContainerWrapper';
 import SvgIcon from '@/components/SvgIcon';
 import Typeset from '@/components/Typeset2';
 import { SECTION_COMMON_PY } from '@/utils/constant';
+import { Typography } from '@mui/material';
 
 // @types
 
@@ -65,7 +66,7 @@ export default function Blog3({ heading, caption, blogs }) {
                         }}
                       >
                         <Link component={NextLink} variant="h3" color="text.primary" {...item.link}>
-                          {item.caption}
+                          {item.heading}
                         </Link>
                         {item.link && (
                           <Link component={NextLink} {...item.link} rel="noopener noreferrer" aria-label="blog-link">
@@ -73,6 +74,11 @@ export default function Blog3({ heading, caption, blogs }) {
                           </Link>
                         )}
                       </Stack>
+                      {caption && (
+                        <Typography variant="h6" sx={{ color: 'text.secondary' }}>
+                          {caption}
+                        </Typography>
+                      )}
                       {item.profile && <ProfileCard2 {...item.profile} />}
                     </Stack>
                   </Box>
