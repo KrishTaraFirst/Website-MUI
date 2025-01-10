@@ -4,7 +4,22 @@ import { useState, useEffect } from 'react';
 import Factory from '@/utils/Factory';
 import { indianCurrency } from '../../../../utils/CurrencyToggle';
 import { useSearchParams } from 'next/navigation';
-import { Typography, Button, Stack, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import MainCard from '@/components/MainCard';
+
+import {
+  Typography,
+  Button,
+  Stack,
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Grid
+} from '@mui/material';
 
 /***************************  ACCOUNT  ***************************/
 
@@ -27,7 +42,7 @@ export default function RecordPayment() {
       get_Individual_Invoice_Data();
     }
   }, [invoiceId]);
-
+  console.log(selectedInvoice);
   return (
     <Stack sx={{ gap: 3 }}>
       <Stack direction="row" sx={{ alignItems: 'end', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
@@ -40,13 +55,52 @@ export default function RecordPayment() {
           </Typography>
         </Stack>
       </Stack>
-
+      <MainCard>
+        <Grid container rowSpacing={4} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+          <Grid item xs={12} sm={4}>
+            <Box>
+              <Typography variant="subtitle1">Customer Name :{selectedInvoice?.customer}</Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Box>
+              <Typography variant="subtitle1">Invoice Number : {selectedInvoice?.invoice_number}</Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Box>
+              <Typography variant="subtitle1">Invoice Date : {selectedInvoice?.invoice_date}</Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Box>
+              <Typography variant="subtitle1">
+                Invoice Amount : {indianCurrency}&nbsp;{selectedInvoice?.amount_invoiced}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Box>
+              <Typography variant="subtitle1">
+                Total Amount paid : {indianCurrency}&nbsp;{selectedInvoice?.amount_invoiced - selectedInvoice?.balance_due}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Box>
+              <Typography variant="subtitle1">
+                Due Amount : {indianCurrency}&nbsp;{selectedInvoice?.balance_due}
+              </Typography>
+            </Box>
+          </Grid>
+        </Grid>
+      </MainCard>
       <Box>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Date</TableCell>
+                <TableCell>Payment Date</TableCell>
                 <TableCell>Amount</TableCell>
                 <TableCell>Mode</TableCell>
                 <TableCell>Comments</TableCell>

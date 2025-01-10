@@ -12,6 +12,8 @@ import { indianCurrency } from '../../../../utils/CurrencyToggle';
 
 import { useSearchParams } from 'next/navigation';
 import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Typography, Grid, Button, Stack, Box } from '@mui/material';
+import { useRouter } from 'next/navigation';
+import { useSnackbar } from '@/components/CustomSnackbar';
 
 /***************************  ACCOUNT  ***************************/
 
@@ -19,7 +21,8 @@ export default function RecordPayment() {
   const searchParams = useSearchParams();
   const invoiceId = searchParams.get('id');
   const [selectedInvoice, setSelectedInvoice] = useState(null);
-
+  const { showSnackbar } = useSnackbar();
+  const router = useRouter();
   let customerFields = [
     { name: 'customer', label: 'Customer Name' },
     { name: 'invoice_number', label: 'Invoice Number' },
@@ -47,18 +50,18 @@ export default function RecordPayment() {
       amount_due: '',
 
       amount: '',
-      date: '',
+      date: dayjs().format('YYYY-MM-DD'),
       method: '',
-      tax_deducted: 'no_tax',
+      tax_deducted: 'tds_income_tax',
       amount_withheld: '',
       comments: ''
     },
     validationSchema: Yup.object({
-      //   amount: Yup.number().required('required'),
-      //   date: Yup.date().required('required'),
-      //   method: Yup.string().required('equired'),
-      //   tax_deducted: Yup.string().required(' required'),
-      //   amount_withheld: Yup.number().required(' required')
+      amount: Yup.number().required('required').typeError('Amount must be an integer'),
+      date: Yup.date().required('required'),
+      method: Yup.string().required('required'),
+      tax_deducted: Yup.string().required(' required'),
+      amount_withheld: Yup.number().required('Amount withheld is required when tax is deducted')
     }),
     onSubmit: async (values) => {
       let postData = {
@@ -77,7 +80,9 @@ export default function RecordPayment() {
       let url = '/invoicing/receipt';
       const { res, error } = await Factory('post', url, postData);
       if (res.status_cd === 0) {
-        // showSnackbar(type === 'edit' ? 'Data Updated Successfully' : 'Data Added Successfully', 'success');
+        router.push(`/invoicing`);
+        showSnackbar('Payment recorded Successfully', 'success');
+        resetForm();
       }
     }
   });
@@ -162,7 +167,24 @@ export default function RecordPayment() {
                 {item.name === 'tax_deducted' ? (
                   <FormControl fullWidth>
                     <label>{item.label}</label>
-                    <RadioGroup name={item.name} value={values[item.name]} onChange={(e) => setFieldValue(item.name, e.target.value)} row>
+                    <RadioGroup
+                      name={item.name}
+                      value={values[item.name]}
+                      onChange={(e) => {
+                        const value = e.target.value;
+
+                        // If 'no_tax' is selected, reset the amount_withheld to 0 and clear errors
+                        if (value === 'no_tax') {
+                          setFieldValue('tax_deducted', value);
+                          setFieldValue('amount_withheld', 0); // Set amount_withheld to 0 when no tax is selected
+                          formik.setFieldTouched('amount_withheld', false); // Clear any touched state
+                          formik.setFieldError('amount_withheld', ''); // Clear error for amount_withheld
+                        } else {
+                          setFieldValue('tax_deducted', value); // Keep the selected value for tax_deducted
+                        }
+                      }}
+                      row
+                    >
                       <FormControlLabel value="no_tax" control={<Radio />} label="No Tax deducted" />
                       <FormControlLabel value="tds_income_tax" control={<Radio />} label="Yes, TDS/TCS" />
                     </RadioGroup>
@@ -211,6 +233,7 @@ export default function RecordPayment() {
                       onBlur={formik.handleBlur}
                       error={touched[item.name] && Boolean(errors[item.name])}
                       helperText={touched[item.name] && errors[item.name]}
+                      disabled={values.tax_deducted === 'no_tax' && (item.name === 'amount_withheld' || item.name === 'tax_deducted')}
                     />
                   </div>
                 )}

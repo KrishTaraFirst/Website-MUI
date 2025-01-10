@@ -202,7 +202,7 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
       getInvoices(businessDetailsData.id);
     }
   };
-
+  const handleWriteOff = (id) => {};
   useEffect(() => {
     if (businessDetailsData.id && financialYear) {
       getInvoices(businessDetailsData.id);
@@ -445,7 +445,7 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
 
                     <TableCell>
                       {' '}
-                      {indianCurrency}&nbsp;{invoice.pending_amount}
+                      {indianCurrency}&nbsp;{invoice.balance_due}
                     </TableCell>
                     <TableCell>
                       <ActionCell
@@ -467,6 +467,9 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
                         onClose={onClose}
                         onDownload={() => {
                           downloadInvoice(invoice.id);
+                        }}
+                        onWriteOff={() => {
+                          handleWriteOff(invoice.id);
                         }}
                         deleteDialogData={{
                           title: 'Delete record',

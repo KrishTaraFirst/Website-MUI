@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import Popper from '@mui/material/Popper';
-import { IconDotsVertical, IconEdit, IconTrash, IconDownload } from '@tabler/icons-react';
+import { IconDotsVertical, IconEdit, IconTrash, IconDownload, IconCheck } from '@tabler/icons-react';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Fade from '@mui/material/Fade';
 import List from '@mui/material/List';
@@ -33,6 +33,7 @@ import MessyDoodle from '@/images/illustration/MessyDoodle';
  * @param {Object} props.deleteDialogData - Custom data for the delete confirmation dialog.
  * @param {Object} props.onRecordPayment
  * @param {Object} props.onPaymentHistory
+ * @param {Object} props.onWriteOff
  *
  * @returns {JSX.Element} - The rendered ActionCell component.
  */
@@ -46,7 +47,8 @@ export default function ActionCell({
   onEdit,
   onDelete,
   deleteDialogData,
-  onDownload
+  onDownload,
+  onWriteOff
 }) {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null); // Anchor for Popper
@@ -130,6 +132,14 @@ export default function ActionCell({
                         <IconEdit size={16} />
                       </ListItemIcon>
                       <ListItemText>Payment History</ListItemText>
+                    </ListItemButton>
+                  )}
+                  {fromComponent === 'invoice' && (
+                    <ListItemButton onClick={onWriteOff}>
+                      <ListItemIcon>
+                        <IconCheck size={16} />
+                      </ListItemIcon>
+                      <ListItemText>Write Off</ListItemText>
                     </ListItemButton>
                   )}
                   {/* Delete Action */}
