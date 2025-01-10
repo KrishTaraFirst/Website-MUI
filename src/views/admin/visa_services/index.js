@@ -9,6 +9,7 @@ import Services from './visaconsultencyFiles/Services';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import OverviewCard from './visaconsultencyFiles/OverviewCard';
 import { useAuth } from '@/contexts/AuthContext';
+import { Stack, Typography } from '@mui/material';
 /***************************  ANALYTICS - OVERVIEW  ***************************/
 
 export default function AnalyticsOverview() {
@@ -39,6 +40,14 @@ export default function AnalyticsOverview() {
 
   return (
     <Grid container spacing={{ xs: 2, md: 3 }}>
+      <Stack sx={{ gap: 0 }}>
+        <Typography variant="h4" sx={{ fontWeight: 400 }}>
+          Quick access
+        </Typography>
+        <Typography variant="caption" sx={{ color: 'grey.700' }}>
+          View or create your services
+        </Typography>
+      </Stack>
       <Grid size={12}>
         <OverviewCard clientListData={clientListData} />
       </Grid>

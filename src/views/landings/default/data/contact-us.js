@@ -9,19 +9,20 @@ export const contactUS = {
       icon: 'tabler-phone',
       title: 'Contact Sale',
       content: 'Speak to someone from our sales team.',
-      link: { children: 'Contact Sales', href: branding.company.socialLink.support, target: '_blank', rel: 'noopener noreferrer' }
+      link: { children: 'Contact Sales', href: '/blocks/coming-soon', rel: 'noopener noreferrer' }
     },
     {
       icon: 'tabler-help-circle',
       title: 'Have a Question',
       content: 'See our frequently asked question',
-      link: { children: 'Get Answers', href: '/faq' }
+      // link: { children: 'Get Answers', href: '/faq' }
+      link: { children: 'Get Answers', href: '/blocks/coming-soon' }
     },
     {
       icon: 'tabler-folder-check',
       title: 'Press & Media',
       content: 'Get in touch with our PR team',
-      link: { children: 'Press Contact', href: '/contact' }
+      link: { children: 'Press Contact', href: '/blocks/coming-soon' }
     }
   ]
 };

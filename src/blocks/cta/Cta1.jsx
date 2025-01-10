@@ -14,12 +14,12 @@ import { motion } from 'framer-motion';
 // @project
 import ButtonAnimationWrapper from '@/components/ButtonAnimationWrapper';
 import ContainerWrapper from '@/components/ContainerWrapper';
-import GraphicsCard  from '@/components/cards/GraphicsCard';
+import GraphicsCard from '@/components/cards/GraphicsCard';
 import { SECTION_COMMON_PY } from '@/utils/constant';
 
 /***************************  CALL TO ACTION - 1  ***************************/
 
-export default function Cta1({ bgImage, heading, primaryBtn }) {
+export default function Cta1({ bgImage, heading, captionLine }) {
   const theme = useTheme();
 
   return (
@@ -57,10 +57,10 @@ export default function Cta1({ bgImage, heading, primaryBtn }) {
               <Typography variant="h2" align="center">
                 {heading}
               </Typography>
-              {primaryBtn && (
-                <ButtonAnimationWrapper style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                  <Button color="primary" size="large" variant="contained" sx={{ width: { xs: '100%', sm: 'auto' } }} {...primaryBtn} />
-                </ButtonAnimationWrapper>
+              {captionLine && (
+                <Typography variant="h6" sx={{ color: 'text.secondary', textAlign: 'center' }}>
+                  {captionLine}
+                </Typography>
               )}
             </Stack>
           </Box>

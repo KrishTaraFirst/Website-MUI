@@ -11,7 +11,7 @@ export default function Contact() {
   return (
     <>
       <ContactUs4 {...contactUS} />
-      <Cta5 {...cta5} />
+      {/* <Cta5 {...cta5} /> */}
     </>
   );
 }
