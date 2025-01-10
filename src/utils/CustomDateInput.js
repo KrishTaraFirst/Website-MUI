@@ -12,6 +12,7 @@ const CustomDatePicker = ({
   helperText,
   width = '100%', // Default width is 100% if not provided
   size = 'small', // Default size is "small"
+  onBlur,
   ...params
 }) => {
   return (
@@ -20,6 +21,7 @@ const CustomDatePicker = ({
         label={label}
         value={value}
         onChange={onChange}
+        onBlur={onBlur} // Triggering onBlur from Formik here
         renderInput={(props) => (
           <TextField
             {...props}

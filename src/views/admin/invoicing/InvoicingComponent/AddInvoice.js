@@ -709,7 +709,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
   }, [selectedInvoice]);
 
   const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue, resetForm } = formik;
-
+  console.log(values);
   return (
     <Stack sx={{ gap: 3 }}>
       <Stack direction="row" sx={{ alignItems: 'end', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
@@ -960,13 +960,16 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
                 </Box>
               </Box>
 
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {/* Sub Total */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Typography variant="body1">Sub Total:</Typography>
-                  <Typography variant="body1" sx={{ ml: 2 }}>
-                    {indianCurrency}&nbsp; {formik.values.subtotal_amount.toFixed(2)}
-                  </Typography>{' '}
+                  <Typography variant="body1">
+                    {indianCurrency} {formik.values.subtotal_amount.toFixed(2)}
+                  </Typography>
                 </Box>
+
+                {/* Shipping Charges Section */}
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Typography variant="body1" sx={{ whiteSpace: 'nowrap' }}>
@@ -977,10 +980,10 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
                       placeholder={indianCurrency}
                       value={formik.values.shipping_amount}
                       onChange={handleShippingAmountChange}
-                      sx={{ mt: -1, ml: 2 }}
+                      sx={{ width: '100px', ml: 2 }}
                     />
-                    <Typography variant="body1" sx={{ ml: 2 }}>
-                      {indianCurrency}&nbsp; {formik.values.shipping_amount.toFixed(2)}
+                    <Typography variant="body1">
+                      {indianCurrency} {formik.values.shipping_amount.toFixed(2)}
                     </Typography>
                   </Box>
 
@@ -990,86 +993,101 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
                   />
 
                   {formik.values.applied_tax && (
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <InputLabel>GST Rate</InputLabel>
-                      <Select value={formik.values.selected_gst_rate} onChange={handleGSTRateChange} sx={{ minWidth: 120 }}>
-                        {gstRates.map((rate) => (
-                          <MenuItem key={rate} value={rate}>
-                            {rate}%
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </Box>
-                  )}
-
-                  {formik.values.applied_tax && (
-                    <Typography variant="body2" sx={{ mt: 1 }}>
-                      Shipping Amount (With Tax): {indianCurrency}&nbsp;{formik.values.shipping_amount_with_tax.toFixed(2)}
-                    </Typography>
+                    <>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <InputLabel>GST Rate</InputLabel>
+                        <Select value={formik.values.selected_gst_rate} onChange={handleGSTRateChange} sx={{ minWidth: 120 }}>
+                          {gstRates.map((rate) => (
+                            <MenuItem key={rate} value={rate}>
+                              {rate}%
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </Box>
+                      <Typography variant="body2" sx={{ mt: 1 }}>
+                        Shipping Amount (With Tax): {indianCurrency} {formik.values.shipping_amount_with_tax.toFixed(2)}
+                      </Typography>
+                    </>
                   )}
                 </Box>
 
+                {/* Taxes Section */}
                 {formik.values.total_cgst_amount > 0 && (
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Typography variant="body1">CGST:</Typography>
-                    <Typography variant="body1" sx={{ ml: 2 }}>
-                      {formik.values.total_cgst_amount.toFixed(2)}
-                    </Typography>{' '}
+                    <Typography variant="body1">
+                      {indianCurrency} {formik.values.total_cgst_amount.toFixed(2)}
+                    </Typography>
                   </Box>
                 )}
 
                 {formik.values.total_sgst_amount > 0 && (
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Typography variant="body1">SGST:</Typography>
-                    <Typography variant="body1" sx={{ ml: 2 }}>
-                      {indianCurrency}&nbsp; {formik.values.total_sgst_amount.toFixed(2)}
-                    </Typography>{' '}
+                    <Typography variant="body1">
+                      {indianCurrency} {formik.values.total_sgst_amount.toFixed(2)}
+                    </Typography>
                   </Box>
                 )}
 
                 {formik.values.total_igst_amount > 0 && (
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Typography variant="body1">IGST:</Typography>
-                    <Typography variant="body1" sx={{ ml: 2 }}>
-                      {indianCurrency}&nbsp; {formik.values.total_igst_amount.toFixed(2)}
-                    </Typography>{' '}
-                  </Box>
-                )}
-                {formik.values.applied_tax && (
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body1"> Tax on Shipping:</Typography>
-                    <Typography variant="body1" sx={{ ml: 2 }}>
-                      {indianCurrency}&nbsp; {formik.values.shipping_tax.toFixed(2)}
-                    </Typography>{' '}
+                    <Typography variant="body1">
+                      {indianCurrency} {formik.values.total_igst_amount.toFixed(2)}
+                    </Typography>
                   </Box>
                 )}
 
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                {formik.values.applied_tax && (
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="body1">Tax on Shipping:</Typography>
+                    <Typography variant="body1">
+                      {indianCurrency} {formik.values.shipping_tax.toFixed(2)}
+                    </Typography>
+                  </Box>
+                )}
+
+                {/* Total Amount */}
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
                   <Typography variant="h6" fontWeight="bold">
                     Total:
                   </Typography>
-                  <Typography variant="h6" fontWeight="bold" sx={{ ml: 2 }}>
-                    {indianCurrency}&nbsp; {formik.values.total_amount.toFixed(2)}
-                  </Typography>{' '}
+                  <Typography variant="h6" fontWeight="bold">
+                    {indianCurrency} {formik.values.total_amount.toFixed(2)}
+                  </Typography>
                 </Box>
               </Box>
             </Box>
 
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, mb: 3, gap: 5 }}>
-              <Button variant="contained" type="submit">
-                Save
-              </Button>
-              <Button
-                variant="contained"
-                type="button"
-                onClick={() => {
-                  formik.setFieldValue('invoice_status', 'Draft'); // 'Draft' should be a string
-                  formik.handleSubmit();
-                }}
-                disabled={formik.values.invoice_status === 'Draft'}
-              >
-                Save as Draft
-              </Button>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <Button
+                  variant="contained"
+                  type="button"
+                  onClick={() => {
+                    formik.setFieldValue('invoice_status', 'Draft'); // 'Draft' should be a string
+                    formik.handleSubmit();
+                  }}
+                  disabled={formik.values.invoice_status === 'Draft'}
+                >
+                  Save as Draft
+                </Button>
+                <Button
+                  variant="outlined"
+                  type="button"
+                  onClick={() => {
+                    router.push(`/invoicing`);
+                  }}
+                >
+                  Close
+                </Button>
+              </Box>
+              <Box>
+                <Button variant="contained" type="submit">
+                  Save
+                </Button>
+              </Box>
             </Box>
           </form>
         </DialogContent>
