@@ -5,10 +5,12 @@ import Factory from '@/utils/Factory';
 import { indianCurrency } from '../../../../utils/CurrencyToggle';
 import { useSearchParams } from 'next/navigation';
 import MainCard from '@/components/MainCard';
+import ActionCell from '@/utils/ActionCell';
+import { useSnackbar } from '@/components/CustomSnackbar';
+import CustomInput from '@/utils/CustomInput';
 
 import {
   Typography,
-  Button,
   Stack,
   Box,
   Table,
@@ -18,15 +20,23 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Grid
+  Grid,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Divider,
+  Button
 } from '@mui/material';
-
+import { Preview } from '@mui/icons-material';
 /***************************  ACCOUNT  ***************************/
 
 export default function RecordPayment() {
   const searchParams = useSearchParams();
   const invoiceId = searchParams.get('id');
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const { showSnackbar } = useSnackbar();
+  let [recordData, setRecordData] = useState({});
+  let [open, setOpen] = useState(false);
 
   const get_Individual_Invoice_Data = async () => {
     const { res } = await Factory('get', `/invoicing/individual-invoice/${invoiceId}/`, {});
@@ -36,7 +46,27 @@ export default function RecordPayment() {
       console.log('Failed to fetch details');
     }
   };
-
+  const handleDelete = async (id) => {
+    let url = `/invoicing/receipt-delete/${id}/`;
+    const { res } = await Factory('delete', url, {});
+    if (res.status_cd === 1) {
+      showSnackbar(JSON.stringify(res.data), 'error');
+    } else {
+      showSnackbar('Record Deleted Successfully', 'success');
+      get_Individual_Invoice_Data();
+    }
+  };
+  const handleSaveComment = async (id) => {
+    let url = `/invoicing/receipt-update/${id}/`;
+    const { res } = await Factory('put', url, recordData);
+    if (res.status_cd === 1) {
+      showSnackbar(JSON.stringify(res.data), 'error');
+    } else {
+      setOpen(false);
+      showSnackbar('Record Updated Successfully', 'success');
+      get_Individual_Invoice_Data();
+    }
+  };
   useEffect(() => {
     if (invoiceId) {
       get_Individual_Invoice_Data();
@@ -104,27 +134,50 @@ export default function RecordPayment() {
                 <TableCell>Amount</TableCell>
                 <TableCell>Mode</TableCell>
                 <TableCell>Comments</TableCell>
+                <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {selectedInvoice?.customer_invoice_receipts.length > 0 ? (
-                selectedInvoice?.customer_invoice_receipts?.map((customer, index) => (
+                selectedInvoice?.customer_invoice_receipts?.map((receipt, index) => (
                   <TableRow key={index}>
-                    <TableCell>{customer.date}</TableCell>
+                    <TableCell>{receipt.date}</TableCell>
                     <TableCell>
                       {indianCurrency}&nbsp;
-                      {customer.amount}
+                      {receipt.amount}
                     </TableCell>
                     <TableCell>
-                      {customer.method === 'cash'
+                      {receipt.method === 'cash'
                         ? 'Cash'
-                        : customer.method === 'card'
+                        : receipt.method === 'card'
                           ? 'Card'
-                          : customer.method === 'bank_transfer'
+                          : receipt.method === 'bank_transfer'
                             ? 'Bank Transfer'
                             : ''}
                     </TableCell>
-                    <TableCell>{customer.comments}</TableCell>
+                    <TableCell>{receipt.comments}</TableCell>
+                    <TableCell>
+                      <ActionCell
+                        row={receipt} // Pass the customer row data
+                        onEdit={() => {
+                          setRecordData(receipt);
+                          setOpen(true);
+                        }}
+                        onDelete={() => {
+                          handleDelete(receipt.id);
+                        }}
+                        open={open}
+                        onClose={() => {
+                          setOpen(false);
+                        }}
+                        deleteDialogData={{
+                          title: 'Delete record',
+                          heading: 'Are you sure you want to delete this record?',
+                          description: `This action will permanantely remove this record from the list.`,
+                          successMessage: 'Record has been deleted.'
+                        }}
+                      />
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
@@ -137,6 +190,49 @@ export default function RecordPayment() {
             </TableBody>
           </Table>
         </TableContainer>
+        <Dialog
+          open={open}
+          onClose={() => setOpen(false)}
+          fullWidth
+          maxWidth="lg"
+          sx={{
+            '& .MuiDialogPaper-root': {
+              minHeight: '4000px', // Minimum height
+              maxHeight: '600px', // Maximum height
+              minWidth: '500px', // Minimum width
+              maxWidth: '800px' // Maximum width
+            }
+          }}
+        >
+          <Box sx={{ m: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <DialogTitle id="form-dialog-title" sx={{ fontWeight: 'bold' }}>
+                Edit Comment
+              </DialogTitle>
+            </Box>
+
+            <Divider />
+            <DialogContent sx={{ padding: '16px' }}>
+              <CustomInput
+                multiline
+                minRows={8}
+                fullWidth
+                name="comment"
+                value={recordData?.comments || ''}
+                onChange={(e) => setRecordData((prev) => ({ ...prev, comments: e.target.value }))}
+              />
+            </DialogContent>
+
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, padding: 2 }}>
+              <Button variant="outlined" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button variant="contained" onClick={() => handleSaveComment(recordData.id)}>
+                Save
+              </Button>
+            </Box>
+          </Box>
+        </Dialog>
       </Box>
     </Stack>
   );

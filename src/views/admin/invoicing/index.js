@@ -112,16 +112,7 @@ export default function AnalyticsOverview() {
             handleOpen={handleOpen}
           />
         </Grid>
-        <Grid size={12}>{/* <Services /> */}</Grid>
       </Grid>
-      {/* <AddInvoice
-        invoicesList={invoicesList}
-        businessDetailsData={businessDetails}
-        customers={customers}
-        open={open}
-        onClose={handleClose}
-        getInvoicesList={getInvoicesList}
-      /> */}
     </Stack>
   );
 }

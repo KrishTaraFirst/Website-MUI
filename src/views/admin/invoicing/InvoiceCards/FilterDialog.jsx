@@ -35,7 +35,8 @@ export default function FilterDialog({ financialYear, businessData, filterDialog
   } = useForm({
     defaultValues: {
       date: '',
-      status: '',
+      paymentstatus: '',
+      invoicestatus: '',
       invoiceNumber: '',
       customer: '',
       amount: '',
@@ -54,16 +55,10 @@ export default function FilterDialog({ financialYear, businessData, filterDialog
   // }
   // };
 
-  const handleEdit = (invoice) => {
-    setSelectedInvoice(invoice);
-    setType('edit');
-    handleOpen();
-  };
-
   useEffect(() => {}, []);
 
   const onSubmit = async (formData) => {
-    let url = `/invoicing/filter-invoices?invoicing_profile_id=${businessData.id}&financial_year=${financialYear}&payment_status=${formData.status}&due_date=${formData.dueDate}&invoice_date=${formData.date}&invoice_number=${formData.invoiceNumber}&customer=${formData.customer}&total_amount=${formData.amount}`;
+    let url = `/invoicing/filter-invoices?invoicing_profile_id=${businessData.id}&financial_year=${financialYear}&payment_status=${formData.paymentstatus}&invoice_status=${formData.invoicestatus}&due_date=${formData.dueDate}&invoice_date=${formData.date}&invoice_number=${formData.invoiceNumber}&customer=${formData.customer}&total_amount=${formData.amount}`;
     const { res } = await Factory('get', url, {});
     if (res.status_cd === 1) {
       showSnackbar(JSON.stringify(res.data), 'error');
@@ -73,8 +68,9 @@ export default function FilterDialog({ financialYear, businessData, filterDialog
       setInvoices(res.data);
       setFilterDialog(false);
     }
-    reset({ status: '', date: '', status: '', invoiceNumber: '', customer: '', amount: '', dueDate: '' });
-    setValue('status', '');
+    reset({ paymentstatus: '', date: '', invoicestatus: '', invoiceNumber: '', customer: '', amount: '', dueDate: '' });
+    setValue('paymentstatus', '');
+    setValue('invoicestatus', '');
   };
 
   return (
@@ -105,6 +101,22 @@ export default function FilterDialog({ financialYear, businessData, filterDialog
                     slotProps={{ input: { 'aria-label': 'Date' } }}
                     error={errors.date && Boolean(errors.date)}
                     // sx={{ ...inputSx }}
+                  />
+                </Stack>
+                <Stack sx={{ gap: 0.5 }}>
+                  <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+                    Invoice Status
+                  </Typography>
+                  <Autocomplete
+                    options={['Draft', 'Pending Approval', 'Resubmission', 'Approved', 'Invoice Sent']}
+                    onChange={(e, val) => {
+                      setValue('invoicestatus', val);
+                    }}
+                    renderInput={(params) => (
+                      <TextField {...params} slotProps={{ htmlInput: { ...params.inputProps, 'aria-label': 'Status' } }} />
+                    )}
+                    placeholder="Select Payment Status"
+                    error={errors.invoicestatus && Boolean(errors.invoicestatus)}
                   />
                 </Stack>
                 <Stack sx={{ gap: 0.5 }}>
@@ -152,18 +164,18 @@ export default function FilterDialog({ financialYear, businessData, filterDialog
 
                 <Stack sx={{ gap: 0.5 }}>
                   <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-                    Status
+                    Payment Status
                   </Typography>
                   <Autocomplete
-                    options={['Pending', 'Paid']}
+                    options={['Overdue', 'Paid', 'Partially Paid', 'Pending', 'Written Off', 'Partially Written Off']}
                     onChange={(e, val) => {
-                      setValue('status', val);
+                      setValue('paymentstatus', val);
                     }}
                     renderInput={(params) => (
                       <TextField {...params} slotProps={{ htmlInput: { ...params.inputProps, 'aria-label': 'Status' } }} />
                     )}
-                    placeholder="Select status"
-                    error={errors.status && Boolean(errors.status)}
+                    placeholder="Select Payment Status"
+                    error={errors.paymentstatus && Boolean(errors.paymentstatus)}
                   />
                   {/* <OutlinedInput
                     {...register('status')}

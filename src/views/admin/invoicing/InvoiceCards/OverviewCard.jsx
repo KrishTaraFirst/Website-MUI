@@ -202,7 +202,16 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
       getInvoices(businessDetailsData.id);
     }
   };
-  const handleWriteOff = (id) => {};
+  const handleWriteOff = async (id) => {
+    let url = `/invoicing/invoice-wave-off/${id}`;
+    const { res } = await Factory('put', url, {});
+    if (res.status_cd === 1) {
+      showSnackbar(JSON.stringify(res.data), 'error');
+    } else {
+      showSnackbar('Successfully wavedoff', 'success');
+      getInvoices(businessDetailsData.id);
+    }
+  };
   useEffect(() => {
     if (businessDetailsData.id && financialYear) {
       getInvoices(businessDetailsData.id);

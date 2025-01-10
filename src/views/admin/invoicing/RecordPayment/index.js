@@ -76,13 +76,14 @@ export default function RecordPayment() {
         comments: values.comments
       };
 
-      console.log(postData);
       let url = '/invoicing/receipt';
       const { res, error } = await Factory('post', url, postData);
       if (res.status_cd === 0) {
         router.push(`/invoicing`);
         showSnackbar('Payment recorded Successfully', 'success');
         resetForm();
+      } else {
+        showSnackbar(JSON.stringify(res.data), 'error');
       }
     }
   });
