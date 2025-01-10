@@ -43,7 +43,7 @@ export default function Customization() {
             onChange={() => onChangeThemeMode(theme.palette.mode === ThemeMode.DARK ? ThemeMode.LIGHT : ThemeMode.DARK)}
           />
         </ListItem>
-        <ListItem sx={{ px: 1 }}>
+        {/* <ListItem sx={{ px: 1 }}>
           <ListItemIcon sx={{ minWidth: 32 }}>
             <SvgIcon name="tabler-text-direction-ltr" color="text.primary" stroke={1} />
           </ListItemIcon>
@@ -53,7 +53,7 @@ export default function Customization() {
             checked={theme.direction === ThemeDirection.RTL}
             onChange={() => onChangeThemeDirection(theme.direction === ThemeDirection.RTL ? ThemeDirection.LTR : ThemeDirection.RTL)}
           />
-        </ListItem>
+        </ListItem> */}
       </List>
     </MenuPopper>
   );

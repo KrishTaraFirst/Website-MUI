@@ -18,7 +18,7 @@ import { generateFocusVisibleStyles } from '@/utils/CommonFocusStyle';
 
 /***************************  SITEMAP - DATA  ***************************/
 
-const linkProps = { target: '_blank', rel: 'noopener noreferrer' };
+const linkProps = { rel: 'noopener noreferrer' };
 const menuItems = [
   {
     id: 'use-case',

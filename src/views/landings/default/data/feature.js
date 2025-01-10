@@ -3,7 +3,7 @@ import branding from '@/branding.json';
 import { IconType } from '@/enum';
 import { SECTION_PATH, BUY_NOW_URL, ADMIN_PATH, DOCS_URL } from '@/path';
 
-const linkProps = { target: '_blank', rel: 'noopener noreferrer' };
+const linkProps = { rel: 'noopener noreferrer' };
 
 export const feature2 = {
   heading: 'Culture of Innovation',

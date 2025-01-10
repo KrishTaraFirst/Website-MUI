@@ -18,7 +18,6 @@ export default function AnalyticsOverview() {
   const [clientListData, setClientListData] = useState({});
   const { showSnackbar } = useSnackbar();
   const { user, tokens, logout } = useAuth();
-  console.log(user);
 
   const getClientsData = async () => {
     const url = '/user_management/visa-clients/dashboard-status/';
