@@ -226,7 +226,6 @@ export default function TableComponent() {
   // Delete single row by id from dialog
   const onDeleteRow = (id) => {
     setData((prev) => prev.filter((item) => item.id !== id));
-    console.log('User deleted', data);
   };
 
   // Block/Unblock single row by id from dialog and switch

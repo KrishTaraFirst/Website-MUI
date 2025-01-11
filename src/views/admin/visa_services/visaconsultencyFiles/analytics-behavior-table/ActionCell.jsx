@@ -54,7 +54,6 @@ export default function ActionCell({ row, onDelete }) {
 
   const handleDialogDelete = (id) => {
     // onDelete(row.id);
-    console.log('User deleted', id, row);
     handleDeleteDialogClose();
   };
 

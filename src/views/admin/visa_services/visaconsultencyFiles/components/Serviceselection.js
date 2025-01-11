@@ -127,9 +127,6 @@ const FormPage = ({ selectedClientData, setShowSuccessMessage, setRefresh, visad
       comments: service.comments,
       service_type: service.id
     }));
-    // console.log(filteredServices);
-    // console.log(serviceData);
-    // console.log(visadetails);
 
     let postData = {
       user_id: selectedClientData.user,

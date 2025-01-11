@@ -4,7 +4,6 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import SvgIcon from '@/components/SvgIcon';
 import { useRouter } from 'next/navigation';
 function SuccessMessage({ visadetails, selectedClientData }) {
-  console.log(selectedClientData);
   const router = useRouter();
   return (
     <Grid container justifyContent="center" spacing={2} sx={{ minHeight: '100vh', textAlign: 'center' }}>
@@ -87,7 +86,6 @@ function SuccessMessage({ visadetails, selectedClientData }) {
               }}
               onClick={() => {
                 // Add navigation logic for "Go to Dashboard"
-                console.log('Go to Dashboard clicked');
                 router.push('/visa-services');
               }}
             >

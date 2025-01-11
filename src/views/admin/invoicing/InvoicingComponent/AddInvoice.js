@@ -243,8 +243,8 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
       const { res } = await Factory(method, url, postData);
       if (res.status_cd === 0) {
         resetForm();
-        showSnackbar('Data Added Successfully', 'success');
-        router.push(`/invoicing/invoice?id=${selectedInvoice?.id}`);
+        const invoice_id = selectedInvoice ? selectedInvoice?.id : res.id;
+        router.push(`/invoicing/invoice?id=${invoice_id}`);
       }
     }
   });

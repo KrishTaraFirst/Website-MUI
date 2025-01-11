@@ -30,14 +30,12 @@ const FormPage = ({ selectedClientData, setSelectedClient, setRefresh }) => {
   const [editedService, setEditedService] = useState({});
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const handleInputChange = (name, val) => {
-    // console.log("Field Name:", name, "Value:", val);
     setEditedService((prev) => ({
       ...prev,
       [name]: val
     }));
   };
   const handleEditClick = (service) => {
-    // console.log(service);
     setEditedService({ ...service });
     setDialogOpen(true);
   };
@@ -59,7 +57,6 @@ const FormPage = ({ selectedClientData, setSelectedClient, setRefresh }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(editedService);
     let putData = {
       visa_application: {
         user: editedService.user_id,
@@ -76,7 +73,6 @@ const FormPage = ({ selectedClientData, setSelectedClient, setRefresh }) => {
         quantity: editedService.quantity
       }
     };
-    console.log(putData);
     const url = `/user_management/service-details/${editedService.id}/`;
     const { res, error } = await Factory('put', url, putData);
     if (res.status_cd === 0) {

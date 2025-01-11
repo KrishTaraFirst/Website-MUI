@@ -64,7 +64,6 @@ const FormPage = () => {
   };
 
   const handleInputChange = (name, val) => {
-    console.log('Field Name:', name, 'Value:', val);
     setEditedService((prev) => ({
       ...prev,
       [name]: val
@@ -183,10 +182,6 @@ const FormPage = () => {
       comments: service.comments,
       service_type: service.id
     }));
-    console.log(selectedClient);
-    // console.log(filteredServices);
-    // console.log(serviceData);
-    // console.log(visadetails);
 
     let postData = {
       user_id: selectedClient.user,
