@@ -1,38 +1,30 @@
-import React from "react";
-import { Grid, Typography, Box, Button } from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { useRouter } from "next/navigation";
+import React from 'react';
+import { Grid, Typography, Box, Button } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import SvgIcon from '@/components/SvgIcon';
+import { useRouter } from 'next/navigation';
 function SuccessMessage({ visadetails, selectedClientData }) {
   console.log(selectedClientData);
   const router = useRouter();
   return (
-    <Grid
-      container
-      justifyContent="center"
-      spacing={2}
-      sx={{ minHeight: "100vh", textAlign: "center" }}
-    >
+    <Grid container justifyContent="center" spacing={2} sx={{ minHeight: '100vh', textAlign: 'center' }}>
       <Grid item>
         <Box
           sx={{
-            backgroundColor: "#E8F5E9", // Light green background
-            padding: "50px",
-            borderRadius: "8px",
+            bgcolor: '#eff7ff',
+            padding: '50px',
+            borderRadius: '8px',
             boxShadow: 3,
+            textAlign: 'center'
           }}
         >
-          <CheckCircleIcon
-            sx={{
-              fontSize: 50,
-              color: "green",
-              marginBottom: "16px",
-            }}
-          />
+          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+            <SvgIcon name="tabler-rosette-discount-check" size={60} sx={{ fontSize: 50, textAlign: 'center' }} color="text.secondary" />
+          </Box>
           <Typography
             variant="h5"
             sx={{
-              fontWeight: "bold",
-              marginBottom: "8px",
+              mb: 2
             }}
           >
             Congratulations!
@@ -40,7 +32,7 @@ function SuccessMessage({ visadetails, selectedClientData }) {
           <Typography
             variant="h5"
             sx={{
-              marginBottom: "8px",
+              marginBottom: '8px'
             }}
           >
             Your Service Request is Successfully Placed
@@ -48,8 +40,8 @@ function SuccessMessage({ visadetails, selectedClientData }) {
           <Typography
             variant="body1"
             sx={{
-              color: "#666",
-              fontSize: "1rem",
+              color: '#666',
+              fontSize: '1rem'
             }}
           >
             The Tarafirst Team has started working on your service.
@@ -57,33 +49,30 @@ function SuccessMessage({ visadetails, selectedClientData }) {
           <Typography
             variant="body1"
             sx={{
-              color: "#666",
-              fontSize: "1rem",
-              marginBottom: "20px",
+              color: '#666',
+              fontSize: '1rem',
+              marginBottom: '20px'
             }}
           >
             We will keep you posted shortly.
           </Typography>
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "center",
+              display: 'flex',
+              justifyContent: 'center',
               gap: 2,
-              marginTop: "20px",
+              mt: 3
             }}
           >
             <Button
               variant="outlined"
-              color="primary"
               sx={{
-                padding: "10px 20px",
-                textTransform: "none",
-                fontSize: "16px",
+                padding: '10px 20px',
+                textTransform: 'none',
+                fontSize: '16px'
               }}
               onClick={() => {
-                router.push(
-                  `/tara/visaconsultencydashboard/status?id=${selectedClientData?.user}`
-                );
+                router.push(`/visa-services/status?id=${selectedClientData?.user}`);
               }}
             >
               Check Your Status
@@ -92,14 +81,14 @@ function SuccessMessage({ visadetails, selectedClientData }) {
               variant="contained"
               // color="secondary"
               sx={{
-                padding: "10px 20px",
-                textTransform: "none",
-                fontSize: "16px",
+                padding: '10px 20px',
+                textTransform: 'none',
+                fontSize: '16px'
               }}
               onClick={() => {
                 // Add navigation logic for "Go to Dashboard"
-                console.log("Go to Dashboard clicked");
-                router.push("/tara");
+                console.log('Go to Dashboard clicked');
+                router.push('/visa-services');
               }}
             >
               Go to Dashboard

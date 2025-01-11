@@ -229,7 +229,21 @@ export default function EarlyAccess() {
                   <br />
                   &nbsp;
                 </td>
-                <td colSpan="7">
+                <td colSpan="7"></td>
+              </tr>
+            </tbody>
+          </table>
+          <table
+            style={{
+              width: '100%',
+              borderCollapse: 'collapse',
+              borderSpacing: 0
+            }}
+          >
+            <tbody>
+              <tr>
+                <td style={{ width: '100%' }}></td>
+                <td>
                   <table
                     style={{
                       width: '100%',
@@ -238,169 +252,156 @@ export default function EarlyAccess() {
                     }}
                   >
                     <tbody>
-                      <tr>
-                        <td style={{ width: '100%' }}></td>
-                        <td>
-                          <table
+                      <tr
+                        style={{
+                          marginTop: '0.5rem'
+                        }}
+                      >
+                        <td
+                          style={{
+                            borderBottomWidth: '1px',
+                            padding: '0.5rem'
+                          }}
+                        >
+                          <div style={{ whiteSpace: 'nowrap', color: '#94a3b8' }}>SUB TOTAL (%):</div>
+                        </td>
+                        <td
+                          style={{
+                            borderBottomWidth: '1px',
+                            padding: '0.5rem',
+                            textAlign: 'right'
+                          }}
+                        >
+                          <div
                             style={{
-                              width: '100%',
-                              borderCollapse: 'collapse',
-                              borderSpacing: 0
+                              whiteSpace: 'nowrap',
+                              fontWeight: 700,
+                              color: '#006397'
                             }}
                           >
-                            <tbody>
-                              <tr>
-                                <td
-                                  style={{
-                                    borderBottomWidth: '1px',
-                                    padding: '0.75rem'
-                                  }}
-                                >
-                                  <div style={{ whiteSpace: 'nowrap', color: '#94a3b8' }}>SUB TOTAL (%):</div>
-                                </td>
-                                <td
-                                  style={{
-                                    borderBottomWidth: '1px',
-                                    padding: '0.75rem',
-                                    textAlign: 'right'
-                                  }}
-                                >
-                                  <div
-                                    style={{
-                                      whiteSpace: 'nowrap',
-                                      fontWeight: 700,
-                                      color: '#006397'
-                                    }}
-                                  >
-                                    {subtotal_amount}
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td
-                                  style={{
-                                    borderBottomWidth: '1px',
-                                    padding: '0.75rem'
-                                  }}
-                                >
-                                  <div style={{ whiteSpace: 'nowrap', color: '#94a3b8' }}>SHIPPING AMOUNT (%):</div>
-                                </td>
-                                <td
-                                  style={{
-                                    borderBottomWidth: '1px',
-                                    padding: '0.75rem',
-                                    textAlign: 'right'
-                                  }}
-                                >
-                                  <div
-                                    style={{
-                                      whiteSpace: 'nowrap',
-                                      fontWeight: 700,
-                                      color: '#006397'
-                                    }}
-                                  >
-                                    {shipping_amount}
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td style={{ padding: '0.75rem' }}>
-                                  <div style={{ whiteSpace: 'nowrap', color: '#94a3b8' }}>CGST (%):</div>
-                                </td>
-                                <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                                  <div
-                                    style={{
-                                      whiteSpace: 'nowrap',
-                                      fontWeight: 700,
-                                      color: '#006397'
-                                    }}
-                                  >
-                                    {total_cgst_amount}
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td style={{ padding: '0.55rem' }}>
-                                  <div style={{ whiteSpace: 'nowrap', color: '#94a3b8' }}>SGST (%):</div>
-                                </td>
-                                <td style={{ padding: '0.55rem', textAlign: 'right' }}>
-                                  <div
-                                    style={{
-                                      whiteSpace: 'nowrap',
-                                      fontWeight: 700,
-                                      color: '#006397'
-                                    }}
-                                  >
-                                    {total_sgst_amount}
-                                  </div>
-                                </td>
-                              </tr>
-                              {total_igst_amount && (
-                                <tr>
-                                  <td
-                                    style={{
-                                      borderBottomWidth: '1px',
-                                      padding: '0.75rem'
-                                    }}
-                                  >
-                                    <div style={{ whiteSpace: 'nowrap', color: '#94a3b8' }}>IGST Amount (%):</div>
-                                  </td>
-                                  <td
-                                    style={{
-                                      borderBottomWidth: '1px',
-                                      padding: '0.55rem',
-                                      textAlign: 'right'
-                                    }}
-                                  >
-                                    <div
-                                      style={{
-                                        whiteSpace: 'nowrap',
-                                        fontWeight: 700,
-                                        color: '#006397'
-                                      }}
-                                    >
-                                      {total_igst_amount}
-                                    </div>
-                                  </td>
-                                </tr>
-                              )}
-                              <tr>
-                                <td
-                                  style={{
-                                    backgroundColor: '#006397',
-                                    padding: '0.55rem'
-                                  }}
-                                >
-                                  <div
-                                    style={{
-                                      whiteSpace: 'nowrap',
-                                      fontWeight: 700,
-                                      color: '#fff'
-                                    }}
-                                  >
-                                    Total:
-                                  </div>
-                                </td>
-                                <td
-                                  style={{
-                                    backgroundColor: '#006397',
-                                    padding: '0.75rem',
-                                    textAlign: 'right'
-                                  }}
-                                >
-                                  <div
-                                    style={{
-                                      whiteSpace: 'nowrap',
-                                      fontWeight: 700,
-                                      color: '#fff'
-                                    }}
-                                  >
-                                    {total_amount}
-                                  </div>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
+                            {subtotal_amount}
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td
+                          style={{
+                            borderBottomWidth: '1px',
+                            padding: '0.5rem'
+                          }}
+                        >
+                          <div style={{ whiteSpace: 'nowrap', color: '#94a3b8' }}>SHIPPING AMOUNT (%):</div>
+                        </td>
+                        <td
+                          style={{
+                            borderBottomWidth: '1px',
+                            padding: '0.5rem',
+                            textAlign: 'right'
+                          }}
+                        >
+                          <div
+                            style={{
+                              whiteSpace: 'nowrap',
+                              fontWeight: 700,
+                              color: '#006397'
+                            }}
+                          >
+                            {shipping_amount}
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: '0.5rem' }}>
+                          <div style={{ whiteSpace: 'nowrap', color: '#94a3b8' }}>CGST (%):</div>
+                        </td>
+                        <td style={{ padding: '0.5rem', textAlign: 'right' }}>
+                          <div
+                            style={{
+                              whiteSpace: 'nowrap',
+                              fontWeight: 700,
+                              color: '#006397'
+                            }}
+                          >
+                            {total_cgst_amount}
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: '0.55rem' }}>
+                          <div style={{ whiteSpace: 'nowrap', color: '#94a3b8' }}>SGST (%):</div>
+                        </td>
+                        <td style={{ padding: '0.55rem', textAlign: 'right' }}>
+                          <div
+                            style={{
+                              whiteSpace: 'nowrap',
+                              fontWeight: 700,
+                              color: '#006397'
+                            }}
+                          >
+                            {total_sgst_amount}
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td
+                          style={{
+                            borderBottomWidth: '1px',
+                            padding: '0.5rem'
+                          }}
+                        >
+                          <div style={{ whiteSpace: 'nowrap', color: '#94a3b8' }}>IGST Amount (%):</div>
+                        </td>
+                        <td
+                          style={{
+                            borderBottomWidth: '1px',
+                            padding: '0.55rem',
+                            textAlign: 'right'
+                          }}
+                        >
+                          <div
+                            style={{
+                              whiteSpace: 'nowrap',
+                              fontWeight: 700,
+                              color: '#006397'
+                            }}
+                          >
+                            {total_igst_amount}
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td
+                          style={{
+                            backgroundColor: '#006397',
+                            padding: '0.55rem'
+                          }}
+                        >
+                          <div
+                            style={{
+                              whiteSpace: 'nowrap',
+                              fontWeight: 700,
+                              color: '#fff'
+                            }}
+                          >
+                            Total:
+                          </div>
+                        </td>
+                        <td
+                          style={{
+                            backgroundColor: '#006397',
+                            padding: '0.5rem',
+                            textAlign: 'right'
+                          }}
+                        >
+                          <div
+                            style={{
+                              whiteSpace: 'nowrap',
+                              fontWeight: 700,
+                              color: '#fff'
+                            }}
+                          >
+                            {total_amount}
+                          </div>
                         </td>
                       </tr>
                     </tbody>
