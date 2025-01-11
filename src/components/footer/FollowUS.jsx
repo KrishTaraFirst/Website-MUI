@@ -15,16 +15,16 @@ import { IconType } from '@/enum';
 
 /***************************  FOLLOW US - DATA  ***************************/
 
-const linkProps = { target: '_blank', rel: 'noopener noreferrer' };
+const linkProps = { rel: 'noopener noreferrer' };
 const socialIcons = [
   {
     icon: 'tabler-filled-linkedin',
     link: { href: `${branding.company.socialLink.linkedin}`, ...linkProps }
   },
-  // {
-  //   icon: 'tabler-filled-instagram',
-  //   link: { href: `${branding.company.socialLink.instagram}` }
-  // },
+  {
+    icon: 'tabler-filled-instagram',
+    link: { href: `${branding.company.socialLink.instagram}`, ...linkProps }
+  },
   {
     icon: 'tabler-filled-facebook',
     link: { href: `${branding.company.socialLink.facebook}`, ...linkProps }

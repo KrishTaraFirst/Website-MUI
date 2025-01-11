@@ -18,7 +18,8 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Grid
+  Grid,
+  Card
 } from '@mui/material';
 
 /***************************  ACCOUNT  ***************************/
@@ -55,89 +56,99 @@ export default function RecordPayment() {
           </Typography>
         </Stack>
       </Stack>
-      <MainCard>
-        <Grid container rowSpacing={4} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-          <Grid item xs={12} sm={4}>
-            <Box>
-              <Typography variant="subtitle1">Customer Name :{selectedInvoice?.customer}</Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Box>
-              <Typography variant="subtitle1">Invoice Number : {selectedInvoice?.invoice_number}</Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Box>
-              <Typography variant="subtitle1">Invoice Date : {selectedInvoice?.invoice_date}</Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Box>
-              <Typography variant="subtitle1">
-                Invoice Amount : {indianCurrency}&nbsp;{selectedInvoice?.amount_invoiced}
+      <MainCard sx={{ p: 2 }}>
+        <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+          <Grid item xs={12} sm={4} md={2}>
+            <Stack direction="column">
+              <Typography variant="subtitle1">Customer Name </Typography>
+              <Typography color={'grey.700'} variant="subtitle1">
+                {selectedInvoice?.customer}
               </Typography>
-            </Box>
+            </Stack>
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <Box>
-              <Typography variant="subtitle1">
-                Total Amount paid : {indianCurrency}&nbsp;{selectedInvoice?.amount_invoiced - selectedInvoice?.balance_due}
+          <Grid item xs={12} sm={4} md={2}>
+            <Stack direction="column">
+              <Typography variant="subtitle1">Invoice Number </Typography>
+              <Typography color={'grey.700'} variant="subtitle1">
+                {selectedInvoice?.invoice_number}
               </Typography>
-            </Box>
+            </Stack>
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <Box>
-              <Typography variant="subtitle1">
-                Due Amount : {indianCurrency}&nbsp;{selectedInvoice?.balance_due}
+          <Grid item xs={12} sm={4} md={2}>
+            <Stack direction="column">
+              <Typography variant="subtitle1">Invoice Date </Typography>
+              <Typography color={'grey.700'} variant="subtitle1">
+                {selectedInvoice?.invoice_date}
               </Typography>
-            </Box>
+            </Stack>
+          </Grid>
+          <Grid item xs={12} sm={4} md={2}>
+            <Stack direction="column">
+              <Typography variant="subtitle1">Invoice Amount</Typography>
+              <Typography color={'grey.700'} variant="subtitle1">
+                {indianCurrency}&nbsp;{selectedInvoice?.amount_invoiced}
+              </Typography>
+            </Stack>
+          </Grid>
+          <Grid item xs={12} sm={4} md={2}>
+            <Stack direction="column">
+              <Typography variant="subtitle1">Total Amount paid </Typography>
+              <Typography color={'grey.700'} variant="subtitle1">
+                {indianCurrency}&nbsp;{selectedInvoice?.amount_invoiced - selectedInvoice?.balance_due}
+              </Typography>
+            </Stack>
+          </Grid>
+          <Grid item xs={12} sm={4} md={2}>
+            <Stack direction="column">
+              <Typography variant="subtitle1">Due Amount </Typography>
+              <Typography color={'grey.700'} variant="subtitle1">
+                {indianCurrency}&nbsp;{selectedInvoice?.balance_due}{' '}
+              </Typography>
+            </Stack>
           </Grid>
         </Grid>
       </MainCard>
-      <Box>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Payment Date</TableCell>
-                <TableCell>Amount</TableCell>
-                <TableCell>Mode</TableCell>
-                <TableCell>Comments</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {selectedInvoice?.customer_invoice_receipts.length > 0 ? (
-                selectedInvoice?.customer_invoice_receipts?.map((customer, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{customer.date}</TableCell>
-                    <TableCell>
-                      {indianCurrency}&nbsp;
-                      {customer.amount}
-                    </TableCell>
-                    <TableCell>
-                      {customer.method === 'cash'
-                        ? 'Cash'
-                        : customer.method === 'card'
-                          ? 'Card'
-                          : customer.method === 'bank_transfer'
-                            ? 'Bank Transfer'
-                            : ''}
-                    </TableCell>
-                    <TableCell>{customer.comments}</TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={7} align="center">
-                    No customers available
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Payment Date</TableCell>
+              <TableCell>Amount</TableCell>
+              <TableCell>Mode</TableCell>
+              <TableCell>Comments</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {selectedInvoice?.customer_invoice_receipts.length > 0 ? (
+              selectedInvoice?.customer_invoice_receipts?.map((customer, index) => (
+                <TableRow key={index}>
+                  <TableCell>{customer.date}</TableCell>
+                  <TableCell>
+                    {indianCurrency}&nbsp;
+                    {customer.amount}
                   </TableCell>
+                  <TableCell>
+                    {customer.method === 'cash'
+                      ? 'Cash'
+                      : customer.method === 'card'
+                        ? 'Card'
+                        : customer.method === 'bank_transfer'
+                          ? 'Bank Transfer'
+                          : ''}
+                  </TableCell>
+                  <TableCell>{customer.comments}</TableCell>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} align="center">
+                  No customers available
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Stack>
   );
 }

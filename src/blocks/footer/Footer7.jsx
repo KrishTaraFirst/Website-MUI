@@ -44,7 +44,7 @@ const data = [
       },
       {
         label: 'About',
-        link: { href: '/about', ...linkProps }
+        link: { href: '/#', ...linkProps }
       },
       {
         label: 'Contact Us',
@@ -109,7 +109,7 @@ const iconProps = { color: 'text.secondary' };
 
 const usefullLinks = [
   {
-    icon: <SvgIcon name="tabler-network" {...iconProps} />,
+    icon: <SvgIcon name="tabler-world" {...iconProps} />,
     title: 'www.tarafirst.com',
     href: '#'
   },

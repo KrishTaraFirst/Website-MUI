@@ -22,7 +22,7 @@ const linkProps = { rel: 'noopener noreferrer' };
 //     // landingMegamenu,
 //     // { id: 'components', title: 'Blocks', link: SECTION_PATH },
 //     pagesMegamenu,
-//     { id: 'docs', title: 'Docs', link: DOCS_URL, target: '_blank', rel: 'noopener noreferrer', icon: 'tabler-pin-invoke' }
+//     { id: 'docs', title: 'Docs', link: DOCS_URL, rel: 'noopener noreferrer', icon: 'tabler-pin-invoke' }
 //   ]
 // };
 
@@ -37,6 +37,6 @@ export const navbar = {
     // landingMegamenu,
     // { id: 'components', title: 'Blocks', link: SECTION_PATH },
     pagesMegamenu,
-    { id: 'docs', title: 'Docs', link: DOCS_URL, target: '_blank', rel: 'noopener noreferrer', icon: 'tabler-pin-invoke' }
+    { id: 'docs', title: 'Docs', link: DOCS_URL, rel: 'noopener noreferrer', icon: 'tabler-pin-invoke' }
   ]
 };

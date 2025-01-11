@@ -25,7 +25,6 @@ export default function Copyright({ type = CopyrightType.TYPE1, isDivider = true
     component: NextLink,
     variant: 'caption',
     color: 'text.secondary',
-    target: '_blank',
     rel: 'noopener noreferrer',
     underline: 'hover',
     'aria-label': 'Opens in a new tab',
