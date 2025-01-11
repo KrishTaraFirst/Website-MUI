@@ -85,43 +85,55 @@ export default function RecordPayment() {
           </Typography>
         </Stack>
       </Stack>
-      <MainCard>
-        <Grid container rowSpacing={4} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-          <Grid item xs={12} sm={4}>
-            <Box>
-              <Typography variant="subtitle1">Customer Name :{selectedInvoice?.customer}</Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Box>
-              <Typography variant="subtitle1">Invoice Number : {selectedInvoice?.invoice_number}</Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Box>
-              <Typography variant="subtitle1">Invoice Date : {selectedInvoice?.invoice_date}</Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Box>
-              <Typography variant="subtitle1">
-                Invoice Amount : {indianCurrency}&nbsp;{selectedInvoice?.amount_invoiced}
+      <MainCard sx={{ p: 2 }}>
+        <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+          <Grid item xs={12} sm={4} md={2}>
+            <Stack direction="column">
+              <Typography variant="subtitle1">Customer Name </Typography>
+              <Typography color={'grey.700'} variant="subtitle1">
+                {selectedInvoice?.customer}
               </Typography>
-            </Box>
+            </Stack>
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <Box>
-              <Typography variant="subtitle1">
-                Total Amount paid : {indianCurrency}&nbsp;{selectedInvoice?.amount_invoiced - selectedInvoice?.balance_due}
+          <Grid item xs={12} sm={4} md={2}>
+            <Stack direction="column">
+              <Typography variant="subtitle1">Invoice Number </Typography>
+              <Typography color={'grey.700'} variant="subtitle1">
+                {selectedInvoice?.invoice_number}
               </Typography>
-            </Box>
+            </Stack>
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <Box>
-              <Typography variant="subtitle1">
-                Due Amount : {indianCurrency}&nbsp;{selectedInvoice?.balance_due}
+          <Grid item xs={12} sm={4} md={2}>
+            <Stack direction="column">
+              <Typography variant="subtitle1">Invoice Date </Typography>
+              <Typography color={'grey.700'} variant="subtitle1">
+                {selectedInvoice?.invoice_date}
               </Typography>
-            </Box>
+            </Stack>
+          </Grid>
+          <Grid item xs={12} sm={4} md={2}>
+            <Stack direction="column">
+              <Typography variant="subtitle1">Invoice Amount</Typography>
+              <Typography color={'grey.700'} variant="subtitle1">
+                {indianCurrency}&nbsp;{selectedInvoice?.amount_invoiced}
+              </Typography>
+            </Stack>
+          </Grid>
+          <Grid item xs={12} sm={4} md={2}>
+            <Stack direction="column">
+              <Typography variant="subtitle1">Total Amount paid </Typography>
+              <Typography color={'grey.700'} variant="subtitle1">
+                {indianCurrency}&nbsp;{selectedInvoice?.amount_invoiced - selectedInvoice?.balance_due}
+              </Typography>
+            </Stack>
+          </Grid>
+          <Grid item xs={12} sm={4} md={2}>
+            <Stack direction="column">
+              <Typography variant="subtitle1">Due Amount </Typography>
+              <Typography color={'grey.700'} variant="subtitle1">
+                {indianCurrency}&nbsp;{selectedInvoice?.balance_due}{' '}
+              </Typography>
+            </Stack>
           </Grid>
         </Grid>
       </MainCard>
