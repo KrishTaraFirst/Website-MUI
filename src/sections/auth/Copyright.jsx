@@ -20,7 +20,6 @@ export default function Copyright() {
     component: NextLink,
     variant: 'caption',
     color: 'text.secondary',
-    target: '_blank',
     underline: 'hover',
     sx: { '&:hover': { color: 'primary.main' } }
   };

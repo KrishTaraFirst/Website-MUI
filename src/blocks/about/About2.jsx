@@ -24,9 +24,10 @@ import { SECTION_COMMON_PY } from '@/utils/constant';
 
 /***************************  ABOUT - 2  ***************************/
 
-export default function About2({ heading, caption, image, description, title, primaryBtn }) {
+export default function About2({ heading, caption, image, description1, title1, description2, title2, primaryBtn }) {
   const theme = useTheme();
-  const cardPadding = { xs: 3, sm: 4, md: 5 };
+  const cardPaddingX = { xs: 3, sm: 4, md: 5 };
+  const cardPaddingY = { xs: 3, sm: 8, md: 10 };
 
   const grey100 = theme.palette.grey[100];
   const gradient =
@@ -69,10 +70,19 @@ export default function About2({ heading, caption, image, description, title, pr
               style={{ height: '100%' }}
             >
               <GraphicsCard sx={{ height: 1 }}>
-                <Stack sx={{ alignItems: 'flex-start', justifyContent: 'space-between', gap: cardPadding, p: cardPadding, height: 1 }}>
+                <Stack
+                  sx={{
+                    alignItems: 'flex-start',
+                    justifyContent: 'space-between',
+                    gap: cardPaddingY,
+                    px: cardPaddingX,
+                    height: 1,
+                    py: cardPaddingY
+                  }}
+                >
                   <Stack sx={{ gap: { xs: 1, sm: 1.5 } }}>
-                    {title && <Typography variant="h4">{title}</Typography>}
-                    {description && <Typography sx={{ color: 'text.secondary' }}>{description}</Typography>}
+                    {title1 && <Typography variant="h4">{title1}</Typography>}
+                    {description1 && <Typography sx={{ color: 'text.secondary' }}>{description1}</Typography>}
                   </Stack>
                   {primaryBtn && (
                     <ButtonAnimationWrapper>
@@ -84,6 +94,41 @@ export default function About2({ heading, caption, image, description, title, pr
             </motion.div>
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 0.3,
+                delay: 0.3
+              }}
+              style={{ height: '100%' }}
+            >
+              <GraphicsCard sx={{ height: 1 }}>
+                <Stack
+                  sx={{
+                    alignItems: 'flex-start',
+                    justifyContent: 'space-between',
+                    gap: cardPaddingY,
+                    px: cardPaddingX,
+                    height: 1,
+                    py: cardPaddingY
+                  }}
+                >
+                  <Stack sx={{ gap: { xs: 1, sm: 1.5 } }}>
+                    {title2 && <Typography variant="h4">{title2}</Typography>}
+                    {description2 && <Typography sx={{ color: 'text.secondary' }}>{description2}</Typography>}
+                  </Stack>
+                  {primaryBtn && (
+                    <ButtonAnimationWrapper>
+                      <Button variant="contained" size="large" {...primaryBtn} />
+                    </ButtonAnimationWrapper>
+                  )}
+                </Stack>
+              </GraphicsCard>
+            </motion.div>
+          </Grid>
+          {/* <Grid size={{ xs: 12, sm: 6 }}>
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -111,7 +156,7 @@ export default function About2({ heading, caption, image, description, title, pr
                 </Stack>
               </GraphicsCard>
             </motion.div>
-          </Grid>
+          </Grid> */}
         </Grid>
       </Stack>
     </ContainerWrapper>

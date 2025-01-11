@@ -1,9 +1,11 @@
 export const about = {
-  heading: 'Empowering Businesses to Succeed',
+  heading: 'Our Values Guide Our Every Step',
   image: { light: '/assets/images/graphics/ai/graphics21-light.svg', dark: '/assets/images/graphics/ai/graphics21-dark.svg' },
-  caption: 'Learn how our AI platform empowers businesses of all sizes to achieve their goals and reach new heights',
-  title: 'Empower your business with our AI platform, streamlining sales',
-  description:
-    'Empower your business with our AI platform, streamlining sales, marketing, and service processes to drive growth and build stronger customer relationships.',
-  primaryBtn: { children: 'Subscribe', href: '#' }
+  caption:
+    'At Tara, we center everything around authenticity, simplicity, and progress. Our core belief is that finance shouldn’t be intimidating.',
+  title1: 'Finance Made Simple',
+  description1: 'We believe finance should be approachable, breaking down complexities with intuitive, easy-to-understand solutions.',
+  title2: 'Transparency & Confidentiality at Core',
+  description2: 'At Tara, we ensure complete transparency while safeguarding your data with utmost confidentiality and security.'
+  // primaryBtn: { children: 'Subscribe', href: '#' }
 };

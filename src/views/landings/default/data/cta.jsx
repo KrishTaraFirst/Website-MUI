@@ -11,7 +11,6 @@ export const cta4 = {
   primaryBtn: {
     children: 'Read Our story',
     href: 'https://blog.saasable.io/a-decade-of-expertise-the-phoenixcoded-story-and-why-you-should-trust-us',
-    target: '_blank',
     rel: 'noopener noreferrer'
   },
   profileGroups: {
@@ -53,7 +52,6 @@ export const cta5 = {
   primaryBtn: {
     children: 'Join Discord Community',
     href: branding.company.socialLink.discord,
-    target: '_blank',
     rel: 'noopener noreferrer'
   },
   description: <DescriptionLine />,

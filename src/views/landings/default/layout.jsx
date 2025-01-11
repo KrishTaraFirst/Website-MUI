@@ -10,7 +10,7 @@ import { Navbar10 } from '@/blocks/navbar';
 import { NavbarContent10 } from '@/blocks/navbar/navbar-content';
 
 // @data
-import { navbar } from './data';
+import { navbar } from '../ai/data/navbar';
 
 // @types
 

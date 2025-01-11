@@ -10,11 +10,11 @@ export const navbar = {
   primaryBtn: { children: 'Login', href: '/login', rel: 'noopener noreferrer' },
   navItems: [
     { id: 'home', title: 'Home', link: '/' },
-    { id: 'about', title: 'About', link: '/about' },
-    { id: 'contact', title: 'Contact', link: '/contact' },
+    // { id: 'about', title: 'About', link: '/about' },
+    { id: 'contact', title: 'Contact', link: '/contact' }
     // landingMegamenu,
     // { id: 'components', title: 'Blocks', link: SECTION_PATH },
-    pagesMegamenu,
-    { id: 'docs', title: 'Docs', link: DOCS_URL, target: '_blank', rel: 'noopener noreferrer', icon: 'tabler-pin-invoke' }
+    // pagesMegamenu,
+    // { id: 'docs', title: 'Docs', link: DOCS_URL, rel: 'noopener noreferrer', icon: 'tabler-pin-invoke' }
   ]
 };

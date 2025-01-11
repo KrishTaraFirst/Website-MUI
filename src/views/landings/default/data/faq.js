@@ -96,7 +96,7 @@ export const faq = {
     }
   ],
   getInTouch: {
-    link: { children: 'Get in Touch', href: branding.company.socialLink.support, target: '_blank', rel: 'noopener noreferrer' }
+    link: { children: 'Get in Touch', href: branding.company.socialLink.support, rel: 'noopener noreferrer' }
   },
   categories: ['General', 'Pricing & Licenses', 'Support & Updates'],
   activeCategory: 'General'

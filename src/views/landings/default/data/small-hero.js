@@ -2,7 +2,7 @@
 import branding from '@/branding.json';
 import { BUY_NOW_URL } from '@/path';
 
-const linkProps = { target: '_blank', rel: 'noopener noreferrer' };
+const linkProps = { rel: 'noopener noreferrer' };
 
 export const smallHero = {
   chip: {

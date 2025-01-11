@@ -28,7 +28,7 @@ import { SECTION_COMMON_PY } from '@/utils/constant';
 
 /***************************  FOOTER - 7 DATA  ***************************/
 
-const linkProps = { target: '_blank', rel: 'noopener noreferrer' };
+const linkProps = { rel: 'noopener noreferrer' };
 const data = [
   {
     id: 'company',
@@ -36,15 +36,15 @@ const data = [
     title: 'Company',
     menu: [
       {
-        label: 'Why Phoenixcoded?',
+        label: 'Why tara?',
         link: {
-          href: 'https://blog.saasable.io/a-decade-of-expertise-the-phoenixcoded-story-and-why-you-should-trust-us',
+          href: '#',
           ...linkProps
         }
       },
       {
         label: 'About',
-        link: { href: '/about', ...linkProps }
+        link: { href: '/#', ...linkProps }
       },
       {
         label: 'Contact Us',
@@ -59,19 +59,20 @@ const data = [
     menu: [
       {
         label: 'Pricing',
-        link: { href: '/pricing', ...linkProps }
+        // link: { href: '/pricing', ...linkProps }
+        link: { href: '#', ...linkProps }
       },
       {
         label: 'FAQ',
-        link: { href: '/faq', ...linkProps }
+        link: { href: '#', ...linkProps }
       },
       {
         label: 'Support',
-        link: { href: branding.company.socialLink.support, ...linkProps }
+        link: { href: '#', ...linkProps }
       },
       {
         label: 'License Terms',
-        link: { href: 'https://mui.com/store/license/', ...linkProps }
+        link: { href: '#', ...linkProps }
       }
     ]
   },
@@ -82,15 +83,15 @@ const data = [
     menu: [
       {
         label: 'Freebies',
-        link: { href: FREEBIES_URL, ...linkProps }
+        link: { href: '#', ...linkProps }
       },
       {
         label: 'Documentation',
-        link: { href: DOCS_URL, ...linkProps }
+        link: { href: '#', ...linkProps }
       },
       {
         label: 'Blog',
-        link: { href: 'https://blog.saasable.io/', ...linkProps }
+        link: { href: '#', ...linkProps }
       },
       {
         label: 'Privacy Policy',
@@ -98,7 +99,7 @@ const data = [
       },
       {
         label: 'Refund Policy',
-        link: { href: 'https://mui.com/store/customer-refund-policy/', ...linkProps }
+        link: { href: '#', ...linkProps }
       }
     ]
   }
@@ -108,19 +109,19 @@ const iconProps = { color: 'text.secondary' };
 
 const usefullLinks = [
   {
-    icon: <SvgIcon name="tabler-brand-figma" {...iconProps} />,
-    title: 'Figma Version 1.0.0',
-    href: 'https://www.figma.com/community/file/1425095061180549847'
+    icon: <SvgIcon name="tabler-world" {...iconProps} />,
+    title: 'www.tarafirst.com',
+    href: '#'
   },
   {
-    icon: <SvgIcon name="tabler-route" {...iconProps} />,
-    title: 'React Material UI v6.1.4',
-    href: 'https://mui.com/material-ui/getting-started'
+    icon: <SvgIcon name="tabler-mail" {...iconProps} />,
+    title: 'admin@tarafirst.com',
+    href: '#'
   },
   {
-    icon: <SvgIcon name="tabler-sparkles" {...iconProps} />,
-    title: 'Documentation',
-    href: DOCS_URL
+    icon: <SvgIcon name="tabler-phone-call" {...iconProps} />,
+    title: '8801538918',
+    href: '#'
   }
 ];
 
@@ -130,12 +131,12 @@ export default function Footer7() {
   const logoFollowContent = (
     <Stack sx={{ alignItems: 'flex-start', gap: { xs: 1.5, sm: 3 } }}>
       <LogoSection isIcon={true} />
-      <Typography variant="h6" sx={{ maxWidth: { sm: 280 }, mb: { xs: -1, sm: -2.5 } }}>
+      {/* <Typography variant="h6" sx={{ maxWidth: { sm: 280 }, mb: { xs: -1, sm: -2.5 } }}>
         {process.env.NEXT_PUBLIC_VERSION}
       </Typography>
       <Typography variant="body2" sx={{ maxWidth: { sm: 280 } }}>
         Explore the different versions of our SaasAble template.
-      </Typography>
+      </Typography> */}
     </Stack>
   );
 
