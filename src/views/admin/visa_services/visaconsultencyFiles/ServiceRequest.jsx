@@ -2,7 +2,7 @@
 import { useSearchParams } from 'next/navigation';
 import CustomAutocomplete from '@/components/CustomComponents/CustomAutocomplete';
 import CustomInput from '@/components/CustomComponents/CustomInput';
-import AdditionalDetails from './componnets/AdditionalDetails';
+import AdditionalDetails from './components/AdditionalDetails';
 import {
   Typography,
   Grid,
@@ -28,9 +28,9 @@ import {
 import { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import ServicesSuccessMessage from './componnets/ServicesSuccessMessage';
-import Serviceselection from './componnets/Serviceselection';
-import ServiceHistory from './componnets/ServiceHistory';
+import ServicesSuccessMessage from './components/ServicesSuccessMessage';
+import Serviceselection from './components/Serviceselection';
+import ServiceHistory from './components/ServiceHistory';
 import CloseIcon from '@mui/icons-material/Close';
 import Factory from '@/utils/Factory';
 import { titles } from './data';

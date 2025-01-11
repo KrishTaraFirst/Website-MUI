@@ -115,7 +115,7 @@ const usefullLinks = [
   },
   {
     icon: <SvgIcon name="tabler-mail" {...iconProps} />,
-    title: 'admin@tarafirst.com',
+    title: 'contact@tarafirst.com',
     href: '#'
   },
   {
