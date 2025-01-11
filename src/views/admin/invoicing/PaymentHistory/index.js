@@ -5,10 +5,12 @@ import Factory from '@/utils/Factory';
 import { indianCurrency } from '../../../../utils/CurrencyToggle';
 import { useSearchParams } from 'next/navigation';
 import MainCard from '@/components/MainCard';
+import ActionCell from '@/utils/ActionCell';
+import { useSnackbar } from '@/components/CustomSnackbar';
+import CustomInput from '@/utils/CustomInput';
 
 import {
   Typography,
-  Button,
   Stack,
   Box,
   Table,
@@ -19,15 +21,23 @@ import {
   TableRow,
   Paper,
   Grid,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Divider,
+  Button,
   Card
 } from '@mui/material';
-
+import { Preview } from '@mui/icons-material';
 /***************************  ACCOUNT  ***************************/
 
 export default function RecordPayment() {
   const searchParams = useSearchParams();
   const invoiceId = searchParams.get('id');
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const { showSnackbar } = useSnackbar();
+  let [recordData, setRecordData] = useState({});
+  let [open, setOpen] = useState(false);
 
   const get_Individual_Invoice_Data = async () => {
     const { res } = await Factory('get', `/invoicing/individual-invoice/${invoiceId}/`, {});
@@ -37,7 +47,27 @@ export default function RecordPayment() {
       console.log('Failed to fetch details');
     }
   };
-
+  const handleDelete = async (id) => {
+    let url = `/invoicing/receipt-delete/${id}/`;
+    const { res } = await Factory('delete', url, {});
+    if (res.status_cd === 1) {
+      showSnackbar(JSON.stringify(res.data), 'error');
+    } else {
+      showSnackbar('Record Deleted Successfully', 'success');
+      get_Individual_Invoice_Data();
+    }
+  };
+  const handleSaveComment = async (id) => {
+    let url = `/invoicing/receipt-update/${id}/`;
+    const { res } = await Factory('put', url, recordData);
+    if (res.status_cd === 1) {
+      showSnackbar(JSON.stringify(res.data), 'error');
+    } else {
+      setOpen(false);
+      showSnackbar('Record Updated Successfully', 'success');
+      get_Individual_Invoice_Data();
+    }
+  };
   useEffect(() => {
     if (invoiceId) {
       get_Individual_Invoice_Data();

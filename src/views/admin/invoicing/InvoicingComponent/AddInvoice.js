@@ -244,7 +244,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
       if (res.status_cd === 0) {
         resetForm();
         showSnackbar('Data Added Successfully', 'success');
-        router.push(`/invoicing`);
+        router.push(`/invoicing/invoice?id=${selectedInvoice?.id}`);
       }
     }
   });
@@ -302,22 +302,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
                 due_date: dayjs().format('YYYY-MM-DD'),
                 sales_person: '',
                 order_number: '',
-                item_details: [
-                  // {
-                  //   item: '',
-                  //   quantity: 1,
-                  //   rate: 0,
-                  //   discount_type: '%',
-                  //   discount: 0,
-                  //   amount: 0,
-                  //   tax: 0,
-                  //   taxamount: 0,
-                  //   total_amount: 0,
-                  //   cgst_amount: 0,
-                  //   sgst_amount: 0,
-                  //   igst_amount: 0
-                  // }
-                ],
+                item_details: [],
                 amount_invoiced: 0,
                 total_cgst_amount: 0,
                 total_sgst_amount: 0,
@@ -328,7 +313,18 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
                 subtotal_amount: 0,
                 terms_and_conditions: '',
                 total_amount: 0,
-                shipping_amount_with_tax: 0
+                shipping_amount_with_tax: 0,
+                shipping_tax: 0,
+                same_address: false,
+                not_applicablefor_shipping: false,
+                applied_tax: false,
+                shipping_address: {
+                  address_line1: '',
+                  address_line2: '',
+                  country: 'IN',
+                  state: '',
+                  postal_code: ''
+                }
               });
               const selectedCustomer = customers?.find((customer) => customer.name === newValue);
               formik.setFieldValue('customer', newValue);
@@ -980,7 +976,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
                       placeholder={indianCurrency}
                       value={formik.values.shipping_amount}
                       onChange={handleShippingAmountChange}
-                      sx={{ width: '100px', ml: 2 }}
+                      sx={{ minWidth: '200px', maxWidth: '200px', ml: 1, mt: -1, mr: 2 }}
                     />
                     <Typography variant="body1">
                       {indianCurrency} {formik.values.shipping_amount.toFixed(2)}

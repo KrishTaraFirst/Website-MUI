@@ -20,7 +20,8 @@ import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import MessyDoodle from '@/images/illustration/MessyDoodle';
-
+import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 /**
  * ActionCell Component - Handles Edit and Delete actions
  *
@@ -76,7 +77,7 @@ export default function ActionCell({
     onDelete(row); // Call delete callback with row data
     handleDeleteDialogClose();
   };
-
+  console.log(row);
   return (
     <>
       <IconButton color="secondary" size="small" onClick={handleActionClick} aria-label="action">
@@ -121,7 +122,7 @@ export default function ActionCell({
                   {fromComponent === 'invoice' && (
                     <ListItemButton onClick={onRecordPayment}>
                       <ListItemIcon>
-                        <IconEdit size={16} />
+                        <BookmarkAddIcon size={16} />
                       </ListItemIcon>
                       <ListItemText>Record Payment</ListItemText>
                     </ListItemButton>
@@ -129,12 +130,12 @@ export default function ActionCell({
                   {fromComponent === 'invoice' && (
                     <ListItemButton onClick={onPaymentHistory}>
                       <ListItemIcon>
-                        <IconEdit size={16} />
+                        <LibraryBooksIcon size={16} />
                       </ListItemIcon>
                       <ListItemText>Payment History</ListItemText>
                     </ListItemButton>
                   )}
-                  {fromComponent === 'invoice' && (
+                  {(row?.invoice_status === 'Approved' || row?.invoice_status === 'Invoice Sent') && (
                     <ListItemButton onClick={onWriteOff}>
                       <ListItemIcon>
                         <IconCheck size={16} />
@@ -142,6 +143,7 @@ export default function ActionCell({
                       <ListItemText>Write Off</ListItemText>
                     </ListItemButton>
                   )}
+
                   {/* Delete Action */}
                   <ListItemButton sx={{ color: 'error.main' }} onClick={handleDeleteDialogOpen}>
                     <ListItemIcon>
