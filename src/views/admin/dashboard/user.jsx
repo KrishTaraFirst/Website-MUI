@@ -21,7 +21,7 @@ export default function AnalyticsOverview() {
   return (
     <Grid container spacing={{ xs: 2, md: 3 }}>
       <Grid container size={12}>
-        <Grid container size={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <MainCard style={{ display: 'flex', flexDirection: 'row' }}>
             <Grid
               size={8}
@@ -43,7 +43,7 @@ export default function AnalyticsOverview() {
             </Grid>
           </MainCard>
         </Grid>
-        <Grid size={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <MainCard style={{ minHeight: '29%', maxHeight: '29%' }}>
             <Typography variant="subtitle1">User Since Dec, 2024</Typography>
           </MainCard>

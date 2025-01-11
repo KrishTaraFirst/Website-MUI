@@ -239,7 +239,6 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
       let post_url = '/invoicing/invoice-create';
       let method = selectedInvoice ? 'put' : 'post';
       let url = selectedInvoice ? put_url : post_url;
-      console.log(postData);
       const { res } = await Factory(method, url, postData);
       if (res.status_cd === 0) {
         resetForm();
@@ -593,7 +592,6 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
   };
   const handleDiscountChange = (index, value) => {
     const newDiscount = value;
-    console.log(newDiscount);
     const newItemDetails = [...formik.values.item_details];
     newItemDetails[index].discount = newDiscount;
 
@@ -670,8 +668,6 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
 
   useEffect(() => {
     if (selectedInvoice) {
-      console.log(selectedInvoice);
-
       formik.setValues({
         ...selectedInvoice,
         invoice_date: selectedInvoice.invoice_date,
