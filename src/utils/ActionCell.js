@@ -119,19 +119,26 @@ export default function ActionCell({
                     <ListItemText>Edit</ListItemText>
                   </ListItemButton>
                   {/* {fromComponent === 'invoice' && ( */}
-                  {row?.invoice_status === 'Approved' ||
-                    (row?.invoice_status === 'Invoice Sent' && (
-                      <>
-                        {row?.invoice_status !== 'Paid' && (
-                          <ListItemButton onClick={onRecordPayment}>
-                            <ListItemIcon>
-                              <BookmarkAddIcon size={16} />
-                            </ListItemIcon>
-                            <ListItemText>Record Payment</ListItemText>
-                          </ListItemButton>
-                        )}
-                      </>
-                    ))}
+                  {/* {['Approved', 'Invoice Sent'].includes(row?.invoice_status) && (
+                    <>
+                      {row?.balance_due !== 0 && (
+                        <ListItemButton onClick={onRecordPayment}>
+                          <ListItemIcon>
+                            <BookmarkAddIcon size={16} />
+                          </ListItemIcon>
+                          <ListItemText>Record Payment</ListItemText>
+                        </ListItemButton>
+                      )}
+                    </>
+                  )} */}
+                  {['Approved', 'Invoice Sent'].includes(row?.invoice_status) && row?.balance_due !== 0 && (
+                    <ListItemButton onClick={onRecordPayment}>
+                      <ListItemIcon>
+                        <BookmarkAddIcon size={16} />
+                      </ListItemIcon>
+                      <ListItemText>Record Payment</ListItemText>
+                    </ListItemButton>
+                  )}
                   {fromComponent === 'invoice' && (
                     <ListItemButton onClick={onPaymentHistory}>
                       <ListItemIcon>
