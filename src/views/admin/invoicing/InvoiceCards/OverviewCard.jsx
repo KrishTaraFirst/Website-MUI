@@ -416,8 +416,8 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
                 <TableCell>Date</TableCell>
                 <TableCell>Invoice Number</TableCell>
                 <TableCell>Customer</TableCell>
-                <TableCell> Payment Status</TableCell>
-                <TableCell> Invoice Status</TableCell>
+                <TableCell>Payment Status</TableCell>
+                <TableCell>Invoice Status</TableCell>
                 <TableCell>Due Date</TableCell>
                 <TableCell>Amount</TableCell>
                 <TableCell>Balance Due</TableCell>
@@ -436,7 +436,7 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
                         size="small"
                         variant="outlined"
                         label={invoice.payment_status}
-                        color={invoice.payment_status === 'Pending' ? 'warning' : 'success'}
+                        color={invoice.payment_status === 'Pending' || invoice.payment_status === 'Overdue' ? 'warning' : 'success'}
                       />
                     </TableCell>
                     <TableCell>
