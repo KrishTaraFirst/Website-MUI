@@ -9,6 +9,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import { Typography } from '@mui/material';
+import { useRouter } from 'next/navigation';
 
 // @project
 import GraphicsCard from '@/components/cards/GraphicsCard';
@@ -37,6 +38,7 @@ export default function EarlyAccess() {
   const { showSnackbar } = useSnackbar();
   const searchParams = useSearchParams();
   const invoice_id = searchParams.get('id');
+  const router = useRouter();
   const [invoice, setInvoice] = useState({
     shipping_address: {
       ship_to_address: '',
@@ -60,6 +62,27 @@ export default function EarlyAccess() {
       setInvoice(res.data);
     } else {
       showSnackbar('Failed to fetch invoice', 'error');
+    }
+  };
+
+  const updateStatus = async () => {
+    // let url = `/invoicing/invoice-wave-off/${invoice_id}`;
+    // const { res } = await Factory('put', url, {});
+    // if (res.status_cd === 1) {
+    //   showSnackbar(JSON.stringify(res.data), 'error');
+    // } else {
+    //   showSnackbar('Successfully wavedoff', 'success');
+    //   getInvoices(businessDetailsData.id);
+    // }
+    const postData = {
+      invoice_status: 'Approved'
+    };
+    let url = `/invoicing/invoice-update/${invoice_id}/`;
+    const { res } = await Factory('put', url, postData);
+    if (res.status_cd === 0) {
+      // resetForm();
+      router.push(`/invoicing`);
+      showSnackbar('Approved', 'success');
     }
   };
 
@@ -517,7 +540,7 @@ export default function EarlyAccess() {
                 </Typography>
               </Stack>
               <Stack direction="row" sx={{ gap: 2, mb: 2 }}>
-                <Button fullWidth variant="contained">
+                <Button fullWidth onClick={updateStatus} variant="contained">
                   Approve Invoice
                 </Button>
                 <Button fullWidth variant="contained">

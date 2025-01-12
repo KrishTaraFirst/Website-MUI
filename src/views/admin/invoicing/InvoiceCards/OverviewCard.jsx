@@ -444,7 +444,7 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
                         size="small"
                         variant="outlined"
                         label={invoice.invoice_status}
-                        color={invoice.payment_status === 'Approved' ? 'success' : 'warning'}
+                        color={invoice.invoice_status === 'Approved' ? 'success' : 'warning'}
                       />
                     </TableCell>
                     <TableCell>{invoice.due_date}</TableCell>
