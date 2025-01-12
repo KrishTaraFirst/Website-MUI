@@ -127,16 +127,14 @@ export default function RecordPayment() {
             Record Payment
           </Typography>
           <Typography variant="caption" sx={{ color: 'grey.700' }}>
-            Some text tagline regarding Record Payment.
+            Record your payment details.
           </Typography>
         </Stack>
       </Stack>
 
       <Box>
         <Box sx={{ mb: 2 }}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-            Invoice Details
-          </Typography>
+          <Typography variant="h6">Invoice Details</Typography>
         </Box>
 
         <form onSubmit={formik.handleSubmit}>
@@ -144,7 +142,7 @@ export default function RecordPayment() {
             {customerFields.map((item, index) => (
               <Grid item xs={12} sm={4} key={item.name}>
                 <div style={{ paddingBottom: '5px' }}>
-                  <label>{item.label}</label>
+                  <Typography sx={{ color: 'grey.800' }}>{item.label}</Typography>
                 </div>
                 <CustomInput
                   name={item.name}
@@ -157,122 +155,126 @@ export default function RecordPayment() {
               </Grid>
             ))}
           </Grid>
-          <Box sx={{ mb: 2, mt: 2 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-              Latest Payment Record
-            </Typography>
-          </Box>
-          <Grid container spacing={2}>
-            {paymentFields.map((item, index) => (
-              <Grid item xs={12} sm={4} key={item.name}>
-                {item.name === 'tax_deducted' ? (
-                  <FormControl fullWidth>
-                    <label>{item.label}</label>
-                    <RadioGroup
-                      name={item.name}
-                      value={values[item.name]}
-                      onChange={(e) => {
-                        const value = e.target.value;
+          {values.amount_due !== 0 && (
+            <>
+              <Box sx={{ mb: 2, mt: 4 }}>
+                <Typography variant="h6">Latest Payment Record</Typography>
+              </Box>
+              <Grid container spacing={2}>
+                {paymentFields.map((item, index) => (
+                  <Grid item xs={12} sm={4} key={item.name}>
+                    {item.name === 'tax_deducted' ? (
+                      <FormControl fullWidth>
+                        <Typography sx={{ color: 'grey.800' }}>{item.label}</Typography>
+                        <RadioGroup
+                          name={item.name}
+                          value={values[item.name]}
+                          onChange={(e) => {
+                            const value = e.target.value;
 
-                        // If 'no_tax' is selected, reset the amount_withheld to 0 and clear errors
-                        if (value === 'no_tax') {
-                          setFieldValue('tax_deducted', value);
-                          setFieldValue('amount_withheld', 0); // Set amount_withheld to 0 when no tax is selected
-                          formik.setFieldTouched('amount_withheld', false); // Clear any touched state
-                          formik.setFieldError('amount_withheld', ''); // Clear error for amount_withheld
-                        } else {
-                          setFieldValue('tax_deducted', value); // Keep the selected value for tax_deducted
-                        }
-                      }}
-                      row
-                    >
-                      <FormControlLabel value="no_tax" control={<Radio />} label="No Tax deducted" />
-                      <FormControlLabel value="tds_income_tax" control={<Radio />} label="Yes, TDS/TCS" />
-                    </RadioGroup>
-                  </FormControl>
-                ) : item.name === 'method' ? (
-                  <div style={{ paddingBottom: '5px' }}>
-                    <label>{item.label}</label>
-                    <CustomAutocomplete
-                      value={values[item.name]}
-                      name={item.name}
-                      options={['Cash', 'Card', 'Bank Transfer']}
-                      onChange={(e, newValue) => setFieldValue(item.name, newValue)}
-                      error={touched[item.name] && Boolean(errors[item.name])}
-                      helperText={touched[item.name] && errors[item.name]}
-                    />
-                  </div>
-                ) : item.name === 'date' ? (
-                  <div style={{ paddingBottom: '5px' }}>
-                    <label>{item.label}</label>
+                            // If 'no_tax' is selected, reset the amount_withheld to 0 and clear errors
+                            if (value === 'no_tax') {
+                              setFieldValue('tax_deducted', value);
+                              setFieldValue('amount_withheld', 0); // Set amount_withheld to 0 when no tax is selected
+                              formik.setFieldTouched('amount_withheld', false); // Clear any touched state
+                              formik.setFieldError('amount_withheld', ''); // Clear error for amount_withheld
+                            } else {
+                              setFieldValue('tax_deducted', value); // Keep the selected value for tax_deducted
+                            }
+                          }}
+                          row
+                        >
+                          <FormControlLabel value="no_tax" control={<Radio />} label="No Tax deducted" />
+                          <FormControlLabel value="tds_income_tax" control={<Radio />} label="Yes, TDS/TCS" />
+                        </RadioGroup>
+                      </FormControl>
+                    ) : item.name === 'method' ? (
+                      <div style={{ paddingBottom: '5px' }}>
+                        <Typography sx={{ color: 'grey.800' }}>{item.label}</Typography>
 
-                    <CustomDatePicker
-                      views={['year', 'month', 'day']}
-                      value={values[item.name] ? dayjs(values[item.name]) : null} // Ensure it's a dayjs object or null
-                      onChange={(newDate) => {
-                        const formattedDate = dayjs(newDate).format('YYYY-MM-DD');
-                        setFieldValue(item.name, formattedDate); // Set the formatted date in Formik
-                      }}
-                      sx={{
-                        width: '100%',
-                        '& .MuiInputBase-root': {
-                          fontSize: '0.75rem',
-                          height: '40px'
-                        }
-                      }}
-                      error={touched[item.name] && Boolean(errors[item.name])}
-                      helperText={touched[item.name] && errors[item.name]}
-                    />
-                  </div>
-                ) : (
-                  <div style={{ paddingBottom: '5px' }}>
-                    <label>{item.label}</label>
-                    <CustomInput
-                      name={item.name}
-                      value={values[item.name]}
-                      onChange={(e) => setFieldValue(item.name, e.target.value)}
-                      onBlur={formik.handleBlur}
-                      error={touched[item.name] && Boolean(errors[item.name])}
-                      helperText={touched[item.name] && errors[item.name]}
-                      disabled={values.tax_deducted === 'no_tax' && (item.name === 'amount_withheld' || item.name === 'tax_deducted')}
-                    />
-                  </div>
-                )}
+                        <CustomAutocomplete
+                          value={values[item.name]}
+                          name={item.name}
+                          options={['Cash', 'Card', 'Bank Transfer']}
+                          onChange={(e, newValue) => setFieldValue(item.name, newValue)}
+                          error={touched[item.name] && Boolean(errors[item.name])}
+                          helperText={touched[item.name] && errors[item.name]}
+                        />
+                      </div>
+                    ) : item.name === 'date' ? (
+                      <div style={{ paddingBottom: '5px' }}>
+                        <Typography sx={{ color: 'grey.800' }}>{item.label}</Typography>
+
+                        <CustomDatePicker
+                          views={['year', 'month', 'day']}
+                          value={values[item.name] ? dayjs(values[item.name]) : null} // Ensure it's a dayjs object or null
+                          onChange={(newDate) => {
+                            const formattedDate = dayjs(newDate).format('YYYY-MM-DD');
+                            setFieldValue(item.name, formattedDate); // Set the formatted date in Formik
+                          }}
+                          sx={{
+                            width: '100%',
+                            '& .MuiInputBase-root': {
+                              fontSize: '0.75rem',
+                              height: '40px'
+                            }
+                          }}
+                          error={touched[item.name] && Boolean(errors[item.name])}
+                          helperText={touched[item.name] && errors[item.name]}
+                        />
+                      </div>
+                    ) : (
+                      <div style={{ paddingBottom: '5px' }}>
+                        <Typography sx={{ color: 'grey.800' }}>{item.label}</Typography>
+                        <CustomInput
+                          name={item.name}
+                          value={values[item.name]}
+                          onChange={(e) => setFieldValue(item.name, e.target.value)}
+                          onBlur={formik.handleBlur}
+                          error={touched[item.name] && Boolean(errors[item.name])}
+                          helperText={touched[item.name] && errors[item.name]}
+                          disabled={values.tax_deducted === 'no_tax' && (item.name === 'amount_withheld' || item.name === 'tax_deducted')}
+                        />
+                      </div>
+                    )}
+                  </Grid>
+                ))}
               </Grid>
-            ))}
-          </Grid>
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2 }}>
-              Comments
-            </Typography>
-            <CustomInput
-              multiline
-              minRows={4}
-              maxRows={6}
-              name="comments" // Assuming 'notes' is the key in your initialValues
-              value={values.notes}
-              onChange={(e) => formik.setFieldValue('comments', e.target.value)}
-              sx={{
-                width: '100%', // Restricting width to 100% of its parent container
-                maxWidth: '400px' // Limiting the max width if needed
-              }}
-            />
-          </Box>
-
+              <Box sx={{ mt: 4 }}>
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                  Comments
+                </Typography>
+                <CustomInput
+                  multiline
+                  minRows={4}
+                  maxRows={6}
+                  name="comments" // Assuming 'notes' is the key in your initialValues
+                  value={values.notes}
+                  onChange={(e) => formik.setFieldValue('comments', e.target.value)}
+                  sx={{
+                    width: '100%', // Restricting width to 100% of its parent container
+                    maxWidth: '400px' // Limiting the max width if needed
+                  }}
+                />
+              </Box>
+            </>
+          )}
           <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, mb: 3, gap: 5 }}>
-            <Typography variant="h6" fontWeight="bold">
+            <Typography variant="h5" sx={{ fontWeight: 400 }}>
               Balance Due:
             </Typography>
-            <Typography variant="h6" fontWeight="bold">
+            <Typography variant="h5" sx={{ fontWeight: 400 }}>
               {indianCurrency}
               {values.amount_due}
             </Typography>{' '}
           </Box>
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, mb: 3, gap: 5 }}>
-            <Button variant="contained" type="submit">
-              Save
-            </Button>
-          </Box>
+          {values.amount_due !== 0 && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, mb: 3, gap: 5 }}>
+              <Button variant="contained" type="submit">
+                Save
+              </Button>
+            </Box>
+          )}
         </form>
       </Box>
     </Stack>

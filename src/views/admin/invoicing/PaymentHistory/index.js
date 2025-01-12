@@ -81,7 +81,7 @@ export default function RecordPayment() {
             Record of Payments Received
           </Typography>
           <Typography variant="caption" sx={{ color: 'grey.700' }}>
-            Some text tagline regarding Record Payment.
+            View your payment history
           </Typography>
         </Stack>
       </Stack>
