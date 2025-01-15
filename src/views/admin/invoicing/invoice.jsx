@@ -66,14 +66,6 @@ export default function EarlyAccess() {
   };
 
   const updateStatus = async () => {
-    // let url = `/invoicing/invoice-wave-off/${invoice_id}`;
-    // const { res } = await Factory('put', url, {});
-    // if (res.status_cd === 1) {
-    //   showSnackbar(JSON.stringify(res.data), 'error');
-    // } else {
-    //   showSnackbar('Successfully wavedoff', 'success');
-    //   getInvoices(businessDetailsData.id);
-    // }
     const postData = {
       invoice_status: 'Approved'
     };
@@ -540,15 +532,15 @@ export default function EarlyAccess() {
                 </Typography>
               </Stack>
               <Stack direction="row" sx={{ gap: 2, mb: 2 }}>
-                <Button fullWidth onClick={updateStatus} variant="contained">
+                <Button fullWidth onClick={updateStatus} disabled={invoice.invoice_status === 'Approved'} variant="contained">
                   Approve Invoice
                 </Button>
-                <Button fullWidth variant="contained">
+                <Button fullWidth variant="contained" onClick={() => showSnackbar('Coming soon', 'success')}>
                   Email Invoice
                 </Button>
               </Stack>
               <Stack direction="column">
-                <Button fullWidth variant="outlined">
+                <Button fullWidth variant="outlined" onClick={() => router.push(`recordpayment?id=${invoice_id}`)}>
                   Update Payment Status
                 </Button>
               </Stack>

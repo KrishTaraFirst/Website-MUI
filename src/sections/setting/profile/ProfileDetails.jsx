@@ -17,6 +17,8 @@ import ModalEmail from './ModalEmail';
 import ModalPhoneNumber from './ModalPhoneNumber';
 import ModalPassword from './ModalPassword';
 import ProfileAvatar from './ProfileAvatar';
+import useCurrentUser from '@/hooks/useCurrentUser';
+import { logout } from '@/utils/api';
 
 import SettingCard from '@/components/cards/SettingCard';
 import DialogLogout from '@/components/dialog/DialogLogout';
@@ -28,7 +30,14 @@ import { IconCheck } from '@tabler/icons-react';
 /***************************   PROFILE - DETAILS  ***************************/
 
 export default function SettingDetailsCard() {
+  const { userData } = useCurrentUser();
   const listStyle = { p: { xs: 2, sm: 3 }, flexWrap: 'wrap', gap: 1 };
+
+  // if (userData && Object.keys(userData).length > 0) {
+  //   const name = `${userData?.firstname ?? ''} ${userData?.lastname ?? ''}`.trim();
+  //   profileData.caption = userData?.role ? RoleTitles[userData.role] : undefined;
+  //   profileData.title = name;
+  // }
 
   const primaryTypographyProps = { variant: 'body2', sx: { color: 'grey.700' } };
   const secondaryTypographyProps = {
@@ -47,8 +56,8 @@ export default function SettingDetailsCard() {
   };
 
   const handleDialogLogout = () => {
-    console.log('logout');
     setOpenLogoutDialog(false);
+    logout();
   };
 
   // Dialog Delete handle
@@ -75,34 +84,34 @@ export default function SettingDetailsCard() {
         <ListItem sx={listStyle} divider>
           <Grid container columnSpacing={2} rowSpacing={1.5}>
             <Grid size={{ xs: 12, sm: 6 }}>
-              <InputLabel>First Name</InputLabel>
+              <InputLabel>Name</InputLabel>
               <OutlinedInput
-                defaultValue="Erika"
+                defaultValue={userData?.firstname || ''}
                 fullWidth
                 aria-describedby="outlined-name"
                 inputProps={{ 'aria-label': 'name' }}
                 placeholder="ex. Jone"
               />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            {/* <Grid size={{ xs: 12, sm: 6 }}>
               <InputLabel>Last Name</InputLabel>
               <OutlinedInput
-                defaultValue="Collins"
+                defaultValue={userData?.lastname || ''}
                 fullWidth
                 aria-describedby="outlined-name"
                 inputProps={{ 'aria-label': 'name' }}
                 placeholder="ex. Doe"
               />
-            </Grid>
+            </Grid> */}
             <Grid size={12}>
-              <FormHelperText sx={{ mt: 0 }}>Use your first and last name as they appear on your government-issued ID.</FormHelperText>
+              <FormHelperText sx={{ mt: 0 }}>Use your name as they appear on your government-issued ID.</FormHelperText>
             </Grid>
           </Grid>
         </ListItem>
         <ListItem sx={listStyle} divider>
           <ListItemText
             primary="Email Address"
-            secondary="junius12@saasable.io"
+            secondary={userData?.email || ''}
             {...{ primaryTypographyProps, secondaryTypographyProps }}
           />
           <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5, ml: 'auto' }}>
@@ -113,7 +122,7 @@ export default function SettingDetailsCard() {
         <ListItem sx={listStyle} divider>
           <ListItemText
             primary="Phone Number (optional)"
-            secondary="No phone number"
+            secondary={userData?.contact || ''}
             {...{ primaryTypographyProps, secondaryTypographyProps }}
           />
           <ModalPhoneNumber />
@@ -134,12 +143,12 @@ export default function SettingDetailsCard() {
           <DialogLogout
             open={openLogoutDialog}
             title="Logout"
-            heading="Are you sure you want to logout of Erika Collins?"
+            heading={`Are you sure you want to logout of ${userData?.firstname ?? ''}?`}
             onClose={handleDialogLogoutClose}
             onLogout={handleDialogLogout}
           />
         </ListItem>
-        <ListItem sx={listStyle}>
+        {/* <ListItem sx={listStyle}>
           <ListItemText
             primary="Delete Account"
             secondary="No longer use of this Account?"
@@ -156,7 +165,7 @@ export default function SettingDetailsCard() {
             onClose={handleDialogDeleteClose}
             onDelete={handleDialogDelete}
           />
-        </ListItem>
+        </ListItem> */}
       </List>
     </SettingCard>
   );

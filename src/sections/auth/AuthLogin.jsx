@@ -70,6 +70,7 @@ export default function AuthLogin({ inputSx }) {
           firstname: res.data.name,
           lastname: '',
           // password: 'Super@123',
+          mobile: res.data.mobile_number,
           access_token: res.data.access
         };
         setIsProcessing(false);

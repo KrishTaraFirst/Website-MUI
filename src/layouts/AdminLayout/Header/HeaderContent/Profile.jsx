@@ -200,7 +200,7 @@ export default function ProfileSection() {
                         )}
                       </Popper>
                     </ListItemButton>
-                    <ListItemButton href="#" sx={{ ...buttonStyle, my: 0.5 }}>
+                    <ListItemButton href="/setting/profile" sx={{ ...buttonStyle, my: 0.5 }}>
                       <ListItemIcon>
                         <IconSettings size={16} />
                       </ListItemIcon>
