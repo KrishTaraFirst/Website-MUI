@@ -11,7 +11,7 @@ export default async function Settings({ params }) {
 }
 
 export async function generateStaticParams() {
-  const response = ['profile', 'general', 'pricing', 'internationalization', 'authentication'];
+  const response = ['profile', 'general', 'pricing', 'communication_preferences', 'authentication'];
 
   return response.map((tab) => ({
     tab: tab

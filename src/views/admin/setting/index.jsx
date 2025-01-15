@@ -44,7 +44,7 @@ export default function Setting({ tab = 'profile' }) {
           <Tab label="Profile" value="profile" />
           <Tab label="General" value="general" />
           <Tab label="Pricing" value="pricing" />
-          <Tab label="Internationalization" value="internationalization" />
+          <Tab label="Communication Preferences" value="communication_preferences" />
           <Tab label="Authentication" value="authentication" />
         </Tabs>
         {tab === 'internationalization' && (
@@ -67,10 +67,10 @@ export default function Setting({ tab = 'profile' }) {
 
       <Box>
         {tab === 'profile' && <ProfileSetting />}
-        {tab === 'general' && <GeneralSetting />}
+        {/* {tab === 'general' && <GeneralSetting />}
         {tab === 'pricing' && <PricingSetting />}
-        {tab === 'internationalization' && <I18nSetting />}
-        {tab === 'authentication' && <AuthenticationSetting />}
+        {tab === 'communication_preferences' && <I18nSetting />}
+        {tab === 'authentication' && <AuthenticationSetting />} */}
       </Box>
     </Stack>
   );

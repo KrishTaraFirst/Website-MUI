@@ -71,7 +71,7 @@ export default function AnalyticsOverview() {
             Invoicing
           </Typography>
           <Typography variant="caption" sx={{ color: 'grey.700' }}>
-            Some text tagline regarding invoicing.
+            Dashboard to help manage your customer invoices.
           </Typography>
         </Stack>
         <Stack direction="row" sx={{ gap: 1.5 }}>

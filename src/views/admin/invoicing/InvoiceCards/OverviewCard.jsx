@@ -212,6 +212,19 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
       getInvoices(businessDetailsData.id);
     }
   };
+
+  const handleApprove = async (id) => {
+    const postData = {
+      invoice_status: 'Approved'
+    };
+    let url = `/invoicing/invoice-update/${id}/`;
+    const { res } = await Factory('put', url, postData);
+    if (res.status_cd === 0) {
+      showSnackbar('Approved', 'success');
+      getInvoices(businessDetailsData.id);
+    }
+  };
+
   useEffect(() => {
     if (businessDetailsData.id && financialYear) {
       getInvoices(businessDetailsData.id);
@@ -263,6 +276,7 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
                   }}
                 >
                   <Stack sx={{ gap: 1.5 }}>
+                    <Typography variant="h6">Financial Year</Typography>
                     <Autocomplete
                       options={['2021-22', '2022-23', '2023-24', '2024-25']}
                       value={financialYear}
@@ -295,7 +309,10 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
             <Grid key={index} size={{ xs: 6, sm: 6, md: 2 }}>
               <MainCard
                 onClick={() => {
-                  getStatsData(item.id);
+                  if (item.title === title) {
+                    getInvoices(businessDetailsData.id);
+                    setTitle('Over All Financial Year Invoices');
+                  } else getStatsData(item.id);
                 }}
                 sx={{
                   border: 'none',
@@ -304,6 +321,7 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
                   textAlign: 'center',
                   cursor: 'pointer',
                   transition: 'all 0.3s ease-in-out',
+                  bgcolor: item.title === title && 'grey.300',
                   '&:hover': {
                     bgcolor: 'grey.300'
                   },
@@ -336,7 +354,10 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
           <Grid key={index} size={{ xs: 6, sm: 6, md: 3 }}>
             <MainCard
               onClick={() => {
-                getStatsData(item.id);
+                if (item.title === title) {
+                  getInvoices(businessDetailsData.id);
+                  setTitle('Over All Financial Year Invoices');
+                } else getStatsData(item.id);
               }}
               sx={{
                 border: 'none',
@@ -344,6 +365,7 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
                 boxShadow: 'none',
                 textAlign: 'center',
                 cursor: 'pointer',
+                bgcolor: item.title === title && 'grey.300',
                 transition: 'all 0.3s ease-in-out',
                 '&:hover': {
                   bgcolor: 'grey.300'
@@ -476,6 +498,9 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
                         onClose={onClose}
                         onDownload={() => {
                           downloadInvoice(invoice.id);
+                        }}
+                        onApprove={() => {
+                          handleApprove(invoice.id);
                         }}
                         onWriteOff={() => {
                           handleWriteOff(invoice.id);

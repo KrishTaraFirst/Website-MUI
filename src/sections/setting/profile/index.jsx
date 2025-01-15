@@ -15,7 +15,7 @@ export default function ProfileSetting() {
       <Grid size={12}>
         <ProfileDetails />
       </Grid>
-      <Grid size={12}>
+      {/* <Grid size={12}>
         <ProfileLoginService />
       </Grid>
       <Grid size={12}>
@@ -23,7 +23,7 @@ export default function ProfileSetting() {
       </Grid>
       <Grid size={12}>
         <ProfileTimezone />
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 }

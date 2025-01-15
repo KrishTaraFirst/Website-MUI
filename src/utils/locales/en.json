@@ -35,6 +35,11 @@
   "tooltip": "Tooltip",
   "typography": "Typography",
   "invoicing": "Invoicing",
+  "settings": "Settings",
+  "recordpayment": "Record Payment",
+  "paymenthistory": "Payment History",
+  "invoice": "Invoice",
+  "generateInvoice": "Generate Invoice",
   "visaServices": "Visa Services",
 
   "plugins": "Plugins",

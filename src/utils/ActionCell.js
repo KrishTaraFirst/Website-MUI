@@ -49,7 +49,8 @@ export default function ActionCell({
   onDelete,
   deleteDialogData,
   onDownload,
-  onWriteOff
+  onWriteOff,
+  onApprove
 }) {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null); // Anchor for Popper
@@ -145,6 +146,14 @@ export default function ActionCell({
                         <LibraryBooksIcon size={16} />
                       </ListItemIcon>
                       <ListItemText>Payment History</ListItemText>
+                    </ListItemButton>
+                  )}
+                  {row?.invoice_status !== 'Approved' && (
+                    <ListItemButton onClick={onApprove}>
+                      <ListItemIcon>
+                        <IconCheck size={16} />
+                      </ListItemIcon>
+                      <ListItemText>Approve</ListItemText>
                     </ListItemButton>
                   )}
                   {(row?.invoice_status === 'Approved' || row?.invoice_status === 'Invoice Sent') && (

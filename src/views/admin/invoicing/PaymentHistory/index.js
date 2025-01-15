@@ -165,7 +165,7 @@ export default function RecordPayment() {
                           ? 'Card'
                           : receipt.method === 'bank_transfer'
                             ? 'Bank Transfer'
-                            : ''}
+                            : receipt.method}
                     </TableCell>
                     <TableCell>{receipt.comments}</TableCell>
                     <TableCell>

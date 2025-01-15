@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 import Notification from './Notification';
 import Profile from './Profile';
 import SearchBar from './SearchBar';
-import Breadcrumbs from '@/components/Breadcrumbs';
+import Breadcrumbs from '@/components/CustomBreadcrumbs';
 
 /***************************  HEADER CONTENT  ***************************/
 
