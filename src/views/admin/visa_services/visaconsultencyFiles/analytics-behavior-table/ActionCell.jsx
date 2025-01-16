@@ -29,7 +29,7 @@ const dialogDeleteData = {
 
 /***************************  TABLE - ACTION  ***************************/
 
-export default function ActionCell({ row, onDelete }) {
+export default function ActionCell({ row, onDelete, onEdit }) {
   const theme = useTheme();
 
   // Handle action popper
@@ -53,7 +53,7 @@ export default function ActionCell({ row, onDelete }) {
   };
 
   const handleDialogDelete = (id) => {
-    // onDelete(row.id);
+    onDelete(row.id);
     handleDeleteDialogClose();
   };
 

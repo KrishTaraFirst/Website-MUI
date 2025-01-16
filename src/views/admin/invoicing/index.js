@@ -63,6 +63,7 @@ export default function AnalyticsOverview() {
   useEffect(() => {
     getCustomersData();
   }, []);
+
   return (
     <Stack sx={{ gap: 3 }}>
       <Stack direction="row" sx={{ alignItems: 'end', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>

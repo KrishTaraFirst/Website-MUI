@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 // @next
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 // @mui
 import { useTheme } from '@mui/material/styles';
@@ -24,24 +24,37 @@ const homeBreadcrumb = { title: 'Home', url: APP_DEFAULT_PATH };
 
 /***************************  BREADCRUMBS  ***************************/
 
-export default function Breadcrumbs({ data }) {
+export default function CustomBreadcrumbs({ data }) {
   const theme = useTheme();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const [breadcrumbItems, setBreadcrumbItems] = useState([]);
 
   useEffect(() => {
     if (!pathname) return;
 
-    // Dynamically generate breadcrumbs from the URL path
-    const pathSegments = pathname.split('/').filter((segment) => segment);
-    const breadcrumbData = pathSegments.map((segment, index) => {
-      const href = '/' + pathSegments.slice(0, index + 1).join('/');
-      return { title: decodeURIComponent(segment), url: href };
-    });
+    // Define custom mapping rules for URLs
+    const customBreadcrumbMap = {
+      '/dashboard/user': { title: 'Dashboard', url: '/dashboard/user' }
+    };
 
-    // Add "Home" as the first breadcrumb
-    setBreadcrumbItems([homeBreadcrumb, ...breadcrumbData]);
+    // Check if the current path matches a custom rule
+    const matchedBreadcrumb = customBreadcrumbMap[pathname];
+    if (matchedBreadcrumb) {
+      // Use the mapped breadcrumb if available
+      setBreadcrumbItems([homeBreadcrumb, matchedBreadcrumb]);
+    } else {
+      // Default behavior: split the path and create breadcrumbs
+      const pathSegments = pathname.split('/').filter((segment) => segment);
+      const breadcrumbData = pathSegments.map((segment, index) => {
+        const href = '/' + pathSegments.slice(0, index + 1).join('/');
+        return { title: decodeURIComponent(segment), url: href };
+      });
+
+      // Add "Home" as the first breadcrumb
+      setBreadcrumbItems([homeBreadcrumb, ...breadcrumbData]);
+    }
   }, [pathname]);
 
   return (
@@ -74,4 +87,4 @@ export default function Breadcrumbs({ data }) {
   );
 }
 
-Breadcrumbs.propTypes = { data: PropTypes.array };
+CustomBreadcrumbs.propTypes = { data: PropTypes.array };

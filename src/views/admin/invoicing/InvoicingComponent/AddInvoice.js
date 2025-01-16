@@ -78,6 +78,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
 
+  const [saveButton, setSaveButton] = useState(true);
   const [bulkItemsDialogue, setBulkItemsDialogue] = useState(false); // State for Apply Tax checkbox
   // const [invoice_number_format, set_Invoice_number_format] = useState('');
   let termsDropdown = ['NET 15', 'NET 30', 'NET 45', 'NET 60', 'Due end of the MONTH', 'Due end of next MONTH', 'Due on Receipt', 'Custom'];
@@ -291,6 +292,8 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
         <CustomAutocomplete
           value={formik.values[fieldName] || null}
           onChange={(event, newValue) => {
+            setSaveButton(false);
+
             if (newValue === null) return;
 
             if (item.name === 'customer') {
@@ -406,6 +409,8 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
           views={['year', 'month', 'day']}
           value={dateValue ? dayjs(dateValue) : null} // If empty, it should be null
           onChange={(newDate) => {
+            setSaveButton(false);
+
             const formattedDate = dayjs(newDate).format('YYYY-MM-DD');
             if (item.name === 'invoice_date') {
               formik.setFieldValue(fieldName, formattedDate); // Set invoice date in Formik
@@ -434,7 +439,10 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
         <CustomInput
           name={fieldName}
           value={formik.values[fieldName]}
-          onChange={(e) => formik.setFieldValue(fieldName, e.target.value)} // replaced handleChange with setFieldValue
+          onChange={(e) => {
+            setSaveButton(false);
+            formik.setFieldValue(fieldName, e.target.value);
+          }} // replaced handleChange with setFieldValue
           onBlur={formik.handleBlur}
           error={formik.touched[fieldName] && Boolean(formik.errors[fieldName])}
           helperText={formik.touched[fieldName] && formik.errors[fieldName]}
@@ -452,6 +460,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
         <CustomAutocomplete
           value={formik.values[section][item.name]}
           onChange={(_, newValue) => {
+            setSaveButton(false);
             setFieldValue(fieldName, newValue);
           }}
           options={indian_States_And_UTs} // Example options
@@ -467,7 +476,10 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
         <CustomInput
           name={fieldName}
           value={formik.values[section][item.name]}
-          onChange={(e) => setFieldValue(fieldName, e.target.value)}
+          onChange={(e) => {
+            setSaveButton(false);
+            setFieldValue(fieldName, e.target.value);
+          }}
           onBlur={formik.handleBlur}
           error={formik.touched[section]?.[item.name] && Boolean(formik.errors[section]?.[item.name])}
           helperText={formik.touched[section]?.[item.name] && formik.errors[section]?.[item.name]}
@@ -478,6 +490,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
     }
   };
   const handleAddItemRow = () => {
+    setSaveButton(false);
     const newItemDetails = [
       ...formik.values.item_details,
       {
@@ -567,6 +580,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
   };
 
   const handleDiscountTypeChange = (index, newDiscountType) => {
+    setSaveButton(false);
     const newItemDetails = [...formik.values.item_details];
     newItemDetails[index].discount_type = newDiscountType;
 
@@ -575,6 +589,8 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
   };
 
   const handleQuantityChange = (index, value) => {
+    setSaveButton(false);
+
     const newQuantity = Number(value) || 0;
     const newItemDetails = [...formik.values.item_details];
     newItemDetails[index].quantity = newQuantity;
@@ -583,6 +599,8 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
     recalculateTotals();
   };
   const handleRateChange = (index, value) => {
+    setSaveButton(false);
+
     const newRate = Number(value) || 0;
     const newItemDetails = [...formik.values.item_details];
     newItemDetails[index].rate = newRate;
@@ -591,6 +609,8 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
     recalculateTotals();
   };
   const handleDiscountChange = (index, value) => {
+    setSaveButton(false);
+
     const newDiscount = value;
     const newItemDetails = [...formik.values.item_details];
     newItemDetails[index].discount = newDiscount;
@@ -598,6 +618,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
     formik.setFieldValue('item_details', newItemDetails);
   };
   const handleItemChange = (index, newValue) => {
+    setSaveButton(false);
     const newItemDetails = [...formik.values.item_details];
     // Fetch the selected item from the items list
     const selectedItem = itemsList.find((i) => i.name === newValue) || {};
@@ -706,7 +727,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
       <Stack direction="row" sx={{ alignItems: 'end', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
         <Stack direction="column" sx={{ gap: 0.5 }}>
           <Typography variant="h4" sx={{ fontWeight: 400 }}>
-            Create Invoice
+            {selectedInvoice ? 'Edit' : 'Create'} Invoice
           </Typography>
           <Typography variant="caption" sx={{ color: 'grey.700' }}>
             Some text tagline regarding invoicing.
@@ -900,6 +921,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
                 variant="contained"
                 startIcon={<IconPlus size={16} />}
                 onClick={() => {
+                  setSaveButton(false);
                   setBulkItemsDialogue(true);
                 }}
               >
@@ -921,7 +943,10 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
                 maxRows={6}
                 name="notes" // Assuming 'notes' is the key in your initialValues
                 value={formik.values.notes}
-                onChange={(e) => formik.setFieldValue('notes', e.target.value)}
+                onChange={(e) => {
+                  setSaveButton(false);
+                  formik.setFieldValue('notes', e.target.value);
+                }}
               />
             </Box>
 
@@ -935,7 +960,10 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
                 maxRows={6}
                 name="terms_and_conditions" // Assuming 'terms_and_conditions' is the key in your initialValues
                 value={formik.values.terms_and_conditions}
-                onChange={(e) => formik.setFieldValue('terms_and_conditions', e.target.value)}
+                onChange={(e) => {
+                  setSaveButton(false);
+                  formik.setFieldValue('terms_and_conditions', e.target.value);
+                }}
               />
             </Box>
           </Box>
@@ -1041,34 +1069,32 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
         </Box>
         <Divider sx={{ mt: 3, mb: 3 }} />
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 6 }}>
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <Button
-              variant="contained"
-              type="button"
-              onClick={() => {
-                formik.setFieldValue('invoice_status', 'Draft'); // 'Draft' should be a string
-                formik.handleSubmit();
-              }}
-              disabled={formik.values.invoice_status === 'Draft'}
-            >
-              Save as Draft
-            </Button>
-            <Button
-              variant="outlined"
-              type="button"
-              onClick={() => {
-                router.push(`/invoicing`);
-              }}
-            >
-              Close
-            </Button>
-          </Box>
-          <Box>
-            <Button variant="contained" type="submit">
-              Save
-            </Button>
-          </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 6, gap: 2 }}>
+          <Button
+            variant="outlined"
+            color="error"
+            type="button"
+            onClick={() => {
+              router.push(`/invoicing`);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            type="button"
+            onClick={() => {
+              formik.setFieldValue('invoice_status', 'Draft'); // 'Draft' should be a string
+              formik.handleSubmit();
+            }}
+            disabled={formik.values.invoice_status === 'Draft'}
+          >
+            Save as Draft
+          </Button>
+
+          <Button variant="contained" disabled={saveButton} type="submit">
+            Save
+          </Button>
         </Box>
       </form>
 

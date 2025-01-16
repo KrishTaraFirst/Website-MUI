@@ -116,14 +116,17 @@ export default function EarlyAccess() {
     swift_code,
     image_url,
     registration_number,
-    note,
+    notes,
     terms_and_conditions
   }) => {
     console.log(billing_address);
     return (
       <div
         id="INVOICE_TEMPLATE"
-        style={{ paddingTop: '1rem', paddingBottom: '1rem', border: '1px solid rgb(0 99 151 / 16%)', borderRadius: '50px' }}
+        style={{
+          paddingTop: '1rem',
+          paddingBottom: '1rem'
+        }}
       >
         <div style={{ padding: '1.5rem 3.5rem' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', borderSpacing: 0 }}>
@@ -163,7 +166,7 @@ export default function EarlyAccess() {
 
         <div
           style={{
-            backgroundColor: '#f1f5f9',
+            backgroundColor: '#dae5f0',
             padding: '1.5rem 3.5rem',
             fontSize: '0.875rem',
             lineHeight: '1.25rem'
@@ -477,17 +480,15 @@ export default function EarlyAccess() {
 
         <div
           style={{
-            paddingLeft: '3.5rem',
-            paddingRight: '3.5rem',
-            paddingTop: '2.5rem',
-            paddingBottom: '2.5rem',
+            padding: '2rem 2.5rem',
             fontSize: '0.875rem',
             lineHeight: '1.25rem',
             color: '#404040',
-            textAlign: 'center'
+            textAlign: 'center',
+            backgroundColor: '#dae5f0'
           }}
         >
-          <p style={{ margin: 0, color: '#006397', fontWeight: 700 }}>{note}</p>
+          <p style={{ margin: 0, color: '#006397', fontWeight: 700 }}>{notes}</p>
           <p style={{ margin: 0, fontStyle: 'italic' }}>{terms_and_conditions}</p>
         </div>
       </div>
@@ -496,19 +497,28 @@ export default function EarlyAccess() {
 
   return (
     <ContainerWrapper sx={{ py: SECTION_COMMON_PY }}>
-      <GraphicsCard
+      <Box
         sx={{
           width: 1,
           position: 'relative',
           height: { sm: 'calc(100vh - 80px)', md: 'calc(100vh - 96px)' },
           minHeight: { xs: 'calc(100vh - 64px)', sm: 500, md: 600 },
           p: 0,
-          borderRadius: '50px',
           height: '100%'
         }}
       >
+        {/* backgroundColor: '#f1f5f9', */}
         <Grid container sx={{ height: 1 }}>
-          <Grid sx={{ order: { xs: -1, sm: 0 } }} size={{ xs: 12, sm: 8 }}>
+          <Grid
+            sx={{
+              order: { xs: -1, sm: 0 },
+              bgcolor: 'grey.100',
+              borderRadius: { xs: 6, sm: 8, md: 10 },
+              border: '1px solid rgb(0 99 151 / 16%)',
+              overflow: 'hidden'
+            }}
+            size={{ xs: 12, sm: 8 }}
+          >
             <InvoiceTemplate {...invoice} billing_address={invoice.billing_address} shipping_address={invoice.shipping_address} />
           </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
@@ -547,7 +557,7 @@ export default function EarlyAccess() {
             </Box>
           </Grid>
         </Grid>
-      </GraphicsCard>
+      </Box>
     </ContainerWrapper>
   );
 }

@@ -1,5 +1,5 @@
 'use client';
-
+import React from 'react';
 import {
   Typography,
   TableCell,
@@ -48,10 +48,10 @@ const TaskList = ({
         <TableContainer
           component={Paper}
           sx={{
-            borderRadius: '12px',
-            overflow: 'auto', // Enable scrolling when content exceeds max height
-            maxHeight: '500px', // Set the maximum height
-            minHeight: '200px' // Set the minimum height
+            borderRadius: '12px'
+            // overflow: 'auto', // Enable scrolling when content exceeds max height
+            // maxHeight: '500px', // Set the maximum height
+            // minHeight: '200px' // Set the minimum height
           }}
         >
           <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
@@ -86,46 +86,47 @@ const TaskList = ({
             </TableHead>
             <TableBody>
               {taskList &&
-                taskList?.map((service) => (
-                  <TableRow key={service.id}>
-                    <TableCell align="center">{service.id || service.service_id}</TableCell>
-                    <TableCell align="left">{service.service_name}</TableCell>
-                    {from === 'tasklist' && <TableCell align="left">{service.first_name + ' ' + service.last_name}</TableCell>}
+                taskList?.map((service, idx) => (
+                  <React.Fragment key={idx}>
+                    <TableRow key={service.id}>
+                      <TableCell align="center">{service.id || service.service_id}</TableCell>
+                      <TableCell align="left">{service.service_name}</TableCell>
+                      {from === 'tasklist' && <TableCell align="left">{service.first_name + ' ' + service.last_name}</TableCell>}
 
-                    <TableCell align="center">{service.date}</TableCell>
-                    {/* <TableCell align="center">
+                      <TableCell align="center">{service.date}</TableCell>
+                      {/* <TableCell align="center">
                       {service.passport_number}
                     </TableCell> */}
-                    {/* <TableCell align="center">{service.purpose}</TableCell>
+                      {/* <TableCell align="center">{service.purpose}</TableCell>
                     <TableCell align="left">{service.visa_type}</TableCell> */}
-                    <TableCell align="center">{service.destination_country}</TableCell>
-                    <TableCell align="center">{service.quantity}</TableCell>
-                    <TableCell
-                      align="center"
-                      // sx={{
-                      //   color: service.status === 'Pending' ? 'orange' : service.status === 'In - Progress' ? '#f58d42' : 'green',
-                      //   fontWeight: 'bold'
-                      // }}
-                    >
-                      <Chip
-                        label={service.status === 'pending' ? 'Pending' : service.status === 'completed' ? 'Completed' : 'In Progress'}
-                        color={service.status === 'pending' ? 'warning' : service.status === 'completed' ? 'success' : 'warning'}
-                        variant="outlined"
-                      />
-                    </TableCell>
-                    <TableCell align="center">{service.comments}</TableCell>
+                      <TableCell align="center">{service.destination_country}</TableCell>
+                      <TableCell align="center">{service.quantity}</TableCell>
+                      <TableCell
+                        align="center"
+                        // sx={{
+                        //   color: service.status === 'Pending' ? 'orange' : service.status === 'In - Progress' ? '#f58d42' : 'green',
+                        //   fontWeight: 'bold'
+                        // }}
+                      >
+                        <Chip
+                          label={service.status === 'pending' ? 'Pending' : service.status === 'completed' ? 'Completed' : 'In Progress'}
+                          color={service.status === 'pending' ? 'warning' : service.status === 'completed' ? 'success' : 'warning'}
+                          variant="outlined"
+                        />
+                      </TableCell>
+                      <TableCell align="center">{service.comments}</TableCell>
 
-                    <TableCell align="center">
-                      <ActionCell
-                        row={service}
-                        onEdit={() => handleEditClick(service)}
-                        onDelete={(id) => {
-                          handleDelete(service);
-                          // setDeleteDialogOpen(true);
-                          // setEditedService({ ...service });
-                        }}
-                      />
-                      {/* <Box>
+                      <TableCell align="center">
+                        <ActionCell
+                          row={service}
+                          onEdit={() => handleEditClick(service)}
+                          onDelete={(id) => {
+                            handleDelete(service);
+                            // setDeleteDialogOpen(true);
+                            // setEditedService({ ...service });
+                          }}
+                        />
+                        {/* <Box>
                         <Button onClick={() => handleEditClick(service)}>
                           <EditIcon />
                         </Button>
@@ -139,8 +140,9 @@ const TaskList = ({
                           <DeleteIcon />
                         </Button>
                       </Box> */}
-                    </TableCell>
-                  </TableRow>
+                      </TableCell>
+                    </TableRow>
+                  </React.Fragment>
                 ))}
             </TableBody>
           </Table>
@@ -238,7 +240,7 @@ const TaskList = ({
         <DialogTitle>Are you sure you want to delete the Task?</DialogTitle>
 
         <DialogActions sx={{ textAlign: 'center' }}>
-          <Button onClick={() => setDeleteDialogOpen(false)} color="primary">
+          <Button onClick={() => setDeleteDialogOpen(false)} color="error" variant="outlined">
             Cancel
           </Button>
           <Button

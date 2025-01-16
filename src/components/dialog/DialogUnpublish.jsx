@@ -41,7 +41,7 @@ export default function DialogUnpublish({ title, heading, description, open, onC
         </Stack>
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'space-between' }}>
-        <Button variant="outlined" color="secondary" onClick={onClose} autoFocus>
+        <Button variant="outlined" color="error" onClick={onClose} autoFocus>
           Cancel
         </Button>
         <Button variant="contained" color="error" onClick={onUnpublish}>

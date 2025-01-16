@@ -14,6 +14,7 @@ const CustomInput = ({
   multiline,
   maxRows,
   rows,
+  onBlur,
   ...props
 }) => {
   return (
@@ -41,6 +42,7 @@ const CustomInput = ({
       multiline={multiline} // Pass multiline prop here
       rows={rows} // Optionally set rows for default visible rows
       maxRows={maxRows}
+      onBlur={onBlur}
       {...props}
     />
   );

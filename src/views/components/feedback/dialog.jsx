@@ -175,7 +175,7 @@ export default function Dialogs() {
                 modalContent={<Typography variant="h3">Modal Content</Typography>}
                 footer={
                   <Stack direction="row" sx={{ width: 1, justifyContent: 'space-between', gap: 2 }}>
-                    <Button variant="outlined" color="secondary" onClick={() => setOpen(false)}>
+                    <Button variant="outlined" color="error" onClick={() => setOpen(false)}>
                       Cancel
                     </Button>
                     <Button variant="contained">Update</Button>
