@@ -223,7 +223,7 @@ export default function RecordPayment() {
             </DialogContent>
 
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, padding: 2 }}>
-              <Button variant="outlined" onClick={() => setOpen(false)}>
+              <Button variant="outlined" color="error" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button variant="contained" onClick={() => handleSaveComment(recordData.id)}>

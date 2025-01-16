@@ -158,6 +158,7 @@ const AddTask = ({
           <Button
             variant="outlined"
             type="button"
+            color="error"
             onClick={() => {
               setAddTaskDialogOpen(false);
             }}

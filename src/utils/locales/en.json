@@ -41,6 +41,7 @@
   "invoice": "Invoice",
   "generateInvoice": "Generate Invoice",
   "visaServices": "Visa Services",
+  "visa-services": "Visa Services",
 
   "plugins": "Plugins",
   "color-picker": "Color Picker",

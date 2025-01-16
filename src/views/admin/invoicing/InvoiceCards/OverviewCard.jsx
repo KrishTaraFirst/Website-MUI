@@ -98,7 +98,6 @@ const overallStats = [
   {
     id: 'over_dues',
     title: 'Over due',
-    href: '',
     value: '0',
     compare: 'Compare to last week',
     buttonLable: 'Create New'
@@ -106,21 +105,24 @@ const overallStats = [
   {
     id: 'due_today',
     title: 'Due today',
-    href: 'pending',
     value: '0',
     compare: 'Compare to last week'
   },
   {
     id: 'due_within_30_days',
     title: 'Due with in 30 days',
-    href: 'in_progress',
     value: '20',
     compare: 'Compare to last week'
   },
   {
     id: 'total_recievables',
     title: 'Total Receivable',
-    href: 'completed',
+    value: '0',
+    compare: 'Compare to last week'
+  },
+  {
+    id: 'bad_debt',
+    title: 'Bad Debt',
     value: '0',
     compare: 'Compare to last week'
   }
@@ -135,7 +137,8 @@ const titles = {
   over_dues: 'Over due',
   due_today: 'Due today',
   due_within_30_days: 'Due with in 30 days',
-  total_recievables: 'Total Receivable'
+  total_recievables: 'Total Receivable',
+  bad_debt: 'Bad Debt'
 };
 
 export default function OverviewCard({ businessDetailsData, open, onClose }) {
@@ -351,7 +354,7 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
       </Grid>
       <Grid container sx={{ borderRadius: 4, boxShadow: theme.customShadows.section, ...applyBorderWithRadius(16, theme), mb: 4 }}>
         {overallStats.map((item, index) => (
-          <Grid key={index} size={{ xs: 6, sm: 6, md: 3 }}>
+          <Grid key={index} size={{ xs: 6, sm: 6, md: 2.4 }}>
             <MainCard
               onClick={() => {
                 if (item.title === title) {
@@ -397,7 +400,7 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
         <Grid container>
           <Grid size={{ xs: 6 }}>
             <Typography variant="h6">{title}</Typography>
-            {!['Over due', 'Due today', 'Due with in 30 days', 'Total Receivable'].includes(title) && (
+            {!['Over due', 'Due today', 'Due with in 30 days', 'Total Receivable', 'Bad Debt'].includes(title) && (
               <Typography variant="caption" color="grey.700">
                 FY: {financialYear}
               </Typography>
@@ -483,7 +486,7 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
                         fromComponent="invoice"
                         row={invoice} // Pass the customer row data
                         onEdit={() => {
-                          router.push(`/invoicing/generateInvoice?id=${invoice.id}`);
+                          router.push(`/invoicing/editInvoice?id=${invoice.id}`);
                         }}
                         onDelete={() => {
                           handleDelete(invoice.id);

@@ -66,7 +66,7 @@ export default function DialogDelete({ title, heading, description, open, onClos
         </DialogContent>
 
         <DialogActions sx={{ justifyContent: 'space-between' }}>
-          <Button variant="outlined" color="secondary" onClick={onClose} autoFocus>
+          <Button variant="outlined" color="error" onClick={onClose} autoFocus>
             Cancel
           </Button>
           <Button variant="contained" color="error" onClick={handleDelete}>

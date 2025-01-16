@@ -206,7 +206,7 @@ export default function ActionCell({
         </DialogContent>
 
         <DialogActions sx={{ justifyContent: 'space-between' }}>
-          <Button variant="outlined" color="secondary" onClick={handleDeleteDialogClose} autoFocus>
+          <Button variant="outlined" color="error" onClick={handleDeleteDialogClose} autoFocus>
             Cancel
           </Button>
           <Button variant="contained" color="error" onClick={handleDialogDelete}>

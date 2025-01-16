@@ -243,7 +243,7 @@ export default function AddNewAccount({ open, onClose, formData }) {
         }
         footer={
           <Stack direction="row" sx={{ width: 1, justifyContent: 'space-between', gap: 2 }}>
-            <Button variant="outlined" color="secondary" onClick={handleClose}>
+            <Button variant="outlined" color="error" onClick={handleClose}>
               Cancel
             </Button>
             <Button variant="contained" onClick={handleSubmit(onSubmit)}>

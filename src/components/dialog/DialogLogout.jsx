@@ -43,7 +43,7 @@ export default function DialogLogout({ title, heading, open, description, onClos
         </Stack>
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'space-between' }}>
-        <Button variant="outlined" color="secondary" onClick={onClose} autoFocus>
+        <Button variant="outlined" color="error" onClick={onClose} autoFocus>
           Cancel
         </Button>
         <Button variant="contained" sx={{ ml: 0 }} onClick={onLogout}>

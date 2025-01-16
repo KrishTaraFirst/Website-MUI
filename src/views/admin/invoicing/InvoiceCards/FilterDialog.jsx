@@ -206,7 +206,7 @@ export default function FilterDialog({ financialYear, businessData, filterDialog
         <DialogActions sx={{ justifyContent: 'space-between' }}>
           <Button
             variant="outlined"
-            color="secondary"
+            color="error"
             onClick={() => {
               setFilterDialog(false);
             }}
