@@ -24,7 +24,7 @@ jobs:
       # Step 3: Set up known hosts to avoid SSH prompts
       - name: Set up known hosts
         run: |
-          ssh-keyscan -H ${{ secrets.EC2_PUBLIC_IP_DEV }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H 43.204.216.129 >> ~/.ssh/known_hosts
 
       # Step 4: Install dependencies
       - name: Install dependencies
@@ -39,9 +39,9 @@ jobs:
       # Step 6: Deploy files to the Nginx server
       - name: Copy files to Nginx server
         run: |
-          scp -r -i ~/.ssh/id_rsa ./out/* ec2-user@${{ secrets.EC2_PUBLIC_IP_DEV }}:/usr/share/nginx/html/
+          scp -r -i ~/.ssh/id_rsa ./out/* ec2-user@43.204.216.129:/usr/share/nginx/html/
 
       # Step 7: Reload Nginx to apply changes
       - name: Reload Nginx
         run: |
-          ssh -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_PUBLIC_IP_DEV }} 'sudo systemctl reload nginx'
+          ssh -i ~/.ssh/id_rsa ec2-user@43.204.216.129 'sudo systemctl reload nginx'
