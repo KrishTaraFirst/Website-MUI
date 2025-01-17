@@ -1,7 +1,7 @@
-name: Dev Workflow
+name: Build and Deploy Next.js to Nginx
 
 on:
-  workflow_dispatch: # Manual trigger for the workflow
+  workflow_dispatch:
 
 jobs:
   build_and_deploy:
@@ -21,6 +21,10 @@ jobs:
       # Step 3: Set up known hosts to avoid SSH prompts
       - name: Set up known hosts
         run: |
+          if [ -z "${{ secrets.EC2_IP_DEV }}" ]; then
+            echo "Error: EC2_IP_DEV is not set."
+            exit 1
+          fi
           ssh-keyscan -H ${{ secrets.EC2_IP_DEV }} >> ~/.ssh/known_hosts
 
       # Step 4: Install dependencies
