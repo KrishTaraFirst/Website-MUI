@@ -1,13 +1,10 @@
-name: Build and Deploy Next.js to Nginx
+name: Dev Workflow
 
 on:
+  workflow_dispatch: # Manual trigger for the workflow
   push:
     branches:
       - dev # Change this to your branch name if needed
-  # pull_request:
-  #   branches:
-  #     - dev  # Trigger when a PR is merged into the dev branch
-  workflow_dispatch:  # Manual trigger for the workflow
 
 jobs:
   build_and_deploy:
@@ -29,23 +26,22 @@ jobs:
         run: |
           ssh-keyscan -H ${{ secrets.EC2_IP_DEV }} >> ~/.ssh/known_hosts
 
-      # Step 4: Install dependencies
-      - name: Install dependencies
+      # Step 4: Copy project files to the server
+      - name: Copy project files to server
         run: |
-          npm install
+          scp -r -i ~/.ssh/id_rsa . ec2-user@${{ secrets.EC2_IP_DEV }}:/tmp/nextjs_project
 
-      # Step 5: Build the Next.js app
-      - name: Build Next.js app
+      # Step 5: Build the Next.js app on the server
+      - name: Build Next.js app on server
         run: |
-          npm run build
+          ssh -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_IP_DEV }} << EOF
+            cd /tmp/nextjs_project
+            npm install
+            npm run build
+            sudo cp -r ./out/* /usr/share/nginx/html/
+          EOF
 
-      # Step 6: Deploy files to the Nginx server
-      - name: Copy files to Nginx server
-        run: |
-          scp -r -i ~/.ssh/id_rsa ./out/* ec2-user@${{ secrets.EC2_IP_DEV }}:/usr/share/nginx/html/
-
-
-      # Step 7: Reload Nginx to apply changes
+      # Step 6: Reload Nginx to apply changes
       - name: Reload Nginx
         run: |
           ssh -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_IP_DEV }} 'sudo systemctl reload nginx'
