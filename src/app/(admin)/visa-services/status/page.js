@@ -2,7 +2,7 @@
 import dynamic from 'next/dynamic';
 
 // @project
-const StatusPage = dynamic(() => import('@/views/admin/visa-services/visaconsultencyFiles/components/Status'));
+const StatusPage = dynamic(() => import('@/views/admin/visa_services/visaconsultencyFiles/components/Status'));
 
 /***************************  ACCOUNT  ***************************/
 
