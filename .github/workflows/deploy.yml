@@ -1,4 +1,4 @@
-name: Build and Deploy Next.js to Nginx
+name: Dev Workflow
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   # pull_request:
   #   branches:
   #     - dev  # Trigger when a PR is merged into the dev branch
-  workflow_dispatch:  # Manual trigger for the workflow
+  workflow_dispatch: # Manual trigger for the workflow
 
 jobs:
   build_and_deploy:
@@ -43,7 +43,6 @@ jobs:
       - name: Copy files to Nginx server
         run: |
           scp -r -i ~/.ssh/id_rsa ./out/* ec2-user@${{ secrets.EC2_IP_DEV }}:/usr/share/nginx/html/
-
 
       # Step 7: Reload Nginx to apply changes
       - name: Reload Nginx
