@@ -45,7 +45,7 @@ export default function AnalyticsOverview() {
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
           <MainCard style={{ minHeight: '29%', maxHeight: '29%' }}>
-            <Typography variant="subtitle1">User Since Dec, 2022</Typography>
+            <Typography variant="subtitle1">User Since Dec, 2023</Typography>
           </MainCard>
           <div style={{ minHeight: '4%', maxHeight: '4%' }}></div>
           <MainCard style={{ minHeight: '67%', maxHeight: '67%' }}>
