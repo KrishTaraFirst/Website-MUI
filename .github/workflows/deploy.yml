@@ -1,13 +1,13 @@
-name: Dev Workflow
+name: Build and Deploy Next.js to Nginx
 
 on:
-  workflow_dispatch: # Manual trigger for the workflow
   push:
     branches:
       - dev # Change this to your branch name if needed
   # pull_request:
   #   branches:
   #     - dev  # Trigger when a PR is merged into the dev branch
+  workflow_dispatch: # Manual trigger for the workflow
 
 jobs:
   build_and_deploy:
@@ -16,6 +16,9 @@ jobs:
       # Step 1: Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Debug EC2 IP
+        run: echo "EC2_IP_DEV=${{ secrets.EC2_IP_DEV }}"
 
       # Step 2: Set up SSH key for accessing EC2
       - name: Set up SSH key
