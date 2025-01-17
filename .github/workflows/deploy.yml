@@ -1,4 +1,4 @@
-name: Build and Deploy Next.js to Nginx
+name: DEV Workflow
 
 on:
   workflow_dispatch:
