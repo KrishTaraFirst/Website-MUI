@@ -1,7 +1,13 @@
-name: DEV Workflow
+name: Dev Workflow
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Manual trigger for the workflow
+  push:
+    branches:
+      - dev # Change this to your branch name if needed
+  # pull_request:
+  #   branches:
+  #     - dev  # Trigger when a PR is merged into the dev branch
 
 jobs:
   build_and_deploy:
@@ -21,10 +27,6 @@ jobs:
       # Step 3: Set up known hosts to avoid SSH prompts
       - name: Set up known hosts
         run: |
-          if [ -z "${{ secrets.EC2_IP_DEV }}" ]; then
-            echo "Error: EC2_IP_DEV is not set."
-            exit 1
-          fi
           ssh-keyscan -H ${{ secrets.EC2_IP_DEV }} >> ~/.ssh/known_hosts
 
       # Step 4: Install dependencies
