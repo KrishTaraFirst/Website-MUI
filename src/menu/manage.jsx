@@ -34,7 +34,15 @@ const manage = {
       id: 'visaServices',
       title: <FormattedMessage id="visaServices" />,
       type: 'item',
-      url: '/visa-services',
+      url: '/payroll',
+      icon: 'IconSubtask',
+      roles: [AuthRole.SUPER_ADMIN]
+    },
+    {
+      id: 'payroll',
+      title: <FormattedMessage id="payroll" />,
+      type: 'item',
+      url: '/payroll',
       icon: 'IconSubtask',
       roles: [AuthRole.SUPER_ADMIN]
     },
