@@ -75,7 +75,8 @@ export default function AuthLogin({ inputSx }) {
         };
         setIsProcessing(false);
         localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));
-        router.push(APP_DEFAULT_PATH);
+        if (res.data.user_type === null) router.push('/user-type');
+        else router.push(APP_DEFAULT_PATH);
       }
     } catch (error) {
       // console.error("Login error:", error.response.data.detail);

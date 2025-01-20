@@ -434,7 +434,12 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
         </Grid>
       </Box>
       <Grid>
-        <TableContainer component={Paper}>
+        <TableContainer
+          component={Paper}
+          sx={{
+            borderRadius: '12px'
+          }}
+        >
           <Table>
             <TableHead>
               <TableRow>
@@ -478,7 +483,6 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
                     </TableCell>
 
                     <TableCell>
-                      {' '}
                       {indianCurrency}&nbsp;{invoice.balance_due}
                     </TableCell>
                     <TableCell>
