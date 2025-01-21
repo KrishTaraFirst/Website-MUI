@@ -1,6 +1,5 @@
 'use client';
 import dayjs from 'dayjs'; // Import dayjs
-import CustomInput from '@/utils/CustomInput';
 import { useRouter } from 'next/navigation';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -14,31 +13,57 @@ import {
   Radio,
   FormControlLabel,
   RadioGroup,
-  Grid,
-  DialogContent
+  Grid2,
+  DialogContent,
+  TextField
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { statesAndUTs } from '@/utils/helperData';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import CustomDatePicker from '@/utils/CustomDateInput';
-import Factory from '@/utils/Factory';
-// import { useAuth } from '../../../context/AuthContext';
+
+const businessKycFields = [
+  { name: 'name', label: 'Business Name' },
+  { name: 'pan_number', label: 'PAN Number' },
+  { name: 'aadhaar_number', label: 'Aadhaar Number' },
+  { name: 'dob', label: 'Date of Birth' },
+  { name: 'address_line1', label: 'Address Line 1' },
+  { name: 'address_line2', label: 'Address Line 2' },
+  { name: 'city', label: 'City' },
+  { name: 'state', label: 'State' },
+  { name: 'phoneNumber', label: 'Phone Number' },
+  { name: 'country', label: 'Country' },
+  { name: 'zip', label: 'Pin Code' }
+];
+
+const firmKycFields = [
+  { name: 'firmname', label: 'Firm Name' },
+  { name: 'firmregistrationnumber', label: 'Firm Registration Number' },
+  { name: 'firmemail', label: 'Firm Email' },
+  { name: 'firmmobilenumber', label: 'Firm Mobile Number' },
+  { name: 'noofpartnersinfirm', label: 'Number of Partners in Firm' },
+  { name: 'address_line1', label: 'Address Line 1' },
+  { name: 'address_line2', label: 'Address Line 2' },
+  { name: 'city', label: 'City' },
+  { name: 'state', label: 'State' },
+  { name: 'zip', label: 'Pin Code' }
+];
 
 export default function BusinessKYC() {
   const router = useRouter();
   const [dialogOpen, setDialogOpen] = useState(true);
   const [firmkycDialogOpen, setFirmkycDialogOpen] = useState(false);
-  //   const { user, logout, setUser, setTokens } = useAuth();
 
-  const [selectedDate, setSelectedDate] = useState(dayjs()); // Initialize with dayjs()
-  //   console.log(user);
+  const [selectedDate, setSelectedDate] = useState(dayjs());
+
   const handleDateChange = (newDate) => {
     const formattedDate = dayjs(newDate).format('YYYY-MM-DD');
     setSelectedDate(dayjs(newDate));
-    formik.setFieldValue('dob', formattedDate);
+    businessKycFormik.setFieldValue('dob', formattedDate);
   };
 
-  const formik = useFormik({
+  // Business KYC Formik
+  const businessKycFormik = useFormik({
     initialValues: {
       dob: new Date(),
       name: '',
@@ -46,7 +71,6 @@ export default function BusinessKYC() {
       pan_number: '',
       address_line1: '',
       address_line2: '',
-      address_line3: '',
       city: '',
       state: '',
       zip: '',
@@ -55,39 +79,32 @@ export default function BusinessKYC() {
       country: 'IN'
     },
     validationSchema: Yup.object({
-      // name: Yup.string().required("Name is required"),
-      // dob: Yup.string().required("DOB is required"),
-      // pan_number: Yup.string().required("PAN Card number is required"),
-      // aadhaar_number: Yup.string().required("Aadhar Card number is required"),
-      // address_line1: Yup.string().required("Address Line 1 is required"),
-      // city: Yup.string().required("City is required"),
-      // state: Yup.string().required("State is required"),
-      // zip: Yup.string().required("Zip code is required"),
-      // phoneNumber: Yup.string().required("Phone number is required"),
-      // havefirm: Yup.boolean(),
+      name: Yup.string().required('Business Name is required'),
+      dob: Yup.date().required('Date of Birth is required').max(new Date(), 'DOB cannot be in the future'),
+      pan_number: Yup.string()
+        .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN format')
+        .required('PAN is required'),
+      aadhaar_number: Yup.string()
+        .matches(/^\d{12}$/, 'Aadhaar number must be 12 digits')
+        .required('Aadhaar number is required'),
+      address_line1: Yup.string().required('Address Line 1 is required'),
+      city: Yup.string().required('City is required'),
+      state: Yup.string().required('State is required'),
+      zip: Yup.string()
+        .matches(/^\d{6}$/, 'Zip code must be a 6-digit number')
+        .required('Zip code is required'),
+      phoneNumber: Yup.string()
+        .matches(/^\d{10}$/, 'Phone number must be a 10-digit number')
+        .required('Phone number is required'),
+      havefirm: Yup.boolean().required('Please specify whether you have a firm').nullable()
     }),
     onSubmit: async (values) => {
       console.log(values);
-      const postData = {
-        pan_number: values.pan_number,
-        aadhaar_number: values.aadhaar_number,
-        date: values.firmemail,
-        name: values.name,
-        address: {
-          address_line1: values.address_line1,
-          address_line2: values.address_line2 || '',
-          address_line3: values.address_line3 || '',
-          pinCode: values.zip,
-          state: values.state,
-          city: values.city,
-          country: values.country
-        },
-        have_firm: 'false',
-        date: values.dob
-      };
+      const postData = { ...values, date: values.dob };
+
       setDialogOpen(false);
       setFirmkycDialogOpen(true);
-      console.log('one', postData);
+      console.log('Business KYC Data:', postData);
       //   try {
       //     const url = `/user_management/users-kyc/`;
       //     const { res, error } = await Factory("post", url, postData);
@@ -105,54 +122,43 @@ export default function BusinessKYC() {
     }
   });
 
-  const firmkycFormik = useFormik({
+  // Firm KYC Formik
+  const firmKycFormik = useFormik({
     initialValues: {
       firmname: '',
       firmregistrationnumber: '',
       firmemail: '',
       firmmobilenumber: '',
       noofpartnersinfirm: '',
-      firmaddress1: '',
-      firmaddress2: '',
-      firmaddress3: '',
+      address_line1: '',
+      address_line2: '',
       city: '',
       state: '',
       zip: '',
       country: 'IN'
     },
     validationSchema: Yup.object({
-      // firmname: Yup.string().required("Firm Name is required"),
-      // firmregistrationnumber: Yup.string().required(
-      //   "Firm Registration Number is required"
-      // ),
-      // firmemail: Yup.string()
-      //   .email("Invalid email address")
-      //   .required("Firm Email is required"),
-      // firmmobilenumber: Yup.string().required("Firm Mobile Number is required"),
-      // noofpartnersinfirm: Yup.string().required("No of Partners is required"),
-      // city: Yup.string().required("City is required"),
-      // state: Yup.string().required("State is required"),
-      // zip: Yup.string().required("Zip code is required"),
+      firmname: Yup.string().required('Firm Name is required'),
+      firmregistrationnumber: Yup.string()
+        .required('Firm Registration Number is required')
+        .matches(/^[A-Za-z0-9]+$/, 'Firm Registration Number must be alphanumeric'),
+      firmemail: Yup.string().email('Invalid email address').required('Firm Email is required'),
+      firmmobilenumber: Yup.string()
+        .matches(/^[0-9]{10}$/, 'Firm Mobile Number must be a 10-digit number')
+        .required('Firm Mobile Number is required'),
+      noofpartnersinfirm: Yup.number().required('Number of Partners is required').positive().integer(),
+      address_line1: Yup.string().required('Address Line 1 is required'),
+      city: Yup.string().required('City is required'),
+      state: Yup.string().required('State is required'),
+      zip: Yup.string()
+        .matches(/^\d{6}$/, 'Invalid Zip code')
+        .required('Zip code is required')
     }),
     onSubmit: async (values) => {
       console.log(values);
-      const postData = {
-        firm_name: values.firmname,
-        firm_registration_number: values.firmregistrationnumber,
-        firm_email: values.firmemail,
-        firm_mobile_number: values.firmmobilenumber,
-        address: {
-          address_line1: values.firmaddress1,
-          address_line2: values.firmaddress2 || '', // Default to empty string if undefined
-          address_line3: values.firmaddress3 || '', // Default to empty string if undefined
-          pinCode: values.zip,
-          state: values.state,
-          city: values.city,
-          country: values.country
-        },
-        number_of_firm_partners: Number(values.noofpartnersinfirm)
-      };
-      console.log('two', postData);
+      const postData = { ...values, number_of_firm_partners: Number(values.noofpartnersinfirm) };
+      console.log('Firm KYC Data:', postData);
+
       setFirmkycDialogOpen(false);
       //   try {
       //     const url = `/user_management/firmkyc/`;
@@ -172,8 +178,71 @@ export default function BusinessKYC() {
     }
   });
 
-  const { errors, touched, handleSubmit, getFieldProps } = formik;
-  const { errors: kycErrors, touched: kycTouched, handleSubmit: kycHandleSubmit, getFieldProps: getKycFieldProps } = firmkycFormik;
+  const renderFields = (fields, formik) => {
+    return fields.map((field) => {
+      if (field.name === 'state') {
+        return (
+          <Grid2 item key={field.name} size={{ xs: 12, sm: 6, md: 6 }}>
+            <div style={{ paddingBottom: '5px' }}>
+              <label>{field.label}</label>
+            </div>
+            <CustomAutocomplete
+              value={formik.values[field.name]}
+              onChange={(event, newValue) => formik.setFieldValue(field.name, newValue)}
+              options={statesAndUTs}
+              error={formik.touched[field.name] && Boolean(formik.errors[field.name])}
+              helperText={formik.touched[field.name] && formik.errors[field.name]}
+              name={field.name}
+            />
+          </Grid2>
+        );
+      } else if (field.name === 'dob') {
+        return (
+          <Grid2 item key={field.name} size={{ xs: 12, sm: 6, md: 6 }}>
+            <div style={{ paddingBottom: '5px' }}>
+              <label>{field.label}</label>
+            </div>
+            <CustomDatePicker
+              value={formik.values.dob ? dayjs(formik.values.dob) : null}
+              onChange={handleDateChange}
+              views={['year', 'month', 'day']}
+              error={formik.touched.dob && Boolean(formik.errors.dob)}
+              helperText={formik.touched.dob && formik.errors.dob}
+              sx={{ width: '100%', '& .MuiInputBase-root': { fontSize: '0.75rem', height: '40px' } }}
+            />
+          </Grid2>
+        );
+      } else {
+        return (
+          <Grid2 item key={field.name} size={{ xs: 12, sm: 6, md: 6 }}>
+            <div style={{ paddingBottom: '5px' }}>
+              <label>{field.label}</label>
+            </div>
+            <TextField
+              fullWidth
+              name={field.name}
+              value={formik.values[field.name]} // This ensures the value is tied to Formik state
+              onChange={(e) => {
+                if (field.name === 'pan_number') {
+                  formik.setFieldValue(field.name, e.target.value.toUpperCase());
+                } else {
+                  formik.setFieldValue(field.name, e.target.value);
+                }
+              }}
+              onBlur={formik.handleBlur}
+              error={formik.touched[field.name] && Boolean(formik.errors[field.name])}
+              helperText={formik.touched[field.name] && formik.errors[field.name]}
+              disabled={field.name === 'country'}
+            />
+          </Grid2>
+        );
+      }
+    });
+  };
+
+  // Destructuring for business KYC and firm KYC separately
+  const { errors, touched, handleSubmit, getFieldProps } = businessKycFormik;
+  const { errors: kycErrors, touched: kycTouched, handleSubmit: kycHandleSubmit, getFieldProps: getKycFieldProps } = firmKycFormik;
   //   useEffect(() => {
   //     const userDetails = JSON.parse(localStorage.getItem('user'));
   //     console.log(userDetails);
@@ -183,115 +252,22 @@ export default function BusinessKYC() {
   //   }, []);
   return (
     <Box>
+      {/* Business KYC Dialog */}
       <Dialog open={dialogOpen} maxWidth="sm">
         <DialogTitle>
           <Typography variant="h4">Business KYC</Typography>
           <Typography variant="body2">Please provide the necessary details to complete the registration.</Typography>
         </DialogTitle>
-        <form onSubmit={handleSubmit} autoComplete="off">
-          <DialogContent
-            dividers
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 3
-            }}
-          >
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
-                <CustomInput id="name" label="Business Name" {...getFieldProps('name')} touched={touched.name} errors={errors.name} />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <CustomInput
-                  id="pan_number"
-                  label="PAN Card Number"
-                  {...getFieldProps('pan_number')}
-                  touched={touched.pan_number}
-                  errors={errors.pan_number}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <CustomInput
-                  id="aadhaar_number"
-                  label="Aadhar Card Number"
-                  {...getFieldProps('aadhaar_number')}
-                  touched={touched.aadhaar_number}
-                  errors={errors.aadhaar_number}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <CustomDatePicker
-                  label="Date of Birth"
-                  views={['year', 'month', 'day']}
-                  value={selectedDate}
-                  onChange={handleDateChange} // Use formik for the first form
-                  sx={{
-                    width: '100%',
-                    '& .MuiInputBase-root': {
-                      fontSize: '0.75rem',
-                      height: '40px'
-                    }
-                  }}
-                  error={formik.touched.dob && Boolean(formik.errors.dob)}
-                  helperText={formik.touched.dob && formik.errors.dob}
-                />
-              </Grid>
-            </Grid>
-
-            <CustomInput
-              id="address_line1"
-              label="Address Line 1"
-              {...getFieldProps('address_line1')}
-              touched={touched.address_line1}
-              errors={errors.address_line1}
-            />
-            <CustomInput
-              id="address_line2"
-              label="Address Line 2 (optional)"
-              {...getFieldProps('address_line2')}
-              touched={touched.address_line2}
-              errors={errors.address_line2}
-            />
-
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
-                <CustomInput id="city" label="City" {...getFieldProps('city')} touched={touched.city} errors={errors.city} />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <CustomAutocomplete
-                  id="state"
-                  label="State"
-                  options={statesAndUTs} // Array of state/UT options
-                  value={formik.values.state}
-                  onChange={(event, newValue) => {
-                    formik.setFieldValue('state', newValue); // Set the selected state value in Formik
-                  }}
-                  error={formik.touched.state && Boolean(formik.errors.state)} // Error handling
-                  helperText={formik.touched.state && formik.errors.state} // Error message display
-                  fullWidth // Optional: makes the autocomplete input full width
-                />
-              </Grid>
-            </Grid>
-
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
-                <CustomInput id="zip" label="Zip Code" {...getFieldProps('zip')} touched={touched.zip} errors={errors.zip} />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <CustomInput
-                  id="phoneNumber"
-                  label="Phone Number"
-                  {...getFieldProps('phoneNumber')}
-                  touched={touched.phoneNumber}
-                  errors={errors.phoneNumber}
-                />
-              </Grid>
-            </Grid>
-
+        <form onSubmit={businessKycFormik.handleSubmit} autoComplete="off">
+          <DialogContent>
+            <Grid2 container spacing={2}>
+              {renderFields(businessKycFields, businessKycFormik)}
+            </Grid2>
             <RadioGroup
+              row
               name="havefirm"
-              value={formik.values.havefirm}
-              onChange={(e) => formik.setFieldValue('havefirm', e.target.value)}
+              value={businessKycFormik.values.havefirm}
+              onChange={(e) => businessKycFormik.setFieldValue('havefirm', e.target.value)}
               sx={{
                 display: 'flex',
                 flexDirection: 'row', // Align items horizontally
@@ -302,158 +278,40 @@ export default function BusinessKYC() {
               <Typography variant="body1" sx={{ marginRight: '8px' }}>
                 Do you have a firm?
               </Typography>
-              <FormControlLabel value="true" label="Yes" control={<Radio />} />
-              <FormControlLabel value="false" label="No" control={<Radio />} />
+              <FormControlLabel value="true" control={<Radio />} label="Yes" />
+              <FormControlLabel value="false" control={<Radio />} label="No" />
             </RadioGroup>
           </DialogContent>
-
-          <DialogActions
-            sx={{
-              justifyContent: 'space-between'
-            }}
-          >
-            <Button variant="outlined" color="error" type="button">
+          <DialogActions>
+            <Button variant="outlined" color="error" onClick={() => setDialogOpen(false)}>
               Skip
             </Button>
-            <Button variant="contained" type="submit" disabled={formik.isSubmitting}>
-              {formik.isSubmitting ? 'Processing...' : 'Next'}
+            <Button variant="contained" type="submit">
+              Next
             </Button>
           </DialogActions>
         </form>
       </Dialog>
 
-      <Dialog open={firmkycDialogOpen} onClose={() => setFirmkycDialogOpen(false)} maxWidth="sm">
+      {/* Firm KYC Dialog */}
+      <Dialog open={firmkycDialogOpen} maxWidth="sm">
         <DialogTitle>
           <Typography variant="h4">Firm KYC</Typography>
           <Typography variant="body2">Please provide the necessary details to complete the registration.</Typography>
         </DialogTitle>
-        <form onSubmit={kycHandleSubmit}>
-          <DialogContent
-            dividers
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 3
-            }}
-          >
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
-                <CustomInput
-                  id="firmname"
-                  label="Firm Name"
-                  {...getKycFieldProps('firmname')}
-                  touched={kycTouched.firmname}
-                  errors={kycErrors.firmname}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <CustomInput
-                  id="firmregistrationnumber"
-                  label="Firm Registration Number"
-                  {...getKycFieldProps('firmregistrationnumber')}
-                  touched={kycTouched.firmregistrationnumber}
-                  errors={kycErrors.firmregistrationnumber}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <CustomInput
-                  id="firmemail"
-                  label="Firm Email"
-                  {...getKycFieldProps('firmemail')}
-                  touched={kycTouched.firmemail}
-                  errors={kycErrors.firmemail}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <CustomInput
-                  id="firmmobilenumber"
-                  label="Firm Mobile Number"
-                  {...getKycFieldProps('firmmobilenumber')}
-                  touched={kycTouched.firmmobilenumber}
-                  errors={kycErrors.firmmobilenumber}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <CustomInput
-                  id="noofpartnersinfirm"
-                  label="Number of Partners in Firm"
-                  {...getKycFieldProps('noofpartnersinfirm')}
-                  touched={kycTouched.noofpartnersinfirm}
-                  errors={kycErrors.noofpartnersinfirm}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <CustomInput
-                  id="firmaddress1"
-                  label="Firm Address Line 1"
-                  {...getKycFieldProps('firmaddress1')}
-                  touched={kycTouched.firmaddress1}
-                  errors={kycErrors.firmaddress1}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <CustomInput
-                  id="firmaddress2"
-                  label="Firm Address Line 2 (optional)"
-                  {...getKycFieldProps('firmaddress2')}
-                  touched={kycTouched.firmaddress2}
-                  errors={kycErrors.firmaddress2}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <CustomInput id="city" label="City" {...getKycFieldProps('city')} touched={kycTouched.city} errors={kycErrors.city} />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <CustomAutocomplete
-                  id="state"
-                  label="State"
-                  options={statesAndUTs}
-                  touched={kycTouched.state}
-                  errors={kycErrors.state}
-                  value={firmkycFormik.values.state}
-                  onChange={(event, newValue) => {
-                    firmkycFormik.setFieldValue('state', newValue); // Correct way to set Formik field value
-                  }}
-                  // Optional: Add additional props for error handling and display
-                  error={kycTouched.state && Boolean(kycErrors.state)}
-                  helperText={kycTouched.state && kycErrors.state}
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <CustomInput id="zip" label="Firm Zip Code" {...getKycFieldProps('zip')} touched={kycTouched.zip} errors={kycErrors.zip} />
-              </Grid>
-            </Grid>
+        <form onSubmit={firmKycFormik.handleSubmit} autoComplete="off">
+          <DialogContent>
+            <Grid2 container spacing={2}>
+              {renderFields(firmKycFields, firmKycFormik)}
+            </Grid2>
           </DialogContent>
-          <DialogActions
-            sx={{
-              justifyContent: 'space-between'
-            }}
-          >
-            <Button
-              onClick={() => {
-                setFirmkycDialogOpen(false);
-                setDialogOpen(true);
-              }}
-              variant="outlined"
-              color="error"
-              type="button"
-            >
+          <DialogActions>
+            <Button variant="outlined" color="error" onClick={() => setFirmkycDialogOpen(false)}>
               Skip
             </Button>
-            <Box>
-              <Button>Cancel</Button>
-              <Button
-                variant="contained"
-                type="button"
-                onClick={(e) => {
-                  kycHandleSubmit();
-                }}
-                disabled={firmkycFormik.isSubmitting}
-              >
-                {firmkycFormik.isSubmitting ? 'Processing...' : 'Complete Firm KYC'}
-              </Button>
-            </Box>
+            <Button variant="contained" type="submit" disabled={firmKycFormik.isSubmitting}>
+              Complete Firm KYC
+            </Button>
           </DialogActions>
         </form>
       </Dialog>

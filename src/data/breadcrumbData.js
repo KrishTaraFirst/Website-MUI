@@ -28,5 +28,13 @@ export const breadcrumbData = {
   'travel-booking': 'Travel Booking',
   'visa-slot': 'Visa Slot',
   'passport-application': 'Passport Application',
-  status: 'Status'
+  status: 'Status',
+
+  payroll: 'Payroll',
+  organization_details: 'Organization Details',
+  set_up_work_location: 'Set up work location',
+  set_up_departments: 'Set up departments',
+  set_up_designations: 'Set up designations',
+  set_up_statutory_components: 'Set up statutory components',
+  set_up_salary_components: 'set up salary components'
 };

@@ -1,10 +1,11 @@
+'use client';
 import React from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { TextField, Button, Box, Typography } from '@mui/material';
 import Grid2 from '@mui/material/Grid2'; // Import Grid2 from MUI system
 
-function Organizationdetails() {
+function Organizationdetails({ tab }) {
   // Field definitions for organization details
   const fields = [
     { name: 'organization_name', label: 'Organization Name' },

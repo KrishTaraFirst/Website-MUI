@@ -1,10 +1,3 @@
-// import React from 'react';
-
-// function StatuitoryComponents() {
-//   return <div>StatuitoryComponents</div>;
-// }
-
-// export default StatuitoryComponents;
 'use client';
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';

@@ -116,7 +116,7 @@ const UserType = () => {
         >
           <Tab
             label={getTabLabel(
-              'Business',
+              'Corporate Entity',
               'Streamlining business operations, compliance with financial regulation management',
               selectedIndex === 0
             )}
