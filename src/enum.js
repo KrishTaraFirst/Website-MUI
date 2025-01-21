@@ -89,6 +89,7 @@ export let AuthRole;
   AuthRole['SUPER_ADMIN'] = 'super-admin';
   AuthRole['ADMIN'] = 'admin';
   AuthRole['USER'] = 'user';
+  AuthRole['SERVICE_PROVIDER'] = 'service-provider';
 })(AuthRole || (AuthRole = {}));
 
 /** Auth type enum */
