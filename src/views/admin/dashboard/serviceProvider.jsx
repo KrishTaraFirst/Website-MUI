@@ -14,7 +14,7 @@ import { Height } from '@mui/icons-material';
 
 /***************************  ANALYTICS - OVERVIEW  ***************************/
 
-export default function AnalyticsOverview() {
+export default function ServiceProvider() {
   //   const { user } = useAuth();
   const chipDefaultProps = { color: 'black', variant: 'text', size: 'small' };
 

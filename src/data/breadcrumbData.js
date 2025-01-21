@@ -1,7 +1,17 @@
 export const breadcrumbData = {
   Home: 'Home',
+  manageAccess: 'Manage Access',
+  'manage-access': 'Manage Access',
+  payroll: 'Payroll',
+  'corporate-entities': 'Corporate Entities',
+  individual: 'Individual',
+  'ca-firms': 'CA Firms',
+  'service-providers': 'Service Providers',
+  user: 'User',
+  dashboard: 'Dashboard',
+
+  //Invoicing
   settings: 'Settings',
-  setting: 'Setting',
   recordpayment: 'Record Payment',
   paymenthistory: 'Payment History',
   invoice: 'Invoice',
@@ -9,11 +19,16 @@ export const breadcrumbData = {
   editInvoice: 'Edit Invoice',
   generateInvoice: 'Generate Invoice',
   'visa-services': 'Visa Services',
+
+  //profile
+  setting: 'Setting',
   profile: 'Profile',
   general: 'General',
   pricing: 'Pricing',
   communication_preferences: 'Communication Preferences',
   authentication: 'Authentication',
+
+  //Visa Services
   'create-new': 'Create New',
   in_progress: 'In Progress',
   completed: 'Completed',
