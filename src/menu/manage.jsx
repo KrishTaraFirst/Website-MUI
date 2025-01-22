@@ -18,8 +18,16 @@ const manage = {
       id: 'dashboard',
       title: <FormattedMessage id="dashboard" />,
       type: 'item',
-      url: '/dashboard/user',
+      url: '/dashboard',
       icon: 'IconLayoutGrid'
+    },
+    {
+      id: 'manageAccess',
+      title: <FormattedMessage id="manageAccess" />,
+      type: 'item',
+      url: '/manage-access',
+      icon: 'IconBrandAsana',
+      roles: [AuthRole.SUPER_ADMIN]
     },
     // anand
     {
@@ -27,7 +35,7 @@ const manage = {
       title: <FormattedMessage id="invoicing" />,
       type: 'item',
       url: '/invoicing',
-      icon: 'IconInvoice',
+      icon: 'IconFileInvoice',
       roles: [AuthRole.SUPER_ADMIN, AuthRole.USER]
     },
     {
@@ -43,9 +51,10 @@ const manage = {
       title: <FormattedMessage id="payroll" />,
       type: 'item',
       url: '/payroll',
-      icon: 'IconSubtask',
+      icon: 'IconInvoice',
       roles: [AuthRole.SUPER_ADMIN]
     },
+
     //
     // {
     //   id: 'account',
@@ -86,7 +95,7 @@ const manage = {
     // },
     {
       id: 'setting',
-      title: <FormattedMessage id="setting" />,
+      title: <FormattedMessage id="settings" />,
       type: 'item',
       url: '/setting',
       icon: 'IconSettings',

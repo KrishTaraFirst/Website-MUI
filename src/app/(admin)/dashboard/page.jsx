@@ -1,18 +1,11 @@
-'use client';
-
 // @next
-import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 
-import { useEffect } from 'react';
+// @project
+const UserDashboard = dynamic(() => import('@/views/admin/dashboard'));
 
-/***************************  DASHBOARD  ***************************/
+/***************************  ACCOUNT  ***************************/
 
-export default function Dashboard() {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.replace('/dashboard/user');
-  }, [router]);
-
-  return null;
+export default function Invoicings() {
+  return <UserDashboard />;
 }

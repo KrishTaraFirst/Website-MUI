@@ -36,14 +36,16 @@ export default function CustomBreadcrumbs({ data }) {
 
     // Define custom mapping rules for URLs
     const customBreadcrumbMap = {
-      '/dashboard/user': { title: 'Dashboard', url: '/dashboard/user' }
+      '/dashboard/user': { title: 'dashboard', url: '/dashboard/user' },
+      'dashboard/user/corporate-entities': { title: 'corporate-entities', url: 'dashboard/user/corporate-entities' },
+      '/dashboard/user': { title: 'dashboard', url: '/dashboard/user' }
     };
 
     // Check if the current path matches a custom rule
     const matchedBreadcrumb = customBreadcrumbMap[pathname];
     if (matchedBreadcrumb) {
       // Use the mapped breadcrumb if available
-      setBreadcrumbItems([homeBreadcrumb, matchedBreadcrumb]);
+      setBreadcrumbItems([matchedBreadcrumb]);
     } else {
       // Default behavior: split the path and create breadcrumbs
       const pathSegments = pathname.split('/').filter((segment) => segment);
@@ -53,7 +55,7 @@ export default function CustomBreadcrumbs({ data }) {
       });
 
       // Add "Home" as the first breadcrumb
-      setBreadcrumbItems([homeBreadcrumb, ...breadcrumbData]);
+      setBreadcrumbItems([...breadcrumbData]);
     }
   }, [pathname]);
 
