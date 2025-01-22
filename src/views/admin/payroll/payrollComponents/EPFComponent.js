@@ -1,3 +1,4 @@
+'use client';
 import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -148,49 +149,43 @@ function EpfComponent() {
           }}
         >
           <Grid2 container spacing={2} sx={{ maxWidth: '600px' }}>
-            {dummyData ? (
-              <Grid2 container spacing={2}>
-                <Grid2 size={{ xs: 12 }}>
-                  <Typography variant="body1" style={{ textAlign: 'left' }}>
-                    EPF Number:
+            {dummyData && (
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom mb={2}>
+                    Employees’ Provident Fund
                   </Typography>
-                  <Typography variant="body1" style={{ textAlign: 'right' }}>
-                    {dummyData.epf_number}
+                  <Box display="flex" justifyContent="space-between" mb={1}>
+                    <Typography variant="body1">EPF Number :</Typography>
+                    <Typography variant="body1">{dummyData.epf_number}</Typography>
+                  </Box>
+                  <Box display="flex" justifyContent="space-between" mb={1}>
+                    <Typography variant="body1">Employee Contribution Rate :</Typography>
+                    <Typography variant="body1">{dummyData.epf_contribution_rate}</Typography>
+                  </Box>
+                  <Box display="flex" justifyContent="space-between" mb={2}>
+                    <Typography variant="body1">Employer Contribution Rate :</Typography>
+                    <Typography variant="body1">Restricted Contribution [12% or 15,000]</Typography>
+                  </Box>
+                  <Typography variant="h6" mb={1}>
+                    CTC Inclusions :
                   </Typography>
-                </Grid2>
-
-                <Grid2 size={{ xs: 12 }}>
-                  <Typography variant="body1" style={{ textAlign: 'left' }}>
-                    EPF Contribution Rate:
-                  </Typography>
-                  <Typography variant="body1" style={{ textAlign: 'right' }}>
-                    {dummyData.epf_contribution_rate}
-                  </Typography>
-                </Grid2>
-
-                <Grid2 size={{ xs: 12 }}>
-                  <Typography variant="h6" style={{ textAlign: 'left' }}>
-                    CTC Conclusions:
-                  </Typography>
-                </Grid2>
-
-                {/* Display contribution rates horizontally in a single line */}
-                <Grid2 container spacing={2} alignItems="center">
-                  {dummyData.contribution_rates
-                    .sort() // or apply custom sorting logic
-                    .map((rate, index) => (
-                      <Grid2 item key={index}>
-                        <FormControlLabel
-                          control={<Checkbox checked={true} />}
-                          label={rate}
-                          sx={{ marginRight: 2 }} // Optional: Adjust the spacing between checkboxes
-                        />
-                      </Grid2>
-                    ))}
-                </Grid2>
-              </Grid2>
-            ) : (
-              <Typography>Loading EPF data...</Typography>
+                  {dummyData.contribution_rates.map((rate, index) => (
+                    <Box display="flex" alignItems="center" key={index} ml={2}>
+                      <Checkbox checked={true} />
+                      <Typography variant="body2">{rate}</Typography>
+                    </Box>
+                  ))}
+                  <Box display="flex" justifyContent="space-between" mt={2}>
+                    <Typography variant="body1">Allow employee level override :</Typography>
+                    <Typography variant="body1">Yes</Typography>
+                  </Box>
+                  <Box display="flex" justifyContent="space-between" mt={1}>
+                    <Typography variant="body1">Pro rate restricted PF wage :</Typography>
+                    <Typography variant="body1">Yes</Typography>
+                  </Box>
+                </CardContent>
+              </Card>
             )}
           </Grid2>
         </Box>

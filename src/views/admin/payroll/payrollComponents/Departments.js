@@ -1,3 +1,4 @@
+'use client';
 import React, { useState } from 'react';
 import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Paper, Button, Stack, Grid2, Typography } from '@mui/material';
 import DepartmentDialog from './DepartmentDialog'; // Import the DepartmentDialog
