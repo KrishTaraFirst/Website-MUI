@@ -18,7 +18,7 @@ const mockUsers = [
   {
     id: '2',
     email: 'admin@saasable.io',
-    role: AuthRole.ADMIN,
+    role: AuthRole.CORPORATE_ADMIN,
     contact: '123456789',
     dialcode: '+91',
     firstname: 'Mark',
@@ -29,7 +29,7 @@ const mockUsers = [
   {
     id: '3',
     email: 'user@saasable.io',
-    role: AuthRole.USER,
+    role: AuthRole.INDIVIDUAL,
     contact: '123456789',
     dialcode: '+91',
     firstname: 'Bob',
