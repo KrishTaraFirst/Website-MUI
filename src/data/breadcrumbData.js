@@ -51,5 +51,7 @@ export const breadcrumbData = {
   set_up_departments: 'Set up departments',
   set_up_designations: 'Set up designations',
   set_up_statutory_components: 'Set up statutory components',
-  set_up_salary_components: 'set up salary components'
+  set_up_salary_components: 'set up salary components',
+  set_up_salary_template: 'set up salary Template',
+  'add-employee': 'Add Employee'
 };

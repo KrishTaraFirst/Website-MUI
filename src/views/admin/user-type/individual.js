@@ -10,6 +10,8 @@ import { useState } from 'react';
 import Factory from '@/utils/Factory';
 import { statesAndUTs } from '@/utils/helperData';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
+import { APP_DEFAULT_PATH } from '@/config';
+import { useSnackbar } from '@/components/CustomSnackbar';
 
 const individualFieldData = [
   { name: 'name', label: 'Full Name', type: 'text' },
@@ -30,6 +32,7 @@ export default function IndividualForm() {
   const router = useRouter();
   const [kycDialogOpen, setKycDialogOpen] = useState(true);
   const [selectedDate, setSelectedDate] = useState(dayjs());
+  const { showSnackbar } = useSnackbar();
 
   const handleDateChange = (newDate) => {
     const formattedDate = dayjs(newDate).format('YYYY-MM-DD');
@@ -42,7 +45,7 @@ export default function IndividualForm() {
       name: '',
       email: '',
       mobile: '',
-      dob: null,
+      dob: dayjs().format('YYYY-MM-DD'),
       address_line1: '',
       address_line2: '',
       city: '',
@@ -89,20 +92,15 @@ export default function IndividualForm() {
         have_firm: 'false',
         date: values.dob
       };
-      setKycDialogOpen(false);
-      try {
-        // const url = `/user_management/users-kyc/`;
-        // const { res, error } = await Factory('post', url, postData);
-        // console.log(res);
-        // if (res.status_cd === 0) {
-        //   setKycDialogOpen(false);
-        //   router.push('/tara');
-        // } else {
-        //   alert('Please check your credentials.');
-        // }
-      } catch (error) {
-        console.error('KYC submission error:', error);
-        alert('Something went wrong. Please try again.');
+      const url = `/user_management/users-kyc/`;
+      const { res, error } = await Factory('post', url, postData);
+      console.log(res);
+      if (res.status_cd === 0) {
+        setKycDialogOpen(false);
+        showSnackbar(res?.detail, 'success');
+        router.push(APP_DEFAULT_PATH);
+      } else {
+        showSnackbar(JSON.stringify(res.data.error_message), 'error');
       }
     }
   });
@@ -165,7 +163,7 @@ export default function IndividualForm() {
   return (
     <Box>
       <Dialog maxWidth="sm" open={kycDialogOpen}>
-        <DialogTitle>
+        <DialogTitle component="div">
           <Typography variant="h4">Complete Your KYC</Typography>
           <Typography variant="body2">Please fill in your KYC details to complete the registration.</Typography>
         </DialogTitle>
@@ -188,8 +186,8 @@ export default function IndividualForm() {
             <Button variant="outlined" color="error" onClick={() => setKycDialogOpen(false)}>
               Skip
             </Button>
-            <Button variant="contained" type="submit" disabled={formik.isSubmitting}>
-              {formik.isSubmitting ? 'Processing...' : 'Complete KYC'}
+            <Button variant="contained" type="submit">
+              Complete KYC
             </Button>
           </DialogActions>
         </form>

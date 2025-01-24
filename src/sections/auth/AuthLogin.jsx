@@ -59,7 +59,6 @@ export default function AuthLogin({ inputSx }) {
       };
 
       const res = await axios.post(BASE_URL + url, postData);
-
       if (res.status === 200) {
         let userDAta = {
           id: res.data.id,
@@ -71,7 +70,12 @@ export default function AuthLogin({ inputSx }) {
           lastname: '',
           // password: 'Super@123',
           mobile: res.data.mobile_number,
-          access_token: res.data.access
+          access_token: res.data.access,
+          user_role: res.data.user_role,
+          user_type: res.data.user_type,
+          user_kyc: res.data.user_kyc,
+          user_groups: res.data.user_groups,
+          associated_services: res.data.associated_services
         };
         setIsProcessing(false);
         localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));

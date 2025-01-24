@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Box, Grid, Typography } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Box, Divider, Typography } from '@mui/material';
 import Grid2 from '@mui/material/Grid2'; // Import Grid2 from MUI system
 
 export default function WorkLocationDialog({ open, handleClose, handleOpenDialog }) {
@@ -16,16 +16,35 @@ export default function WorkLocationDialog({ open, handleClose, handleOpenDialog
   ];
 
   // Formik validation schema
+
   const validationSchema = Yup.object({
-    worklocation_name: Yup.string().required('Work Location Name is required'),
-    address_line1: Yup.string().required('Address Line 1 is required'),
-    address_line2: Yup.string(),
-    state: Yup.string().required('State is required'),
-    city: Yup.string().required('City is required'),
-    postal_code: Yup.string().required('Pincode is required')
+    worklocation_name: Yup.string()
+      .required('Work Location Name is required')
+      .min(3, 'Work Location Name must be at least 3 characters')
+      .max(100, 'Work Location Name must be at most 100 characters'),
+
+    address_line1: Yup.string()
+      .required('Address Line 1 is required')
+      .min(5, 'Address Line 1 must be at least 5 characters')
+      .max(100, 'Address Line 1 must be at most 100 characters'),
+
+    address_line2: Yup.string().max(100, 'Address Line 2 must be at most 100 characters'),
+
+    state: Yup.string()
+      .required('State is required')
+      .min(2, 'State must be at least 2 characters')
+      .max(50, 'State must be at most 50 characters'),
+
+    city: Yup.string()
+      .required('City is required')
+      .min(2, 'City must be at least 2 characters')
+      .max(50, 'City must be at most 50 characters'),
+
+    postal_code: Yup.string()
+      .required('Pincode is required')
+      .matches(/^[0-9]{6}$/, 'Invalid Pincode format. It must be exactly 6 digits.')
   });
 
-  // Initialize Formik with initial values and validation schema
   const formik = useFormik({
     initialValues: {
       worklocation_name: '',
@@ -69,8 +88,8 @@ export default function WorkLocationDialog({ open, handleClose, handleOpenDialog
     <>
       {/* Dialog for Work Location */}
       <Dialog open={open} onClose={handleClose} maxWidth={'md'} fullWidth>
-        <DialogTitle>Work Location Details</DialogTitle>
-
+        <DialogTitle textAlign="center">Add Location Details</DialogTitle>
+        <Divider />
         <DialogContent>
           <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
             <Grid2 container spacing={3}>

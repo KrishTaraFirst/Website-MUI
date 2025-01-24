@@ -22,15 +22,16 @@ import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import { statesAndUTs } from '@/utils/helperData';
 import Factory from '@/utils/Factory';
 import { TextField } from '@mui/material';
+import { APP_DEFAULT_PATH } from '@/config';
+import { useSnackbar } from '@/components/CustomSnackbar';
 
 export default function FirmForm() {
   const router = useRouter();
   const [dialogOpen, setDialogOpen] = useState(true);
   const [firmKycDialogOpen, setFirmKycDialogOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(dayjs());
+  const { showSnackbar } = useSnackbar();
 
   const handleDateChange = (newDate) => {
-    setSelectedDate(dayjs(newDate));
     caKycFormik.setFieldValue('dob', dayjs(newDate).format('YYYY-MM-DD'));
   };
 
@@ -121,7 +122,7 @@ export default function FirmForm() {
   const caKycFormik = useFormik({
     initialValues: {
       name: '',
-      dob: new Date(),
+      dob: dayjs().format('YYYY-MM-DD'),
       icai_number: '',
       aadhaar_number: '',
       pan_number: '',
@@ -154,29 +155,20 @@ export default function FirmForm() {
         date: values.dob
       };
 
-      setDialogOpen(false);
-      setFirmKycDialogOpen(true);
-      console.log('1');
-      // try {
-      //   const url = `/user_management/users-kyc/`;
-
-      //   const { res, error } = await Factory("post", url, postData);
-      //   console.log(res); // Log the response
-
-      //   if (res.status_cd === 0) {
-      //     if (postData.have_firm === "true") {
-      //       setDialogOpen(false); // Close the current dialog
-      //       setFirmkycDialogOpen(true); // Open the firm KYC dialog
-      //     } else {
-      //       alert("something went wrong");
-      //     }
-      //   } else {
-      //     alert("Please check your credentials.");
-      //   }
-      // } catch (error) {
-      //   console.error("KYC submission error:", error);
-      //   alert("Something went wrong. Please try again.");
-      // }
+      const url = `/user_management/users-kyc/`;
+      const { res, error } = await Factory('post', url, postData);
+      console.log(res);
+      if (res.status_cd === 0) {
+        if (postData.have_firm === 'true') {
+          setDialogOpen(false);
+          setFirmKycDialogOpen(true);
+          showSnackbar(JSON.stringify(res.detail), 'success');
+        }
+        showSnackbar(JSON.stringify(res.detail), 'success');
+        setDialogOpen(false);
+      } else {
+        showSnackbar(JSON.stringify(res.data.error_message), 'error');
+      }
     }
   });
 
@@ -212,33 +204,24 @@ export default function FirmForm() {
         },
         number_of_firm_partners: Number(values.noofpartnersinfirm)
       };
+      const url = `/user_management/firmkyc/`;
+      const { res, error } = await Factory('post', url, postData);
+      console.log(res); // Log the response
 
-      setFirmKycDialogOpen(false);
-      // Send postData to the server here
-      console.log('2');
-      // try {
-      //   const url = `/user_management/firmkyc/`;
-
-      //   const { res, error } = await Factory("post", url, postData);
-      //   console.log(res); // Log the response
-
-      //   if (res.status_cd === 0) {
-      //     setFirmkycDialogOpen(false); // Open the firm KYC dialog
-      //     router.push("/tara");
-      //   } else {
-      //     alert("Something went wrong");
-      //   }
-      // } catch (error) {
-      //   console.error("KYC submission error:", error);
-      //   alert("Something went wrong. Please try again.");
-      // }
+      if (res.status_cd === 0) {
+        setFirmKycDialogOpen(false);
+        showSnackbar(res?.detail, 'success');
+        router.push(APP_DEFAULT_PATH);
+      } else {
+        showSnackbar(JSON.stringify(res.data.data), 'error');
+      }
     }
   });
   const renderFields = (fields, formik, handleDateChange) => {
     return fields.map((field) => {
       if (field.name === 'state') {
         return (
-          <Grid2 item key={field.name} size={{ xs: 12, sm: 6, md: 6 }}>
+          <Grid2 key={field.name} size={{ xs: 12, sm: 6, md: 6 }}>
             <div style={{ paddingBottom: '5px' }}>
               <label>{field.label}</label>
             </div>
@@ -254,7 +237,7 @@ export default function FirmForm() {
         );
       } else if (field.name === 'dob') {
         return (
-          <Grid2 item key={field.name} size={{ xs: 12, sm: 6, md: 6 }}>
+          <Grid2 key={field.name} size={{ xs: 12, sm: 6, md: 6 }}>
             <div style={{ paddingBottom: '5px' }}>
               <label>{field.label}</label>
             </div>
@@ -270,7 +253,7 @@ export default function FirmForm() {
         );
       } else {
         return (
-          <Grid2 item key={field.name} size={{ xs: 12, sm: 6, md: 6 }}>
+          <Grid2 key={field.name} size={{ xs: 12, sm: 6, md: 6 }}>
             <div style={{ paddingBottom: '5px' }}>
               <label>{field.label}</label>
             </div>
@@ -310,7 +293,7 @@ export default function FirmForm() {
   return (
     <Box>
       <Dialog open={dialogOpen} maxWidth="sm">
-        <DialogTitle>
+        <DialogTitle component="div">
           <Typography variant="h4">Chartered Accountant KYC</Typography>
           <Typography variant="body2">Please provide the necessary details to complete the registration.</Typography>
         </DialogTitle>
@@ -345,19 +328,20 @@ export default function FirmForm() {
               <FormControlLabel value="false" label="No" control={<Radio />} />
             </RadioGroup>
           </DialogContent>
+
           <DialogActions sx={{ justifyContent: 'space-between' }}>
             <Button onClick={() => setDialogOpen(false)} variant="outlined" color="error" type="button">
-              Back
+              Skip
             </Button>
-            <Button variant="contained" type="submit" disabled={caKycFormik.isSubmitting}>
-              {caKycFormik.isSubmitting ? 'Processing...' : 'Next'}
+            <Button variant="contained" type="submit">
+              Next
             </Button>
           </DialogActions>
         </form>
       </Dialog>
 
       <Dialog open={firmKycDialogOpen} onClose={() => setFirmKycDialogOpen(false)} maxWidth="sm">
-        <DialogTitle>
+        <DialogTitle component="div">
           <Typography variant="h4">Firm KYC</Typography>
           <Typography variant="body2">Please provide the necessary details to complete the registration.</Typography>
         </DialogTitle>
