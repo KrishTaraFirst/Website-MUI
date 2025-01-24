@@ -27,17 +27,6 @@ export default function AnalyticsBehaviorTable({ type, tableData }) {
   const columns = useMemo(
     () => [
       {
-        id: 'Sno',
-        accessorKey: 'Sno',
-        header: 'Sno',
-        cell: (info) => (
-          <Typography variant="body2" color="text.secondary">
-            {info.row.index + 1}
-            {console.log(info.row.index)}
-          </Typography>
-        )
-      },
-      {
         id: 'user',
         accessorKey: 'user',
         header: 'User',
