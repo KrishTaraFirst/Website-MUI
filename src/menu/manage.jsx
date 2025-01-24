@@ -36,15 +36,15 @@ const manage = {
       type: 'item',
       url: '/invoicing',
       icon: 'IconFileInvoice',
-      roles: [AuthRole.SUPER_ADMIN, AuthRole.USER]
+      roles: [AuthRole.INDIVIDUAL]
     },
     {
-      id: 'visaServices',
+      id: 'VisaServices',
       title: <FormattedMessage id="visaServices" />,
       type: 'item',
       url: '/visa-services',
       icon: 'IconSubtask',
-      roles: [AuthRole.SUPER_ADMIN]
+      roles: [AuthRole.SERVICE_PROVIDER]
     },
     {
       id: 'payroll',
@@ -52,7 +52,7 @@ const manage = {
       type: 'item',
       url: '/payroll',
       icon: 'IconInvoice',
-      roles: [AuthRole.SUPER_ADMIN]
+      roles: [AuthRole.CORPORATE_ADMIN, AuthRole.INDIVIDUAL]
     },
 
     //
@@ -99,7 +99,7 @@ const manage = {
       type: 'item',
       url: '/setting',
       icon: 'IconSettings',
-      roles: [AuthRole.SUPER_ADMIN, AuthRole.ADMIN]
+      roles: [AuthRole.SUPER_ADMIN, AuthRole.CORPORATE_ADMIN, AuthRole.SERVICE_PROVIDER, AuthRole.INDIVIDUAL]
     }
   ]
 };

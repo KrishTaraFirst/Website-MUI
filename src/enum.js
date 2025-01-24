@@ -87,8 +87,9 @@ export let AuthRole;
 
 (function (AuthRole) {
   AuthRole['SUPER_ADMIN'] = 'super-admin';
-  AuthRole['ADMIN'] = 'admin';
-  AuthRole['USER'] = 'user';
+  AuthRole['CORPORATE_ADMIN'] = 'corporate-admin';
+  AuthRole['CHARTED_ACCOUNTANT_FIRM'] = 'charted-accountant-firm';
+  AuthRole['INDIVIDUAL'] = 'individual';
   AuthRole['SERVICE_PROVIDER'] = 'service-provider';
 })(AuthRole || (AuthRole = {}));
 

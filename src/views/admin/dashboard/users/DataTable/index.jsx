@@ -14,16 +14,29 @@ import Table from './analytics-behavior-table/Table';
 import ActionCell from './analytics-behavior-table/ActionCell';
 import { analyticsBehaviorTableData } from './analytics-behavior-table/behavior-table-data';
 import Profile from '@/components/Profile';
+import ManageAccess from '../manage-access';
 
 /***************************  COMPONENT - TABLE  ***************************/
 
-export default function AnalyticsBehaviorTable() {
+export default function AnalyticsBehaviorTable({ type, tableData }) {
   const [data, setData] = useState([...analyticsBehaviorTableData]);
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState([]);
+  const [accessDialog, setAccessDialog] = useState(false);
 
   const columns = useMemo(
     () => [
+      {
+        id: 'Sno',
+        accessorKey: 'Sno',
+        header: 'Sno',
+        cell: (info) => (
+          <Typography variant="body2" color="text.secondary">
+            {info.row.index + 1}
+            {console.log(info.row.index)}
+          </Typography>
+        )
+      },
       {
         id: 'user',
         accessorKey: 'user',
@@ -81,7 +94,9 @@ export default function AnalyticsBehaviorTable() {
       },
       {
         id: 'action',
-        cell: ({ row }) => <ActionCell row={row.original} onDelete={(id) => onDeleteRow(id)} />
+        cell: ({ row }) => (
+          <ActionCell row={row.original} onDelete={(id) => onDeleteRow(id)} accessDialog={accessDialog} setAccessDialog={setAccessDialog} />
+        )
       }
     ], // eslint-disable-next-line react-hooks/exhaustive-deps
     []
@@ -113,5 +128,10 @@ export default function AnalyticsBehaviorTable() {
   };
   // console.log(table.getRowModel().rows);
 
-  return <Table table={table} onGlobalSearch={onGlobalSearch} />;
+  return (
+    <>
+      <ManageAccess open={accessDialog} setOpen={setAccessDialog} />
+      <Table table={table} onGlobalSearch={onGlobalSearch} />
+    </>
+  );
 }

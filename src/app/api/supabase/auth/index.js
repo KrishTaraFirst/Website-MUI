@@ -33,7 +33,6 @@ export async function login(request) {
   }
 }
 
-
 // export async function signUp(request) {
 //   try {
 //     const body = await request.json();
@@ -47,7 +46,7 @@ export async function login(request) {
 //           lastname: body.lastname,
 //           dialcode: body.dialcode,
 //           contact: body.contact,
-//           role: AuthRole.USER
+//           role: AuthRole.INDIVIDUAL
 //         }
 //       }
 //     });

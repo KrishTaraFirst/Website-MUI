@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import dynamic from 'next/dynamic';
 
 // @project
-const UsersPage = dynamic(() => import('@/views/admin/dashboard/users.jsx'));
+const UsersPage = dynamic(() => import('@/views/admin/dashboard/users'));
 
 export default async function UsersDataPage({ params }) {
   const { tab } = await params;

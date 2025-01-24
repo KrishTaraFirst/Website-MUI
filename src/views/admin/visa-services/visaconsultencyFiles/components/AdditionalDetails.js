@@ -28,7 +28,11 @@ import {
   Stack
 } from '@mui/material';
 import CustomInput from '@/components/CustomComponents/CustomInput';
+import useCurrentUser from '@/hooks/useCurrentUser';
+
 const FormPage = ({ visadetails, selectedClientData, selectedTitle, setShowSuccessMessage, service_id }) => {
+  const { userData } = useCurrentUser();
+  const permissions = userData.VisaServices;
   const searchParams = useSearchParams();
   let name = searchParams.get('name'); // Retrieve 'name' from query params
   const [serviceListDialog, setServiceListDialog] = useState(false);
@@ -82,90 +86,94 @@ const FormPage = ({ visadetails, selectedClientData, selectedTitle, setShowSucce
   };
   return (
     <>
-      <Box sx={{ mt: 3 }}>
-        <Stack direction="row" sx={{ mb: 3 }}>
-          <Stack sx={{ gap: 0.5 }}>
-            <Typography variant="h4" sx={{ fontWeight: 400 }}>
-              Additional Details
-            </Typography>
-            <Typography variant="caption" sx={{ color: 'grey.700' }}>
-              Tagline for service history
-            </Typography>
-          </Stack>
-        </Stack>
-        <TableContainer component={Paper} sx={{ borderRadius: '12px', overflow: 'hidden' }}>
-          <Table sx={{ minWidth: 650 }} size="medium" aria-label="service details table">
-            <TableHead>
-              <TableRow>
-                <TableCell align="center">
-                  <Typography variant="subtitle2">Services</Typography>
-                </TableCell>
-                <TableCell align="center">
-                  <Typography variant="subtitle2">Quantity</Typography>
-                </TableCell>
-                <TableCell align="center">
-                  <Typography variant="subtitle2">Comments / Instructions</Typography>
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {selectedServices.map((service, idx) => (
-                <TableRow
-                  key={idx}
-                  sx={{
-                    '&:hover': { backgroundColor: '#f5f5f5' },
-                    '&:last-child td, &:last-child th': { border: 0 }
-                  }}
-                >
-                  <TableCell align="center" sx={{ p: 0 }}>
-                    <Typography variant="subtitle2">{service.servicename}</Typography>
-                  </TableCell>
-                  <TableCell align="center" sx={{ p: 0 }}>
-                    <Button
-                      sx={{ padding: '2px 4px', minWidth: '30px', mr: 2 }}
-                      variant="outlined"
-                      onClick={() => handleQuantityChange(service, -1)}
-                      disabled={service.quantity <= 0}
+      {permissions.includes('VS_Task_Create') && (
+        <>
+          <Box sx={{ mt: 3 }}>
+            <Stack direction="row" sx={{ mb: 3 }}>
+              <Stack sx={{ gap: 0.5 }}>
+                <Typography variant="h4" sx={{ fontWeight: 400 }}>
+                  Additional Details
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'grey.700' }}>
+                  Tagline for service history
+                </Typography>
+              </Stack>
+            </Stack>
+            <TableContainer component={Paper} sx={{ borderRadius: '12px', overflow: 'hidden' }}>
+              <Table sx={{ minWidth: 650 }} size="medium" aria-label="service details table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell align="center">
+                      <Typography variant="subtitle2">Services</Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Typography variant="subtitle2">Quantity</Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Typography variant="subtitle2">Comments / Instructions</Typography>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {selectedServices.map((service, idx) => (
+                    <TableRow
+                      key={idx}
+                      sx={{
+                        '&:hover': { backgroundColor: '#f5f5f5' },
+                        '&:last-child td, &:last-child th': { border: 0 }
+                      }}
                     >
-                      -
-                    </Button>
-                    {service.quantity || 0}
-                    <Button
-                      sx={{ padding: '2px 4px', minWidth: '30px', ml: 2 }}
-                      variant="outlined"
-                      onClick={() => handleQuantityChange(service, 1)}
-                    >
-                      +
-                    </Button>
-                  </TableCell>
-                  <TableCell align="center" sx={{ p: 1 }}>
-                    <CustomInput
-                      value={service.comments || ''}
-                      onChange={(e) => handleCommentChange(service, e.target.value)}
-                      multiline
-                      rows={2}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
+                      <TableCell align="center" sx={{ p: 0 }}>
+                        <Typography variant="subtitle2">{service.servicename}</Typography>
+                      </TableCell>
+                      <TableCell align="center" sx={{ p: 0 }}>
+                        <Button
+                          sx={{ padding: '2px 4px', minWidth: '30px', mr: 2 }}
+                          variant="outlined"
+                          onClick={() => handleQuantityChange(service, -1)}
+                          disabled={service.quantity <= 0}
+                        >
+                          -
+                        </Button>
+                        {service.quantity || 0}
+                        <Button
+                          sx={{ padding: '2px 4px', minWidth: '30px', ml: 2 }}
+                          variant="outlined"
+                          onClick={() => handleQuantityChange(service, 1)}
+                        >
+                          +
+                        </Button>
+                      </TableCell>
+                      <TableCell align="center" sx={{ p: 1 }}>
+                        <CustomInput
+                          value={service.comments || ''}
+                          onChange={(e) => handleCommentChange(service, e.target.value)}
+                          multiline
+                          rows={2}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
 
-      <Box sx={{ marginTop: '30px', textAlign: 'right' }}>
-        <Button
-          variant="contained"
-          onClick={submitDetails}
-          sx={{
-            padding: '10px 30px',
-            textTransform: 'none',
-            fontSize: '16px'
-          }}
-        >
-          Submit
-        </Button>
-      </Box>
+          <Box sx={{ marginTop: '30px', textAlign: 'right' }}>
+            <Button
+              variant="contained"
+              onClick={submitDetails}
+              sx={{
+                padding: '10px 30px',
+                textTransform: 'none',
+                fontSize: '16px'
+              }}
+            >
+              Submit
+            </Button>
+          </Box>
+        </>
+      )}
     </>
   );
 };

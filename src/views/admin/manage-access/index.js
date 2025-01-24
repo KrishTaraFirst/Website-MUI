@@ -8,7 +8,6 @@ import MuiAccordionSummary, { accordionSummaryClasses } from '@mui/material/Acco
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import { Box, Card, Stack, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
-import PresentationCard from '@/components/cards/PresentationCard';
 
 const Accordion = styled((props) => <MuiAccordion disableGutters elevation={0} square {...props} />)(({ theme }) => ({
   border: `0px solid ${theme.palette.divider}`,
@@ -45,7 +44,7 @@ const Checkboxes = () => {
   return (
     <>
       <FormControlLabel
-        control={<Checkbox size="small" sx={{ mt: 0 }} />}
+        control={<Checkbox defaultChecked disabled size="medium" sx={{ mt: -0.5 }} />}
         label={
           <Stack sx={{ gap: 0.5 }}>
             <Typography variant="h6">Invoicing</Typography>
@@ -59,7 +58,7 @@ const Checkboxes = () => {
       <Stack direction="row" sx={{ alignItems: 'flex-start', ml: 3, gap: 4, flexWrap: { xs: 'wrap', sm: 'nowrap' } }}>
         <FormGroup sx={{ gap: 2.5 }}>
           <FormControlLabel
-            control={<Checkbox size="small" sx={{ mt: -1 }} />}
+            control={<Checkbox disabled defaultChecked size="medium" sx={{ mt: -1 }} />}
             label={
               <Stack sx={{ gap: 0.5 }}>
                 <Typography variant="subtitle2">Title will goes here</Typography>
@@ -71,7 +70,7 @@ const Checkboxes = () => {
             sx={{ alignItems: 'flex-start' }}
           />
           <FormControlLabel
-            control={<Checkbox size="small" defaultChecked sx={{ mt: -1 }} />}
+            control={<Checkbox disabled size="medium" defaultChecked sx={{ mt: -1 }} />}
             label={
               <Stack sx={{ gap: 0.5 }}>
                 <Typography variant="subtitle2">Title will goes here</Typography>
@@ -83,45 +82,7 @@ const Checkboxes = () => {
             sx={{ alignItems: 'flex-start' }}
           />
           <FormControlLabel
-            control={<Checkbox size="small" indeterminate sx={{ mt: -1 }} />}
-            label={
-              <Stack sx={{ gap: 0.5 }}>
-                <Typography variant="subtitle2">Title will goes here</Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                  Choose the content you want to view.
-                </Typography>
-              </Stack>
-            }
-            sx={{ alignItems: 'flex-start' }}
-          />
-        </FormGroup>
-        <FormGroup sx={{ gap: 2.5 }}>
-          <FormControlLabel
-            control={<Checkbox sx={{ mt: -1 }} />}
-            label={
-              <Stack sx={{ gap: 0.5 }}>
-                <Typography variant="subtitle2">Title will goes here</Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                  Choose the content you want to view.
-                </Typography>
-              </Stack>
-            }
-            sx={{ alignItems: 'flex-start' }}
-          />
-          <FormControlLabel
-            control={<Checkbox defaultChecked sx={{ mt: -1 }} />}
-            label={
-              <Stack sx={{ gap: 0.5 }}>
-                <Typography variant="subtitle2">Title will goes here</Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                  Choose the content you want to view.
-                </Typography>
-              </Stack>
-            }
-            sx={{ alignItems: 'flex-start' }}
-          />
-          <FormControlLabel
-            control={<Checkbox indeterminate sx={{ mt: -1 }} />}
+            control={<Checkbox disabled size="medium" defaultChecked sx={{ mt: -1 }} />}
             label={
               <Stack sx={{ gap: 0.5 }}>
                 <Typography variant="subtitle2">Title will goes here</Typography>
@@ -135,7 +96,7 @@ const Checkboxes = () => {
         </FormGroup>
         <FormGroup sx={{ gap: 2.5 }}>
           <FormControlLabel
-            control={<Checkbox size="large" sx={{ mt: -1 }} />}
+            control={<Checkbox disabled defaultChecked sx={{ mt: -1 }} />}
             label={
               <Stack sx={{ gap: 0.5 }}>
                 <Typography variant="subtitle2">Title will goes here</Typography>
@@ -147,7 +108,7 @@ const Checkboxes = () => {
             sx={{ alignItems: 'flex-start' }}
           />
           <FormControlLabel
-            control={<Checkbox size="large" defaultChecked sx={{ mt: -1 }} />}
+            control={<Checkbox disabled defaultChecked sx={{ mt: -1 }} />}
             label={
               <Stack sx={{ gap: 0.5 }}>
                 <Typography variant="subtitle2">Title will goes here</Typography>
@@ -159,7 +120,7 @@ const Checkboxes = () => {
             sx={{ alignItems: 'flex-start' }}
           />
           <FormControlLabel
-            control={<Checkbox size="large" indeterminate sx={{ mt: -1 }} />}
+            control={<Checkbox disabled defaultChecked sx={{ mt: -1 }} />}
             label={
               <Stack sx={{ gap: 0.5 }}>
                 <Typography variant="subtitle2">Title will goes here</Typography>
@@ -173,7 +134,45 @@ const Checkboxes = () => {
         </FormGroup>
         <FormGroup sx={{ gap: 2.5 }}>
           <FormControlLabel
-            control={<Checkbox sx={{ mt: -1 }} />}
+            control={<Checkbox disabled defaultChecked size="medium" sx={{ mt: -1 }} />}
+            label={
+              <Stack sx={{ gap: 0.5 }}>
+                <Typography variant="subtitle2">Title will goes here</Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  Choose the content you want to view.
+                </Typography>
+              </Stack>
+            }
+            sx={{ alignItems: 'flex-start' }}
+          />
+          <FormControlLabel
+            control={<Checkbox disabled size="medium" defaultChecked sx={{ mt: -1 }} />}
+            label={
+              <Stack sx={{ gap: 0.5 }}>
+                <Typography variant="subtitle2">Title will goes here</Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  Choose the content you want to view.
+                </Typography>
+              </Stack>
+            }
+            sx={{ alignItems: 'flex-start' }}
+          />
+          <FormControlLabel
+            control={<Checkbox disabled size="medium" defaultChecked sx={{ mt: -1 }} />}
+            label={
+              <Stack sx={{ gap: 0.5 }}>
+                <Typography variant="subtitle2">Title will goes here</Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  Choose the content you want to view.
+                </Typography>
+              </Stack>
+            }
+            sx={{ alignItems: 'flex-start' }}
+          />
+        </FormGroup>
+        <FormGroup sx={{ gap: 2.5 }}>
+          <FormControlLabel
+            control={<Checkbox disabled size="medium" defaultChecked sx={{ mt: -1 }} />}
             label={
               <Stack sx={{ gap: 0.5 }}>
                 <Typography variant="subtitle2">Title will goes here</Typography>
@@ -185,7 +184,7 @@ const Checkboxes = () => {
             sx={{ alignItems: 'flex-start' }}
           />
           <FormControlLabel
-            control={<Checkbox defaultChecked sx={{ mt: -1 }} />}
+            control={<Checkbox disabled size="medium" defaultChecked sx={{ mt: -1 }} />}
             label={
               <Stack sx={{ gap: 0.5 }}>
                 <Typography variant="subtitle2">Title will goes here</Typography>
@@ -197,7 +196,7 @@ const Checkboxes = () => {
             sx={{ alignItems: 'flex-start' }}
           />
           <FormControlLabel
-            control={<Checkbox indeterminate sx={{ mt: -1 }} />}
+            control={<Checkbox disabled size="medium" defaultChecked sx={{ mt: -1 }} />}
             label={
               <Stack sx={{ gap: 0.5 }}>
                 <Typography variant="subtitle2">Title will goes here</Typography>
@@ -212,7 +211,7 @@ const Checkboxes = () => {
       </Stack>
 
       <FormControlLabel
-        control={<Checkbox size="small" sx={{ mt: 0 }} />}
+        control={<Checkbox disabled size="medium" defaultChecked sx={{ mt: -0.5 }} />}
         label={
           <Stack sx={{ gap: 0.5 }}>
             <Typography variant="h6">Visa Services</Typography>
@@ -226,7 +225,7 @@ const Checkboxes = () => {
       <Stack direction="row" sx={{ alignItems: 'flex-start', ml: 3, gap: 4, flexWrap: { xs: 'wrap', sm: 'nowrap' } }}>
         <FormGroup sx={{ gap: 2.5 }}>
           <FormControlLabel
-            control={<Checkbox size="small" sx={{ mt: -1 }} />}
+            control={<Checkbox disabled size="medium" defaultChecked sx={{ mt: -1 }} />}
             label={
               <Stack sx={{ gap: 0.5 }}>
                 <Typography variant="subtitle2">Title will goes here</Typography>
@@ -238,7 +237,7 @@ const Checkboxes = () => {
             sx={{ alignItems: 'flex-start' }}
           />
           <FormControlLabel
-            control={<Checkbox size="small" defaultChecked sx={{ mt: -1 }} />}
+            control={<Checkbox disabled size="medium" defaultChecked sx={{ mt: -1 }} />}
             label={
               <Stack sx={{ gap: 0.5 }}>
                 <Typography variant="subtitle2">Title will goes here</Typography>
@@ -250,45 +249,7 @@ const Checkboxes = () => {
             sx={{ alignItems: 'flex-start' }}
           />
           <FormControlLabel
-            control={<Checkbox size="small" indeterminate sx={{ mt: -1 }} />}
-            label={
-              <Stack sx={{ gap: 0.5 }}>
-                <Typography variant="subtitle2">Title will goes here</Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                  Choose the content you want to view.
-                </Typography>
-              </Stack>
-            }
-            sx={{ alignItems: 'flex-start' }}
-          />
-        </FormGroup>
-        <FormGroup sx={{ gap: 2.5 }}>
-          <FormControlLabel
-            control={<Checkbox sx={{ mt: -1 }} />}
-            label={
-              <Stack sx={{ gap: 0.5 }}>
-                <Typography variant="subtitle2">Title will goes here</Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                  Choose the content you want to view.
-                </Typography>
-              </Stack>
-            }
-            sx={{ alignItems: 'flex-start' }}
-          />
-          <FormControlLabel
-            control={<Checkbox defaultChecked sx={{ mt: -1 }} />}
-            label={
-              <Stack sx={{ gap: 0.5 }}>
-                <Typography variant="subtitle2">Title will goes here</Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                  Choose the content you want to view.
-                </Typography>
-              </Stack>
-            }
-            sx={{ alignItems: 'flex-start' }}
-          />
-          <FormControlLabel
-            control={<Checkbox indeterminate sx={{ mt: -1 }} />}
+            control={<Checkbox disabled size="medium" defaultChecked sx={{ mt: -1 }} />}
             label={
               <Stack sx={{ gap: 0.5 }}>
                 <Typography variant="subtitle2">Title will goes here</Typography>
@@ -302,7 +263,7 @@ const Checkboxes = () => {
         </FormGroup>
         <FormGroup sx={{ gap: 2.5 }}>
           <FormControlLabel
-            control={<Checkbox size="large" sx={{ mt: -1 }} />}
+            control={<Checkbox disabled size="medium" defaultChecked sx={{ mt: -1 }} />}
             label={
               <Stack sx={{ gap: 0.5 }}>
                 <Typography variant="subtitle2">Title will goes here</Typography>
@@ -314,7 +275,7 @@ const Checkboxes = () => {
             sx={{ alignItems: 'flex-start' }}
           />
           <FormControlLabel
-            control={<Checkbox size="large" defaultChecked sx={{ mt: -1 }} />}
+            control={<Checkbox disabled size="medium" defaultChecked sx={{ mt: -1 }} />}
             label={
               <Stack sx={{ gap: 0.5 }}>
                 <Typography variant="subtitle2">Title will goes here</Typography>
@@ -326,7 +287,7 @@ const Checkboxes = () => {
             sx={{ alignItems: 'flex-start' }}
           />
           <FormControlLabel
-            control={<Checkbox size="large" indeterminate sx={{ mt: -1 }} />}
+            control={<Checkbox disabled size="medium" defaultChecked sx={{ mt: -1 }} />}
             label={
               <Stack sx={{ gap: 0.5 }}>
                 <Typography variant="subtitle2">Title will goes here</Typography>
@@ -340,7 +301,45 @@ const Checkboxes = () => {
         </FormGroup>
         <FormGroup sx={{ gap: 2.5 }}>
           <FormControlLabel
-            control={<Checkbox sx={{ mt: -1 }} />}
+            control={<Checkbox disabled size="medium" defaultChecked sx={{ mt: -1 }} />}
+            label={
+              <Stack sx={{ gap: 0.5 }}>
+                <Typography variant="subtitle2">Title will goes here</Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  Choose the content you want to view.
+                </Typography>
+              </Stack>
+            }
+            sx={{ alignItems: 'flex-start' }}
+          />
+          <FormControlLabel
+            control={<Checkbox disabled size="medium" defaultChecked sx={{ mt: -1 }} />}
+            label={
+              <Stack sx={{ gap: 0.5 }}>
+                <Typography variant="subtitle2">Title will goes here</Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  Choose the content you want to view.
+                </Typography>
+              </Stack>
+            }
+            sx={{ alignItems: 'flex-start' }}
+          />
+          <FormControlLabel
+            control={<Checkbox disabled size="medium" defaultChecked sx={{ mt: -1 }} />}
+            label={
+              <Stack sx={{ gap: 0.5 }}>
+                <Typography variant="subtitle2">Title will goes here</Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  Choose the content you want to view.
+                </Typography>
+              </Stack>
+            }
+            sx={{ alignItems: 'flex-start' }}
+          />
+        </FormGroup>
+        <FormGroup sx={{ gap: 2.5 }}>
+          <FormControlLabel
+            control={<Checkbox disabled size="medium" defaultChecked sx={{ mt: -1 }} />}
             label={
               <Stack sx={{ gap: 0.5 }}>
                 <Typography variant="subtitle2">Title will goes here</Typography>
@@ -352,7 +351,7 @@ const Checkboxes = () => {
             sx={{ alignItems: 'flex-start' }}
           />
           <FormControlLabel
-            control={<Checkbox defaultChecked sx={{ mt: -1 }} />}
+            control={<Checkbox disabled size="medium" defaultChecked sx={{ mt: -1 }} />}
             label={
               <Stack sx={{ gap: 0.5 }}>
                 <Typography variant="subtitle2">Title will goes here</Typography>
@@ -364,7 +363,7 @@ const Checkboxes = () => {
             sx={{ alignItems: 'flex-start' }}
           />
           <FormControlLabel
-            control={<Checkbox indeterminate sx={{ mt: -1 }} />}
+            control={<Checkbox disabled size="medium" defaultChecked sx={{ mt: -1 }} />}
             label={
               <Stack sx={{ gap: 0.5 }}>
                 <Typography variant="subtitle2">Title will goes here</Typography>

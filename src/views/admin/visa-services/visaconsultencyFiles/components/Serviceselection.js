@@ -32,8 +32,12 @@ import {
   Stack,
   DialogContent
 } from '@mui/material';
+import useCurrentUser from '@/hooks/useCurrentUser';
 import { ConstructionOutlined } from '@mui/icons-material';
+
 const FormPage = ({ selectedClientData, setShowSuccessMessage, setRefresh, visadetails }) => {
+  const { userData } = useCurrentUser();
+  const permissions = userData.VisaServices;
   const searchParams = useSearchParams();
   const [servicelistDialogue, setServicelistDialogue] = useState(false);
   const [selectedServices, setSelectedServices] = useState([]);
@@ -167,7 +171,7 @@ const FormPage = ({ selectedClientData, setShowSuccessMessage, setRefresh, visad
     getServicesList();
   }, []);
 
-  return (
+  return permissions.includes('VS_Task_Create') ? (
     <>
       <Box style={{ marginTop: 25 }}>
         <Stack direction="row" sx={{ mb: 2 }}>
@@ -362,6 +366,8 @@ const FormPage = ({ selectedClientData, setShowSuccessMessage, setRefresh, visad
         </form>
       </Dialog>
     </>
+  ) : (
+    <></>
   );
 };
 

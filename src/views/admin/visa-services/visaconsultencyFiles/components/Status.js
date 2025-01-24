@@ -39,7 +39,11 @@ import Factory from '@/utils/Factory';
 import DeleteIcon from '@mui/icons-material/Delete';
 import TaskList from './TaskList';
 import AddTask from './AddTask';
+import useCurrentUser from '@/hooks/useCurrentUser';
+
 const FormPage = () => {
+  const { userData } = useCurrentUser();
+  const permissions = userData.VisaServices;
   const searchParams = useSearchParams();
   const name = searchParams.get('name'); // Retrieve 'name' from query params
   const title = searchParams.get('title'); // Retrieve 'name' from query params
@@ -344,19 +348,20 @@ const FormPage = () => {
               Task List
             </Typography>
             <Typography variant="caption" sx={{ color: 'grey.700' }}>
-              List of tasks of the client
+              List of tasks for the client
             </Typography>
           </Stack>
         </Stack>
-
-        <Button
-          variant="contained"
-          onClick={() => {
-            setAddTaskDialogOpen(true);
-          }}
-        >
-          Add Task
-        </Button>
+        {permissions.includes('VS_Task_Create') && (
+          <Button
+            variant="contained"
+            onClick={() => {
+              setAddTaskDialogOpen(true);
+            }}
+          >
+            Add Task
+          </Button>
+        )}
       </Box>
 
       <TaskList

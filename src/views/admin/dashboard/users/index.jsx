@@ -1,6 +1,7 @@
 'use client';
 import UserBehaviourTable from '@/sections/dashboard/analytics/user-behavior';
-import AnalyticsBehaviorTable from '@/sections/dashboard/analytics/user-behavior/AnalyticsBehaviorTable';
+import AnalyticsBehaviorTable from './DataTable';
+import ManageAccess from './manage-access';
 
 export default function Dashboard({ tab }) {
   switch (tab) {
@@ -18,7 +19,12 @@ export default function Dashboard({ tab }) {
 }
 
 function CorporateEntity() {
-  return <AnalyticsBehaviorTable />;
+  return (
+    <>
+      <ManageAccess />
+      <AnalyticsBehaviorTable type={'corporateEntity'} />
+    </>
+  );
 }
 
 function ServiceProvider() {
@@ -26,9 +32,9 @@ function ServiceProvider() {
 }
 
 function CAFirm() {
-  return <AnalyticsBehaviorTable />;
+  return <AnalyticsBehaviorTable type={'caFirm'} />;
 }
 
 function Individual() {
-  return <AnalyticsBehaviorTable />;
+  return <AnalyticsBehaviorTable type={'individual'} />;
 }

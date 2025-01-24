@@ -17,19 +17,19 @@ import DialogDelete from '@/components/dialog/DialogDelete';
 import MainCard from '@/components/MainCard';
 
 // @assets
-import { IconDotsVertical, IconDownload, IconPrinter, IconLockAccessOff, IconTrash } from '@tabler/icons-react';
+import { IconDotsVertical, IconSettingsCode, IconPrinter, IconShare, IconTrash } from '@tabler/icons-react';
 
 /***************************  DIALOG - DATA  ***************************/
 
 const dialogDeleteData = {
-  title: 'Delete record',
-  heading: 'Are you sure you want to permanently delete ?',
-  description: 'This action will permanently erase the record data'
+  title: 'Delete User',
+  heading: 'Are you sure you want to delete?',
+  description: 'By deleting user Audrey Leffler MD it will vanish all records so be careful about it'
 };
 
 /***************************  TABLE - ACTION  ***************************/
 
-export default function ActionCell({ row, onDelete, onEdit }) {
+export default function ActionCell({ row, onDelete, setAccessDialog }) {
   const theme = useTheme();
 
   // Handle action popper
@@ -53,7 +53,8 @@ export default function ActionCell({ row, onDelete, onEdit }) {
   };
 
   const handleDialogDelete = (id) => {
-    onDelete(id);
+    onDelete(row.id);
+    console.log('User deleted', id, row);
     handleDeleteDialogClose();
   };
 
@@ -71,33 +72,39 @@ export default function ActionCell({ row, onDelete, onEdit }) {
             <MainCard sx={{ borderRadius: 3, boxShadow: theme.customShadows.tooltip, minWidth: 150, p: 0.5 }}>
               <ClickAwayListener onClickAway={() => setAnchorEl(null)}>
                 <List disablePadding>
-                  {onEdit && (
-                    <ListItemButton sx={buttonStyle} onClick={onEdit}>
-                      <ListItemIcon>
-                        <IconDownload size={iconSize} />
-                      </ListItemIcon>
-                      <ListItemText>Edit</ListItemText>
-                    </ListItemButton>
-                  )}
-                  {onDelete && (
-                    <ListItemButton
-                      onClick={handleDeleteDialogOpen}
-                      sx={{ ...buttonStyle, color: 'error.main', ...theme.applyStyles('dark', { color: theme.palette.error.light }) }}
-                    >
-                      <ListItemIcon sx={{ color: 'inherit' }}>
-                        <IconTrash size={iconSize} />
-                      </ListItemIcon>
-                      <ListItemText sx={{ color: 'inherit' }}>Delete</ListItemText>
-                    </ListItemButton>
-                  )}
-                  {!onEdit && !onDelete && (
-                    <ListItemButton sx={buttonStyle} disabled>
-                      <ListItemIcon>
-                        <IconLockAccessOff size={iconSize} />
-                      </ListItemIcon>
-                      <ListItemText>No Access</ListItemText>
-                    </ListItemButton>
-                  )}
+                  <ListItemButton
+                    sx={buttonStyle}
+                    onClick={() => {
+                      setAccessDialog(true);
+                      handleActionClick();
+                    }}
+                  >
+                    <ListItemIcon>
+                      <IconSettingsCode size={iconSize} />
+                    </ListItemIcon>
+                    <ListItemText>Manage Access</ListItemText>
+                  </ListItemButton>
+                  <ListItemButton sx={{ ...buttonStyle }}>
+                    <ListItemIcon sx={{ color: 'inherit' }}>
+                      <IconPrinter size={iconSize} />
+                    </ListItemIcon>
+                    <ListItemText sx={{ color: 'inherit' }}>Print</ListItemText>
+                  </ListItemButton>
+                  <ListItemButton sx={{ ...buttonStyle }}>
+                    <ListItemIcon sx={{ color: 'inherit' }}>
+                      <IconShare size={iconSize} />
+                    </ListItemIcon>
+                    <ListItemText sx={{ color: 'inherit' }}>Share</ListItemText>
+                  </ListItemButton>
+                  <ListItemButton
+                    onClick={handleDeleteDialogOpen}
+                    sx={{ ...buttonStyle, color: 'error.main', ...theme.applyStyles('dark', { color: theme.palette.error.light }) }}
+                  >
+                    <ListItemIcon sx={{ color: 'inherit' }}>
+                      <IconTrash size={iconSize} />
+                    </ListItemIcon>
+                    <ListItemText sx={{ color: 'inherit' }}>Delete</ListItemText>
+                  </ListItemButton>
                 </List>
               </ClickAwayListener>
             </MainCard>
