@@ -17,7 +17,7 @@ import DialogDelete from '@/components/dialog/DialogDelete';
 import MainCard from '@/components/MainCard';
 
 // @assets
-import { IconDotsVertical, IconDownload, IconPrinter, IconShare, IconTrash } from '@tabler/icons-react';
+import { IconDotsVertical, IconDownload, IconPrinter, IconLockAccessOff, IconTrash } from '@tabler/icons-react';
 
 /***************************  DIALOG - DATA  ***************************/
 
@@ -71,21 +71,33 @@ export default function ActionCell({ row, onDelete, onEdit }) {
             <MainCard sx={{ borderRadius: 3, boxShadow: theme.customShadows.tooltip, minWidth: 150, p: 0.5 }}>
               <ClickAwayListener onClickAway={() => setAnchorEl(null)}>
                 <List disablePadding>
-                  <ListItemButton sx={buttonStyle} onClick={onEdit}>
-                    <ListItemIcon>
-                      <IconDownload size={iconSize} />
-                    </ListItemIcon>
-                    <ListItemText>Edit</ListItemText>
-                  </ListItemButton>
-                  <ListItemButton
-                    onClick={handleDeleteDialogOpen}
-                    sx={{ ...buttonStyle, color: 'error.main', ...theme.applyStyles('dark', { color: theme.palette.error.light }) }}
-                  >
-                    <ListItemIcon sx={{ color: 'inherit' }}>
-                      <IconTrash size={iconSize} />
-                    </ListItemIcon>
-                    <ListItemText sx={{ color: 'inherit' }}>Delete</ListItemText>
-                  </ListItemButton>
+                  {onEdit && (
+                    <ListItemButton sx={buttonStyle} onClick={onEdit}>
+                      <ListItemIcon>
+                        <IconDownload size={iconSize} />
+                      </ListItemIcon>
+                      <ListItemText>Edit</ListItemText>
+                    </ListItemButton>
+                  )}
+                  {onDelete && (
+                    <ListItemButton
+                      onClick={handleDeleteDialogOpen}
+                      sx={{ ...buttonStyle, color: 'error.main', ...theme.applyStyles('dark', { color: theme.palette.error.light }) }}
+                    >
+                      <ListItemIcon sx={{ color: 'inherit' }}>
+                        <IconTrash size={iconSize} />
+                      </ListItemIcon>
+                      <ListItemText sx={{ color: 'inherit' }}>Delete</ListItemText>
+                    </ListItemButton>
+                  )}
+                  {!onEdit && !onDelete && (
+                    <ListItemButton sx={buttonStyle} disabled>
+                      <ListItemIcon>
+                        <IconLockAccessOff size={iconSize} />
+                      </ListItemIcon>
+                      <ListItemText>No Access</ListItemText>
+                    </ListItemButton>
+                  )}
                 </List>
               </ClickAwayListener>
             </MainCard>

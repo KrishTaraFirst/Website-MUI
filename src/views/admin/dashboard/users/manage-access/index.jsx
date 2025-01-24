@@ -252,7 +252,7 @@ const Checkboxes = ({ data = [], checkedItems, setCheckedItems, type }) => {
       >
         <Grid2 container rowSpacing={2} columnSpacing={1}>
           {data.map((item, idx) => (
-            <Grid2 key={idx} size={{ xs: 12, sm: 4, md: 3 }}>
+            <Grid2 key={idx} size={{ xs: 12, sm: 6, md: 3 }}>
               <FormControlLabel
                 control={
                   <Checkbox
@@ -285,7 +285,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 export default function ManageAccess({ open, setOpen }) {
-  const [expanded, setExpanded] = React.useState('caFirm');
+  const [expanded, setExpanded] = React.useState('visa-services');
   const [checkedItems, setCheckedItems] = React.useState({});
 
   const handleChange = (panel) => (event, newExpanded) => {
@@ -308,6 +308,11 @@ export default function ManageAccess({ open, setOpen }) {
       onClose={handleClose}
       TransitionComponent={Transition}
       keepMounted
+      BackdropProps={{
+        sx: {
+          backgroundColor: 'rgba(0, 0, 0, 0.5)' // Black tint
+        }
+      }}
       sx={{
         '& .MuiDialog-paper': {
           width: '70%', // Take up 50% of the screen width
@@ -328,24 +333,16 @@ export default function ManageAccess({ open, setOpen }) {
               Tagline for manage access
             </Typography>
           </Stack>
-          <IconButton variant="outlined" color="secondary" aria-label="close" onClick={handleClose}>
-            <IconX size={20} />
+          <IconButton variant="outlined" sx={{ p: 0 }} color="secondary" aria-label="close" onClick={handleClose}>
+            <IconX size={24} />
           </IconButton>
         </Stack>
       </DialogTitle>
       <DialogContent dividers>
         <Box>
           <Card sx={{ borderRadius: 2, border: '1px solid #dfdfdf' }}>
-            <Accordion expanded={expanded === 'caFirm'} onChange={handleChange('caFirm')}>
-              <AccordionSummary aria-controls="caFirmd-content" id="caFirmd-header">
-                <Typography component="span">Invoicing</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Checkboxes data={invoicingActions} type={'invoicing'} checkedItems={checkedItems} setCheckedItems={setCheckedItems} />
-              </AccordionDetails>
-            </Accordion>
-            <Accordion expanded={expanded === 'corporateEntity'} onChange={handleChange('corporateEntity')}>
-              <AccordionSummary aria-controls="corporateEntityd-content" id="corporateEntityd-header">
+            <Accordion expanded={expanded === 'visa-services'} onChange={handleChange('visa-services')}>
+              <AccordionSummary aria-controls="visa-servicesd-content" id="visa-servicesd-header">
                 <Typography component="span">Visa Services</Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -357,16 +354,25 @@ export default function ManageAccess({ open, setOpen }) {
                 />
               </AccordionDetails>
             </Accordion>
-            <Accordion expanded={expanded === 'individual'} onChange={handleChange('individual')}>
-              <AccordionSummary aria-controls="individuald-content" id="individuald-header">
+            <Accordion expanded={expanded === 'invoicing'} onChange={handleChange('invoicing')}>
+              <AccordionSummary aria-controls="invoicingd-content" id="invoicingd-header">
+                <Typography component="span">Invoicing</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Checkboxes data={invoicingActions} type={'invoicing'} checkedItems={checkedItems} setCheckedItems={setCheckedItems} />
+              </AccordionDetails>
+            </Accordion>
+
+            <Accordion expanded={expanded === 'payroll'} onChange={handleChange('payroll')}>
+              <AccordionSummary aria-controls="payrolld-content" id="payrolld-header">
                 <Typography component="span">Payroll</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Checkboxes type="payroll" />
               </AccordionDetails>
             </Accordion>
-            <Accordion expanded={expanded === 'serviceProvider'} onChange={handleChange('serviceProvider')}>
-              <AccordionSummary aria-controls="serviceProviderd-content" id="serviceProviderd-header">
+            <Accordion expanded={expanded === 'tds-tcs'} onChange={handleChange('tds-tcs')}>
+              <AccordionSummary aria-controls="tds-tcsd-content" id="tds-tcsd-header">
                 <Typography component="span">TDS/TCS</Typography>
               </AccordionSummary>
               <AccordionDetails>

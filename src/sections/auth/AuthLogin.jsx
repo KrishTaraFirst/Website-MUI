@@ -33,7 +33,7 @@ import { emailSchema, passwordSchema } from '@/utils/validationSchema';
 import { CloseEye, OpenEye } from '@/icons';
 
 const roles = {
-  Individual: AuthRole.SUPER_ADMIN,
+  Tara: AuthRole.SUPER_ADMIN,
   CA: AuthRole.CHARTED_ACCOUNTANT_FIRM,
   Business: AuthRole.CORPORATE_ADMIN,
   ServiceProvider: AuthRole.SERVICE_PROVIDER,
@@ -72,7 +72,8 @@ export default function AuthLogin({ inputSx }) {
         let userDAta = {
           id: res.data.id,
           email: res.data.email,
-          role: roles[res.data.user_type],
+          // role: roles[res.data.user_type],
+          role: AuthRole.SUPER_ADMIN,
           contact: '123456789',
           dialcode: '+1',
           firstname: res.data.name,

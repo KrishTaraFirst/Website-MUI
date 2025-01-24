@@ -24,7 +24,7 @@ export default function Toolbar({ onGlobalSearch }) {
         justifyContent: 'space-between',
         gap: { xs: 1, sm: 2 },
         px: { xs: 1.25, sm: 2.5 },
-        py: 0.5,
+        py: 1,
         width: 1
       }}
     >
@@ -37,15 +37,15 @@ export default function Toolbar({ onGlobalSearch }) {
         </IconButton>
       </Stack>
 
-      <Stack
+      {/* <Stack
         direction="row"
         sx={{ alignItems: 'center', gap, width: { xs: 1, sm: 'calc(100% - 263px)' }, justifyContent: 'flex-end', display: { xs: 'flex' } }}
-      >
-        <Divider orientation="vertical" flexItem sx={{ height: 18, marginY: 'auto', display: { xs: 'none', sm: 'block' } }} />
-        <Button variant="text" color="secondary" sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
+      > */}
+      {/* <Divider orientation="vertical" flexItem sx={{ height: 18, marginY: 'auto', display: { xs: 'none', sm: 'block' } }} /> */}
+      {/* <Button variant="text" color="secondary" sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
           View All
-        </Button>
-      </Stack>
+        </Button> */}
+      {/* </Stack> */}
     </Stack>
   );
 }

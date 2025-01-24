@@ -59,13 +59,11 @@ export default function AnalyticsBehaviorTable({ tab }) {
   }, []);
 
   const handleEditClick = (service) => {
-    console.log(service);
     setEditedService({ ...service });
     setDialogOpen(true);
   };
 
   const handleInputChange = (name, val) => {
-    console.log('Field Name:', name, 'Value:', val);
     setEditedService((prev) => ({
       ...prev,
       [name]: val
