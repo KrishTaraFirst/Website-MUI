@@ -1,7 +1,7 @@
 import React from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Box, Grid, Typography } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Box, Grid, Typography, Divider } from '@mui/material';
 import Grid2 from '@mui/material/Grid2'; // Import Grid2 from MUI system
 
 export default function DesignationDialog({ open, handleClose, handleOpenDialog }) {
@@ -54,8 +54,8 @@ export default function DesignationDialog({ open, handleClose, handleOpenDialog 
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>Add Designation Details</DialogTitle>
-
+      <DialogTitle textAlign="center">Add Designation Details</DialogTitle>
+      <Divider />
       <DialogContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
         <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%', maxWidth: 600 }}>
           <Grid2 container spacing={3}>

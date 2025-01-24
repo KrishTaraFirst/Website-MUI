@@ -1,13 +1,12 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, Button, Dialog, Tabs, Tab, Link } from '@mui/material';
-import { useRouter } from 'next/navigation';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import Factory from '@/utils/Factory';
 import IndividualForm from './individual';
 import BusinessForm from './business';
 import FirmForm from './firm';
+import useCurrentUser from '@/hooks/useCurrentUser';
 
 const user_type = {
   individual: 'Individual',
@@ -21,29 +20,27 @@ const UserType = () => {
   const [selectedIndex, setSelectedIndex] = useState(0); // Track selected tab index
   const [selectedType, setSelectedType] = useState(null); // Selected type for navigation
   const [dialogOpen, setDialogOpen] = useState(true); // Dialog open state
-  const router = useRouter(); // Next.js router
-  const [selectedUserType, setSelectedUserType] = useState(''); // Selected type for navigation
-
+  const { userData } = useCurrentUser();
   const handleTabChange = (event, newValue) => {
     setSelectedIndex(newValue); // Set the selected tab index
   };
 
   const handleNext = async () => {
-    // const url = `/user_management/update-users-info`;
-    // const postData = { user_type: user_type[selectedType] };
+    const url = `/user_management/update-users-info`;
+    const postData = { user_type: user_type[selectedType] };
 
-    // const { res, error } = await Factory('patch', url, postData);
-    // console.log(res);
-    // if (res.status_cd === 0) {
-    setDialogOpen(false);
-    //   //   const userDetails = JSON.parse(localStorage.getItem('user'));
-    //   //   userDetails.user_type = selectedType;
-    //   //   localStorage.setItem('user', JSON.stringify(userDetails));
-    //   //   setSelectedUserType(selectedType);
-    //   // router.push(`/tara/registrationtype/${selectedType}`);
-    // } else {
-    //   showSnackbar('Something went wrong', 'error');
-    // }
+    const { res, error } = await Factory('patch', url, postData);
+    console.log(res);
+    if (res.status_cd === 0) {
+      setDialogOpen(false);
+      showSnackbar('UserType Updated Successfully', 'success');
+
+      const userDetails = JSON.parse(localStorage.getItem('auth-user'));
+      userDetails.user_type = selectedType;
+      localStorage.setItem('auth-user', JSON.stringify(userDetails));
+    } else {
+      showSnackbar(res.data.data, 'error');
+    }
   };
 
   const getTabLabel = (label, desc, flag) => {
@@ -58,15 +55,6 @@ const UserType = () => {
       </>
     );
   };
-  useEffect(() => {
-    // const userDetails = JSON.parse(localStorage.getItem('user'));
-    // console.log(userDetails);
-    // if (!userDetails.user_kyc) {
-    //   setSelectedUserType(userDetails.user_type);
-    // }
-    // userDetails.user_type = selectedType;
-    // localStorage.setItem("user", JSON.stringify(userDetails));
-  }, [selectedType]);
 
   return (
     <>

@@ -5,14 +5,15 @@ import dynamic from 'next/dynamic';
 // @project
 const PayrollComponent = dynamic(() => import('@/views/admin/payroll'));
 
-const Organizationdetails = dynamic(() => import('@/views/admin/payroll/payrollComponents/Organizationdetails'));
-const Worklocation = dynamic(() => import('@/views/admin/payroll/payrollComponents/Worklocation'));
-const Departments = dynamic(() => import('@/views/admin/payroll/payrollComponents/Departments'));
-const Designations = dynamic(() => import('@/views/admin/payroll/payrollComponents/Designations'));
-const StatuitoryComponents = dynamic(() => import('@/views/admin/payroll/payrollComponents/StatuitoryComponents'));
-const SalaryComponents = dynamic(() => import('@/views/admin/payroll/payrollComponents/SalaryComponents'));
+const Organizationdetails = dynamic(() => import('@/views/admin/payroll/Payrollsettings/Organizationdetails'));
+const Worklocation = dynamic(() => import('@/views/admin/payroll/Payrollsettings/Worklocation'));
+const Departments = dynamic(() => import('@/views/admin/payroll/Payrollsettings/Departments'));
+const Designations = dynamic(() => import('@/views/admin/payroll/Payrollsettings/Designations'));
+const StatuitoryComponents = dynamic(() => import('@/views/admin/payroll/Payrollsettings/StatuitoryComponents'));
+const SalaryComponents = dynamic(() => import('@/views/admin/payroll/Payrollsettings/SalaryComponents'));
+const SalaryTemplate = dynamic(() => import('@/views/admin/payroll/Payrollsettings/SalaryTemplate'));
+const AddEmployee = dynamic(() => import('@/views/admin/payroll/PayrollDashboard/AddEmployee'));
 
-// import SalaryTemplate from './payrollComponents/SalaryTemplate';
 export default async function Dashboard({ params }) {
   const { tab } = await params;
   console.log(tab);
@@ -31,6 +32,10 @@ export default async function Dashboard({ params }) {
         <StatuitoryComponents tab={tab} />
       ) : ['set_up_salary_components'].includes(tab) ? (
         <SalaryComponents tab={tab} />
+      ) : ['set_up_salary_template'].includes(tab) ? (
+        <SalaryTemplate tab={tab} />
+      ) : ['add-employee'].includes(tab) ? (
+        <AddEmployee tab={tab} />
       ) : (
         <PayrollComponent tab={tab} />
       )}
@@ -45,7 +50,9 @@ export async function generateStaticParams() {
     'set_up_departments',
     'set_up_designations',
     'set_up_statutory_components',
-    'set_up_salary_components'
+    'set_up_salary_components',
+    'set_up_salary_template',
+    'add-employee'
   ];
 
   return response.map((tab) => ({

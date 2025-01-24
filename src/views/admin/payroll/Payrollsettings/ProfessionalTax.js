@@ -22,7 +22,8 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper
+  Paper,
+  Divider
 } from '@mui/material';
 import { IconPlus, IconTrash } from '@tabler/icons-react';
 
@@ -179,6 +180,7 @@ function ProfessionalTax() {
 
       <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
         <DialogTitle sx={{ textAlign: 'center' }}>Professional Tax</DialogTitle>
+        <Divider />
         <DialogContent>
           <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
             <Grid2 container spacing={3}>

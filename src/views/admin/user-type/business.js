@@ -21,6 +21,9 @@ import { useState } from 'react';
 import { statesAndUTs } from '@/utils/helperData';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import CustomDatePicker from '@/utils/CustomDateInput';
+import { useSnackbar } from '@/components/CustomSnackbar';
+import { APP_DEFAULT_PATH } from '@/config';
+import Factory from '@/utils/Factory';
 
 const businessKycFields = [
   { name: 'name', label: 'Business Name' },
@@ -29,8 +32,8 @@ const businessKycFields = [
   { name: 'dob', label: 'Date of Birth' },
   { name: 'address_line1', label: 'Address Line 1' },
   { name: 'address_line2', label: 'Address Line 2' },
-  { name: 'city', label: 'City' },
   { name: 'state', label: 'State' },
+  { name: 'city', label: 'City' },
   { name: 'phoneNumber', label: 'Phone Number' },
   { name: 'country', label: 'Country' },
   { name: 'zip', label: 'Pin Code' }
@@ -44,8 +47,8 @@ const firmKycFields = [
   { name: 'noofpartnersinfirm', label: 'Number of Partners in Firm' },
   { name: 'address_line1', label: 'Address Line 1' },
   { name: 'address_line2', label: 'Address Line 2' },
-  { name: 'city', label: 'City' },
   { name: 'state', label: 'State' },
+  { name: 'city', label: 'City' },
   { name: 'zip', label: 'Pin Code' }
 ];
 
@@ -53,19 +56,17 @@ export default function BusinessKYC() {
   const router = useRouter();
   const [dialogOpen, setDialogOpen] = useState(true);
   const [firmkycDialogOpen, setFirmkycDialogOpen] = useState(false);
-
-  const [selectedDate, setSelectedDate] = useState(dayjs());
+  const { showSnackbar } = useSnackbar();
 
   const handleDateChange = (newDate) => {
     const formattedDate = dayjs(newDate).format('YYYY-MM-DD');
-    setSelectedDate(dayjs(newDate));
     businessKycFormik.setFieldValue('dob', formattedDate);
   };
 
   // Business KYC Formik
   const businessKycFormik = useFormik({
     initialValues: {
-      dob: new Date(),
+      dob: dayjs().format('YYYY-MM-DD'),
       name: '',
       aadhaar_number: '',
       pan_number: '',
@@ -99,26 +100,23 @@ export default function BusinessKYC() {
       havefirm: Yup.boolean().required('Please specify whether you have a firm').nullable()
     }),
     onSubmit: async (values) => {
-      console.log(values);
       const postData = { ...values, date: values.dob };
+      // console.log('Business KYC Data:', postData);
+      const url = `/user_management/users-kyc/`;
+      const { res, error } = await Factory('post', url, postData);
+      console.log(res); // Log the response
 
-      setDialogOpen(false);
-      setFirmkycDialogOpen(true);
-      console.log('Business KYC Data:', postData);
-      //   try {
-      //     const url = `/user_management/users-kyc/`;
-      //     const { res, error } = await Factory("post", url, postData);
-      //     console.log(res); // Log the response
-
-      //     if (res.status_cd === 0) {
-      //       setFirmkycDialogOpen(true); // Open the firm KYC dialog
-      //     } else {
-      //       alert("Please check your credentials.");
-      //     }
-      //   } catch (error) {
-      //     console.error("KYC submission error:", error);
-      //     alert("Something went wrong. Please try again.");
-      //   }
+      if (res.status_cd === 0) {
+        if (postData.havefirm === 'true') {
+          setDialogOpen(false);
+          setFirmkycDialogOpen(true); // Open the firm KYC dialog
+          showSnackbar(JSON.stringify(res.data.detail), 'success');
+        }
+        showSnackbar(JSON.stringify(res.data.detail), 'success');
+        setDialogOpen(false);
+      } else {
+        showSnackbar(JSON.stringify(res.data.error_message), 'error');
+      }
     }
   });
 
@@ -141,7 +139,8 @@ export default function BusinessKYC() {
       firmname: Yup.string().required('Firm Name is required'),
       firmregistrationnumber: Yup.string()
         .required('Firm Registration Number is required')
-        .matches(/^[A-Za-z0-9]+$/, 'Firm Registration Number must be alphanumeric'),
+        .matches(/^[A-Z0-9]{10}$/, 'Invalid format. Format should be: ABCD123456'),
+
       firmemail: Yup.string().email('Invalid email address').required('Firm Email is required'),
       firmmobilenumber: Yup.string()
         .matches(/^[0-9]{10}$/, 'Firm Mobile Number must be a 10-digit number')
@@ -155,26 +154,20 @@ export default function BusinessKYC() {
         .required('Zip code is required')
     }),
     onSubmit: async (values) => {
-      console.log(values);
       const postData = { ...values, number_of_firm_partners: Number(values.noofpartnersinfirm) };
       console.log('Firm KYC Data:', postData);
 
-      setFirmkycDialogOpen(false);
-      //   try {
-      //     const url = `/user_management/firmkyc/`;
-      //     const { res, error } = await Factory("post", url, postData);
-      //     console.log(res); // Log the response
+      const url = `/user_management/firmkyc/`;
+      const { res, error } = await Factory('post', url, postData);
+      console.log(res); // Log the response
 
-      //     if (res.status_cd === 0) {
-      //       setFirmkycDialogOpen(false); // Close the firm KYC dialog
-      //       router.push("/tara");
-      //     } else {
-      //       alert("Please check your credentials.");
-      //     }
-      //   } catch (error) {
-      //     console.error("KYC submission error:", error);
-      //     alert("Something went wrong. Please try again.");
-      //   }
+      if (res.status_cd === 0) {
+        setFirmkycDialogOpen(false); // Close the firm KYC dialog
+        showSnackbar(JSON.stringify(res.data.detail), 'success');
+        router.push(APP_DEFAULT_PATH);
+      } else {
+        showSnackbar(JSON.stringify(res.data.data), 'error');
+      }
     }
   });
 
@@ -182,7 +175,7 @@ export default function BusinessKYC() {
     return fields.map((field) => {
       if (field.name === 'state') {
         return (
-          <Grid2 item key={field.name} size={{ xs: 12, sm: 6, md: 6 }}>
+          <Grid2 key={field.name} size={{ xs: 12, sm: 6, md: 6 }}>
             <div style={{ paddingBottom: '5px' }}>
               <label>{field.label}</label>
             </div>
@@ -198,7 +191,7 @@ export default function BusinessKYC() {
         );
       } else if (field.name === 'dob') {
         return (
-          <Grid2 item key={field.name} size={{ xs: 12, sm: 6, md: 6 }}>
+          <Grid2 key={field.name} size={{ xs: 12, sm: 6, md: 6 }}>
             <div style={{ paddingBottom: '5px' }}>
               <label>{field.label}</label>
             </div>
@@ -214,7 +207,7 @@ export default function BusinessKYC() {
         );
       } else {
         return (
-          <Grid2 item key={field.name} size={{ xs: 12, sm: 6, md: 6 }}>
+          <Grid2 key={field.name} size={{ xs: 12, sm: 6, md: 6 }}>
             <div style={{ paddingBottom: '5px' }}>
               <label>{field.label}</label>
             </div>
@@ -243,21 +236,16 @@ export default function BusinessKYC() {
   // Destructuring for business KYC and firm KYC separately
   const { errors, touched, handleSubmit, getFieldProps } = businessKycFormik;
   const { errors: kycErrors, touched: kycTouched, handleSubmit: kycHandleSubmit, getFieldProps: getKycFieldProps } = firmKycFormik;
-  //   useEffect(() => {
-  //     const userDetails = JSON.parse(localStorage.getItem('user'));
-  //     console.log(userDetails);
-  //     // userDetails.user_type = selectedType;
 
-  //     // localStorage.setItem("user", JSON.stringify(userDetails));
-  //   }, []);
   return (
     <Box>
       {/* Business KYC Dialog */}
       <Dialog open={dialogOpen} maxWidth="sm">
-        <DialogTitle>
+        <DialogTitle component="div">
           <Typography variant="h4">Business KYC</Typography>
           <Typography variant="body2">Please provide the necessary details to complete the registration.</Typography>
         </DialogTitle>
+
         <form onSubmit={businessKycFormik.handleSubmit} autoComplete="off">
           <DialogContent>
             <Grid2 container spacing={2}>
@@ -295,7 +283,7 @@ export default function BusinessKYC() {
 
       {/* Firm KYC Dialog */}
       <Dialog open={firmkycDialogOpen} maxWidth="sm">
-        <DialogTitle>
+        <DialogTitle component="div">
           <Typography variant="h4">Firm KYC</Typography>
           <Typography variant="body2">Please provide the necessary details to complete the registration.</Typography>
         </DialogTitle>
