@@ -148,29 +148,25 @@ function SalaryTemplate() {
           </Grid2>
 
           {/* Annual CTC */}
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Box sx={{ mr: 1 }}>
-              <Typography variant="h6">Annual CTC</Typography>
-            </Box>
-            <Box sx={{ flex: 1, mr: 2 }}>
-              <CustomInput
-                fullWidth
-                name="annual_ctc"
-                value={values.annual_ctc}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={touched.annual_ctc && Boolean(errors.annual_ctc)}
-                helperText={touched.annual_ctc && errors.annual_ctc}
-              />
-            </Box>
-            <Box>
-              <Typography variant="body2">Per Year</Typography>
-            </Box>
-          </Box>
+
+          <Grid2 size={{ sx: 12, sm: 6, md: 4 }}>
+            <div style={{ paddingBottom: '5px' }}>
+              <label>Annual CTC</label>
+            </div>
+            <CustomInput
+              fullWidth
+              name="annual_ctc"
+              value={values.annual_ctc}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={touched.annual_ctc && Boolean(errors.annual_ctc)}
+              helperText={touched.annual_ctc && errors.annual_ctc}
+            />
+          </Grid2>
 
           {/* Earnings Table */}
           <TableContainer component={Paper}>
-            <Table>
+            <Table size="small" sx={{ fontSize: '0.875rem' }}>
               <TableHead>
                 <TableRow>
                   <TableCell>Salary Components</TableCell>
@@ -219,8 +215,8 @@ function SalaryTemplate() {
                         </Typography>
                       </Box>
                     </TableCell>
-                    <TableCell>{earning.monthly}</TableCell>
-                    <TableCell>{earning.annually}</TableCell>
+                    <TableCell>{earning.monthly || 0}</TableCell>
+                    <TableCell>{earning.annually || 0}</TableCell>
                     <TableCell>
                       <ListItemButton sx={{ color: '#d32f2f' }} onClick={() => handleDeleteEarnings(index)}>
                         <ListItemIcon>
@@ -230,44 +226,22 @@ function SalaryTemplate() {
                     </TableCell>
                   </TableRow>
                 ))}
-              </TableBody>
-
-              <TableRow>
-                <TableCell colSpan={2} sx={{ fontWeight: 'bold' }}>
-                  Gross Salary
-                </TableCell>
-                <TableCell>
-                  <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.monthly || 0), 0)}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.annually || 0), 0)}</Typography>
-                </TableCell>
-                <TableCell></TableCell>
-              </TableRow>
-            </Table>
-          </TableContainer>
-          <Box sx={{ mt: 2 }}>
-            <Button variant="outlined" onClick={handleAddEarnings}>
-              Add Component
-            </Button>
-          </Box>
-          <Box sx={{ fontWeight: 'bold' }}>Employer Contributions</Box>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
+                <Box sx={{ mt: 2 }}>
+                  <Button variant="outlined" onClick={handleAddEarnings}>
+                    Add Component
+                  </Button>
+                </Box>
                 <TableRow>
-                  <TableCell>Salary Components</TableCell>
-                  <TableCell>Calculation Type</TableCell>
-                  <TableCell>Monthly</TableCell>
-                  <TableCell>Annually</TableCell>
-                  <TableCell>Action</TableCell> {/* For Delete button */}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow>
-                  <TableCell colSpan={6} sx={{ fontWeight: 'bold' }}>
-                    Employer Contributions
+                  <TableCell colSpan={2} sx={{ fontWeight: 'bold' }}>
+                    Gross Salary
                   </TableCell>
+                  <TableCell>
+                    <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.monthly || 0), 0)}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.annually || 0), 0)}</Typography>
+                  </TableCell>
+                  <TableCell></TableCell>
                 </TableRow>
                 {values.employer_contributions.map((earning, index) => (
                   <TableRow key={index}>
@@ -307,36 +281,18 @@ function SalaryTemplate() {
                     </TableCell>
                   </TableRow>
                 ))}
-              </TableBody>
-
-              <TableRow>
-                <TableCell colSpan={2} sx={{ fontWeight: 'bold' }}>
-                  Gross Salary
-                </TableCell>
-                <TableCell>
-                  <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.monthly || 0), 0)}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.annually || 0), 0)}</Typography>
-                </TableCell>
-                <TableCell></TableCell>
-              </TableRow>
-            </Table>
-          </TableContainer>
-
-          <Box sx={{ fontWeight: 'bold' }}>Deductions</Box>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
                 <TableRow>
-                  <TableCell>Salary Components</TableCell>
-                  <TableCell>Calculation Type</TableCell>
-                  <TableCell>Monthly</TableCell>
-                  <TableCell>Annually</TableCell>
-                  <TableCell>Action</TableCell> {/* For Delete button */}
+                  <TableCell colSpan={2} sx={{ fontWeight: 'bold' }}>
+                    Gross Salary
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.monthly || 0), 0)}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.annually || 0), 0)}</Typography>
+                  </TableCell>
+                  <TableCell></TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
                 <TableRow>
                   <TableCell colSpan={6} sx={{ fontWeight: 'bold' }}>
                     Employer Contributions
@@ -380,22 +336,22 @@ function SalaryTemplate() {
                     </TableCell>
                   </TableRow>
                 ))}
+                <TableRow>
+                  <TableCell colSpan={2} sx={{ fontWeight: 'bold' }}>
+                    Gross Salary
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.monthly || 0), 0)}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.annually || 0), 0)}</Typography>
+                  </TableCell>
+                  <TableCell></TableCell>
+                </TableRow>
               </TableBody>
-
-              <TableRow>
-                <TableCell colSpan={2} sx={{ fontWeight: 'bold' }}>
-                  Gross Salary
-                </TableCell>
-                <TableCell>
-                  <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.monthly || 0), 0)}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.annually || 0), 0)}</Typography>
-                </TableCell>
-                <TableCell></TableCell>
-              </TableRow>
             </Table>
           </TableContainer>
+
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
             <Button variant="contained" color="primary" type="submit">
               Save Template

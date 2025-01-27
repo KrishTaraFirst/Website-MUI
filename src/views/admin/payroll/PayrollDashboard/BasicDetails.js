@@ -3,6 +3,7 @@ import React from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { FormControlLabel, Checkbox, TextField, Button, Box, Grid2, Typography, Divider } from '@mui/material';
+import CustomInput from '@/utils/CustomInput';
 
 function BasicDetails() {
   const employeeFields = [
@@ -69,7 +70,7 @@ function BasicDetails() {
         <div style={{ paddingBottom: '8px' }}>
           <Typography variant="body2">{field.label}</Typography>
         </div>
-        <TextField
+        <CustomInput
           fullWidth
           name={field.name}
           value={values[field.name]}

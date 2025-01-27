@@ -26,6 +26,7 @@ export default function ProfileAvatar() {
   const [avatar, setAvatar] = useState('/assets/images/users/avatar-1.png');
 
   const onDrop = (acceptedFiles) => {
+    console.log(acceptedFiles);
     const file = acceptedFiles[0];
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -34,7 +35,7 @@ export default function ProfileAvatar() {
     reader.readAsDataURL(file);
   };
 
-  const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: { 'image/*': [] }, maxFiles: 1 });
+  const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: { 'image/*': [] }, maxFiles: 10 });
 
   return (
     <>
@@ -45,7 +46,7 @@ export default function ProfileAvatar() {
       </ListItemAvatar>
       <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
         <ListItemText {...getRootProps()}>
-          <input {...getInputProps()} />
+          <input {...getInputProps()} multiple />
           <Button variant="outlined" color="secondary" size="small" startIcon={<IconUpload size={16} stroke={1.5} />}>
             Upload Photo
           </Button>

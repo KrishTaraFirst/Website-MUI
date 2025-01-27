@@ -3,6 +3,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Box, Grid, Typography, Divider } from '@mui/material';
 import Grid2 from '@mui/material/Grid2'; // Import Grid2 from MUI system
+import CustomInput from '@/utils/CustomInput';
 
 export default function DepartmentDialog({ open, handleClose, handleOpenDialog }) {
   // Define fields for department
@@ -42,7 +43,7 @@ export default function DepartmentDialog({ open, handleClose, handleOpenDialog }
         <div style={{ paddingBottom: '8px' }}>
           <Typography variant="body2">{field.label}</Typography>
         </div>
-        <TextField
+        <CustomInput
           fullWidth
           name={field.name}
           value={values[field.name]}

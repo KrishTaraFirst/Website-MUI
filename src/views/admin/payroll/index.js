@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import Payrollsettings from './Payrollsettings';
 import PayrollDashboard from './PayrollDashboard';
-function PartollPage() {
-  const [PayrollSetup, setPayrollSetup] = useState(false);
+function index() {
+  const [PayrollSetup, setPayrollSetup] = useState(true);
   return <div>{PayrollSetup ? <Payrollsettings /> : <PayrollDashboard />}</div>;
 }
 
