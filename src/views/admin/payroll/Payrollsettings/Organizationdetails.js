@@ -1,13 +1,20 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { TextField, Button, Box, Typography } from '@mui/material';
 import Grid2 from '@mui/material/Grid2'; // Import Grid2 from MUI system
 import HomeCard from '@/components/cards/HomeCard';
+import CustomAutocomplete from '@/utils/CustomAutocomplete';
+import CustomInput from '@/utils/CustomInput';
+import CustomUpload from '@/utils/CustomUpload';
+import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
+
+import { IconTemperature } from '@tabler/icons-react';
 
 function Organizationdetails({ tab }) {
   // Field definitions for organization details
+  const [logoDetails, setLogoDetails] = useState([]);
   const fields = [
     { name: 'organization_name', label: 'Organization Name' },
     { name: 'logo', label: 'Logo' },
@@ -58,6 +65,10 @@ function Organizationdetails({ tab }) {
       .required('Address Line 1 is required')
       .min(5, 'Address Line 1 must be at least 5 characters')
       .max(100, 'Address Line 1 must be at most 100 characters'),
+    organization_address_line2: Yup.string()
+      .required('Address Line 2 is required')
+      .min(5, 'Address Line 2 must be at least 5 characters')
+      .max(100, 'Address Line 2 must be at most 100 characters'),
 
     organization_state: Yup.string()
       .required('State is required')
@@ -78,6 +89,10 @@ function Organizationdetails({ tab }) {
       .min(5, 'Address Line 1 must be at least 5 characters')
       .max(100, 'Address Line 1 must be at most 100 characters'),
 
+    filing_address_line2: Yup.string()
+      .required('Address Line 2 is required')
+      .min(5, 'Address Line 2 must be at least 5 characters')
+      .max(100, 'Address Line 2 must be at most 100 characters'),
     filing_state: Yup.string()
       .required('State is required')
       .min(2, 'State must be at least 2 characters')
@@ -97,7 +112,7 @@ function Organizationdetails({ tab }) {
   const formik = useFormik({
     initialValues: {
       organization_name: '',
-      logo: '',
+      logo: null,
       industry: '',
       contact_email: '',
       sender: '',
@@ -114,29 +129,60 @@ function Organizationdetails({ tab }) {
     },
     validationSchema,
     onSubmit: async (values) => {
+      let postData = { ...values };
+      // postData.log =
       console.log(values);
     }
   });
 
-  const { values, handleChange, errors, touched, handleSubmit, handleBlur } = formik;
+  const { values, handleChange, errors, touched, handleSubmit, handleBlur, setFieldValue } = formik;
 
   const renderFields = (fields) => {
-    return fields.map((field) => (
-      <Grid2 key={field.name} size={{ xs: 12, sm: 6, md: 4 }}>
-        <div style={{ paddingBottom: '5px' }}>
-          <label>{field.label}</label>
-        </div>
-        <TextField
-          fullWidth
-          name={field.name}
-          value={values[field.name]}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          error={touched[field.name] && Boolean(errors[field.name])}
-          helperText={touched[field.name] && errors[field.name]}
-        />
-      </Grid2>
-    ));
+    return fields.map((field) => {
+      if (field.name === 'logo') {
+        return (
+          <Grid2 key={field.name} size={{ xs: 12, sm: 6, md: 4 }}>
+            <CustomUpload fieldName={field.name} title="Upload Logo" setLogoDetails={setLogoDetails} />
+          </Grid2>
+        );
+      }
+
+      if (field.name === 'organization_state' || field.name === 'filing_state') {
+        return (
+          <Grid2 key={field.name} size={{ xs: 12, sm: 6, md: 4 }}>
+            <div style={{ paddingBottom: '5px' }}>
+              <label>{field.label}</label>
+            </div>
+            <CustomAutocomplete
+              value={values[field.name]}
+              name={field.name}
+              onChange={(e, newValue) => setFieldValue(field.name, newValue)}
+              options={indian_States_And_UTs}
+              error={touched[field.name] && Boolean(errors[field.name])}
+              helperText={touched[field.name] && errors[field.name]}
+              sx={{ width: '100%' }} // Ensure it's full width
+            />
+          </Grid2>
+        );
+      }
+
+      return (
+        <Grid2 key={field.name} size={{ xs: 12, sm: 6, md: 4 }}>
+          <div style={{ paddingBottom: '5px' }}>
+            <label>{field.label}</label>
+          </div>
+          <CustomInput
+            name={field.name}
+            value={values[field.name]}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={touched[field.name] && Boolean(errors[field.name])}
+            helperText={touched[field.name] && errors[field.name]}
+            sx={{ width: '100%' }} // Ensure it's full width
+          />
+        </Grid2>
+      );
+    });
   };
 
   return (
@@ -150,8 +196,8 @@ function Organizationdetails({ tab }) {
         <Typography variant="h6" gutterBottom sx={{ mt: 4, mb: 2 }}>
           Organization Address
         </Typography>
+
         <Grid2 container spacing={3}>
-          {/* Render dynamic fields for organization address */}
           {renderFields(organizationAddress)}
         </Grid2>
 

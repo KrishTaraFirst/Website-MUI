@@ -15,9 +15,10 @@ import { ServicesData } from './data';
 import Factory from '@/utils/Factory';
 import { ServicesRoute } from './data';
 import { IconArrowDown, IconArrowUp } from '@tabler/icons-react';
-import { Button } from '@mui/material';
-import AnalyticsBehaviorChart from '@/sections/dashboard/analytics/user-behavior/AnalyticsBehaviorChart';
+import { Box, Button } from '@mui/material';
 import PayrollSummary from './PayrollSummary';
+import CustomAutocomplete from '@/utils/CustomAutocomplete';
+
 // @project
 import MainCard from '@/components/MainCard';
 export function applyBorderWithRadius(radius, theme) {
@@ -120,66 +121,76 @@ export default function Services() {
   }, []);
 
   return (
-    <MainCard>
-      <Stack sx={{ gap: 3 }}>
-        <Stack direction="row" sx={{ alignItems: 'end', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-          <Stack sx={{ gap: 0.5 }}>
-            <Typography variant="h4" sx={{ fontWeight: 400 }}>
-              Current Payroll
-            </Typography>
-            <Typography variant="caption" sx={{ color: 'grey.700' }}>
-              Dec 25th 2024
-            </Typography>
+    <Stack sx={{ gap: 3 }}>
+      <MainCard>
+        <Stack sx={{ gap: 3 }}>
+          <Stack direction="row" sx={{ alignItems: 'end', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
+            <Stack sx={{ gap: 0.5 }}>
+              <Typography variant="h4" sx={{ fontWeight: 400 }}>
+                Current Payroll
+              </Typography>
+              <Typography variant="caption" sx={{ color: 'grey.700' }}>
+                Dec 25th 2024
+              </Typography>
+            </Stack>
           </Stack>
-        </Stack>
-        <Grid container spacing={{ xs: 2, md: 3 }}>
-          {ServicesCards.map((card, idx) => (
-            <Grid key={idx} size={{ xs: 12, sm: 6, md: 3 }}>
-              <MainCard sx={{ p: 3, bgcolor: 'grey.50', boxShadow: 'none' }}>
-                <Stack sx={{ gap: 3 }}>
-                  <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Stack sx={{ gap: 0.25 }}>
-                      <Typography variant="h5">{card.service_name}</Typography>
-                      <Typography variant="subtitle1">2520</Typography>
+          <Grid container spacing={{ xs: 2, md: 3 }}>
+            {ServicesData.map((card, idx) => (
+              <Grid key={idx} size={{ xs: 12, sm: 6, md: 3 }}>
+                <MainCard sx={{ p: 1.5, bgcolor: 'grey.50', boxShadow: 'none' }}>
+                  <Stack sx={{ gap: 3 }}>
+                    <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Stack sx={{ gap: 0.25 }}>
+                        <Typography variant="subtitle1">{card.title}</Typography>
+                        <Typography variant="h5">2520</Typography>
+                      </Stack>
+                      <IconButton
+                        onClick={() => {
+                          router.push(`/visa-services/${ServicesRoute[card.service_name]}?id=${card.id}`);
+                        }}
+                        variant="outlined"
+                        color="secondary"
+                        sx={{ bgcolor: 'background.default' }}
+                      >
+                        <IconArrowNarrowRight size={20} />
+                      </IconButton>
                     </Stack>
-                    <IconButton
-                      onClick={() => {
-                        router.push(`/visa-services/${ServicesRoute[card.service_name]}?id=${card.id}`);
-                      }}
-                      variant="outlined"
-                      color="secondary"
-                      sx={{ bgcolor: 'background.default' }}
-                    >
-                      <IconArrowNarrowRight size={20} />
-                    </IconButton>
                   </Stack>
-                </Stack>
-              </MainCard>
-            </Grid>
-          ))}
-        </Grid>
-        <Grid container sx={{ borderRadius: 4, boxShadow: theme.customShadows.section, ...applyBorderWithRadius(16, theme) }}>
-          {overviewData.map((item, index) => (
-            <Grid key={index} size={{ xs: 6, sm: 6, md: 3 }}>
-              {/* <OverviewCard {...{ ...item, cardProps: { sx: { border: 'none', borderRadius: 0, boxShadow: 'none' } } }} /> */}
+                </MainCard>
+              </Grid>
+            ))}
+          </Grid>
+        </Stack>
+      </MainCard>
+      <Box sx={{ float: 'right', width: 300 }}>
+        <CustomAutocomplete
+          value={'Previous Month'}
+          onChange={(event, newValue) => {}}
+          options={['Previous Month', 'December', 'October', 'November']}
+        />
+      </Box>
+      <Grid
+        container
+        sx={{ borderRadius: 4, boxShadow: theme.customShadows.section, ...applyBorderWithRadius(16, theme), flexWrap: 'nowrap' }}
+      >
+        {overviewData.map((item, index) => (
+          <Grid key={index} size={{ xs: 6, sm: 6, md: 3 }}>
+            <MainCard sx={{ border: 'none', borderRadius: 0, boxShadow: 'none' }}>
+              <Stack>
+                <Stack direction="column" sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                  <Typography variant="subtitle1">{item.title}</Typography>
+                  <Typography variant="h4">{item.value}</Typography>
 
-              <MainCard sx={{ border: 'none', borderRadius: 0, boxShadow: 'none' }}>
-                <Stack sx={{ gap: 2 }}>
-                  <Stack direction="column" sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                    <Typography variant="subtitle1">{item.title}</Typography>
-                    <Typography variant="h4">{item.value}</Typography>
-
-                    <Button color="primary" onClick={() => handleChange(item.href)}>
-                      {item.buttonLable}
-                    </Button>
-                  </Stack>
+                  <Button color="primary" onClick={() => handleChange(item.href)}>
+                    {item.buttonLable}
+                  </Button>
                 </Stack>
-              </MainCard>
-            </Grid>
-          ))}
-        </Grid>
-        <PayrollSummary />
-      </Stack>
-    </MainCard>
+              </Stack>
+            </MainCard>
+          </Grid>
+        ))}
+      </Grid>
+      <PayrollSummary />
+    </Stack>
   );
 }

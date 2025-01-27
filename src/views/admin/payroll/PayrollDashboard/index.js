@@ -10,6 +10,7 @@ import { useSnackbar } from '@/components/CustomSnackbar';
 import OverviewCard from './OverviewCard';
 import { Button, Stack, Typography } from '@mui/material';
 import { IconSparkles, IconSettings2 } from '@tabler/icons-react';
+import HomeCard from '@/components/cards/HomeCard';
 
 /***************************  ANALYTICS - OVERVIEW  ***************************/
 
@@ -33,7 +34,7 @@ export default function PayrollDashboard() {
             Payroll
           </Typography>
           <Typography variant="caption" sx={{ color: 'grey.700' }}>
-            Dashboard to help manage your customer invoices.
+            Some text tagline regarding Payroll.
           </Typography>
         </Stack>
         <Stack direction="row" sx={{ gap: 1.5 }}>
