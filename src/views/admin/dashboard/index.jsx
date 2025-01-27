@@ -8,14 +8,15 @@ import { AuthRole } from '@/enum';
 
 export default function UserDashboard() {
   const { userData } = useCurrentUser();
+  console.log(userData.role);
   switch (userData.role) {
     case AuthRole.SUPER_ADMIN:
       return <SuperAdmin />;
-    case AuthRole.ADMIN:
+    case AuthRole.CORPORATE_ADMIN:
       return <CorporateEntity />;
     case AuthRole.SERVICE_PROVIDER:
       return <ServiceProvider />;
-    case AuthRole.USER:
+    case AuthRole.INDIVIDUAL:
       return <Individual />;
     default:
       return <Individual />;

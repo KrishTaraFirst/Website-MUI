@@ -125,7 +125,7 @@ export default function OverviewCard({ clientListData }) {
             <Stack sx={{ gap: 2 }}>
               <Stack direction="row" sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                 <Typography variant="subtitle1">{item.title}</Typography>
-                <Button color="primary" onClick={() => handleChange(item.href)}>
+                <Button color="primary" variant="text" onClick={() => handleChange(item.href)}>
                   {item.buttonLable}
                 </Button>
               </Stack>

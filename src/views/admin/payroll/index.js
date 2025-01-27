@@ -7,4 +7,4 @@ function index() {
   return <div>{PayrollSetup ? <Payrollsettings /> : <PayrollDashboard />}</div>;
 }
 
-export default index;
+export default PartollPage;

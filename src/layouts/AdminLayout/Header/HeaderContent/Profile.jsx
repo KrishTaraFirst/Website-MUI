@@ -46,8 +46,9 @@ const languageList = ['English', 'Spanish', 'France'];
 
 const RoleTitles = {
   [AuthRole.SUPER_ADMIN]: 'Super Admin',
-  [AuthRole.ADMIN]: 'Admin',
-  [AuthRole.USER]: 'User'
+  [AuthRole.CORPORATE_ADMIN]: 'Admin',
+  [AuthRole.SERVICE_PROVIDER]: 'Service Provider',
+  [AuthRole.INDIVIDUAL]: 'Individual'
 };
 
 /***************************  HEADER - PROFILE  ***************************/

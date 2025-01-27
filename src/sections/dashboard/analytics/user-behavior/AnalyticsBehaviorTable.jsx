@@ -111,6 +111,7 @@ export default function AnalyticsBehaviorTable() {
   const onGlobalSearch = (globalFilter) => {
     setGlobalFilter(globalFilter);
   };
+  // console.log(table.getRowModel().rows);
 
   return <Table table={table} onGlobalSearch={onGlobalSearch} />;
 }

@@ -35,6 +35,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import Factory from '@/utils/Factory';
 import { titles } from './data';
 import MainCard from '@/components/MainCard';
+import useCurrentUser from '@/hooks/useCurrentUser';
 // import { useAuth } from '@/app/context/AuthContext';
 
 import { useRouter } from 'next/navigation';
@@ -42,6 +43,8 @@ import { useRouter } from 'next/navigation';
 /***************************  COMPONENT - TABLE  ***************************/
 
 export default function ServiceRequest({ tab }) {
+  const { userData } = useCurrentUser();
+  const permissions = userData.VisaServices;
   const searchParams = useSearchParams();
   const title = searchParams.get('title'); // Retrieve 'name' from query params
   const service_id = searchParams.get('id'); // Retrieve 'name' from query params
@@ -176,7 +179,7 @@ export default function ServiceRequest({ tab }) {
             </Typography>
           </Stack>
         </Stack>
-        {'ServiceProvider_Admin' === 'ServiceProvider_Admin' && (
+        {permissions.includes('VS_Client_Create') && (
           // {user.user_role === 'ServiceProvider_Admin' && (
           <Stack>
             <Button

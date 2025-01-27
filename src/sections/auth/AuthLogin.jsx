@@ -32,6 +32,14 @@ import { emailSchema, passwordSchema } from '@/utils/validationSchema';
 // @assets
 import { CloseEye, OpenEye } from '@/icons';
 
+const roles = {
+  Tara: AuthRole.SUPER_ADMIN,
+  CA: AuthRole.CHARTED_ACCOUNTANT_FIRM,
+  Business: AuthRole.CORPORATE_ADMIN,
+  ServiceProvider: AuthRole.SERVICE_PROVIDER,
+  Individual: AuthRole.INDIVIDUAL
+};
+
 export default function AuthLogin({ inputSx }) {
   const theme = useTheme();
   const router = useRouter();
@@ -63,11 +71,14 @@ export default function AuthLogin({ inputSx }) {
         let userDAta = {
           id: res.data.id,
           email: res.data.email,
+          // role: roles[res.data.user_type],
           role: AuthRole.SUPER_ADMIN,
           contact: '123456789',
           dialcode: '+1',
           firstname: res.data.name,
           lastname: '',
+          user_groups: res.data.user_groups,
+          associated_services: res.data.associated_services,
           // password: 'Super@123',
           mobile: res.data.mobile_number,
           access_token: res.data.access,

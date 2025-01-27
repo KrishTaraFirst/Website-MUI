@@ -21,6 +21,7 @@ import { useForm } from 'react-hook-form';
 // @project
 import axios from '@/utils/axios';
 import { emailSchema } from '@/utils/validationSchema';
+import { useSnackbar } from '@/components/CustomSnackbar';
 
 function useBaseUrl() {
   const [baseUrl, setBaseUrl] = useState(null);
@@ -41,6 +42,7 @@ function useBaseUrl() {
 
 export default function AuthForgotPassword({ inputSx }) {
   const baseUrl = useBaseUrl();
+  const { showSnackbar } = useSnackbar();
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [forgotPasswordError, setForgotPasswordError] = useState('');

@@ -19,7 +19,7 @@ const other = {
       title: <FormattedMessage id="components" />,
       type: 'collapse',
       icon: 'IconAppWindow',
-      roles: [AuthRole.SUPER_ADMIN, AuthRole.ADMIN],
+      roles: [AuthRole.SUPER_ADMIN, AuthRole.CORPORATE_ADMIN],
       children: [
         {
           id: 'avatar',
@@ -166,7 +166,7 @@ const other = {
       type: 'item',
       url: '/chart',
       icon: 'IconChartHistogram',
-      roles: [AuthRole.SUPER_ADMIN, AuthRole.ADMIN]
+      roles: [AuthRole.SUPER_ADMIN, AuthRole.CORPORATE_ADMIN]
     },
     {
       id: 'react-table',
@@ -174,7 +174,7 @@ const other = {
       type: 'item',
       url: '/table',
       icon: 'IconTableShare',
-      roles: [AuthRole.SUPER_ADMIN, AuthRole.ADMIN]
+      roles: [AuthRole.SUPER_ADMIN, AuthRole.CORPORATE_ADMIN]
     },
     {
       id: 'sample-page',
