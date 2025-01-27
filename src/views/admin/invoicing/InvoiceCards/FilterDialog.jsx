@@ -55,8 +55,6 @@ export default function FilterDialog({ financialYear, businessData, filterDialog
   // }
   // };
 
-  useEffect(() => {}, []);
-
   const onSubmit = async (formData) => {
     let url = `/invoicing/filter-invoices?invoicing_profile_id=${businessData.id}&financial_year=${financialYear}&payment_status=${formData.paymentstatus}&invoice_status=${formData.invoicestatus}&due_date=${formData.dueDate}&invoice_date=${formData.date}&invoice_number=${formData.invoiceNumber}&customer=${formData.customer}&total_amount=${formData.amount}`;
     const { res } = await Factory('get', url, {});

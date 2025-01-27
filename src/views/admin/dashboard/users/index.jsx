@@ -19,12 +19,7 @@ export default function Dashboard({ tab }) {
 }
 
 function CorporateEntity() {
-  return (
-    <>
-      <ManageAccess />
-      <AnalyticsBehaviorTable type={'corporateEntity'} />
-    </>
-  );
+  return <AnalyticsBehaviorTable type={'Business'} />;
 }
 
 function ServiceProvider() {
@@ -32,9 +27,9 @@ function ServiceProvider() {
 }
 
 function CAFirm() {
-  return <AnalyticsBehaviorTable type={'caFirm'} />;
+  return <AnalyticsBehaviorTable type={'CA'} />;
 }
 
 function Individual() {
-  return <AnalyticsBehaviorTable type={'individual'} />;
+  return <AnalyticsBehaviorTable type={'Individual'} />;
 }
