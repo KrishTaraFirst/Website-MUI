@@ -46,156 +46,159 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   padding: `${theme.spacing(4)} ${theme.spacing(2)}`,
   borderTop: '1px solid rgba(0, 0, 0, .125)'
 }));
-const visaServicesActions = [
-  {
-    key: 'VS_Task_View',
-    label: 'Task View',
-    description: 'Allows viewing all tasks related to visa services.'
-  },
-  {
-    key: 'VS_Task_Create',
-    label: 'Task Create',
-    description: 'Grants permission to create new tasks for visa services.'
-  },
-  {
-    key: 'VS_Task_Edit',
-    label: 'Task Edit',
-    description: 'Enables editing existing tasks for visa services.'
-  },
-  {
-    key: 'VS_Task_Delete',
-    label: 'Task Delete',
-    description: 'Allows deleting tasks related to visa services.'
-  },
-  {
-    key: 'VS_Client_View',
-    label: 'Client View',
-    description: 'Provides access to view details of clients related to visa services.'
-  },
-  {
-    key: 'VS_Client_Create',
-    label: 'Client Create',
-    description: 'Grants permission to add new clients for visa services.'
-  },
-  {
-    key: 'VS_Client_Edit',
-    label: 'Client Edit',
-    description: 'Enables modifying details of existing clients in visa services.'
-  },
-  {
-    key: 'VS_Client_Delete',
-    label: 'Client Delete',
-    description: 'Allows removal of client records related to visa services.'
-  }
-];
 
-const invoicingActions = [
-  {
-    key: 'INV_Settings_Create',
-    label: 'Settings Create',
-    description: 'Allows creating new invoicing settings.'
-  },
-  {
-    key: 'INV_Settings_Edit',
-    label: 'Settings Edit',
-    description: 'Grants permission to modify existing invoicing settings.'
-  },
-  {
-    key: 'INV_Settings_Delete',
-    label: 'Settings Delete',
-    description: 'Enables deletion of invoicing settings.'
-  },
-  {
-    key: 'INV_Settings_View',
-    label: 'Settings View',
-    description: 'Allows viewing invoicing settings.'
-  },
-  {
-    key: 'INV_NumberFormat_Create',
-    label: 'Number Format Create',
-    description: 'Grants permission to create new number formats for invoices.'
-  },
-  {
-    key: 'INV_NumberFormat_Edit',
-    label: 'Number Format Edit',
-    description: 'Enables editing existing invoice number formats.'
-  },
-  {
-    key: 'INV_NumberFormat_Delete',
-    label: 'Number Format Delete',
-    description: 'Allows deleting invoice number formats.'
-  },
-  {
-    key: 'INV_NumberFormat_View',
-    label: 'Number Format View',
-    description: 'Provides access to view invoice number formats.'
-  },
-  {
-    key: 'INV_Invoice_Create',
-    label: 'Invoice Create',
-    description: 'Allows users to create new invoices.'
-  },
-  {
-    key: 'INV_Invoice_Edit',
-    label: 'Invoice Edit',
-    description: 'Grants permission to modify existing invoices.'
-  },
-  {
-    key: 'INV_Invoice_Delete',
-    label: 'Invoice Delete',
-    description: 'Enables deletion of invoices.'
-  },
-  {
-    key: 'INV_Invoice_View',
-    label: 'Invoice View',
-    description: 'Allows viewing invoices.'
-  },
-  {
-    key: 'INV_ApproveInvoice',
-    label: 'Approve Invoice',
-    description: 'Grants permission to approve invoices.'
-  },
-  {
-    key: 'INV_RecordPayment_Create',
-    label: 'Record Payment Create',
-    description: 'Allows recording new payments for invoices.'
-  },
-  {
-    key: 'INV_RecordPayment_Edit',
-    label: 'Record Payment Edit',
-    description: 'Grants permission to edit recorded payments.'
-  },
-  {
-    key: 'INV_RecordPayment_Delete',
-    label: 'Record Payment Delete',
-    description: 'Enables deletion of recorded payments.'
-  },
-  {
-    key: 'INV_RecordPayment_View',
-    label: 'Record Payment View',
-    description: 'Allows users to view their payment records.'
-  },
-  {
-    key: 'INV_PaymentStatus_Edit',
-    label: 'Payment Status Edit',
-    description: 'Grants permission to update the status of payments.'
-  },
-  {
-    key: 'INV_PaymentStatus_Delete',
-    label: 'Payment Status Delete',
-    description: 'Enables deletion of payment statuses.'
-  },
-  {
-    key: 'INV_SendEmail',
-    label: 'Send Email',
-    description: 'Allows sending invoices via email.'
-  },
-  {
-    key: 'INV_WriteOff',
-    label: 'Write Off',
-    description: 'Grants permission to write off outstanding balances.'
-  }
-];
+const actions = {
+  visaServicesActions: [
+    {
+      key: 'VS_Task_View',
+      label: 'Task View',
+      description: 'Allows viewing all tasks related to visa services.'
+    },
+    {
+      key: 'VS_Task_Create',
+      label: 'Task Create',
+      description: 'Grants permission to create new tasks for visa services.'
+    },
+    {
+      key: 'VS_Task_Edit',
+      label: 'Task Edit',
+      description: 'Enables editing existing tasks for visa services.'
+    },
+    {
+      key: 'VS_Task_Delete',
+      label: 'Task Delete',
+      description: 'Allows deleting tasks related to visa services.'
+    },
+    {
+      key: 'VS_Client_View',
+      label: 'Client View',
+      description: 'Provides access to view details of clients related to visa services.'
+    },
+    {
+      key: 'VS_Client_Create',
+      label: 'Client Create',
+      description: 'Grants permission to add new clients for visa services.'
+    },
+    {
+      key: 'VS_Client_Edit',
+      label: 'Client Edit',
+      description: 'Enables modifying details of existing clients in visa services.'
+    },
+    {
+      key: 'VS_Client_Delete',
+      label: 'Client Delete',
+      description: 'Allows removal of client records related to visa services.'
+    }
+  ],
+
+  invoicingActions: [
+    {
+      key: 'INV_Settings_Create',
+      label: 'Settings Create',
+      description: 'Allows creating new invoicing settings.'
+    },
+    {
+      key: 'INV_Settings_Edit',
+      label: 'Settings Edit',
+      description: 'Grants permission to modify existing invoicing settings.'
+    },
+    {
+      key: 'INV_Settings_Delete',
+      label: 'Settings Delete',
+      description: 'Enables deletion of invoicing settings.'
+    },
+    {
+      key: 'INV_Settings_View',
+      label: 'Settings View',
+      description: 'Allows viewing invoicing settings.'
+    },
+    {
+      key: 'INV_NumberFormat_Create',
+      label: 'Number Format Create',
+      description: 'Grants permission to create new number formats for invoices.'
+    },
+    {
+      key: 'INV_NumberFormat_Edit',
+      label: 'Number Format Edit',
+      description: 'Enables editing existing invoice number formats.'
+    },
+    {
+      key: 'INV_NumberFormat_Delete',
+      label: 'Number Format Delete',
+      description: 'Allows deleting invoice number formats.'
+    },
+    {
+      key: 'INV_NumberFormat_View',
+      label: 'Number Format View',
+      description: 'Provides access to view invoice number formats.'
+    },
+    {
+      key: 'INV_Invoice_Create',
+      label: 'Invoice Create',
+      description: 'Allows users to create new invoices.'
+    },
+    {
+      key: 'INV_Invoice_Edit',
+      label: 'Invoice Edit',
+      description: 'Grants permission to modify existing invoices.'
+    },
+    {
+      key: 'INV_Invoice_Delete',
+      label: 'Invoice Delete',
+      description: 'Enables deletion of invoices.'
+    },
+    {
+      key: 'INV_Invoice_View',
+      label: 'Invoice View',
+      description: 'Allows viewing invoices.'
+    },
+    {
+      key: 'INV_ApproveInvoice',
+      label: 'Approve Invoice',
+      description: 'Grants permission to approve invoices.'
+    },
+    {
+      key: 'INV_RecordPayment_Create',
+      label: 'Record Payment Create',
+      description: 'Allows recording new payments for invoices.'
+    },
+    {
+      key: 'INV_RecordPayment_Edit',
+      label: 'Record Payment Edit',
+      description: 'Grants permission to edit recorded payments.'
+    },
+    {
+      key: 'INV_RecordPayment_Delete',
+      label: 'Record Payment Delete',
+      description: 'Enables deletion of recorded payments.'
+    },
+    {
+      key: 'INV_RecordPayment_View',
+      label: 'Record Payment View',
+      description: 'Allows users to view their payment records.'
+    },
+    {
+      key: 'INV_PaymentStatus_Edit',
+      label: 'Payment Status Edit',
+      description: 'Grants permission to update the status of payments.'
+    },
+    {
+      key: 'INV_PaymentStatus_Delete',
+      label: 'Payment Status Delete',
+      description: 'Enables deletion of payment statuses.'
+    },
+    {
+      key: 'INV_SendEmail',
+      label: 'Send Email',
+      description: 'Allows sending invoices via email.'
+    },
+    {
+      key: 'INV_WriteOff',
+      label: 'Write Off',
+      description: 'Grants permission to write off outstanding balances.'
+    }
+  ]
+};
 
 const Checkboxes = ({ data = [], checkedItems, setCheckedItems, type }) => {
   const handleCheckboxChange = (key) => (event) => {
@@ -347,7 +350,7 @@ export default function ManageAccess({ open, setOpen }) {
               </AccordionSummary>
               <AccordionDetails>
                 <Checkboxes
-                  data={visaServicesActions}
+                  data={actions.visaServicesActions}
                   type={'visaServices'}
                   checkedItems={checkedItems}
                   setCheckedItems={setCheckedItems}
@@ -359,7 +362,12 @@ export default function ManageAccess({ open, setOpen }) {
                 <Typography component="span">Invoicing</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Checkboxes data={invoicingActions} type={'invoicing'} checkedItems={checkedItems} setCheckedItems={setCheckedItems} />
+                <Checkboxes
+                  data={actions.invoicingActions}
+                  type={'invoicing'}
+                  checkedItems={checkedItems}
+                  setCheckedItems={setCheckedItems}
+                />
               </AccordionDetails>
             </Accordion>
 

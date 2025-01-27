@@ -17,7 +17,7 @@ import DialogDelete from '@/components/dialog/DialogDelete';
 import MainCard from '@/components/MainCard';
 
 // @assets
-import { IconDotsVertical, IconSettingsCode, IconPrinter, IconShare, IconTrash } from '@tabler/icons-react';
+import { IconDotsVertical, IconSettingsCode, IconPencil, IconShare, IconTrash } from '@tabler/icons-react';
 
 /***************************  DIALOG - DATA  ***************************/
 
@@ -29,9 +29,8 @@ const dialogDeleteData = {
 
 /***************************  TABLE - ACTION  ***************************/
 
-export default function ActionCell({ row, onDelete, setAccessDialog }) {
+export default function ActionCell({ row, onDelete, setAccessDialog, onEdit, setUser }) {
   const theme = useTheme();
-
   // Handle action popper
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -84,18 +83,24 @@ export default function ActionCell({ row, onDelete, setAccessDialog }) {
                     </ListItemIcon>
                     <ListItemText>Manage Access</ListItemText>
                   </ListItemButton>
-                  <ListItemButton sx={{ ...buttonStyle }}>
+                  <ListItemButton
+                    sx={{ ...buttonStyle }}
+                    onClick={() => {
+                      setUser(row.id);
+                      onEdit(true);
+                    }}
+                  >
                     <ListItemIcon sx={{ color: 'inherit' }}>
-                      <IconPrinter size={iconSize} />
+                      <IconPencil size={iconSize} />
                     </ListItemIcon>
-                    <ListItemText sx={{ color: 'inherit' }}>Print</ListItemText>
+                    <ListItemText sx={{ color: 'inherit' }}>Edit</ListItemText>
                   </ListItemButton>
-                  <ListItemButton sx={{ ...buttonStyle }}>
+                  {/* <ListItemButton sx={{ ...buttonStyle }}>
                     <ListItemIcon sx={{ color: 'inherit' }}>
                       <IconShare size={iconSize} />
                     </ListItemIcon>
                     <ListItemText sx={{ color: 'inherit' }}>Share</ListItemText>
-                  </ListItemButton>
+                  </ListItemButton> */}
                   <ListItemButton
                     onClick={handleDeleteDialogOpen}
                     sx={{ ...buttonStyle, color: 'error.main', ...theme.applyStyles('dark', { color: theme.palette.error.light }) }}

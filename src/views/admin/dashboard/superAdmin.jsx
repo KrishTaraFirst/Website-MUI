@@ -15,6 +15,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import MainCard from '@/components/MainCard';
 import { getRadiusStyles } from '@/utils/getRadiusStyles';
 import AnalyticsBehaviorChart from '@/sections/dashboard/analytics/user-behavior/AnalyticsBehaviorChart';
+import Factory from '@/utils/Factory';
 
 // @assets
 import { IconArrowDown, IconArrowUp } from '@tabler/icons-react';
@@ -57,37 +58,77 @@ export default function SuperAdmin({ clientListData = {} }) {
     {
       title: 'Corporate Entities',
       href: 'corporate-entities',
-      value: '23,876',
+      value: 0,
       compare: 'Tagline content',
       buttonLable: 'Add User'
     },
     {
       title: 'Individual Users',
       href: 'individual',
-      value: '93,876',
+      value: 0,
       compare: 'Tagline content',
       buttonLable: 'Add User'
     },
     {
       title: 'CA Firms',
       href: 'ca-firms',
-      value: '21,376',
+      value: 0,
       compare: 'Tagline content',
       buttonLable: 'Add User'
     },
     {
       title: 'Service Providers',
       href: 'service-providers',
-      value: '53,956',
+      value: 0,
       compare: 'Tagline content',
       buttonLable: 'Add User'
     }
   ]);
 
-  //   useEffect(() => {
-  //     let overview = ;
-  //     setOverviewData([...overview]);
-  //   }, [clientListData]);
+  const getDashboardData = async (id) => {
+    let url = `/user_management/users/stats/`;
+    const { res } = await Factory('get', url, {});
+    if (res.status_cd === 1) {
+      if (res.status === 404) {
+        showSnackbar('Data Not found', 'error');
+      }
+    } else {
+      setOverviewData([
+        {
+          title: 'Corporate Entities',
+          href: 'corporate-entities',
+          value: res.data.Business,
+          compare: 'Tagline content',
+          buttonLable: 'Add User'
+        },
+        {
+          title: 'Individual Users',
+          href: 'individual',
+          value: res.data.Individual,
+          compare: 'Tagline content',
+          buttonLable: 'Add User'
+        },
+        {
+          title: 'CA Firms',
+          href: 'ca-firms',
+          value: res.data.CA,
+          compare: 'Tagline content',
+          buttonLable: 'Add User'
+        },
+        {
+          title: 'Service Providers',
+          href: 'service-providers',
+          value: res.data.ServiceProvider,
+          compare: 'Tagline content',
+          buttonLable: 'Add User'
+        }
+      ]);
+    }
+  };
+
+  useEffect(() => {
+    getDashboardData();
+  }, []);
 
   const handleChange = (val) => {
     router.push(`/dashboard/user/${val}`);
