@@ -115,7 +115,7 @@ export default function BusinessKYC() {
         showSnackbar(JSON.stringify(res.data.detail), 'success');
         setDialogOpen(false);
       } else {
-        showSnackbar(JSON.stringify(res.data.error_message), 'error');
+        showSnackbar(JSON.stringify(res.data), 'error');
       }
     }
   });
