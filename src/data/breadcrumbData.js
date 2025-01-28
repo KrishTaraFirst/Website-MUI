@@ -2,7 +2,7 @@ export const breadcrumbData = {
   Home: 'Home',
   manageAccess: 'Manage Access',
   'manage-access': 'Manage Access',
-  payroll: 'Payroll',
+  payrollsetup: 'payrollsetup',
   'corporate-entities': 'Corporate Entities',
   individual: 'Individual',
   'ca-firms': 'CA Firms',
@@ -45,7 +45,7 @@ export const breadcrumbData = {
   'passport-application': 'Passport Application',
   status: 'Status',
 
-  payroll: 'Payroll',
+  payrollsetup: 'Payrollsetup',
   organization_details: 'Organization Details',
   set_up_work_location: 'Set up work location',
   set_up_departments: 'Set up departments',

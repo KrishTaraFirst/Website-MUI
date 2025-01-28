@@ -100,14 +100,30 @@ export default function BusinessKYC() {
       havefirm: Yup.boolean().required('Please specify whether you have a firm').nullable()
     }),
     onSubmit: async (values) => {
-      const postData = { ...values, date: values.dob };
+      const postData = {
+        dob: values.dob,
+        name: values.name,
+        icai_number: values.icai_number,
+        aadhaar_number: values.aadhaar_number,
+        pan_number: values.pan_number,
+        address: {
+          address_line1: values.address_line1 || '',
+          address_line2: values.address_line2 || '',
+          pinCode: values.zip,
+          state: values.state,
+          city: values.city,
+          country: values.country
+        },
+        have_firm: values.havefirm,
+        date: values.dob
+      };
       // console.log('Business KYC Data:', postData);
       const url = `/user_management/users-kyc/`;
       const { res, error } = await Factory('post', url, postData);
       console.log(res); // Log the response
 
       if (res.status_cd === 0) {
-        if (postData.havefirm === 'true') {
+        if (postData.have_firm === 'true') {
           setDialogOpen(false);
           setFirmkycDialogOpen(true); // Open the firm KYC dialog
           showSnackbar(JSON.stringify(res.data.detail), 'success');
@@ -154,7 +170,21 @@ export default function BusinessKYC() {
         .required('Zip code is required')
     }),
     onSubmit: async (values) => {
-      const postData = { ...values, number_of_firm_partners: Number(values.noofpartnersinfirm) };
+      const postData = {
+        firm_name: values.firmname,
+        firm_registration_number: values.firmregistrationnumber,
+        firm_email: values.firmemail,
+        firm_mobile_number: values.firmmobilenumber,
+        address: {
+          address_line1: values.address_line1,
+          address_line2: values.address_line2 || '',
+          pinCode: values.zip,
+          state: values.state,
+          city: values.city,
+          country: values.country
+        },
+        number_of_firm_partners: Number(values.noofpartnersinfirm)
+      };
       console.log('Firm KYC Data:', postData);
 
       const url = `/user_management/firmkyc/`;
@@ -270,7 +300,7 @@ export default function BusinessKYC() {
               <FormControlLabel value="false" control={<Radio />} label="No" />
             </RadioGroup>
           </DialogContent>
-          <DialogActions>
+          <DialogActions style={{ display: 'flecx', justifyContent: 'space-between' }}>
             <Button variant="outlined" color="error" onClick={() => setDialogOpen(false)}>
               Skip
             </Button>
@@ -293,7 +323,7 @@ export default function BusinessKYC() {
               {renderFields(firmKycFields, firmKycFormik)}
             </Grid2>
           </DialogContent>
-          <DialogActions>
+          <DialogActions style={{ display: 'flecx', justifyContent: 'space-between' }}>
             <Button variant="outlined" color="error" onClick={() => setFirmkycDialogOpen(false)}>
               Skip
             </Button>

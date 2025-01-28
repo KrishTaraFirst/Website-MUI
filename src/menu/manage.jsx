@@ -47,12 +47,12 @@ const manage = {
       roles: [AuthRole.SERVICE_PROVIDER]
     },
     {
-      id: 'payroll',
+      id: 'payoll',
       title: <FormattedMessage id="payroll" />,
       type: 'item',
       url: '/payroll',
       icon: 'IconInvoice',
-      roles: [AuthRole.CORPORATE_ADMIN, AuthRole.INDIVIDUAL]
+      roles: [AuthRole.SUPER_ADMIN, AuthRole.CORPORATE_ADMIN, AuthRole.SERVICE_PROVIDER, AuthRole.INDIVIDUAL]
     },
 
     //
