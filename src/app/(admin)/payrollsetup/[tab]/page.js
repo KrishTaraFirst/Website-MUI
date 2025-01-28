@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import dynamic from 'next/dynamic';
 
 // @project
-const PayrollComponent = dynamic(() => import('@/views/admin/payroll'));
+const PayrollComponent = dynamic(() => import('@/views/admin/payroll/Payrollsettings'));
 
 const Organizationdetails = dynamic(() => import('@/views/admin/payroll/Payrollsettings/Organizationdetails'));
 const Worklocation = dynamic(() => import('@/views/admin/payroll/Payrollsettings/Worklocation'));

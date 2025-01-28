@@ -101,7 +101,7 @@ const PayrollSetup = () => {
                       fontWeight: step.completed ? 500 : 400
                     }}
                     onClick={() => {
-                      const route = `/payroll${step.path}`;
+                      const route = `/payrollsetup${step.path}`;
                       router.push(route);
                     }}
                   >

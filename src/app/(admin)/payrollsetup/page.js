@@ -2,10 +2,10 @@
 import dynamic from 'next/dynamic';
 
 // @project
-const PayrollDashboard = dynamic(() => import('@/views/admin/payroll/PayrollDashboard'));
+const Payrollsettings = dynamic(() => import('@/views/admin/payroll/Payrollsettings'));
 
 /***************************  ACCOUNT  ***************************/
 
 export default function Invoicings() {
-  return <PayrollDashboard />;
+  return <Payrollsettings />;
 }

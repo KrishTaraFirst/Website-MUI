@@ -14,7 +14,7 @@ import HomeCard from '@/components/cards/HomeCard';
 
 /***************************  ANALYTICS - OVERVIEW  ***************************/
 
-export default function PayrollDashboard() {
+export default function PayrollDashboard({ setPayrollSetup }) {
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -41,7 +41,8 @@ export default function PayrollDashboard() {
           <Button
             variant="outlined"
             onClick={() => {
-              router.push(`${pathname}/settings`);
+              router.push(`/payrollsetup`);
+              // setPayrollSetup(true);
             }}
             startIcon={<IconSettings2 size={18} />}
           >
