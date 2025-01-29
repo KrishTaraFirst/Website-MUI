@@ -1,75 +1,87 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Box, Divider, Typography } from '@mui/material';
-import Grid2 from '@mui/material/Grid2'; // Import Grid2 from MUI system
+import { Dialog, DialogActions, DialogContent, DialogTitle, Button, Box, Divider, Grid2 } from '@mui/material';
 import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
 import CustomInput from '@/utils/CustomInput';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
+import Factory from '@/utils/Factory';
+import { useSnackbar } from '@/components/CustomSnackbar';
+import { useSearchParams } from 'next/navigation';
 
-export default function WorkLocationDialog({ open, handleClose, handleOpenDialog }) {
-  const filingAddress = [
-    { name: 'worklocation_name', label: 'Work Location Name' },
-    { name: 'address_line1', label: 'Address Line 1' },
-    { name: 'address_line2', label: 'Address Line 2' },
-    { name: 'state', label: 'State' },
-    { name: 'city', label: 'City' },
-    { name: 'postal_code', label: 'Pincode' }
-  ];
+const filingAddress = [
+  { name: 'location_name', label: 'Work Location Name' },
+  { name: 'address_line1', label: 'Address Line 1' },
+  { name: 'address_line2', label: 'Address Line 2' },
+  { name: 'address_state', label: 'State' },
+  { name: 'address_city', label: 'City' },
+  { name: 'address_pincode', label: 'Pincode' }
+];
+export default function WorkLocationDialog({ open, handleClose, fetchWorkLocations, selectedRecord, type, setType }) {
+  const { showSnackbar } = useSnackbar();
+  const searchParams = useSearchParams();
+  const [payrollid, setPayrollId] = useState(null);
+
+  useEffect(() => {
+    const id = searchParams.get('payrollid');
+    if (id) {
+      setPayrollId(id);
+    }
+  }, [searchParams]);
 
   // Formik validation schema
-
   const validationSchema = Yup.object({
-    worklocation_name: Yup.string()
-      .required('Work Location Name is required')
-      .min(3, 'Work Location Name must be at least 3 characters')
-      .max(100, 'Work Location Name must be at most 100 characters'),
+    location_name: Yup.string().required('Work Location Name is required'),
+    address_line1: Yup.string().required('Address Line 1 is required'),
+    address_line2: Yup.string().required('Address Line 2 is required'),
+    address_state: Yup.string().required('State is required'),
 
-    address_line1: Yup.string().required('Address Line 1 is required').min(5, 'Address Line 1 must be at least 5 characters'),
-
-    address_line2: Yup.string().required('Address Line 2 is required').min(5, 'Address Line 2 must be at least 5 characters'),
-
-    state: Yup.string()
-      .required('State is required')
-      .min(2, 'State must be at least 2 characters')
-      .max(50, 'State must be at most 50 characters'),
-
-    city: Yup.string()
-      .required('City is required')
-      .min(2, 'City must be at least 2 characters')
-      .max(50, 'City must be at most 50 characters'),
-
-    postal_code: Yup.string()
+    address_city: Yup.string().required('City is required'),
+    address_pincode: Yup.string()
       .required('Pincode is required')
       .matches(/^[0-9]{6}$/, 'Invalid Pincode format. It must be exactly 6 digits.')
   });
 
+  // Formik setup
   const formik = useFormik({
     initialValues: {
-      worklocation_name: '',
+      location_name: '',
       address_line1: '',
       address_line2: '',
-      state: '',
-      city: '',
-      postal_code: ''
+      address_state: '',
+      address_city: '',
+      address_pincode: ''
     },
     validationSchema,
     onSubmit: async (values) => {
-      console.log(values);
+      const postData = { ...values, payroll: payrollid };
+      const url = type === 'edit' ? `/payroll/work-locations/update/${selectedRecord.id}/` : `/payroll/work-locations/create/`;
+      let postmethod = type === 'edit' ? 'put' : 'post';
+      const { res } = await Factory(postmethod, url, postData);
+      if (res?.status_cd === 0) {
+        // Trigger the fetchWorkLocations to reload the data
+        fetchWorkLocations();
+        handleClose();
+        showSnackbar('Record Saved Successfully', 'success');
+      } else {
+        showSnackbar(res.data, 'success');
+      }
     }
   });
-
-  const { values, handleChange, errors, touched, handleSubmit, handleBlur, resetForm, setFieldValue } = formik;
+  useEffect(() => {
+    if (type === 'edit' && selectedRecord) {
+      setValues(selectedRecord);
+    }
+  }, [type, selectedRecord]);
+  const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, resetForm, setFieldValue } = formik;
 
   const renderFields = (fields) => {
     return fields.map((field) => {
-      if (field.name === 'state') {
+      if (field.name === 'address_state') {
         return (
-          <Grid2 key={field.name} size={{ xs: 12, sm: 6, md: 4 }}>
-            <div style={{ paddingBottom: '5px' }}>
-              <label>{field.label}</label>
-            </div>
+          <Grid2 key={field.name} size={{ xs: 12, sm: 6 }}>
+            <label>{field.label}</label>
             <CustomAutocomplete
               value={values[field.name]}
               name={field.name}
@@ -77,63 +89,57 @@ export default function WorkLocationDialog({ open, handleClose, handleOpenDialog
               options={indian_States_And_UTs}
               error={touched[field.name] && Boolean(errors[field.name])}
               helperText={touched[field.name] && errors[field.name]}
-              sx={{ width: '100%' }} // Ensure it's full width
+              sx={{ width: '100%' }}
             />
           </Grid2>
         );
       }
 
       return (
-        <Grid2 key={field.name} size={{ xs: 12, sm: 6, md: 4 }}>
-          <div style={{ paddingBottom: '5px' }}>
-            <label>{field.label}</label>
-          </div>
+        <Grid2 key={field.name} size={{ xs: 12, sm: 6 }}>
+          <label>{field.label}</label>
           <CustomInput
             name={field.name}
             value={values[field.name]}
-            onChange={(e) => setFieldValue(field.name, e.target.value)}
+            onChange={handleChange}
             onBlur={handleBlur}
             error={touched[field.name] && Boolean(errors[field.name])}
             helperText={touched[field.name] && errors[field.name]}
-            sx={{ width: '100%' }} // Ensure it's full width
+            sx={{ width: '100%' }}
           />
         </Grid2>
       );
     });
   };
-  // Handle dialog open/close
 
   return (
-    <>
-      {/* Dialog for Work Location */}
-      <Dialog open={open} onClose={handleClose} maxWidth={'md'} fullWidth>
-        <DialogTitle textAlign="center">Add Location Details</DialogTitle>
-        <Divider />
-        <DialogContent>
-          <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
-            <Grid2 container spacing={3}>
-              {/* Render dynamic fields for filing address */}
-              {renderFields(filingAddress)}
-            </Grid2>
-          </Box>
-        </DialogContent>
+    <Dialog open={open} onClose={handleClose} maxWidth={'md'} fullWidth>
+      <DialogTitle textAlign="center">Add Location Details</DialogTitle>
+      <Divider />
+      <DialogContent>
+        <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
+          <Grid2 container spacing={3}>
+            {renderFields(filingAddress)}
+          </Grid2>
+        </Box>
+      </DialogContent>
 
-        <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Button
-            onClick={() => {
-              resetForm();
-              handleClose();
-            }}
-            variant="outlined"
-            color="error"
-          >
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} type="submit" variant="contained" color="primary">
-            Submit
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
+      <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Button
+          onClick={() => {
+            setType('');
+            resetForm();
+            handleClose();
+          }}
+          variant="outlined"
+          color="error"
+        >
+          Cancel
+        </Button>
+        <Button onClick={handleSubmit} type="submit" variant="contained" color="primary">
+          Submit
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }

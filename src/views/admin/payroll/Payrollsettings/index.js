@@ -1,12 +1,16 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import MainCard from '@/components/MainCard';
 import HomeCard from '@/components/cards/HomeCard';
+import useCurrentUser from '@/hooks/useCurrentUser';
+import Factory from '@/utils/Factory';
 
 import { Stepper, Step, StepLabel, Button, Typography, Box, Stack, LinearProgress, Grid2 } from '@mui/material';
 
 const PayrollSetup = () => {
+  const { userData } = useCurrentUser();
+  const [payrollDetails, setPayrollDetails] = useState({});
   const steps = [
     { nameKey: 'Organization Details', path: '/organization_details', completed: false },
     { nameKey: 'Set up Work Location', path: '/set_up_work_location', completed: false },
@@ -24,6 +28,22 @@ const PayrollSetup = () => {
   const completedSteps = steps.filter((step) => step.completed).length;
   const completionPercentage = Math.round((completedSteps / totalSteps) * 100);
 
+  const getData = async () => {
+    const url = `/payroll/business-payroll/${userData.id}/`;
+    const { res, error } = await Factory('get', url, {});
+
+    if (res?.status_cd === 0) {
+      setPayrollDetails(res?.data);
+    } else {
+      setPayrollDetails({}); // Ensure workLocations is reset if there's an error or invalid data
+      // Optionally show a snackbar error here if needed
+      // showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
   return (
     <HomeCard title="Payroll" tagline="Setup your organization before starting payroll">
       <Grid2 container spacing={{ xs: 2, sm: 3 }}>
@@ -101,8 +121,16 @@ const PayrollSetup = () => {
                       fontWeight: step.completed ? 500 : 400
                     }}
                     onClick={() => {
-                      const route = `/payrollsetup${step.path}`;
-                      router.push(route);
+                      if (step.nameKey === 'Organization Details') {
+                        router.push(`/payrollsetup${step.path}`);
+                      } else {
+                        if (payrollDetails?.id) {
+                          const route = `/payrollsetup${step.path}?payrollid=${payrollDetails?.id}`;
+                          router.push(route); // Navigate to the appropriate route with payroll id
+                        } else {
+                          alert('Payroll ID not available!');
+                        }
+                      }
                     }}
                   >
                     {step.completed ? 'Completed' : 'Complete Now'}

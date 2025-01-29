@@ -71,8 +71,8 @@ export default function AuthLogin({ inputSx }) {
         let userDAta = {
           id: res.data.id,
           email: res.data.email,
-          // role: roles[res.data.user_type],
-          role: AuthRole.SUPER_ADMIN,
+          role: roles[res.data.user_type],
+          // role: AuthRole.SUPER_ADMIN,
           contact: '123456789',
           dialcode: '+1',
           firstname: res.data.name,

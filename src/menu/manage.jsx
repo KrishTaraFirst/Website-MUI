@@ -36,7 +36,7 @@ const manage = {
       type: 'item',
       url: '/invoicing',
       icon: 'IconFileInvoice',
-      roles: [AuthRole.INDIVIDUAL]
+      roles: [AuthRole.INDIVIDUAL, AuthRole.CORPORATE_ADMIN]
     },
     {
       id: 'VisaServices',
