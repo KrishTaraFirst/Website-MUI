@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { TextField, Button, Box, Typography } from '@mui/material';
@@ -9,101 +9,85 @@ import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import CustomInput from '@/utils/CustomInput';
 import CustomUpload from '@/utils/CustomUpload';
 import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
+import { useSnackbar } from '@/components/CustomSnackbar';
+import Factory from '@/utils/Factory';
+import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 import { IconTemperature } from '@tabler/icons-react';
 
 function Organizationdetails({ tab }) {
-  // Field definitions for organization details
+  const router = useRouter();
+  const [payrollid, setPayrollId] = useState(null);
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const id = searchParams.get('payrollid'); // Get payrollid from query string
+    if (id) {
+      setPayrollId(id);
+    }
+  }, [searchParams]);
+
+  const { showSnackbar } = useSnackbar();
+  const [postType, setPostType] = useState('');
   const [logoDetails, setLogoDetails] = useState([]);
   const fields = [
-    { name: 'organization_name', label: 'Organization Name' },
+    { name: 'org_name', label: 'Organization Name' },
     { name: 'logo', label: 'Logo' },
     { name: 'industry', label: 'Industry' },
     { name: 'contact_email', label: 'Contact Email' },
-    { name: 'sender', label: 'Sender' }
+    { name: 'sender_email', label: 'Sender' }
   ];
 
   // Address fields for organization and filing (with updated names)
   const organizationAddress = [
-    { name: 'organization_address_line1', label: 'Address Line 1' },
-    { name: 'organization_address_line2', label: 'Address Line 2' },
-    { name: 'organization_state', label: 'State' },
-    { name: 'organization_city', label: 'City' },
-    { name: 'organization_postal_code', label: 'Pincode' }
+    { name: 'org_address_line1', label: 'Address Line 1' },
+    { name: 'org_address_line2', label: 'Address Line 2' },
+    { name: 'org_address_state', label: 'State' },
+    { name: 'org_address_city', label: 'City' },
+    { name: 'org_address_pincode', label: 'Pincode' }
   ];
 
   const filingAddress = [
-    { name: 'filing_address_line1', label: 'Address Line 1' },
-    { name: 'filing_address_line2', label: 'Address Line 2' },
-    { name: 'filing_state', label: 'State' },
-    { name: 'filing_city', label: 'City' },
-    { name: 'filing_postal_code', label: 'Pincode' }
+    { name: 'filling_address_line1', label: 'Address Line 1' },
+    { name: 'filling_address_line2', label: 'Address Line 2' },
+    { name: 'filling_address_state', label: 'State' },
+    { name: 'filling_address_city', label: 'City' },
+    { name: 'filling_address_pincode', label: 'Pincode' }
   ];
 
   // Formik validation schema
   const validationSchema = Yup.object({
-    organization_name: Yup.string()
+    org_name: Yup.string()
       .required('Organization name is required')
       .min(3, 'Organization name must be at least 3 characters')
       .max(100, 'Organization name must be at most 100 characters'),
 
-    logo: Yup.string().required('Logo is required').url('Invalid URL for logo'), // Assuming logo is a URL
+    // logo: Yup.string().required('Logo is required').url('Invalid URL for logo'), // Assuming logo is a URL
 
-    industry: Yup.string()
-      .required('Industry is required')
-      .min(3, 'Industry must be at least 3 characters')
-      .max(50, 'Industry must be at most 50 characters'),
+    industry: Yup.string().required('Industry is required'),
 
     contact_email: Yup.string().email('Invalid email address').required('Email is required'),
 
-    sender: Yup.string()
-      .required('Sender is required')
-      .min(2, 'Sender name must be at least 2 characters')
-      .max(50, 'Sender name must be at most 50 characters'),
+    sender_email: Yup.string().email('Invalid email address').required('Email is required'),
 
-    organization_address_line1: Yup.string()
-      .required('Address Line 1 is required')
-      .min(5, 'Address Line 1 must be at least 5 characters')
-      .max(100, 'Address Line 1 must be at most 100 characters'),
-    organization_address_line2: Yup.string()
-      .required('Address Line 2 is required')
-      .min(5, 'Address Line 2 must be at least 5 characters')
-      .max(100, 'Address Line 2 must be at most 100 characters'),
+    org_address_line1: Yup.string().required('Address Line 1 is required'),
+    org_address_line2: Yup.string().required('Address Line 2 is required'),
 
-    organization_state: Yup.string()
-      .required('State is required')
-      .min(2, 'State must be at least 2 characters')
-      .max(50, 'State must be at most 50 characters'),
+    org_address_state: Yup.string().required('State is required'),
 
-    organization_city: Yup.string()
-      .required('City is required')
-      .min(2, 'City must be at least 2 characters')
-      .max(50, 'City must be at most 50 characters'),
+    org_address_city: Yup.string().required('City is required'),
 
-    organization_postal_code: Yup.string()
+    org_address_pincode: Yup.string()
       .required('Pincode is required')
       .matches(/^[0-9]{6}$/, 'Invalid Pincode format. It must be exactly 6 digits.'),
 
-    filing_address_line1: Yup.string()
-      .required('Address Line 1 is required')
-      .min(5, 'Address Line 1 must be at least 5 characters')
-      .max(100, 'Address Line 1 must be at most 100 characters'),
+    filling_address_line1: Yup.string().required('Address Line 1 is required'),
+    filling_address_line2: Yup.string().required('Address Line 2 is required'),
+    filling_address_state: Yup.string().required('State is required'),
 
-    filing_address_line2: Yup.string()
-      .required('Address Line 2 is required')
-      .min(5, 'Address Line 2 must be at least 5 characters')
-      .max(100, 'Address Line 2 must be at most 100 characters'),
-    filing_state: Yup.string()
-      .required('State is required')
-      .min(2, 'State must be at least 2 characters')
-      .max(50, 'State must be at most 50 characters'),
+    filling_address_city: Yup.string().required('City is required'),
 
-    filing_city: Yup.string()
-      .required('City is required')
-      .min(2, 'City must be at least 2 characters')
-      .max(50, 'City must be at most 50 characters'),
-
-    filing_postal_code: Yup.string()
+    filling_address_pincode: Yup.string()
       .required('Pincode is required')
       .matches(/^[0-9]{6}$/, 'Invalid Pincode format. It must be exactly 6 digits.')
   });
@@ -111,43 +95,62 @@ function Organizationdetails({ tab }) {
   // Initialize Formik with initial values and validation schema
   const formik = useFormik({
     initialValues: {
-      organization_name: '',
+      org_name: '',
       logo: null,
       industry: '',
       contact_email: '',
-      sender: '',
-      organization_address_line1: '',
-      organization_address_line2: '',
-      organization_state: '',
-      organization_city: '',
-      organization_postal_code: '',
-      filing_address_line1: '',
-      filing_address_line2: '',
-      filing_state: '',
-      filing_city: '',
-      filing_postal_code: ''
+      sender_email: '',
+      org_address_line1: '',
+      org_address_line2: '',
+      org_address_state: '',
+      org_address_city: '',
+      org_address_pincode: '',
+      filling_address_line1: '',
+      filling_address_line2: '',
+      filling_address_state: '',
+      filling_address_city: '',
+      filling_address_pincode: ''
     },
     validationSchema,
     onSubmit: async (values) => {
-      let postData = { ...values };
-      // postData.log =
-      console.log(values);
+      let postData = new FormData();
+      // postData.append('business_id', 1);
+
+      Object.keys(values).forEach((key) => {
+        if (key === 'logo' && values[key]) {
+          postData.append(key, values[key]);
+        } else if (values[key]) {
+          postData.append(key, values[key]);
+        }
+      });
+
+      let url = postType === 'post' ? `/payroll/orgs/` : `/payroll/orgs/${payrollid}/`;
+      const { res, error } = await Factory(postType, url, postData);
+      console.log(res);
+      if (res.status_cd === 0) {
+        showSnackbar(postType === 'post' ? 'Data Saved Successfully' : 'Data Updated Successfully', 'success');
+      } else {
+        showSnackbar(JSON.stringify(res.data.data), 'error');
+      }
     }
   });
-
-  const { values, handleChange, errors, touched, handleSubmit, handleBlur, setFieldValue } = formik;
 
   const renderFields = (fields) => {
     return fields.map((field) => {
       if (field.name === 'logo') {
         return (
           <Grid2 key={field.name} size={{ xs: 12, sm: 6, md: 4 }}>
-            <CustomUpload fieldName={field.name} title="Upload Logo" setLogoDetails={setLogoDetails} />
+            <CustomUpload
+              fieldName={field.name}
+              title="Upload Logo"
+              setData={setLogoDetails} // This updates the parent component state
+              logoDetails={values.logo} // Pass the logo URL to the component
+            />
           </Grid2>
         );
       }
 
-      if (field.name === 'organization_state' || field.name === 'filing_state') {
+      if (field.name === 'org_address_state' || field.name === 'filling_address_state') {
         return (
           <Grid2 key={field.name} size={{ xs: 12, sm: 6, md: 4 }}>
             <div style={{ paddingBottom: '5px' }}>
@@ -184,7 +187,44 @@ function Organizationdetails({ tab }) {
       );
     });
   };
+  const get_org_details = async () => {
+    const url = `/payroll/orgs/${payrollid}/`;
+    const { res, error } = await Factory('get', url, {});
 
+    if (res.status_cd === 0) {
+      setValues((prev) => ({
+        ...prev,
+        org_name: res.data.org_name || '',
+        logo: res.data.logo || null,
+        industry: res.data.industry || '',
+        contact_email: res.data.contact_email || '',
+        sender_email: res.data.sender_email || '',
+        org_address_line1: res.data.org_address_line1 || '',
+        org_address_line2: res.data.org_address_line2 || '',
+        org_address_state: res.data.org_address_state || '',
+        org_address_city: res.data.org_address_city || '',
+        org_address_pincode: res.data.org_address_pincode || '',
+        filling_address_line1: res.data.filling_address_line1 || '',
+        filling_address_line2: res.data.filling_address_line2 || '',
+        filling_address_state: res.data.filling_address_state || '',
+        filling_address_city: res.data.filling_address_city || '',
+        filling_address_pincode: res.data.filling_address_pincode || ''
+      }));
+      setPostType('put');
+    } else {
+      // showSnackbar(JSON.stringify(res.data.data), 'error');
+      setPostType('post');
+    }
+  };
+
+  const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, setFieldValue } = formik;
+
+  useEffect(() => {
+    get_org_details();
+  }, []);
+  useEffect(() => {
+    setFieldValue('logo', logoDetails);
+  }, [logoDetails]);
   return (
     <HomeCard title="Organization Details" tagline="Setup your organization before starting payroll">
       <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>

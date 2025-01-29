@@ -19,7 +19,7 @@ export default function AnalyticsOverview() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [businessDetails, setBusinessDetails] = useState({});
-  const [customers, setCustomers] = useState([]);
+  // const [customers, setCustomers] = useState([]);
   const [invoicesList, setInvoicesList] = useState([]);
   const chipDefaultProps = { color: 'black', variant: 'text', size: 'small' };
   const { showSnackbar } = useSnackbar();
@@ -45,24 +45,26 @@ export default function AnalyticsOverview() {
   useEffect(() => {
     const fetchBusinessDetails = async () => {
       const { res } = await Factory('get', '/invoicing/invoicing-profiles/', {});
-      if (res) {
+      if (res.status_cd === 0) {
         const businessData = { ...res.data, state: 'Telangana' };
         setBusinessDetails(businessData);
+      } else {
+        router.push(`invoicing/settings`);
       }
     };
     fetchBusinessDetails();
   }, []);
 
-  const getCustomersData = async () => {
-    const { res } = await Factory('get', '/invoicing/customer_profiles/', {});
-    if (res.status_cd === 0) {
-      setCustomers(res.data.customer_profiles);
-    }
-  };
+  // const getCustomersData = async () => {
+  //   const { res } = await Factory('get', '/invoicing/customer_profiles/', {});
+  //   if (res.status_cd === 0) {
+  //     setCustomers(res.data.customer_profiles);
+  //   }
+  // };
 
-  useEffect(() => {
-    getCustomersData();
-  }, []);
+  // useEffect(() => {
+  //   getCustomersData();
+  // }, []);
 
   return (
     <Stack sx={{ gap: 3 }}>
@@ -103,7 +105,7 @@ export default function AnalyticsOverview() {
           <OverviewCard
             invoicesList={invoicesList}
             businessDetailsData={businessDetails}
-            customers={customers}
+            // customers={customers}
             open={open}
             onClose={handleClose}
             getInvoicesList={getInvoicesList}

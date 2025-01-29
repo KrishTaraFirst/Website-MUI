@@ -148,7 +148,7 @@ export default function ActionCell({
                       <ListItemText>Payment History</ListItemText>
                     </ListItemButton>
                   )}
-                  {row?.invoice_status !== 'Approved' && (
+                  {fromComponent === 'invoice' && (
                     <ListItemButton onClick={onApprove}>
                       <ListItemIcon>
                         <IconCheck size={16} />
