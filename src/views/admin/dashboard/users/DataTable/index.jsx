@@ -22,7 +22,7 @@ import EditUser from '../edit-user';
 
 /***************************  COMPONENT - TABLE  ***************************/
 
-export default function AnalyticsBehaviorTable({ type, tableData }) {
+export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
   const [data, setData] = useState([]);
   const [user, setUser] = useState('');
   const { showSnackbar } = useSnackbar();
@@ -43,21 +43,7 @@ export default function AnalyticsBehaviorTable({ type, tableData }) {
 
   useEffect(() => {
     getUsers();
-  }, []);
-
-  // const handleToggle = async (event, row) => {
-  //   console.log(data);
-  // let url = `/user_management/update-users-info`;
-  // const { res } = await Factory('patch', url, { id: row.original.id, is_active: event.target.checked });
-  // if (res.status_cd === 1) {
-  //   showSnackbar(res.data.message, 'error');
-  // } else {
-  //   let updatedData = JSON.parse(JSON.stringify(data));
-  //   updatedData = updatedData.map((user) => (user.id === row.original.id ? { ...user, is_active: event.target.checked } : user));
-  //   // setData(updatedData);
-  //   showSnackbar('Status Changed', 'success');
-  // }
-  // };
+  }, [refresh]);
 
   const handleToggle = async (event, row) => {
     const { id } = row.original; // Extract the user ID
@@ -170,7 +156,7 @@ export default function AnalyticsBehaviorTable({ type, tableData }) {
   return (
     <>
       <ManageAccess open={accessDialog} setOpen={setAccessDialog} />
-      <EditUser open={editUserDialog} setOpen={setEditUserDialog} user_id={user} getUsers={getUsers} />
+      <EditUser type="edit" open={editUserDialog} setOpen={setEditUserDialog} user_id={user} getUsers={getUsers} />
       <Table table={table} onGlobalSearch={onGlobalSearch} />
     </>
   );
