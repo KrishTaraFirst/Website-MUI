@@ -37,7 +37,7 @@ import { IconChevronRight, IconLanguage, IconLogout, IconSettings, IconSunMoon, 
 /***************************  HEADER - PROFILE DATA  ***************************/
 
 const profileData = {
-  avatar: { src: '/assets/images/users/avatar-1.png', size: AvatarSize.XS },
+  avatar: { src: '/assets/images/user/avatar1.png', size: AvatarSize.SM },
   title: 'Erika Collins',
   caption: 'Super Admin'
 };
@@ -46,8 +46,9 @@ const languageList = ['English', 'Spanish', 'France'];
 
 const RoleTitles = {
   [AuthRole.SUPER_ADMIN]: 'Super Admin',
-  [AuthRole.CORPORATE_ADMIN]: 'Admin',
+  [AuthRole.CORPORATE_ADMIN]: 'Corporate Admin',
   [AuthRole.SERVICE_PROVIDER]: 'Service Provider',
+  [AuthRole.CHARTED_ACCOUNTANT_FIRM]: 'Charted Accountant Firm',
   [AuthRole.INDIVIDUAL]: 'Individual'
 };
 
@@ -70,7 +71,7 @@ export default function ProfileSection() {
   if (userData && Object.keys(userData).length > 0) {
     const name = `${userData?.firstname ?? ''} ${userData?.lastname ?? ''}`.trim();
     profileData.caption = userData?.role ? RoleTitles[userData.role] : undefined;
-    profileData.title = name;
+    profileData.title = name || userData?.email;
   }
 
   const handleActionClick = (event) => {
