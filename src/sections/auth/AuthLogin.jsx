@@ -33,7 +33,7 @@ import { emailSchema, passwordSchema } from '@/utils/validationSchema';
 import { CloseEye, OpenEye } from '@/icons';
 
 const roles = {
-  Tara: AuthRole.SUPER_ADMIN,
+  TaraTeam: AuthRole.SUPER_ADMIN,
   CA: AuthRole.CHARTED_ACCOUNTANT_FIRM,
   Business: AuthRole.CORPORATE_ADMIN,
   ServiceProvider: AuthRole.SERVICE_PROVIDER,

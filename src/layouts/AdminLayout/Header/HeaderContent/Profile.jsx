@@ -45,7 +45,7 @@ const profileData = {
 const languageList = ['English', 'Spanish', 'France'];
 
 const RoleTitles = {
-  [AuthRole.SUPER_ADMIN]: 'Super Admin',
+  [AuthRole.SUPER_ADMIN]: 'Tara Super Admin',
   [AuthRole.CORPORATE_ADMIN]: 'Corporate Admin',
   [AuthRole.SERVICE_PROVIDER]: 'Service Provider',
   [AuthRole.CHARTED_ACCOUNTANT_FIRM]: 'Charted Accountant Firm',
