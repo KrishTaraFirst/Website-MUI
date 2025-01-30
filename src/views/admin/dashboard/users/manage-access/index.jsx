@@ -166,8 +166,20 @@ export default function ManageAccess({ open, setOpen }) {
     }
   }
 
+  async function getUserPermissions() {
+    let url = `/user_management/permissions/`;
+    const { res } = await Factory('get', url, {});
+    if (res.status_cd === 0) {
+      console.log(res);
+      setPermissions(res.data);
+    } else {
+      showSnackbar(JSON.stringify(res.data), 'error');
+    }
+  }
+
   useEffect(() => {
     getPermissions();
+    getUserPermissions();
   }, []);
 
   return (

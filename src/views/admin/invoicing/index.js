@@ -44,7 +44,7 @@ export default function AnalyticsOverview() {
   };
   useEffect(() => {
     const fetchBusinessDetails = async () => {
-      const { res } = await Factory('get', '/invoicing/invoicing-profiles/', {});
+      const { res } = await Factory('get', '/invoicing/invoicing-profiles/?business_id=3', {});
       if (res.status_cd === 0) {
         const businessData = { ...res.data, state: 'Telangana' };
         setBusinessDetails(businessData);
