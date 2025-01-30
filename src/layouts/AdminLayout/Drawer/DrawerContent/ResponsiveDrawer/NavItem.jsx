@@ -48,7 +48,7 @@ export default function NavItem({ item, level = 0 }) {
     let url = `/user_management/user-group?user_id=${userData.id}&name=${id}`;
     const { res } = await Factory('get', url, {});
     if (res.status_cd === 0) {
-      localStorageData[id] = res.data.data.custom_permissions;
+      localStorageData[id] = res.data.custom_permissions;
     } else {
       console.log(res);
     }

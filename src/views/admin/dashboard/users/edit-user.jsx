@@ -30,7 +30,7 @@ const userTypes = {
   'service-providers': 'ServiceProvider'
 };
 
-export default function EditUser({ type, open, setOpen, user_id, setRefresh, user_type }) {
+export default function EditUser({ type, open, setOpen, user_id, setRefresh, user_type, getUsers }) {
   const { showSnackbar } = useSnackbar();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -189,13 +189,17 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
 
   const __editUser = async () => {
     let url = `/user_management/update-users-info`;
-    const { res } = await Factory('patch', url, { ...data });
+    let __data = { ...data };
+    delete __data.email;
+    delete __data.mobile_number;
+    delete __data.password;
+    const { res } = await Factory('patch', url, { ...__data });
 
     if (res.status_cd === 1) {
       showSnackbar(res.data.message, 'error');
     } else {
       showSnackbar('Saved Successfully', 'success');
-      setRefresh((prev) => !prev);
+      getUsers();
       resetForm();
       setOpen(false);
     }

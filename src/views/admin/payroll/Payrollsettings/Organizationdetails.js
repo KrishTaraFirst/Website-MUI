@@ -114,8 +114,7 @@ function Organizationdetails({ tab }) {
     validationSchema,
     onSubmit: async (values) => {
       let postData = new FormData();
-      // postData.append('business_id', 1);
-
+      postData.append('business_id', 1);
       Object.keys(values).forEach((key) => {
         if (key === 'logo' && values[key]) {
           postData.append(key, values[key]);

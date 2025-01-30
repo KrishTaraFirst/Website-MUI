@@ -1,6 +1,5 @@
 'use client';
 import React, { useState } from 'react';
-import UserBehaviourTable from '@/sections/dashboard/analytics/user-behavior';
 import AnalyticsBehaviorTable from './DataTable';
 import { useRouter } from 'next/navigation';
 import ManageAccess from './manage-access';
@@ -9,30 +8,20 @@ import { IconSparkles } from '@tabler/icons-react';
 import EditUser from './edit-user';
 import { Subtitles } from '@mui/icons-material';
 
-// const addUser = async (type) => {
-//   let url = `/user_management/users/by-type/?user_type=${type}`;
-//   const { res } = await Factory('get', url, {});
-//   if (res.status_cd === 0) {
-//     setData(res.data.users);
-//   } else {
-//     showSnackbar(JSON.stringify(res.data), 'error');
-//   }
-// };
-
 export default function Dashboard({ tab }) {
   const [open, setOpen] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const renderComponent = () => {
     switch (tab) {
       case 'corporate-entities':
-        return <CorporateEntity setOpen={setOpen} setRefresh={setRefresh} />;
+        return <CorporateEntity setOpen={setOpen} refresh={refresh} />;
       case 'service-providers':
-        return <ServiceProvider setOpen={setOpen} setRefresh={setRefresh} />;
+        return <ServiceProvider setOpen={setOpen} refresh={refresh} />;
       case 'ca-firms':
-        return <CAFirm setOpen={setOpen} setRefresh={setRefresh} />;
+        return <CAFirm setOpen={setOpen} refresh={refresh} />;
       case 'individual':
       default:
-        return <Individual setOpen={setOpen} setRefresh={setRefresh} />;
+        return <Individual setOpen={setOpen} refresh={refresh} />;
     }
   };
   return (
@@ -72,7 +61,7 @@ const RenderHead = ({ children, title, subTitle, setOpen }) => {
   );
 };
 
-function CorporateEntity({ setOpen, setRefresh }) {
+function CorporateEntity({ setOpen, refresh }) {
   const router = useRouter();
   // const [editUserDialog, setEditUserDialog] = useState(false);
   // useEffect(() => {
@@ -81,31 +70,31 @@ function CorporateEntity({ setOpen, setRefresh }) {
 
   return (
     <RenderHead title="Corporate Entity" subTitle="List of users under Corporate Entity" setOpen={setOpen}>
-      <AnalyticsBehaviorTable type={'Business'} setRefresh={setRefresh} />
+      <AnalyticsBehaviorTable type={'Business'} refresh={refresh} />
     </RenderHead>
   );
 }
 
-function ServiceProvider({ setOpen, setRefresh }) {
+function ServiceProvider({ setOpen, refresh }) {
   return (
     <RenderHead title="Service Provider" subTitle="List of users under Service Provider" setOpen={setOpen}>
-      <UserBehaviourTable />
+      <AnalyticsBehaviorTable type={'ServiceProvider'} refresh={refresh} />
     </RenderHead>
   );
 }
 
-function CAFirm({ setOpen, setRefresh }) {
+function CAFirm({ setOpen, refresh }) {
   return (
     <RenderHead title="Charted Accountant Firm" subTitle="List of users under Charted Accountant Firm" setOpen={setOpen}>
-      <AnalyticsBehaviorTable type={'CA'} setRefresh={setRefresh} />
+      <AnalyticsBehaviorTable type={'CA'} refresh={refresh} />
     </RenderHead>
   );
 }
 
-function Individual({ setOpen, setRefresh }) {
+function Individual({ setOpen, refresh }) {
   return (
     <RenderHead title="Individual" subTitle="List of users under Individual" setOpen={setOpen}>
-      <AnalyticsBehaviorTable type={'Individual'} setRefresh={setRefresh} />
+      <AnalyticsBehaviorTable type={'Individual'} refresh={refresh} />
     </RenderHead>
   );
 }

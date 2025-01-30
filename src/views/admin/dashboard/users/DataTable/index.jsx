@@ -42,6 +42,7 @@ export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
   };
 
   useEffect(() => {
+    console.log(refresh);
     getUsers();
   }, [refresh]);
 
@@ -152,7 +153,6 @@ export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
     setGlobalFilter(globalFilter);
   };
 
-  const statusChange = () => {};
   return (
     <>
       <ManageAccess open={accessDialog} setOpen={setAccessDialog} />
