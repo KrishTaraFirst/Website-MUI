@@ -28,12 +28,13 @@ import { useForm } from 'react-hook-form';
 
 // @project
 import { emailSchema, passwordSchema } from '@/utils/validationSchema';
+import { useSnackbar } from '@/components/CustomSnackbar';
 
 // @assets
 import { CloseEye, OpenEye } from '@/icons';
 
 const roles = {
-  Tara: AuthRole.SUPER_ADMIN,
+  TaraTeam: AuthRole.SUPER_ADMIN,
   CA: AuthRole.CHARTED_ACCOUNTANT_FIRM,
   Business: AuthRole.CORPORATE_ADMIN,
   ServiceProvider: AuthRole.SERVICE_PROVIDER,
@@ -41,6 +42,7 @@ const roles = {
 };
 
 export default function AuthLogin({ inputSx }) {
+  const { showSnackbar } = useSnackbar();
   const theme = useTheme();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -95,8 +97,8 @@ export default function AuthLogin({ inputSx }) {
         else router.push(APP_DEFAULT_PATH);
       }
     } catch (error) {
-      // console.error("Login error:", error.response.data.detail);
       console.log('error', error);
+      showSnackbar(JSON.stringify(error.detail), 'error');
       setIsProcessing(false);
     }
     reset();

@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -15,6 +15,8 @@ import MuiAccordionSummary, { accordionSummaryClasses } from '@mui/material/Acco
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import { Box, Card, Stack, Checkbox, FormControlLabel, FormGroup, Grid2 } from '@mui/material';
+import { useSnackbar } from '@/components/CustomSnackbar';
+import Factory from '@/utils/Factory';
 
 const Accordion = styled((props) => <MuiAccordion disableGutters elevation={0} square {...props} />)(({ theme }) => ({
   border: `0px solid ${theme.palette.divider}`,
@@ -46,159 +48,6 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   padding: `${theme.spacing(4)} ${theme.spacing(2)}`,
   borderTop: '1px solid rgba(0, 0, 0, .125)'
 }));
-
-const actions = {
-  visaServicesActions: [
-    {
-      key: 'VS_Task_View',
-      label: 'Task View',
-      description: 'Allows viewing all tasks related to visa services.'
-    },
-    {
-      key: 'VS_Task_Create',
-      label: 'Task Create',
-      description: 'Grants permission to create new tasks for visa services.'
-    },
-    {
-      key: 'VS_Task_Edit',
-      label: 'Task Edit',
-      description: 'Enables editing existing tasks for visa services.'
-    },
-    {
-      key: 'VS_Task_Delete',
-      label: 'Task Delete',
-      description: 'Allows deleting tasks related to visa services.'
-    },
-    {
-      key: 'VS_Client_View',
-      label: 'Client View',
-      description: 'Provides access to view details of clients related to visa services.'
-    },
-    {
-      key: 'VS_Client_Create',
-      label: 'Client Create',
-      description: 'Grants permission to add new clients for visa services.'
-    },
-    {
-      key: 'VS_Client_Edit',
-      label: 'Client Edit',
-      description: 'Enables modifying details of existing clients in visa services.'
-    },
-    {
-      key: 'VS_Client_Delete',
-      label: 'Client Delete',
-      description: 'Allows removal of client records related to visa services.'
-    }
-  ],
-
-  invoicingActions: [
-    {
-      key: 'INV_Settings_Create',
-      label: 'Settings Create',
-      description: 'Allows creating new invoicing settings.'
-    },
-    {
-      key: 'INV_Settings_Edit',
-      label: 'Settings Edit',
-      description: 'Grants permission to modify existing invoicing settings.'
-    },
-    {
-      key: 'INV_Settings_Delete',
-      label: 'Settings Delete',
-      description: 'Enables deletion of invoicing settings.'
-    },
-    {
-      key: 'INV_Settings_View',
-      label: 'Settings View',
-      description: 'Allows viewing invoicing settings.'
-    },
-    {
-      key: 'INV_NumberFormat_Create',
-      label: 'Number Format Create',
-      description: 'Grants permission to create new number formats for invoices.'
-    },
-    {
-      key: 'INV_NumberFormat_Edit',
-      label: 'Number Format Edit',
-      description: 'Enables editing existing invoice number formats.'
-    },
-    {
-      key: 'INV_NumberFormat_Delete',
-      label: 'Number Format Delete',
-      description: 'Allows deleting invoice number formats.'
-    },
-    {
-      key: 'INV_NumberFormat_View',
-      label: 'Number Format View',
-      description: 'Provides access to view invoice number formats.'
-    },
-    {
-      key: 'INV_Invoice_Create',
-      label: 'Invoice Create',
-      description: 'Allows users to create new invoices.'
-    },
-    {
-      key: 'INV_Invoice_Edit',
-      label: 'Invoice Edit',
-      description: 'Grants permission to modify existing invoices.'
-    },
-    {
-      key: 'INV_Invoice_Delete',
-      label: 'Invoice Delete',
-      description: 'Enables deletion of invoices.'
-    },
-    {
-      key: 'INV_Invoice_View',
-      label: 'Invoice View',
-      description: 'Allows viewing invoices.'
-    },
-    {
-      key: 'INV_ApproveInvoice',
-      label: 'Approve Invoice',
-      description: 'Grants permission to approve invoices.'
-    },
-    {
-      key: 'INV_RecordPayment_Create',
-      label: 'Record Payment Create',
-      description: 'Allows recording new payments for invoices.'
-    },
-    {
-      key: 'INV_RecordPayment_Edit',
-      label: 'Record Payment Edit',
-      description: 'Grants permission to edit recorded payments.'
-    },
-    {
-      key: 'INV_RecordPayment_Delete',
-      label: 'Record Payment Delete',
-      description: 'Enables deletion of recorded payments.'
-    },
-    {
-      key: 'INV_RecordPayment_View',
-      label: 'Record Payment View',
-      description: 'Allows users to view their payment records.'
-    },
-    {
-      key: 'INV_PaymentStatus_Edit',
-      label: 'Payment Status Edit',
-      description: 'Grants permission to update the status of payments.'
-    },
-    {
-      key: 'INV_PaymentStatus_Delete',
-      label: 'Payment Status Delete',
-      description: 'Enables deletion of payment statuses.'
-    },
-    {
-      key: 'INV_SendEmail',
-      label: 'Send Email',
-      description: 'Allows sending invoices via email.'
-    },
-    {
-      key: 'INV_WriteOff',
-      label: 'Write Off',
-      description: 'Grants permission to write off outstanding balances.'
-    }
-  ]
-};
 
 const Checkboxes = ({ data = [], checkedItems, setCheckedItems, type }) => {
   const handleCheckboxChange = (key) => (event) => {
@@ -289,7 +138,10 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function ManageAccess({ open, setOpen }) {
   const [expanded, setExpanded] = React.useState('visa-services');
+  const { showSnackbar } = useSnackbar();
   const [checkedItems, setCheckedItems] = React.useState({});
+  const [permissions, setPermissions] = React.useState({ VisaServices: [], Invoicing: [] });
+  const [customisedPermissions, setCustomisedPermissions] = React.useState({ VisaServices: [], Invoicing: [] });
 
   const handleChange = (panel) => (event, newExpanded) => {
     setExpanded(newExpanded ? panel : false);
@@ -303,6 +155,33 @@ export default function ManageAccess({ open, setOpen }) {
     console.log(checkedItems);
     setOpen(false);
   };
+
+  async function getPermissions() {
+    let url = `/user_management/permissions/`;
+    const { res } = await Factory('get', url, {});
+    if (res.status_cd === 0) {
+      console.log(res);
+      setPermissions(res.data);
+    } else {
+      showSnackbar(JSON.stringify(res.data), 'error');
+    }
+  }
+
+  async function getUserPermissions() {
+    let url = `/user_management/permissions/`;
+    const { res } = await Factory('get', url, {});
+    if (res.status_cd === 0) {
+      console.log(res);
+      setCustomisedPermissions(res.data);
+    } else {
+      showSnackbar(JSON.stringify(res.data), 'error');
+    }
+  }
+
+  useEffect(() => {
+    getPermissions();
+    getUserPermissions();
+  }, []);
 
   return (
     <Dialog
@@ -350,7 +229,7 @@ export default function ManageAccess({ open, setOpen }) {
               </AccordionSummary>
               <AccordionDetails>
                 <Checkboxes
-                  data={actions.visaServicesActions}
+                  data={permissions.VisaServices}
                   type={'visaServices'}
                   checkedItems={checkedItems}
                   setCheckedItems={setCheckedItems}
@@ -362,12 +241,7 @@ export default function ManageAccess({ open, setOpen }) {
                 <Typography component="span">Invoicing</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Checkboxes
-                  data={actions.invoicingActions}
-                  type={'invoicing'}
-                  checkedItems={checkedItems}
-                  setCheckedItems={setCheckedItems}
-                />
+                <Checkboxes data={permissions.Invoicing} type={'invoicing'} checkedItems={checkedItems} setCheckedItems={setCheckedItems} />
               </AccordionDetails>
             </Accordion>
 

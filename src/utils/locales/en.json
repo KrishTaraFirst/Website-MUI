@@ -5,7 +5,11 @@
   "account-user": "Account & User",
   "account": "Account",
   "user": "User",
-
+  "charted-accountant-firm": "Charted Accountant Firm",
+  "corporate-admin": "Corporate Admin",
+  "service-provider": "Service Provider",
+  "individual": "Individual",
+  "super-admin": "Super Admin",
   "roles-permissions": "Roles & Permissions",
   "billing": "Billing",
   "blog": "Blog",

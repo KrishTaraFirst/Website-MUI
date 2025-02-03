@@ -110,7 +110,7 @@ export default function BusinessKYC() {
         setDialogOpen(false);
         router.push(APP_DEFAULT_PATH);
       } else {
-        showSnackbar('Error: ' + res?.data, 'error');
+        showSnackbar(JSON.stringify(res.data), 'error');
       }
     }
   });

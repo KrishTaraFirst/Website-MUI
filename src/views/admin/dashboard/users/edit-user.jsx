@@ -6,28 +6,42 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Slide from '@mui/material/Slide';
-import IconButton from '@mui/material/IconButton';
 import { IconX } from '@tabler/icons-react';
 import { styled } from '@mui/material/styles';
-import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
-import MuiAccordion from '@mui/material/Accordion';
-import MuiAccordionSummary, { accordionSummaryClasses } from '@mui/material/AccordionSummary';
-import MuiAccordionDetails from '@mui/material/AccordionDetails';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { Box, Card, Stack, Checkbox, FormControlLabel, FormGroup, Grid2, TextField } from '@mui/material';
 import Factory from '@/utils/Factory';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import Modal from '@/components/Modal';
 import { ModalSize } from '@/enum';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="right" ref={ref} {...props} />;
 });
 
-export default function EditUser({ open, setOpen, user_id, getUsers }) {
-  const { showSnackbar } = useSnackbar();
+const userTypes = {
+  individual: 'Individual',
+  'ca-firms': 'CA',
+  'corporate-entities': 'Business',
+  'service-providers': 'ServiceProvider'
+};
 
-  const [data, setData] = useState({ first_name: '', last_name: '', id: user_id });
+export default function EditUser({ type, open, setOpen, user_id, setRefresh, user_type, getUsers }) {
+  const { showSnackbar } = useSnackbar();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const [data, setData] = useState({
+    first_name: '',
+    last_name: '',
+    mobile_number: '',
+    email: '',
+    password: '',
+    id: user_id || ''
+  });
   const [errors, setErrors] = useState({ first_name: '', last_name: '', id: user_id });
 
   const resetForm = () => {
@@ -36,24 +50,90 @@ export default function EditUser({ open, setOpen, user_id, getUsers }) {
   };
 
   const handleChange = (field, value) => {
+    // Update the data
     setData((prev) => ({
       ...prev,
       [field]: value
     }));
+
+    // Remove the error dynamically while typing
+    if (errors[field]) {
+      switch (field) {
+        case 'first_name':
+        case 'last_name':
+          if (value.trim().length >= 3 && /^[A-Za-z]+$/.test(value.trim())) {
+            setErrors((prev) => ({ ...prev, [field]: '' }));
+          }
+          break;
+
+        case 'email':
+          if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) {
+            setErrors((prev) => ({ ...prev, [field]: '' }));
+          }
+          break;
+
+        case 'mobile_number':
+          if (/^\d{10}$/.test(value.trim())) {
+            setErrors((prev) => ({ ...prev, [field]: '' }));
+          }
+          break;
+
+        case 'password':
+          if (value.trim().length >= 8 && /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}/.test(value.trim())) {
+            setErrors((prev) => ({ ...prev, [field]: '' }));
+          }
+          break;
+
+        default:
+          break;
+      }
+    }
   };
 
-  const handleBlur = (field, value) => {
-    if (value.trim().length < 3) {
-      setErrors((prev) => ({
-        ...prev,
-        [field]: `${field.replace('_', ' ')} must be at least 3 characters.`
-      }));
-    } else {
-      setErrors((prev) => ({
-        ...prev,
-        [field]: ''
-      }));
+  const handleBlur = (field, value = '') => {
+    let error = '';
+
+    switch (field) {
+      case 'first_name':
+      case 'last_name':
+        if (value.trim().length < 3) {
+          error = `${field.replace('_', ' ')} must be at least 3 characters.`;
+        } else if (!/^[A-Za-z]+$/.test(value.trim())) {
+          error = `${field.replace('_', ' ')} must only contain alphabets.`;
+        }
+        break;
+
+      case 'email':
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) {
+          error = 'Invalid email address.';
+        }
+        break;
+
+      case 'mobile_number':
+        if (!/^\d{10}$/.test(value.trim())) {
+          error = 'Mobile number must be 10 digits without spaces.';
+        }
+        break;
+
+      case 'password':
+        if (value.trim().length < 6) {
+          error = 'Password must be at least 6 characters.';
+        }
+        // else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}/.test(value.trim())) {
+        //   error = 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.';
+        // }
+        break;
+
+      default:
+        break;
     }
+
+    setErrors((prev) => ({
+      ...prev,
+      [field]: error
+    }));
+
+    return error;
   };
 
   const handleClose = () => {
@@ -68,29 +148,75 @@ export default function EditUser({ open, setOpen, user_id, getUsers }) {
     }));
   }, [user_id]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
+    const fieldsToValidate =
+      type === 'add' ? ['first_name', 'last_name', 'mobile_number', 'email', 'password'] : ['first_name', 'last_name'];
+    let valid = true;
+
+    fieldsToValidate.forEach((field) => {
+      const value = data[field];
+      let errorVal = handleBlur(field, value);
+      if (errorVal) {
+        valid = false;
+      }
+    });
+    if (!valid) {
+      showSnackbar('Please fix the errors before submitting.', 'error');
+      return;
+    }
+
+    if (type === 'add') __addUser();
+    else __editUser();
+  };
+
+  const __addUser = async () => {
+    let __data = { ...data };
+    __data['user_type'] = userTypes[user_type];
+    __data['is_active'] = true;
+    delete __data.id;
+    let url = `/user_management/admin/user-registration/`;
+    const { res } = await Factory('post', url, { ...__data });
+
+    if (res.status_cd === 1) {
+      showSnackbar(JSON.stringify(res.data.data), 'error');
+    } else {
+      showSnackbar('Saved Successfully', 'success');
+      setRefresh((prev) => !prev);
+      resetForm();
+      setOpen(false);
+    }
+  };
+
+  const __editUser = async () => {
     let url = `/user_management/update-users-info`;
-    const { res } = await Factory('patch', url, { ...data });
+    let __data = { ...data };
+    delete __data.email;
+    delete __data.mobile_number;
+    delete __data.password;
+    const { res } = await Factory('patch', url, { ...__data });
+
     if (res.status_cd === 1) {
       showSnackbar(res.data.message, 'error');
     } else {
       showSnackbar('Saved Successfully', 'success');
       getUsers();
+      resetForm();
+      setOpen(false);
     }
-    resetForm();
-    setOpen(false);
   };
-
   return (
     <Modal
       open={open}
       onClose={() => setOpen(false)}
       maxWidth={ModalSize.SM}
-      header={{ title: 'Edit User', subheader: 'You can change name here.' }}
+      header={{
+        title: type === 'add' ? 'Add User' : `Edit User`,
+        subheader: type === 'add' ? 'Enter the user details below' : 'You can change name here.'
+      }}
       modalContent={
         <Stack direction="column" sx={{ gap: 2 }}>
           <Stack direction="column" sx={{ gap: 0.5 }}>
-            <Typography variant="subtitle1" sx={{ color: 'grey.800' }}>
+            <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
               First Name
             </Typography>
             <TextField
@@ -105,7 +231,7 @@ export default function EditUser({ open, setOpen, user_id, getUsers }) {
             />
           </Stack>
           <Stack direction="column" sx={{ gap: 0.5 }}>
-            <Typography variant="subtitle1" sx={{ color: 'grey.800' }}>
+            <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
               Last Name
             </Typography>
             <TextField
@@ -119,6 +245,67 @@ export default function EditUser({ open, setOpen, user_id, getUsers }) {
               helperText={errors.last_name}
             />
           </Stack>
+          {type === 'add' && (
+            <>
+              <Stack direction="column" sx={{ gap: 0.5 }}>
+                <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
+                  Mobile
+                </Typography>
+                <TextField
+                  id="outlined-disabled"
+                  value={data.mobile_number}
+                  type="number"
+                  onBlur={(e) => handleBlur('mobile_number', e.target.value)}
+                  onChange={(e) => {
+                    handleChange('mobile_number', e.target.value);
+                  }}
+                  error={!!errors.mobile_number}
+                  helperText={errors.mobile_number}
+                />
+              </Stack>
+
+              <Stack direction="column" sx={{ gap: 0.5 }}>
+                <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
+                  Email
+                </Typography>
+                <TextField
+                  id="outlined-disabled"
+                  value={data.email}
+                  onBlur={(e) => handleBlur('email', e.target.value)}
+                  onChange={(e) => {
+                    handleChange('email', e.target.value);
+                  }}
+                  error={!!errors.email}
+                  helperText={errors.email}
+                />
+              </Stack>
+              <Stack direction="column" sx={{ gap: 0.5 }}>
+                <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
+                  Password
+                </Typography>
+                <TextField
+                  id="outlined-disabled"
+                  value={data.password}
+                  onBlur={(e) => handleBlur('password', e.target.value)}
+                  onChange={(e) => {
+                    handleChange('password', e.target.value);
+                  }}
+                  type={isOpen ? 'text' : 'password'}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton sx={{ height: 0 }} onClick={() => setIsOpen(!isOpen)} rel="noopener noreferrer" aria-label="eye">
+                          {isOpen ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }}
+                  error={!!errors.password}
+                  helperText={errors.password}
+                />
+              </Stack>
+            </>
+          )}
         </Stack>
       }
       footer={

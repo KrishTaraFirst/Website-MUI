@@ -44,8 +44,6 @@ const UserType = () => {
     console.log(res);
     if (res.status_cd === 0) {
       setDialogOpen(false);
-      showSnackbar('UserType Updated Successfully', 'success');
-
       const userDetails = JSON.parse(localStorage.getItem('auth-user'));
       userDetails.user_type = selectedType;
       localStorage.setItem('auth-user', JSON.stringify(userDetails));

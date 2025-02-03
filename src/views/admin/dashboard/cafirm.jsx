@@ -2,9 +2,9 @@
 import UserBehaviourTable from '@/sections/dashboard/analytics/user-behavior';
 import HomeCard from '@/components/cards/HomeCard';
 
-export default function Individual() {
+export default function CAFirm() {
   return (
-    <HomeCard title="Individual" tagline="Individual Dashbord">
+    <HomeCard title="CA Firm" tagline="Charted Accountant Dashbord">
       <UserBehaviourTable />
     </HomeCard>
   );

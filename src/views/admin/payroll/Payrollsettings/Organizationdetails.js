@@ -100,7 +100,6 @@ function Organizationdetails({ tab }) {
     onSubmit: async (values) => {
       let postData = new FormData();
       postData.append('business_id', userData.id);
-
       Object.keys(values).forEach((key) => {
         if (key === 'logo' && values[key]) {
           postData.append(key, values[key]);

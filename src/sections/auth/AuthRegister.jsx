@@ -67,7 +67,6 @@ export default function AuthRegister({ inputSx }) {
   const onSubmit = async (formData) => {
     setIsProcessing(true);
     setRegisterError('');
-    console.log(formData);
     try {
       const url = `/user_management/register/`;
       const payload = {

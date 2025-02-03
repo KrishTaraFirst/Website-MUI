@@ -22,7 +22,7 @@ import EditUser from '../edit-user';
 
 /***************************  COMPONENT - TABLE  ***************************/
 
-export default function AnalyticsBehaviorTable({ type, tableData }) {
+export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
   const [data, setData] = useState([]);
   const [user, setUser] = useState('');
   const { showSnackbar } = useSnackbar();
@@ -42,8 +42,23 @@ export default function AnalyticsBehaviorTable({ type, tableData }) {
   };
 
   useEffect(() => {
+    console.log(refresh);
     getUsers();
-  }, []);
+  }, [refresh]);
+
+  const handleToggle = async (event, row) => {
+    const { id } = row.original; // Extract the user ID
+    const isActive = event.target.checked; // Get the new status from the Switch
+    let url = `/user_management/update-users-info`;
+    const { res } = await Factory('patch', url, { id, is_active: isActive });
+    if (res.status_cd === 0) {
+      const updatedData = data.map((user) => (user.id === id ? { ...user, is_active: isActive } : user));
+      setData(updatedData);
+      showSnackbar('Status Changed', 'success');
+    } else {
+      showSnackbar('Failed to update status', 'error');
+    }
+  };
 
   const columns = useMemo(
     () => [
@@ -87,16 +102,11 @@ export default function AnalyticsBehaviorTable({ type, tableData }) {
         accessorKey: 'status',
         header: 'User Status',
         cell: ({ row }) => {
-          const handleToggle = (event) => {
-            const updatedData = data.map((user) => (user.id === row.original.id ? { ...user, is_active: event.target.checked } : user));
-            setData(updatedData);
-          };
-
           return (
             <Switch
-              checked={Boolean(row.original.is_active)} // Ensures it always has a boolean value
-              onChange={handleToggle}
-              size="medium"
+              checked={Boolean(row.original.is_active)} // Ensure boolean value
+              onChange={(e) => handleToggle(e, row)} // Use onChange instead of onClick
+              size="small"
             />
           );
         }
@@ -142,13 +152,11 @@ export default function AnalyticsBehaviorTable({ type, tableData }) {
   const onGlobalSearch = (globalFilter) => {
     setGlobalFilter(globalFilter);
   };
-  // console.log(table.getRowModel().rows);
 
-  const statusChange = () => {};
   return (
     <>
       <ManageAccess open={accessDialog} setOpen={setAccessDialog} />
-      <EditUser open={editUserDialog} setOpen={setEditUserDialog} user_id={user} getUsers={getUsers} />
+      <EditUser type="edit" open={editUserDialog} setOpen={setEditUserDialog} user_id={user} getUsers={getUsers} />
       <Table table={table} onGlobalSearch={onGlobalSearch} />
     </>
   );

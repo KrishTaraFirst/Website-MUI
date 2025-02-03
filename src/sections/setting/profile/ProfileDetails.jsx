@@ -88,6 +88,7 @@ export default function SettingDetailsCard() {
               <OutlinedInput
                 defaultValue={userData?.firstname || ''}
                 fullWidth
+                disabled
                 aria-describedby="outlined-name"
                 inputProps={{ 'aria-label': 'name' }}
                 placeholder="ex. Jone"
