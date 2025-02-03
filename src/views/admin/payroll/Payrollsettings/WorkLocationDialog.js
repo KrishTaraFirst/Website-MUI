@@ -60,10 +60,11 @@ export default function WorkLocationDialog({ open, handleClose, fetchWorkLocatio
       let postmethod = type === 'edit' ? 'put' : 'post';
       const { res } = await Factory(postmethod, url, postData);
       if (res?.status_cd === 0) {
-        // Trigger the fetchWorkLocations to reload the data
+        setType('');
         fetchWorkLocations();
+        resetForm();
         handleClose();
-        showSnackbar('Record Saved Successfully', 'success');
+        showSnackbar(type === 'edit' ? 'Record Updated Successfully' : 'Record Saved Successfully', 'success');
       } else {
         showSnackbar(res.data, 'success');
       }
@@ -113,7 +114,7 @@ export default function WorkLocationDialog({ open, handleClose, fetchWorkLocatio
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth={'md'} fullWidth>
+    <Dialog open={open} maxWidth={'md'} fullWidth>
       <DialogTitle textAlign="center">Add Location Details</DialogTitle>
       <Divider />
       <DialogContent>

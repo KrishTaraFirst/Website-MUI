@@ -1,33 +1,23 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Paper, Button, Stack, Grid2, Typography } from '@mui/material';
-import DepartmentDialog from './DepartmentDialog'; // Import the DepartmentDialog
+import AddBusinessDialog from './AddBusinessDialog'; // Import the DepartmentDialog
 import EmptyTable from '@/components/third-party/table/EmptyTable';
 import HomeCard from '@/components/cards/HomeCard';
 import Factory from '@/utils/Factory';
 import { useSearchParams } from 'next/navigation';
 import ActionCell from '@/utils/ActionCell';
 import { useSnackbar } from '@/components/CustomSnackbar';
+import useCurrentUser from '@/hooks/useCurrentUser';
 
-function Departments() {
+function BusinessList() {
   const [openDialog, setOpenDialog] = useState(false); // State to manage dialog visibility
-  const [departments, setDepartments] = useState([]); // State to store departments data
-  const [payrollid, setPayrollId] = useState(null); // Payroll ID fetched from URL
+  const [businessList, setBusinessList] = useState([]); // State to store businessList data
   const [postType, setPostType] = useState(''); // Payroll ID fetched from URL
   const [selectedRecord, setSelectedRecord] = useState(null);
   const { showSnackbar } = useSnackbar();
+  const { userData } = useCurrentUser();
 
-  const searchParams = useSearchParams();
-
-  // Update payroll ID from search params
-  useEffect(() => {
-    const id = searchParams.get('payrollid');
-    if (id) {
-      setPayrollId(id);
-    }
-  }, [searchParams]);
-
-  // Open dialog
   const handleOpenDialog = () => {
     setOpenDialog(true);
   };
@@ -37,44 +27,44 @@ function Departments() {
     setOpenDialog(false);
   };
 
-  const fetchDepartments = async () => {
-    if (!payrollid) return; // If there's no payroll id, exit early
-
-    const url = `/payroll/departments/?payroll_id=${payrollid}`;
+  const getBusinessList = async () => {
+    const url = `/user_management/businesses-by-client/`;
     const { res, error } = await Factory('get', url, {});
 
     if (res?.status_cd === 0 && Array.isArray(res?.data)) {
-      setDepartments(res?.data); // Successfully set work locations
+      setBusinessList(res?.data); // Successfully set work locations
     } else {
-      setDepartments([]);
+      setBusinessList([]);
     }
   };
-  const handleEdit = (department) => {
+  const handleEdit = (business) => {
     setPostType('edit');
-    setSelectedRecord(department);
+    setSelectedRecord(business);
     handleOpenDialog();
   };
-  const handleDelete = async (department) => {
-    console.log(department);
-    let url = `/payroll/departments/${department.id}/`;
+  const handleDelete = async (business) => {
+    console.log(business);
+    let url = `/payroll/businessList/${business.id}/`;
     const { res } = await Factory('delete', url, {});
     console.log(res);
     if (res.status_cd === 1) {
       showSnackbar(JSON.stringify(res.data), 'error');
     } else {
       showSnackbar('Record Deleted Successfully', 'success');
-      fetchDepartments();
+      getBusinessList();
     }
   };
+  // Fetch data when payrollid changes
+
   useEffect(() => {
-    fetchDepartments();
-  }, [payrollid]);
+    getBusinessList();
+  }, []);
   return (
-    <HomeCard title="Departments Details" tagline="Setup your organization before starting payroll">
+    <HomeCard title="Business Details" tagline="Setup your organization before starting Business">
       <Grid2 container spacing={{ xs: 2, sm: 3 }}>
         <Grid2 size={12}>
           <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-            <Typography variant="h6">Departments</Typography>
+            <Typography variant="h6">List of Businesses</Typography>
             <Button
               variant="contained"
               color="primary"
@@ -84,16 +74,16 @@ function Departments() {
               }}
               sx={{ marginBottom: 2 }}
             >
-              Add Department
+              Add Business
             </Button>
-            <DepartmentDialog
+            <AddBusinessDialog
               open={openDialog}
               handleClose={handleCloseDialog}
               handleOpenDialog={handleOpenDialog}
               selectedRecord={selectedRecord}
               type={postType}
               setType={setPostType}
-              fetchDepartments={fetchDepartments}
+              getBusinessList={getBusinessList}
             />
           </Stack>
         </Grid2>
@@ -104,39 +94,40 @@ function Departments() {
               <TableHead>
                 <TableRow>
                   <TableCell>S No</TableCell>
-                  <TableCell>Department Name</TableCell>
-                  <TableCell>Department Code</TableCell>
-                  <TableCell>Description</TableCell>
-                  <TableCell>No of Employees</TableCell>
+                  <TableCell>Business Name</TableCell>
+                  <TableCell>Business PAN</TableCell>
+                  <TableCell>Entity Type</TableCell>
+                  <TableCell>Nature of Business</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {departments.length === 0 ? (
+                {businessList.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} sx={{ height: 300 }}>
-                      <EmptyTable msg="No departments available" />
+                      <EmptyTable msg="No Designations available" />
                     </TableCell>
                   </TableRow>
                 ) : (
-                  departments.map((department, index) => (
-                    <TableRow key={department.id}>
+                  businessList.map((business, index) => (
+                    <TableRow key={business.id}>
                       <TableCell>{index + 1}</TableCell>
-                      <TableCell>{department.dept_name}</TableCell>
-                      <TableCell>{department.dept_code}</TableCell>
-                      <TableCell>{department.description}</TableCell>
-                      <TableCell>{department.numOfEmployees}</TableCell>
+                      <TableCell>{business.nameOfBusiness}</TableCell>
+                      <TableCell>{business.pan}</TableCell>
+                      <TableCell>{business.entityType}</TableCell>
+                      <TableCell>{business.business_nature}</TableCell>
+
                       <TableCell>
                         <ActionCell
-                          row={department} // Pass the customer row data
-                          onEdit={() => handleEdit(department)} // Edit handler
-                          onDelete={() => handleDelete(department)} // Delete handler
+                          row={business} // Pass the customer row data
+                          onEdit={() => handleEdit(business)} // Edit handler
+                          onDelete={() => handleDelete(business)} // Delete handler
                           open={openDialog}
                           onClose={handleCloseDialog}
                           deleteDialogData={{
                             title: 'Delete Record',
                             heading: 'Are you sure you want to delete this Record?',
-                            description: `This action will remove ${department.name} from the list.`,
+                            description: `This action will remove ${business.name} from the list.`,
                             successMessage: 'Record has been deleted.'
                           }}
                         />
@@ -153,4 +144,4 @@ function Departments() {
   );
 }
 
-export default Departments;
+export default BusinessList;

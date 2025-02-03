@@ -11,6 +11,7 @@ import OverviewCard from './OverviewCard';
 import { Button, Stack, Typography } from '@mui/material';
 import { IconSparkles, IconSettings2 } from '@tabler/icons-react';
 import HomeCard from '@/components/cards/HomeCard';
+import Loader from '@/components/PageLoader';
 
 /***************************  ANALYTICS - OVERVIEW  ***************************/
 
@@ -25,6 +26,7 @@ export default function PayrollDashboard({ setPayrollSetup }) {
   const { showSnackbar } = useSnackbar();
   const [clientListData, setClientListData] = useState({});
   const [type, setType] = useState('');
+  // <Loader />
 
   return (
     <Stack sx={{ gap: 3 }}>

@@ -7,7 +7,7 @@ import { IconPlus } from '@tabler/icons-react';
 import AddItem from './AddItem'; // Import the AddCustomer component
 import ItemList from './ItemList';
 import Factory from '@/utils/Factory';
-export default function TabThree({ businessDetails, onNext }) {
+export default function TabThree({ businessDetails, onNext, handleBack }) {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState([]);
   const [type, setType] = useState('');
@@ -66,7 +66,10 @@ export default function TabThree({ businessDetails, onNext }) {
           />
         </Grid>
       </Grid>
-      <Box textAlign="center">
+      <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Button variant="outlined" onClick={handleBack} sx={{ mt: 3 }}>
+          Back
+        </Button>
         <Button variant="contained" onClick={onNext} sx={{ mt: 3 }}>
           Next
         </Button>

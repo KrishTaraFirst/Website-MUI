@@ -1,21 +1,32 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Paper, Button, Stack, Grid2, Typography } from '@mui/material';
 import DesignationDialog from './DesignationDialog'; // Import the DepartmentDialog
 import EmptyTable from '@/components/third-party/table/EmptyTable';
 import HomeCard from '@/components/cards/HomeCard';
+import Factory from '@/utils/Factory';
+import { useSearchParams } from 'next/navigation';
+import ActionCell from '@/utils/ActionCell';
+import { useSnackbar } from '@/components/CustomSnackbar';
 
-const sampleDepartments = [
-  { id: 1, designationName: 'HR', numOfEmployees: 25 },
-  { id: 2, designationName: 'IT', numOfEmployees: 40 }
-];
 function Designations() {
   const [openDialog, setOpenDialog] = useState(false); // State to manage dialog visibility
-  const [departments, setDepartments] = useState(sampleDepartments); // State to store departments data
+  const [designations, setDesignations] = useState([]); // State to store designations data
+  const [payrollid, setPayrollId] = useState(null); // Payroll ID fetched from URL
+  const [postType, setPostType] = useState(''); // Payroll ID fetched from URL
+  const [selectedRecord, setSelectedRecord] = useState(null);
+  const { showSnackbar } = useSnackbar();
 
-  // Sample data for the table (example)
+  const searchParams = useSearchParams();
 
-  // Open dialog
+  // Update payroll ID from search params
+  useEffect(() => {
+    const id = searchParams.get('payrollid');
+    if (id) {
+      setPayrollId(id);
+    }
+  }, [searchParams]);
+
   const handleOpenDialog = () => {
     setOpenDialog(true);
   };
@@ -25,25 +36,69 @@ function Designations() {
     setOpenDialog(false);
   };
 
-  // Example to simulate adding a department
+  // Example to simulate adding a designation
   const addDepartment = (newDepartment) => {
-    setDepartments((prevDepartments) => [...prevDepartments, newDepartment]);
+    setDesignations((prevDepartments) => [...prevDepartments, newDepartment]);
   };
+  const fetchDesignations = async () => {
+    if (!payrollid) return; // If there's no payroll id, exit early
 
+    const url = `/payroll/designations/?payroll_id=${payrollid}`;
+    const { res, error } = await Factory('get', url, {});
+
+    if (res?.status_cd === 0 && Array.isArray(res?.data)) {
+      setDesignations(res?.data); // Successfully set work locations
+    } else {
+      setDesignations([]);
+    }
+  };
+  const handleEdit = (designation) => {
+    setPostType('edit');
+    setSelectedRecord(designation);
+    handleOpenDialog();
+  };
+  const handleDelete = async (designation) => {
+    console.log(designation);
+    let url = `/payroll/designations/${designation.id}/`;
+    const { res } = await Factory('delete', url, {});
+    console.log(res);
+    if (res.status_cd === 1) {
+      showSnackbar(JSON.stringify(res.data), 'error');
+    } else {
+      showSnackbar('Record Deleted Successfully', 'success');
+      fetchDesignations();
+    }
+  };
+  // Fetch data when payrollid changes
+
+  useEffect(() => {
+    if (payrollid !== null) fetchDesignations();
+  }, [payrollid]);
   return (
     <HomeCard title="Designation Details" tagline="Setup your organization before starting payroll">
       <Grid2 container spacing={{ xs: 2, sm: 3 }}>
         <Grid2 size={12}>
           <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
             <Typography variant="h6">Designations</Typography>
-            <Button variant="contained" color="primary" onClick={handleOpenDialog} sx={{ marginBottom: 2 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                setPostType('post');
+                handleOpenDialog();
+              }}
+              sx={{ marginBottom: 2 }}
+            >
               Add Designation
             </Button>
             <DesignationDialog
               open={openDialog}
               handleClose={handleCloseDialog}
               handleOpenDialog={handleOpenDialog}
-              addDepartment={addDepartment}
+              selectedRecord={selectedRecord}
+              type={postType}
+              setType={setPostType}
+              fetchDesignations={fetchDesignations}
             />
           </Stack>
         </Grid2>
@@ -55,22 +110,38 @@ function Designations() {
                 <TableRow>
                   <TableCell>S No</TableCell>
                   <TableCell>Designation Name</TableCell>
-                  <TableCell>No of Employees</TableCell>
+                  <TableCell>Description</TableCell>
+                  <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {departments.length === 0 ? (
+                {designations.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} sx={{ height: 300 }}>
                       <EmptyTable msg="No Designations available" />
                     </TableCell>
                   </TableRow>
                 ) : (
-                  departments.map((department, index) => (
-                    <TableRow key={department.id}>
+                  designations.map((designation, index) => (
+                    <TableRow key={designation.id}>
                       <TableCell>{index + 1}</TableCell>
-                      <TableCell>{department.designationName}</TableCell>
-                      <TableCell>{department.numOfEmployees}</TableCell>
+                      <TableCell>{designation.designation_name}</TableCell>
+                      <TableCell>{designation.description}</TableCell>
+                      <TableCell>
+                        <ActionCell
+                          row={designation} // Pass the customer row data
+                          onEdit={() => handleEdit(designation)} // Edit handler
+                          onDelete={() => handleDelete(designation)} // Delete handler
+                          open={openDialog}
+                          onClose={handleCloseDialog}
+                          deleteDialogData={{
+                            title: 'Delete Record',
+                            heading: 'Are you sure you want to delete this Record?',
+                            description: `This action will remove ${designation.name} from the list.`,
+                            successMessage: 'Record has been deleted.'
+                          }}
+                        />
+                      </TableCell>
                     </TableRow>
                   ))
                 )}

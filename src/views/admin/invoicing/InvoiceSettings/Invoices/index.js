@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Factory from '@/utils/Factory';
 import InvoiceNumberFormat from './InvoiceNumberFormat';
 
-export default function TabFour({ businessDetails }) {
+export default function TabFour({ businessDetails, handleBack }) {
   const [open, setOpen] = useState(false);
   const [invoicesList, setInvoicesList] = useState([]);
   const [invoiceNumberFormatDialogue, setInvoiceNumberFormatDialogue] = useState(false);
@@ -19,7 +19,11 @@ export default function TabFour({ businessDetails }) {
   }, []);
   return (
     <>
-      <InvoiceNumberFormat businessDetailsData={businessDetails} setInvoiceNumberFormatDialogue={setInvoiceNumberFormatDialogue} />
+      <InvoiceNumberFormat
+        businessDetailsData={businessDetails}
+        setInvoiceNumberFormatDialogue={setInvoiceNumberFormatDialogue}
+        handleBack={handleBack}
+      />
     </>
   );
 }

@@ -1,12 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Box, Grid, Typography, Divider } from '@mui/material';
 import Grid2 from '@mui/material/Grid2'; // Import Grid2 from MUI system
 import CustomInput from '@/utils/CustomInput';
+import Factory from '@/utils/Factory';
+import { useSnackbar } from '@/components/CustomSnackbar';
+import { useSearchParams } from 'next/navigation';
 
-export default function DesignationDialog({ open, handleClose, handleOpenDialog }) {
-  // Define fields for department
+export default function DesignationDialog({ open, handleClose, fetchDesignations, selectedRecord, type, setType }) {
+  const { showSnackbar } = useSnackbar();
+  const searchParams = useSearchParams();
+  const [payrollid, setPayrollId] = useState(null); // Payroll ID fetched from URL
+
+  // Update payroll ID from search params
+  useEffect(() => {
+    const id = searchParams.get('payrollid');
+    if (id) {
+      setPayrollId(id);
+    }
+  }, [searchParams]);
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
   const departmentFields = [
     { name: 'designation_name', label: 'Designation Name' },
     { name: 'description', label: 'Description' }
@@ -26,12 +43,27 @@ export default function DesignationDialog({ open, handleClose, handleOpenDialog 
     },
     validationSchema,
     onSubmit: async (values) => {
-      console.log(values);
-      handleClose(); // Close dialog after submit
+      const postData = { ...values, payroll: payrollid };
+      const url = type === 'edit' ? `/payroll/designations/${selectedRecord.id}/` : `/payroll/designations/`;
+      let postmethod = type === 'edit' ? 'put' : 'post';
+      const { res } = await Factory(postmethod, url, postData);
+
+      if (res?.status_cd === 0) {
+        fetchDesignations();
+        handleClose();
+        setType('');
+        resetForm();
+        showSnackbar(type === 'edit' ? 'Record Updated Successfully' : 'Record Saved Successfully', 'success');
+      } else {
+        showSnackbar(JSON.stringify(res.data), 'error');
+      }
     }
   });
-
-  const { values, handleChange, errors, touched, handleSubmit, handleBlur, resetForm } = formik;
+  useEffect(() => {
+    if (type === 'edit' && selectedRecord) {
+      setValues(selectedRecord);
+    }
+  }, [type, selectedRecord]);
 
   // Render each field dynamically
   const renderFields = (fields) => {
@@ -52,9 +84,10 @@ export default function DesignationDialog({ open, handleClose, handleOpenDialog 
       </Grid2>
     ));
   };
+  const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, resetForm } = formik;
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+    <Dialog open={open} maxWidth="md" fullWidth>
       <DialogTitle textAlign="center">Add Designation Details</DialogTitle>
       <Divider />
       <DialogContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
@@ -70,6 +103,8 @@ export default function DesignationDialog({ open, handleClose, handleOpenDialog 
         <Button
           onClick={() => {
             resetForm();
+            setType('');
+
             handleClose(); // Reset form and close dialog
           }}
           variant="outlined"
