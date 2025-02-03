@@ -1,16 +1,9 @@
 'use client';
 import Grid from '@mui/material/Grid2';
-
-import Factory from '@/utils/Factory';
-import { useState, useEffect } from 'react';
-
 // @project
-import { useSnackbar } from '@/components/CustomSnackbar';
 import MainCard from '@/components/MainCard';
-import Profile from '@/components/Profile';
-import { Card, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import ZombieingDoodle from '@/images/illustration/ZombieingDoodle';
-import { Height } from '@mui/icons-material';
 
 /***************************  ANALYTICS - OVERVIEW  ***************************/
 

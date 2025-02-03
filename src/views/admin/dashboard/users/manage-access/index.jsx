@@ -141,6 +141,7 @@ export default function ManageAccess({ open, setOpen }) {
   const { showSnackbar } = useSnackbar();
   const [checkedItems, setCheckedItems] = React.useState({});
   const [permissions, setPermissions] = React.useState({ VisaServices: [], Invoicing: [] });
+  const [customisedPermissions, setCustomisedPermissions] = React.useState({ VisaServices: [], Invoicing: [] });
 
   const handleChange = (panel) => (event, newExpanded) => {
     setExpanded(newExpanded ? panel : false);
@@ -171,7 +172,7 @@ export default function ManageAccess({ open, setOpen }) {
     const { res } = await Factory('get', url, {});
     if (res.status_cd === 0) {
       console.log(res);
-      setPermissions(res.data);
+      setCustomisedPermissions(res.data);
     } else {
       showSnackbar(JSON.stringify(res.data), 'error');
     }
