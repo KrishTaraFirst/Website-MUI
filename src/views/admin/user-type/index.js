@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button, Dialog, Tabs, Tab, Link } from '@mui/material';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import Factory from '@/utils/Factory';
@@ -24,6 +24,17 @@ const UserType = () => {
   const handleTabChange = (event, newValue) => {
     setSelectedIndex(newValue); // Set the selected tab index
   };
+  useEffect(() => {
+    const isUserTypeNull = userData.user_type === null;
+    const isUserTypeValidAndKycFalse = userData.user_type !== null && userData.user_kyc === false;
+
+    if (isUserTypeNull) {
+      setDialogOpen(true);
+    } else if (isUserTypeValidAndKycFalse) {
+      setDialogOpen(false);
+      setSelectedType(userData.user_type);
+    }
+  }, [userData, selectedType]);
 
   const handleNext = async () => {
     const url = `/user_management/update-users-info`;
@@ -53,7 +64,6 @@ const UserType = () => {
       </>
     );
   };
-
   return (
     <>
       <Dialog
@@ -120,7 +130,7 @@ const UserType = () => {
               cursor: 'pointer',
               textAlign: 'center'
             }}
-            onClick={() => setSelectedType('business')}
+            onClick={() => setSelectedType('Business')}
           />
           <Tab
             label={getTabLabel(
@@ -142,7 +152,7 @@ const UserType = () => {
               cursor: 'pointer',
               textAlign: 'center'
             }}
-            onClick={() => setSelectedType('firm')}
+            onClick={() => setSelectedType('CA')}
           />
           <Tab
             label={getTabLabel(
@@ -164,7 +174,7 @@ const UserType = () => {
               cursor: 'pointer',
               textAlign: 'center'
             }}
-            onClick={() => setSelectedType('individual')}
+            onClick={() => setSelectedType('Individual')}
           />
         </Tabs>
         {/* Next Button */}
@@ -183,6 +193,7 @@ const UserType = () => {
               // setSelectedType('individual');
               setDialogOpen(false);
               // handleNext();
+              router.push(APP_DEFAULT_PATH);
             }}
             sx={{ mr: 2 }}
           >
@@ -200,15 +211,11 @@ const UserType = () => {
           </Button>
         </Box>
       </Dialog>
-      {!dialogOpen && (
+      {!dialogOpen && selectedType !== null && (
         <>
-          {selectedType === 'individual' ? (
-            <IndividualForm />
-          ) : selectedType === 'business' ? (
-            <BusinessForm />
-          ) : (
-            selectedType === 'firm' && <FirmForm />
-          )}
+          {selectedType === 'Individual' && <IndividualForm />}
+          {selectedType === 'Business' && <BusinessForm />}
+          {selectedType === 'CA' && <FirmForm />}
         </>
       )}
     </>

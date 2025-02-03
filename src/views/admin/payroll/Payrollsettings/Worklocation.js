@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Paper, Button, Stack, Grid2, Typography } from '@mui/material';
-import WorkLocationDialog from './WorkLocationDialog'; // Import the WorkLocationDialog component
+import WorkLocationDialog from './WorkLocationDialog';
 import EmptyTable from '@/components/third-party/table/EmptyTable';
 import HomeCard from '@/components/cards/HomeCard';
 import Factory from '@/utils/Factory';
@@ -13,7 +13,7 @@ function Worklocation() {
   const [openDialog, setOpenDialog] = useState(false); // Controls dialog visibility
   const [workLocations, setWorkLocations] = useState([]); // Stores the list of work locations
   const [payrollid, setPayrollId] = useState(null); // Payroll ID fetched from URL
-  const [postType, setPostType] = useState('post'); // Payroll ID fetched from URL
+  const [postType, setPostType] = useState(''); // Payroll ID fetched from URL
   const [selectedRecord, setSelectedRecord] = useState(null);
   const { showSnackbar } = useSnackbar();
 
@@ -66,17 +66,25 @@ function Worklocation() {
     }
   };
   // Fetch data when payrollid changes
-  useEffect(() => {
-    fetchWorkLocations();
-  }, [payrollid]);
 
+  useEffect(() => {
+    if (payrollid !== null) fetchWorkLocations();
+  }, [payrollid]);
   return (
     <HomeCard title="Work Location Details" tagline="Setup your organization before starting payroll">
       <Grid2 container spacing={{ xs: 2, sm: 3 }}>
         <Grid2 size={12}>
           <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
             <Typography variant="h6">Work Locations</Typography>
-            <Button variant="contained" color="primary" onClick={handleOpenDialog} sx={{ marginBottom: 2 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                setPostType('post');
+                handleOpenDialog();
+              }}
+              sx={{ marginBottom: 2 }}
+            >
               Add Work Location
             </Button>
             <WorkLocationDialog

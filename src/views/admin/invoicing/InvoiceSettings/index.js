@@ -64,7 +64,9 @@ const BasicTabs = ({ type }) => {
   const handleNext = () => {
     setActiveTab((prev) => (prev < 3 ? prev + 1 : prev));
   };
-
+  const handleBack = () => {
+    setActiveTab((prev) => (prev < 3 ? prev - 1 : prev));
+  };
   // Accessibility props for each tab
   const a11yProps = (index) => ({
     value: index,
@@ -119,15 +121,24 @@ const BasicTabs = ({ type }) => {
                   businessDetails={businessDetails}
                   setBusinessDetails={setBusinessDetails}
                   onNext={handleNext}
+                  handleBack={handleBack}
                 />
               )}
-              {index === 2 && <TabThree businessDetails={businessDetails} setBusinessDetails={setBusinessDetails} onNext={handleNext} />}
+              {index === 2 && (
+                <TabThree
+                  businessDetails={businessDetails}
+                  setBusinessDetails={setBusinessDetails}
+                  onNext={handleNext}
+                  handleBack={handleBack}
+                />
+              )}
               {index === 3 && (
                 <TabFour
                   getCustomersData={getCustomersData}
                   customers={customers}
                   businessDetails={businessDetails}
                   setBusinessDetails={setBusinessDetails}
+                  handleBack={handleBack}
                 />
               )}
             </TabPanel>

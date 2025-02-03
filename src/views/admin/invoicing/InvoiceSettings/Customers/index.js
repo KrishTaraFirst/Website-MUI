@@ -8,7 +8,7 @@ import AddCustomer from './AddCustomer'; // Import the AddCustomer component
 import CustomerList from './CustomerList';
 import Factory from '@/utils/Factory';
 import { Box } from '@mui/material';
-export default function TabTwo({ getCustomersData, customers, businessDetails, onNext }) {
+export default function TabTwo({ getCustomersData, customers, businessDetails, onNext, handleBack }) {
   const [open, setOpen] = useState(false);
   const [type, setType] = useState('');
 
@@ -51,7 +51,10 @@ export default function TabTwo({ getCustomersData, customers, businessDetails, o
           />
         </Grid>
       </Grid>
-      <Box textAlign="center">
+      <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Button variant="outlined" onClick={handleBack} sx={{ mt: 3 }}>
+          Back
+        </Button>
         <Button variant="contained" onClick={onNext} sx={{ mt: 3 }}>
           Next
         </Button>

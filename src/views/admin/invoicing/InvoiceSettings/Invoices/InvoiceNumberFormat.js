@@ -7,7 +7,7 @@ import Factory from '@/utils/Factory';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import { usePathname, useRouter } from 'next/navigation';
 
-const InvoiceNumberFormat = ({ businessDetailsData }) => {
+const InvoiceNumberFormat = ({ businessDetailsData, handleBack }) => {
   // State for invoice format data to be manually updated
   const pathname = usePathname();
 
@@ -146,7 +146,11 @@ const InvoiceNumberFormat = ({ businessDetailsData }) => {
         </Grid>
       </DialogContent>
 
-      <DialogActions sx={{ justifyContent: 'center', padding: 0 }}>
+      <DialogActions sx={{ display: 'flex', justifyContent: 'space-between', padding: 0 }}>
+        <Button variant="outlined" onClick={handleBack} sx={{ mt: 3 }}>
+          Back
+        </Button>
+
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, gap: 2 }}>
           <Button onClick={formik.handleSubmit} color="primary" variant="contained">
             Save

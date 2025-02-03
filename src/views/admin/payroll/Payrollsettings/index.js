@@ -121,15 +121,14 @@ const PayrollSetup = () => {
                       fontWeight: step.completed ? 500 : 400
                     }}
                     onClick={() => {
-                      if (step.nameKey === 'Organization Details') {
-                        router.push(`/payrollsetup${step.path}`);
+                      const routeBase = `/payrollsetup${step.path}`;
+
+                      if (step.nameKey === 'Organization Details' && !payrollDetails?.id) {
+                        router.push(routeBase); // Navigate to route without payroll ID
+                      } else if (payrollDetails?.id) {
+                        router.push(`${routeBase}?payrollid=${payrollDetails.id}`); // Navigate with payroll ID
                       } else {
-                        if (payrollDetails?.id) {
-                          const route = `/payrollsetup${step.path}?payrollid=${payrollDetails?.id}`;
-                          router.push(route); // Navigate to the appropriate route with payroll id
-                        } else {
-                          alert('Payroll ID not available!');
-                        }
+                        alert('Payroll ID not available!');
                       }
                     }}
                   >
