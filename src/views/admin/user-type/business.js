@@ -13,6 +13,8 @@ import { useSnackbar } from '@/components/CustomSnackbar';
 import useCurrentUser from '@/hooks/useCurrentUser';
 import Factory from '@/utils/Factory';
 import { APP_DEFAULT_PATH } from '@/config';
+import { entity_choices } from '@/utils/Entity-types';
+import { business_nature_choices } from '@/utils/Nature-of-bsiness';
 
 // Field configurations
 const BusinessFields = [
@@ -24,8 +26,7 @@ const BusinessFields = [
   { name: 'registrationNumber', label: 'Registration Number' },
   { name: 'trade_name', label: 'Trade Name' },
   { name: 'mobile_number', label: 'Mobile Number' },
-  { name: 'email', label: 'Email' },
-  { name: 'client', label: 'Client' }
+  { name: 'email', label: 'Email' }
 ];
 
 const HeadOfficeFields = [
@@ -39,7 +40,9 @@ const HeadOfficeFields = [
 // Validation schema for formik
 const validationSchema = Yup.object({
   nameOfBusiness: Yup.string().required('Business name is required'),
-  pan: Yup.string().required('PAN is required'),
+  pan: Yup.string()
+    // .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN format')
+    .required('PAN is required'),
   dob_or_incorp_date: Yup.date()
     .required('Date of incorporation is required')
     .max(new Date(), 'Incorporation date cannot be in the future')
@@ -54,7 +57,6 @@ const validationSchema = Yup.object({
     .matches(/^[6-9]\d{9}$/, 'Invalid mobile number format')
     .required('Mobile number is required'),
   email: Yup.string().email('Invalid email format').required('Email is required'),
-  client: Yup.string().required('Client is required'),
   address_line1: Yup.string().required('Address Line 1 is required'),
   address_line2: Yup.string(),
   city: Yup.string().required('City is required'),
@@ -81,7 +83,6 @@ export default function BusinessKYC() {
       trade_name: '',
       mobile_number: '',
       email: '',
-      client: '',
       address_line1: '',
       address_line2: '',
       city: '',
@@ -106,16 +107,14 @@ export default function BusinessKYC() {
 
       const { res } = await Factory(method, url, postData);
       if (res?.status_cd === 0) {
-        showSnackbar('Record Saved Successfully', 'success');
+        showSnackbar('Business KYC done Successfully', 'success');
         setDialogOpen(false);
         router.push(APP_DEFAULT_PATH);
       } else {
-        showSnackbar(JSON.stringify(res.data), 'error');
+        showSnackbar(JSON.stringify(res.data.data.error_message), 'error');
       }
     }
   });
-
-  const { values, setFieldValue, handleChange, handleBlur, handleSubmit, errors, touched } = formik;
 
   const renderField = (field) => {
     if (field.name === 'state') {
@@ -135,6 +134,7 @@ export default function BusinessKYC() {
       );
     }
 
+    // Handling for 'dob_or_incorp_date' field (CustomDatePicker)
     if (field.name === 'dob_or_incorp_date') {
       return (
         <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
@@ -153,13 +153,52 @@ export default function BusinessKYC() {
       );
     }
 
+    // Handling for 'entityType' field (CustomAutocomplete)
+    if (field.name === 'entityType') {
+      return (
+        <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
+          <label>{field.label}</label>
+          <CustomAutocomplete
+            value={entity_choices.find((option) => option.key === values[field.name]) || null}
+            name={field.name}
+            onChange={(e, newValue) => setFieldValue(field.name, newValue ? newValue.key : '')}
+            options={entity_choices}
+            getOptionLabel={(option) => option.title}
+            error={touched[field.name] && Boolean(errors[field.name])}
+            helperText={touched[field.name] && errors[field.name]}
+            sx={{ width: '100%' }}
+          />
+        </Grid2>
+      );
+    }
+
+    // Handling for 'businessNature' field (CustomAutocomplete)
+    if (field.name === 'business_nature') {
+      return (
+        <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
+          <label>{field.label}</label>
+          <CustomAutocomplete
+            value={business_nature_choices.find((option) => option.key === values[field.name]) || null}
+            name={field.name}
+            onChange={(e, newValue) => setFieldValue(field.name, newValue ? newValue.key : '')}
+            options={business_nature_choices}
+            getOptionLabel={(option) => option.title}
+            error={touched[field.name] && Boolean(errors[field.name])}
+            helperText={touched[field.name] && errors[field.name]}
+            sx={{ width: '100%' }}
+          />
+        </Grid2>
+      );
+    }
+
+    // Default handling for other fields (CustomInput)
     return (
       <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
         <label>{field.label}</label>
         <CustomInput
           name={field.name}
           value={field.name === 'pan' ? values[field.name].toUpperCase() : values[field.name]}
-          onChange={handleChange}
+          onChange={(e) => setFieldValue(field.name, e.target.value)}
           onBlur={handleBlur}
           error={touched[field.name] && Boolean(errors[field.name])}
           helperText={touched[field.name] && errors[field.name]}
@@ -168,6 +207,7 @@ export default function BusinessKYC() {
       </Grid2>
     );
   };
+  const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue, resetForm } = formik;
 
   return (
     <Box>

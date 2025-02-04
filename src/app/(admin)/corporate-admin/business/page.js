@@ -2,7 +2,7 @@
 import dynamic from 'next/dynamic';
 
 // @project
-const BusinessList = dynamic(() => import('@/views/admin/dashboard/corporateAdminComponenets/BusinessList'));
+const BusinessList = dynamic(() => import('@/views/admin/dashboard/corporate-admin-componenets/BusinessList'));
 
 /***************************  ACCOUNT  ***************************/
 
