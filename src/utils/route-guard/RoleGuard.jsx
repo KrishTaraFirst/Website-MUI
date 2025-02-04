@@ -16,13 +16,41 @@ import menuItems from '@/menu';
 
 /***************************  ROLE GUARD  ***************************/
 
+const restrictedRoutes = {
+  'service-provider': [
+    '/dashboard/user/corporate-entities',
+    '/dashboard/user/indivial',
+    '/dashboard/user/ca-firms',
+    '/dashboard/user/service-providers'
+  ],
+  'corporate-admin': [
+    '/dashboard/user/corporate-entities',
+    '/dashboard/user/indivial',
+    '/dashboard/user/ca-firms',
+    '/dashboard/user/service-providers'
+  ],
+  'charted-accountant-firm': [
+    '/dashboard/user/corporate-entities',
+    '/dashboard/user/indivial',
+    '/dashboard/user/ca-firms',
+    '/dashboard/user/service-providers'
+  ],
+  individual: [
+    '/dashboard/user/corporate-entities',
+    '/dashboard/user/indivial',
+    '/dashboard/user/ca-firms',
+    '/dashboard/user/service-providers'
+  ],
+  'super-admin': []
+};
+
 export default function RoleGuard({ children, sx }) {
   const pathname = usePathname();
 
   const [activeItem, setActiveItem] = useState();
 
   const { isProcessing, userData } = useCurrentUser();
-  const currentRole = userData?.role; // 'admin' or 'user'
+  const currentRole = userData?.role;
 
   useEffect(() => {
     const findMenuItem = async () => {
@@ -67,9 +95,16 @@ export default function RoleGuard({ children, sx }) {
     return null;
   };
 
+  const getRoleGuard = () => {
+    let __permission = activeItem?.roles?.length && currentRole && !activeItem.roles.includes(currentRole);
+    if (__permission) return __permission;
+    else if (restrictedRoutes[currentRole].includes(pathname)) return true;
+    else return false;
+  };
+
   if (isProcessing) return <PageLoader />;
 
-  if (activeItem?.roles?.length && currentRole && !activeItem.roles.includes(currentRole)) {
+  if (getRoleGuard()) {
     return (
       <Container sx={{ textAlign: 'center', ...sx }}>
         <Typography variant="h3" sx={{ mb: 2 }}>
