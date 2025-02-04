@@ -3,7 +3,7 @@ import dayjs from 'dayjs'; // Import dayjs
 import { useRouter } from 'next/navigation';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Dialog, Box, Typography, Button, DialogTitle, DialogActions, Grid2, DialogContent } from '@mui/material';
+import { Dialog, Box, Typography, Button, DialogTitle, DialogActions, Grid2, DialogContent, Divider } from '@mui/material';
 import { useState } from 'react';
 import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
@@ -41,7 +41,7 @@ const HeadOfficeFields = [
 const validationSchema = Yup.object({
   nameOfBusiness: Yup.string().required('Business name is required'),
   pan: Yup.string()
-    // .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN format')
+    .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN format')
     .required('PAN is required'),
   dob_or_incorp_date: Yup.date()
     .required('Date of incorporation is required')
@@ -49,9 +49,7 @@ const validationSchema = Yup.object({
     .nullable(),
   entityType: Yup.string().required('Entity type is required'),
   business_nature: Yup.string().required('Business nature is required'),
-  registrationNumber: Yup.string()
-    .matches(/^[A-Za-z0-9]+$/, 'Invalid registration number')
-    .required('Registration number is required'),
+  registrationNumber: Yup.string().required('Registration number is required'),
   trade_name: Yup.string().required('Trade name is required'),
   mobile_number: Yup.string()
     .matches(/^[6-9]\d{9}$/, 'Invalid mobile number format')
@@ -109,6 +107,9 @@ export default function BusinessKYC() {
       if (res?.status_cd === 0) {
         showSnackbar('Business KYC done Successfully', 'success');
         setDialogOpen(false);
+        const userDetails = JSON.parse(localStorage.getItem('auth-user'));
+        userDetails.business_exists = true;
+        localStorage.setItem('auth-user', JSON.stringify(userDetails));
         router.push(APP_DEFAULT_PATH);
       } else {
         showSnackbar(JSON.stringify(res.data.data.error_message), 'error');
@@ -120,7 +121,7 @@ export default function BusinessKYC() {
     if (field.name === 'state') {
       return (
         <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
-          <label>{field.label}</label>
+          <div style={{ marginBottom: '2px' }}>{field.label}</div>
           <CustomAutocomplete
             value={values[field.name]}
             name={field.name}
@@ -138,7 +139,7 @@ export default function BusinessKYC() {
     if (field.name === 'dob_or_incorp_date') {
       return (
         <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
-          <label>{field.label}</label>
+          <div style={{ marginBottom: '2px' }}>{field.label}</div>
           <CustomDatePicker
             views={['year', 'month', 'day']}
             value={values.dob_or_incorp_date ? dayjs(values.dob_or_incorp_date) : null}
@@ -157,7 +158,7 @@ export default function BusinessKYC() {
     if (field.name === 'entityType') {
       return (
         <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
-          <label>{field.label}</label>
+          <div style={{ marginBottom: '2px' }}>{field.label}</div>
           <CustomAutocomplete
             value={entity_choices.find((option) => option.key === values[field.name]) || null}
             name={field.name}
@@ -176,7 +177,7 @@ export default function BusinessKYC() {
     if (field.name === 'business_nature') {
       return (
         <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
-          <label>{field.label}</label>
+          <div style={{ marginBottom: '2px' }}>{field.label}</div>
           <CustomAutocomplete
             value={business_nature_choices.find((option) => option.key === values[field.name]) || null}
             name={field.name}
@@ -194,11 +195,18 @@ export default function BusinessKYC() {
     // Default handling for other fields (CustomInput)
     return (
       <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
-        <label>{field.label}</label>
+        <div style={{ marginBottom: '2px' }}>{field.label}</div>
+
         <CustomInput
           name={field.name}
-          value={field.name === 'pan' ? values[field.name].toUpperCase() : values[field.name]}
-          onChange={(e) => setFieldValue(field.name, e.target.value)}
+          value={values[field.name]}
+          onChange={(e) => {
+            if (field.name === 'pan') {
+              setFieldValue(field.name, e.target.value.toUpperCase());
+            } else {
+              setFieldValue(field.name, e.target.value);
+            }
+          }}
           onBlur={handleBlur}
           error={touched[field.name] && Boolean(errors[field.name])}
           helperText={touched[field.name] && errors[field.name]}
@@ -208,26 +216,30 @@ export default function BusinessKYC() {
     );
   };
   const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue, resetForm } = formik;
-
+  console.log(APP_DEFAULT_PATH);
   return (
     <Box>
       {/* Business KYC Dialog */}
       <Dialog open={dialogOpen} maxWidth="sm">
         <DialogTitle component="div">
-          <Typography variant="h4">Business KYC</Typography>
-          <Typography variant="body2">Please provide the necessary details to complete the registration.</Typography>
+          <Typography variant="h4" textAlign={'center'}>
+            Business Registration
+          </Typography>
+          <Typography variant="body2" textAlign={'center'}>
+            Please provide the necessary details to complete the registration.
+          </Typography>
         </DialogTitle>
-
+        <Divider />
         <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
           <DialogContent>
-            <Typography variant="h6" sx={{ mb: 2 }}>
+            <Typography variant="subtitle1" sx={{ mb: 2 }}>
               Business Details
             </Typography>
             <Grid2 container spacing={3}>
               {BusinessFields.map(renderField)}
             </Grid2>
 
-            <Typography variant="h6" sx={{ mb: 2, mt: 2 }}>
+            <Typography variant="subtitle1" sx={{ mb: 2, mt: 2 }}>
               Head Office Details
             </Typography>
             <Grid2 container spacing={3}>
@@ -236,7 +248,14 @@ export default function BusinessKYC() {
           </DialogContent>
 
           <DialogActions sx={{ justifyContent: 'space-between' }}>
-            <Button variant="outlined" color="error" onClick={() => setDialogOpen(false)}>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => {
+                setDialogOpen(false);
+                router.push(APP_DEFAULT_PATH);
+              }}
+            >
               Skip
             </Button>
             <Button variant="contained" type="submit">

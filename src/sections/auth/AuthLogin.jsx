@@ -88,13 +88,22 @@ export default function AuthLogin({ inputSx }) {
           user_type: res.data.user_type,
           user_kyc: res.data.user_kyc,
           user_groups: res.data.user_groups,
-          associated_services: res.data.associated_services
+          associated_services: res.data.associated_services,
+          business_exists: res.data.business_exists
         };
         setIsProcessing(false);
         localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));
-
-        if (res.data.user_type === null || res.data.user_kyc === false) router.push('/user-type');
-        else router.push(APP_DEFAULT_PATH);
+        if (res.data.user_type === 'Business') {
+          if (res.data.business_exists === false) {
+            router.push('/user-type');
+          } else {
+            router.push(APP_DEFAULT_PATH);
+          }
+        } else if (res.data.user_type === null || res.data.user_kyc === false) {
+          router.push('/user-type');
+        } else {
+          router.push(APP_DEFAULT_PATH);
+        }
       }
     } catch (error) {
       console.log('error', error);
