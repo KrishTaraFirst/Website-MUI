@@ -65,15 +65,17 @@ export default function OverviewCard({ clientListData }) {
         value: '23,876',
         compare: 'Tagline content',
         buttonLable: 'View',
+        size: 3.5,
         chip: {
           label: '24.5%',
           avatar: <IconArrowUp />
         }
       },
       {
-        title: 'Users',
+        title: 'Total Users',
         href: 'pending',
         value: clientListData.pending || 0,
+        size: 3.5,
         compare: 'Tagline content',
         data: clientListData.in_progress_data || [],
         buttonLable: 'View',
@@ -83,27 +85,15 @@ export default function OverviewCard({ clientListData }) {
         }
       },
       {
-        title: 'In Progress',
-        href: 'in_progress',
-        value: clientListData.in_progress || 0,
+        title: 'New Users',
+        href: '#',
+        value: clientListData.pending || 0,
+        size: 5,
         compare: 'Tagline content',
         data: clientListData.in_progress_data || [],
         buttonLable: 'View',
         chip: {
           label: '20.5%',
-          color: 'error',
-          avatar: <IconArrowDown />
-        }
-      },
-      {
-        title: 'Completed',
-        href: 'completed',
-        value: clientListData.completed || 0,
-        compare: 'Tagline content',
-        data: clientListData.completed_data || [],
-        buttonLable: 'View',
-        chip: {
-          label: '24.5%',
           avatar: <IconArrowUp />
         }
       }
@@ -118,9 +108,7 @@ export default function OverviewCard({ clientListData }) {
   return (
     <Grid container sx={{ borderRadius: 4, boxShadow: theme.customShadows.section, ...applyBorderWithRadius(16, theme) }}>
       {overviewData.map((item, index) => (
-        <Grid key={index} size={{ xs: 6, sm: 6, md: 3 }}>
-          {/* <OverviewCard {...{ ...item, cardProps: { sx: { border: 'none', borderRadius: 0, boxShadow: 'none' } } }} /> */}
-
+        <Grid key={index} size={{ xs: 6, sm: 6, md: item.size }}>
           <MainCard sx={{ border: 'none', borderRadius: 0, boxShadow: 'none' }}>
             <Stack sx={{ gap: 2 }}>
               <Stack direction="row" sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>

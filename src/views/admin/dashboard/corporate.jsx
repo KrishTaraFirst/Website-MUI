@@ -92,14 +92,10 @@ export default function CorporateEntity() {
           </Grid>
         </Grid>
       </Grid>
-
-      <UserBehaviourTable />
-
-      <Grid container sx={{ mt: 3 }} spacing={{ xs: 2, md: 3 }}>
-        <Grid size={12}>
-          <OverviewCard clientListData={clientListData} />{' '}
-        </Grid>
+      <Grid size={12} sx={{ mb: 3 }}>
+        <OverviewCard clientListData={clientListData} />
       </Grid>
+      <UserBehaviourTable />
     </Box>
   );
 }
