@@ -93,7 +93,9 @@ export default function AuthLogin({ inputSx }) {
         };
         setIsProcessing(false);
         localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));
-        if (res.data.user_type === 'Business') {
+        if (res.data.user_type === 'ServiceProvider' || res.data.user_type === 'TaraTeam') {
+          router.push(APP_DEFAULT_PATH);
+        } else if (res.data.user_type === 'Business') {
           if (res.data.business_exists === false) {
             router.push('/user-type');
           } else {
