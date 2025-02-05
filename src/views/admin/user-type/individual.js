@@ -159,7 +159,8 @@ export default function IndividualForm() {
       }
     });
   };
-
+  const userDetails = JSON.parse(localStorage.getItem('auth-user'));
+  console.log(userDetails);
   return (
     <Box>
       <Dialog maxWidth="sm" open={kycDialogOpen}>
@@ -183,7 +184,14 @@ export default function IndividualForm() {
           </DialogContent>
 
           <DialogActions sx={{ justifyContent: 'space-between' }}>
-            <Button variant="outlined" color="error" onClick={() => setKycDialogOpen(false)}>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => {
+                setKycDialogOpen(false);
+                router.push(APP_DEFAULT_PATH);
+              }}
+            >
               Skip
             </Button>
             <Button variant="contained" type="submit">
