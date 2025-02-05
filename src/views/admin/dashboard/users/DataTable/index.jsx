@@ -42,18 +42,18 @@ export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
   };
 
   useEffect(() => {
-    console.log(refresh);
     getUsers();
   }, [refresh]);
 
   const handleToggle = async (event, row) => {
-    const { id } = row.original; // Extract the user ID
-    const isActive = event.target.checked; // Get the new status from the Switch
+    const { id } = row.original;
+    const isActive = event.target.checked;
     let url = `/user_management/update-users-info`;
     const { res } = await Factory('patch', url, { id, is_active: isActive });
     if (res.status_cd === 0) {
-      const updatedData = data.map((user) => (user.id === id ? { ...user, is_active: isActive } : user));
-      setData(updatedData);
+      getUsers();
+      // const updatedData = data.map((user) => (user.id === id ? { ...user, is_active: isActive } : user));
+      // setData(updatedData);
       showSnackbar('Status Changed', 'success');
     } else {
       showSnackbar('Failed to update status', 'error');

@@ -96,9 +96,10 @@ export default function RoleGuard({ children, sx }) {
   };
 
   const getRoleGuard = () => {
-    let __permission = activeItem?.roles?.length && currentRole && !activeItem.roles.includes(currentRole);
+    let __currentRole = typeof currentRole === 'undefined' ? 'individual' : currentRole === null ? 'individual' : currentRole;
+    let __permission = activeItem?.roles?.length && __currentRole && !activeItem.roles.includes(__currentRole);
     if (__permission) return __permission;
-    else if (restrictedRoutes[currentRole].includes(pathname)) return true;
+    else if (restrictedRoutes[__currentRole].includes(pathname)) return true;
     else return false;
   };
 
