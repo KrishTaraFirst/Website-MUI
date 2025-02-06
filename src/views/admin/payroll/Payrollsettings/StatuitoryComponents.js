@@ -39,7 +39,12 @@ const StatutoryComponents = ({ type }) => {
 
   // Tab labels
   const tabLabels = ['EPF', 'ESI', 'Professional Tax'];
-
+  const handleNext = () => {
+    setActiveTab((prev) => (prev < 3 ? prev + 1 : prev));
+  };
+  const handleBack = () => {
+    setActiveTab((prev) => (prev < 3 ? prev - 1 : prev));
+  };
   return (
     <HomeCard title="Statutory Components" tagline="Setup your organization before starting payroll">
       {/* Centering the Tabs section */}
@@ -53,13 +58,13 @@ const StatutoryComponents = ({ type }) => {
 
       {/* Tab Panels - Display content based on activeTab */}
       <TabPanel value={activeTab} index={0}>
-        <EpfComponent />
+        <EpfComponent handleNext={handleNext} />
       </TabPanel>
       <TabPanel value={activeTab} index={1}>
-        <ESIComponent />
+        <ESIComponent handleNext={handleNext} handleBack={handleBack} />
       </TabPanel>
       <TabPanel value={activeTab} index={2}>
-        <ProfessionalTax />
+        <ProfessionalTax handleNext={handleNext} handleBack={handleBack} />
       </TabPanel>
     </HomeCard>
   );

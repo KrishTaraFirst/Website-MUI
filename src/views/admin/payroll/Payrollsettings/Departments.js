@@ -1,6 +1,19 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Paper, Button, Stack, Grid2, Typography } from '@mui/material';
+import {
+  Table,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  Button,
+  Stack,
+  Grid2,
+  Typography,
+  Box
+} from '@mui/material';
 import DepartmentDialog from './DepartmentDialog'; // Import the DepartmentDialog
 import EmptyTable from '@/components/third-party/table/EmptyTable';
 import HomeCard from '@/components/cards/HomeCard';
@@ -8,6 +21,7 @@ import Factory from '@/utils/Factory';
 import { useSearchParams } from 'next/navigation';
 import ActionCell from '@/utils/ActionCell';
 import { useSnackbar } from '@/components/CustomSnackbar';
+import { useRouter } from 'next/navigation';
 
 function Departments() {
   const [openDialog, setOpenDialog] = useState(false); // State to manage dialog visibility
@@ -16,6 +30,7 @@ function Departments() {
   const [postType, setPostType] = useState(''); // Payroll ID fetched from URL
   const [selectedRecord, setSelectedRecord] = useState(null);
   const { showSnackbar } = useSnackbar();
+  const router = useRouter();
 
   const searchParams = useSearchParams();
 
@@ -75,17 +90,31 @@ function Departments() {
         <Grid2 size={12}>
           <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
             <Typography variant="h6">Departments</Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                setPostType('post');
-                handleOpenDialog();
-              }}
-              sx={{ marginBottom: 2 }}
-            >
-              Add Department
-            </Button>
+            <Stack direction="row" sx={{ gap: 2 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  setPostType('post');
+                  handleOpenDialog();
+                }}
+                sx={{ marginBottom: 2 }}
+              >
+                Add Department
+              </Button>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => {
+                  // setPostType('post');
+                  // handleOpenDialog();
+                }}
+                sx={{ marginBottom: 2 }}
+              >
+                Import
+              </Button>
+            </Stack>
+
             <DepartmentDialog
               open={openDialog}
               handleClose={handleCloseDialog}
@@ -124,8 +153,12 @@ function Departments() {
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>{department.dept_name}</TableCell>
                       <TableCell>{department.dept_code}</TableCell>
-                      <TableCell>{department.description}</TableCell>
-                      <TableCell>{department.numOfEmployees}</TableCell>
+                      <TableCell>
+                        {`${department.description}`?.length > 30
+                          ? `${department.description?.substring(0, 20)}...`
+                          : `${department.description}` || 'N/A'}
+                      </TableCell>
+                      <TableCell>{department.numOfEmployees || 0}</TableCell>
                       <TableCell>
                         <ActionCell
                           row={department} // Pass the customer row data
@@ -149,6 +182,16 @@ function Departments() {
           </TableContainer>
         </Grid2>
       </Grid2>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 2 }}>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            router.back();
+          }}
+        >
+          Back
+        </Button>
+      </Box>
     </HomeCard>
   );
 }

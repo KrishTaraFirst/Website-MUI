@@ -26,15 +26,19 @@ import {
   Divider
 } from '@mui/material';
 import { IconPlus, IconTrash } from '@tabler/icons-react';
+import Modal from '@/components/Modal';
+import { ModalSize } from '@/enum';
 
 const details = [
   { name: 'work_location', label: 'Work Location' },
+  { name: 'state', label: 'State' },
   { name: 'pt_number', label: 'PT Number' }
 ];
 
 // Yup Validation Schema
 const validationSchema = Yup.object({
   work_location: Yup.string().required('Work Location is required'),
+  state: Yup.string().required('State is required'),
   pt_number: Yup.string().required('PT Number is required'),
   tax_slabs: Yup.array()
     .of(
@@ -51,7 +55,7 @@ const validationSchema = Yup.object({
     .min(1, 'At least one tax slab is required')
 });
 
-function ProfessionalTax() {
+function ProfessionalTax({ handleBack, handleNext }) {
   const [open, setOpen] = useState(false);
   const [dummyData, setDummyData] = useState(null);
 
@@ -61,6 +65,7 @@ function ProfessionalTax() {
   const formik = useFormik({
     initialValues: {
       work_location: '',
+      state: '',
       pt_number: '',
       tax_slabs: [{ start_range: '', end_range: '', monthly_tax_amount: '' }]
     },
@@ -100,7 +105,7 @@ function ProfessionalTax() {
 
   const renderFields = (fields) => {
     return fields.map((field) => (
-      <Grid2 key={field.name} size={{ sx: 12, sm: 6, md: 4 }}>
+      <Grid2 key={field.name} size={{ sx: 12 }} sx={{ mt: 1 }}>
         <div style={{ paddingBottom: '5px' }}>
           <label>{field.label}</label>
         </div>
@@ -164,7 +169,9 @@ function ProfessionalTax() {
                       <TableCell>{item.work_location}</TableCell>
                       <TableCell>{item.pt_number}</TableCell>
                       <TableCell>{item.state}</TableCell>
-                      <TableCell>View Slabs</TableCell>
+                      <TableCell>
+                        <Button sx={{ textDecoration: 'underline' }}>View Slabs</Button>
+                      </TableCell>
                     </TableRow>
                   ))
                 )}
@@ -178,14 +185,13 @@ function ProfessionalTax() {
         </Grid2>
       )}
 
-      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-        <DialogTitle sx={{ textAlign: 'center' }}>Professional Tax</DialogTitle>
-        <Divider />
-        <DialogContent>
+      <Modal
+        open={open}
+        maxWidth={ModalSize.MD}
+        header={{ title: 'Professional Tax', subheader: '' }}
+        modalContent={
           <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
-            <Grid2 container spacing={3}>
-              {renderFields(details)}
-            </Grid2>
+            {renderFields(details)}
 
             <Box sx={{ mt: 3 }}>
               <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2 }}>
@@ -254,29 +260,37 @@ function ProfessionalTax() {
 
               <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
                 <Button variant="contained" startIcon={<IconPlus size={16} />} onClick={handleAddItemRow}>
-                  Add New Row
+                  Add Slab
                 </Button>
               </Box>
             </Box>
           </Box>
-        </DialogContent>
-
-        <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Button
-            onClick={() => {
-              handleClose();
-              resetForm();
-            }}
-            variant="outlined"
-            color="error"
-          >
-            Cancel
+        }
+        footer={
+          <Stack direction="row" sx={{ width: 1, justifyContent: 'space-between', gap: 2 }}>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => {
+                resetForm();
+                handleClose();
+              }}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" variant="contained" onClick={handleSubmit}>
+              Save
+            </Button>
+          </Stack>
+        }
+      />
+      <Grid2 size={12} textAlign="center" sx={{ mt: 2 }}>
+        <Box>
+          <Button size="small" variant="contained" onClick={handleBack} sx={{ mr: 2 }}>
+            Back
           </Button>
-          <Button onClick={handleSubmit} type="submit" variant="contained" color="primary">
-            Submit
-          </Button>
-        </DialogActions>
-      </Dialog>
+        </Box>
+      </Grid2>
     </Grid2>
   );
 }

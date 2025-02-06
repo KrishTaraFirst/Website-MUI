@@ -46,55 +46,48 @@ const CustomUpload = ({ title, setData, logoDetails, onDelete }) => {
       reader.readAsDataURL(file);
     }
   };
-
   return (
     <div>
-      {/* Display Existing Image with a Delete Option */}
-      {preview ? (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-          <img
-            src={preview}
-            alt="Current Logo"
-            style={{
-              maxWidth: '60px', // Reduce width
-              maxHeight: '60px', // Reduce height
-              objectFit: 'cover',
-              borderRadius: '8px'
-            }}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mt: 2 }}>
+        <label htmlFor="upload-avatar">
+          <input
+            id="upload-avatar"
+            type="file"
+            accept="image/*"
+            style={{ display: 'none' }}
+            onChange={handleOnChange} // Handle file selection
           />
-          <Stack direction="row" spacing={1} alignItems="center">
-            {/* Delete Icon */}
-            <IconButton color="error" onClick={handleDeleteLogo} aria-label="delete">
-              <IconTrash size={16} stroke={1.5} />
-            </IconButton>
-          </Stack>
-        </Box>
-      ) : (
-        <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-          No image uploaded yet.
-        </Typography>
-      )}
+          <Button component="span" variant="outlined" color="secondary" size="small" startIcon={<IconUpload size={16} stroke={1.5} />}>
+            {title}
+          </Button>
+        </label>
+        {preview && (
+          <>
+            <img
+              src={preview}
+              alt="Current Logo"
+              style={{
+                maxWidth: '60px', // Reduce width
+                maxHeight: '60px', // Reduce height
+                objectFit: 'cover',
+                borderRadius: '8px'
+              }}
+            />
+            <Stack direction="row" spacing={1} alignItems="center">
+              {/* Delete Icon */}
+              <IconButton color="error" onClick={handleDeleteLogo} aria-label="delete">
+                <IconTrash size={16} stroke={1.5} />
+              </IconButton>
+            </Stack>
+          </>
+        )}
+      </Box>
 
-      {/* Label to trigger the file input */}
-      <label htmlFor="upload-avatar">
-        <input
-          id="upload-avatar"
-          type="file"
-          accept="image/*"
-          style={{ display: 'none' }}
-          onChange={handleOnChange} // Handle file selection
-        />
-        <Button component="span" variant="outlined" color="secondary" size="small" startIcon={<IconUpload size={16} stroke={1.5} />}>
-          {title}
-        </Button>
-      </label>
-
-      {/* Optionally show file name if you want */}
-      {logoDetails && logoDetails.name && (
+      {/* {logoDetails && logoDetails.name && (
         <Typography variant="body2" color="primary" sx={{ mt: 1 }}>
-          Uploaded: {logoDetails.name}
+          {logoDetails.name}
         </Typography>
-      )}
+      )} */}
     </div>
   );
 };

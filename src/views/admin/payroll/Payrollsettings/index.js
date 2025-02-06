@@ -12,9 +12,9 @@ const PayrollSetup = () => {
   const { userData } = useCurrentUser();
   const [payrollDetails, setPayrollDetails] = useState({});
   const steps = [
-    { nameKey: 'Organization Details', path: '/organization_details', completed: false },
-    { nameKey: 'Set up Work Location', path: '/set_up_work_location', completed: false },
-    { nameKey: 'Set up Departments', path: '/set_up_departments', completed: false },
+    { nameKey: 'Organization Details', path: '/organization_details', completed: true },
+    { nameKey: 'Set up Work Location', path: '/set_up_work_location', completed: true },
+    { nameKey: 'Set up Departments', path: '/set_up_departments', completed: true },
     { nameKey: 'Set up Designations', path: '/set_up_designations', completed: false },
     { nameKey: 'Set up Statutory Components', path: '/set_up_statutory_components', completed: false },
     { nameKey: 'Set up Salary Components', path: '/set_up_salary_components', completed: false },
@@ -45,33 +45,47 @@ const PayrollSetup = () => {
     getData();
   }, []);
   return (
-    <HomeCard title="Payroll" tagline="Setup your organization before starting payroll">
+    <Box sx={{}}>
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="h4" textAlign="center" sx={{ mb: 1 }}>
+          Welcome {userData.firstname}
+        </Typography>
+        <Typography variant="subtitle1" textAlign="center" sx={{ color: 'text.disabled' }}>
+          Set up your organization before starting payroll
+        </Typography>
+      </Box>
+
       <Grid2 container spacing={{ xs: 2, sm: 3 }}>
         <Grid2 size={12}>
-          <MainCard>
-            <Stack direction="column" sx={{ mb: 2, gap: 1 }}>
-              <Typography variant="h6" sx={{ color: '#4A4A4A', fontWeight: 600 }}>
-                Payroll Setup
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#7D7D7D' }}>
-                Follow these steps for an easy payroll process
-              </Typography>
-              <LinearProgress
-                variant="determinate"
-                value={completionPercentage}
-                sx={{
-                  height: 8,
-                  borderRadius: 4,
-                  mt: 1,
-                  backgroundColor: '#EDEDED',
-                  '& .MuiLinearProgress-bar': {
-                    backgroundColor: '#4A90E2'
-                  }
-                }}
-              />
-              <Typography variant="body2" sx={{ textAlign: 'right', color: '#4A4A4A' }}>
-                {completionPercentage}%
-              </Typography>
+          <MainCard sx={{ maxWidth: 800, margin: '0 auto', padding: 2 }}>
+            <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+              <Stack direction="column" sx={{ flexGrow: 1, gap: 1 }}>
+                <Typography variant="h6" sx={{ color: '#4A4A4A', fontWeight: 600 }}>
+                  Payroll Setup
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#7D7D7D' }}>
+                  Follow these steps for an easy payroll process
+                </Typography>
+              </Stack>
+
+              <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
+                <LinearProgress
+                  variant="determinate"
+                  value={completionPercentage}
+                  sx={{
+                    height: 8,
+                    borderRadius: 4,
+                    width: 250, // Adjust width as needed
+                    backgroundColor: '#EDEDED',
+                    '& .MuiLinearProgress-bar': {
+                      backgroundColor: '#4A90E2'
+                    }
+                  }}
+                />
+                <Typography variant="body2" sx={{ color: '#4A4A4A' }}>
+                  {completionPercentage}%
+                </Typography>
+              </Stack>
             </Stack>
 
             <Stack direction="column" spacing={2}>
@@ -114,7 +128,7 @@ const PayrollSetup = () => {
                     </Typography>
                   </Stack>
                   <Button
-                    variant="body2"
+                    variant="outlined"
                     type="button"
                     sx={{
                       color: step.completed ? '#4CAF50' : '#4A90E2',
@@ -140,7 +154,7 @@ const PayrollSetup = () => {
           </MainCard>
         </Grid2>
       </Grid2>
-    </HomeCard>
+    </Box>
   );
 };
 
