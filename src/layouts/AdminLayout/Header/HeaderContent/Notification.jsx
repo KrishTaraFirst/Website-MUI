@@ -20,6 +20,7 @@ import ListSubheader from '@mui/material/ListSubheader';
 import Popper from '@mui/material/Popper';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
 
 // @project
 import { ThemeDirection } from '@/config';
@@ -169,25 +170,27 @@ export default function Notification() {
 
   return (
     <>
-      <IconButton
-        variant="outlined"
-        color="secondary"
-        size="small"
-        onClick={handleActionClick}
-        aria-label="show notifications"
-        {...(notifications.length !== 0 && !allRead && { sx: { '& svg': { animation: `${swing} 1s ease infinite` } } })}
-      >
-        <Badge
-          color="error"
-          variant="dot"
-          invisible={allRead || notifications.length === 0}
-          sx={{
-            '& .MuiBadge-badge': { height: 6, minWidth: 6, top: 4, right: 4, border: `1px solid ${theme.palette.background.default}` }
-          }}
+      <Tooltip describeChild title="Notifications">
+        <IconButton
+          variant="outlined"
+          color="secondary"
+          size="small"
+          onClick={handleActionClick}
+          aria-label="show notifications"
+          {...(notifications.length !== 0 && !allRead && { sx: { '& svg': { animation: `${swing} 1s ease infinite` } } })}
         >
-          <IconBell size={16} />
-        </Badge>
-      </IconButton>
+          <Badge
+            color="error"
+            variant="dot"
+            invisible={allRead || notifications.length === 0}
+            sx={{
+              '& .MuiBadge-badge': { height: 6, minWidth: 6, top: 4, right: 4, border: `1px solid ${theme.palette.background.default}` }
+            }}
+          >
+            <IconBell size={20} />
+          </Badge>
+        </IconButton>
+      </Tooltip>
       <Popper
         placement="bottom-end"
         id={id}

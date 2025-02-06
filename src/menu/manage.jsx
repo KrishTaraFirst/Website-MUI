@@ -29,6 +29,22 @@ const manage = {
       icon: 'IconBrandAsana',
       roles: [AuthRole.SUPER_ADMIN]
     },
+    {
+      id: 'manageCorporateEntities',
+      title: <FormattedMessage id="manageCorporateEntities" />,
+      type: 'item',
+      url: '/manage-corporate-entities',
+      icon: 'IconBuilding',
+      roles: [AuthRole.INDIVIDUAL, AuthRole.CHARTED_ACCOUNTANT_FIRM]
+    },
+    {
+      id: 'manageIndividuals',
+      title: <FormattedMessage id="manageIndividuals" />,
+      type: 'item',
+      url: '/manage-individuals',
+      icon: 'IconUsers',
+      roles: [AuthRole.CHARTED_ACCOUNTANT_FIRM]
+    },
     // anand
     {
       id: 'invoicing',
@@ -36,7 +52,7 @@ const manage = {
       type: 'item',
       url: '/invoicing',
       icon: 'IconFileInvoice',
-      roles: [AuthRole.INDIVIDUAL, AuthRole.CORPORATE_ADMIN]
+      roles: [AuthRole.SUPER_ADMIN, AuthRole.INDIVIDUAL, AuthRole.CORPORATE_ADMIN]
     },
     {
       id: 'VisaServices',
