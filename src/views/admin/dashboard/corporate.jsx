@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 // @project
 // import Services from './visaconsultencyFiles/Services';
 import { useSnackbar } from '@/components/CustomSnackbar';
-import OverviewCard from './corporate-admin-componenets/OverviewCard';
+import OverviewCard from '../corporate-entity/OverviewCard';
 import { useAuth } from '@/contexts/AuthContext';
 import UserBehaviourTable from '@/sections/dashboard/analytics/user-behavior';
 import Grid from '@mui/material/Grid2';

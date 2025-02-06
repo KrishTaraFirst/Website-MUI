@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Paper, Button, Stack, Grid2, Typography } from '@mui/material';
-import AddBusinessDialog from './AddBusinessDialog'; // Import the DepartmentDialog
+import AddCorporateEntityDialog from './AddCorporateEntityDialog';
 import EmptyTable from '@/components/third-party/table/EmptyTable';
 import HomeCard from '@/components/cards/HomeCard';
 import Factory from '@/utils/Factory';
@@ -37,14 +37,14 @@ function BusinessList() {
       setBusinessList([]);
     }
   };
-  const handleEdit = (business) => {
+  const handleEdit = (entity) => {
     setPostType('edit');
-    setSelectedRecord(business);
+    setSelectedRecord(entity);
     handleOpenDialog();
   };
-  const handleDelete = async (business) => {
-    console.log(business);
-    let url = `/payroll/businessList/${business.id}/`;
+  const handleDelete = async (entity) => {
+    console.log(entity);
+    let url = `/payroll/businessList/${entity.id}/`;
     const { res } = await Factory('delete', url, {});
     console.log(res);
     if (res.status_cd === 1) {
@@ -60,44 +60,34 @@ function BusinessList() {
     getBusinessList();
   }, []);
   return (
-    <HomeCard title="Business Details" tagline="Setup your organization before starting Business">
+    <HomeCard
+      title="Corporate Entities"
+      tagline="Setup your organization before starting Entities"
+      CustomElement={() => (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            setPostType('post');
+            handleOpenDialog();
+          }}
+          sx={{ marginBottom: 2 }}
+        >
+          Add Entity
+        </Button>
+      )}
+    >
       <Grid2 container spacing={{ xs: 2, sm: 3 }}>
-        <Grid2 size={12}>
-          <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-            <Typography variant="h6">List of Businesses</Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                setPostType('post');
-                handleOpenDialog();
-              }}
-              sx={{ marginBottom: 2 }}
-            >
-              Add Business
-            </Button>
-            <AddBusinessDialog
-              open={openDialog}
-              handleClose={handleCloseDialog}
-              handleOpenDialog={handleOpenDialog}
-              selectedRecord={selectedRecord}
-              type={postType}
-              setType={setPostType}
-              getBusinessList={getBusinessList}
-            />
-          </Stack>
-        </Grid2>
-
         <Grid2 size={12}>
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
                 <TableRow>
                   <TableCell>S No</TableCell>
-                  <TableCell>Business Name</TableCell>
-                  <TableCell>Business PAN</TableCell>
+                  <TableCell>Entitiey Name</TableCell>
+                  <TableCell>Entitiey PAN</TableCell>
                   <TableCell>Entity Type</TableCell>
-                  <TableCell>Nature of Business</TableCell>
+                  <TableCell>Nature of Entitiey</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -109,25 +99,25 @@ function BusinessList() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  businessList.map((business, index) => (
-                    <TableRow key={business.id}>
+                  businessList.map((entity, index) => (
+                    <TableRow key={entity.id}>
                       <TableCell>{index + 1}</TableCell>
-                      <TableCell>{business.nameOfBusiness}</TableCell>
-                      <TableCell>{business.pan}</TableCell>
-                      <TableCell>{business.entityType}</TableCell>
-                      <TableCell>{business.business_nature}</TableCell>
+                      <TableCell>{entity.nameOfBusiness}</TableCell>
+                      <TableCell>{entity.pan}</TableCell>
+                      <TableCell>{entity.entityType}</TableCell>
+                      <TableCell>{entity.business_nature}</TableCell>
 
                       <TableCell>
                         <ActionCell
-                          row={business} // Pass the customer row data
-                          onEdit={() => handleEdit(business)} // Edit handler
-                          onDelete={() => handleDelete(business)} // Delete handler
+                          row={entity} // Pass the customer row data
+                          onEdit={() => handleEdit(entity)} // Edit handler
+                          onDelete={() => handleDelete(entity)} // Delete handler
                           open={openDialog}
                           onClose={handleCloseDialog}
                           deleteDialogData={{
                             title: 'Delete Record',
                             heading: 'Are you sure you want to delete this Record?',
-                            description: `This action will remove ${business.name} from the list.`,
+                            description: `This action will remove ${entity.name} from the list.`,
                             successMessage: 'Record has been deleted.'
                           }}
                         />
@@ -140,6 +130,16 @@ function BusinessList() {
           </TableContainer>
         </Grid2>
       </Grid2>
+
+      <AddCorporateEntityDialog
+        open={openDialog}
+        handleClose={handleCloseDialog}
+        handleOpenDialog={handleOpenDialog}
+        selectedRecord={selectedRecord}
+        type={postType}
+        setType={setPostType}
+        getBusinessList={getBusinessList}
+      />
     </HomeCard>
   );
 }

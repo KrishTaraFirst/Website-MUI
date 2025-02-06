@@ -14,18 +14,17 @@ import CustomDatePicker from '@/utils/CustomDateInput';
 import dayjs from 'dayjs';
 import useCurrentUser from '@/hooks/useCurrentUser';
 
-// Fields for business and head office
 const BusinessFields = [
-  { name: 'nameOfBusiness', label: 'Business Name' },
-  { name: 'pan', label: 'Business PAN' },
+  { name: 'username', label: 'Username' },
+  { name: 'nameOfBusiness', label: 'Entity Name' },
+  { name: 'email', label: 'Entity Email' },
+  { name: 'pan', label: 'Entity PAN' },
   { name: 'dob_or_incorp_date', label: 'Date of Incorporation' },
   { name: 'entityType', label: 'Entity Type' },
-  { name: 'business_nature', label: 'Business Nature' },
+  { name: 'business_nature', label: 'Entity Nature' },
   { name: 'registrationNumber', label: 'Registration Number' },
   { name: 'trade_name', label: 'Trade Name' },
-  { name: 'mobile_number', label: 'Mobile Number' },
-  { name: 'email', label: 'Email' },
-  { name: 'client', label: 'Client' }
+  { name: 'mobile_number', label: 'Mobile Number' }
 ];
 
 const HeadOfficeFields = [
@@ -38,7 +37,7 @@ const HeadOfficeFields = [
 
 // Validation schema for Formik
 const validationSchema = Yup.object({
-  nameOfBusiness: Yup.string().required('Business name is required'),
+  nameOfBusiness: Yup.string().required('Entity name is required'),
 
   pan: Yup.string()
     // .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN format')
@@ -51,7 +50,7 @@ const validationSchema = Yup.object({
 
   entityType: Yup.string().required('Entity type is required'),
 
-  business_nature: Yup.string().required('Business nature is required'),
+  business_nature: Yup.string().required('Entity nature is required'),
 
   registrationNumber: Yup.string()
     .matches(/^[A-Za-z0-9]+$/, 'Registration number must be alphanumeric')
@@ -63,9 +62,9 @@ const validationSchema = Yup.object({
     .matches(/^[6-9]\d{9}$/, 'Invalid mobile number format')
     .required('Mobile number is required'),
 
-  email: Yup.string().email('Invalid email format').required('Email is required'),
+  email: Yup.string().email('Invalid email format').required('Entity Email is required'),
 
-  client: Yup.string().required('Client is required'),
+  username: Yup.string().required('Username is required'),
 
   address_line1: Yup.string().required('Address Line 1 is required'),
 
@@ -163,8 +162,10 @@ export default function AddBusinessDialog({ open, handleClose, getBusinessList, 
     return fields.map((field) => {
       if (field.name === 'state') {
         return (
-          <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
-            <label style={{ marginBottom: '5px' }}>{field.label}</label>
+          <Grid2 size={{ xs: 12, sm: 6 }} key={field.name} sx={{ mb: 1 }}>
+            <Typography variant="subtitle2" color="grey.800" sx={{ mb: 0.5 }}>
+              {field.label}
+            </Typography>
             <CustomAutocomplete
               value={values[field.name]}
               name={field.name}
@@ -178,8 +179,10 @@ export default function AddBusinessDialog({ open, handleClose, getBusinessList, 
         );
       } else if (field.name === 'dob_or_incorp_date') {
         return (
-          <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
-            <label style={{ marginBottom: '5px' }}>{field.label}</label>
+          <Grid2 size={{ xs: 12, sm: 6 }} key={field.name} sx={{ mb: 1 }}>
+            <Typography variant="subtitle2" color="grey.800" sx={{ mb: 0.5 }}>
+              {field.label}
+            </Typography>{' '}
             <CustomDatePicker
               views={['year', 'month', 'day']}
               value={values.dob_or_incorp_date ? dayjs(values.dob_or_incorp_date) : null}
@@ -198,8 +201,10 @@ export default function AddBusinessDialog({ open, handleClose, getBusinessList, 
       }
 
       return (
-        <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
-          <label>{field.label}</label>
+        <Grid2 size={{ xs: 12, sm: 6 }} key={field.name} sx={{ mb: 1 }}>
+          <Typography variant="subtitle2" color="grey.800" sx={{ mb: 0.5 }}>
+            {field.label}
+          </Typography>
           <CustomInput
             name={field.name}
             value={field.name === 'pan' ? values[field.name].toUpperCase() : values[field.name]}
@@ -215,22 +220,17 @@ export default function AddBusinessDialog({ open, handleClose, getBusinessList, 
   };
   const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, resetForm, setFieldValue } = formik;
   return (
-    <Dialog open={open} maxWidth={'md'} fullWidth>
-      <DialogTitle textAlign="center">Add LBusiness Details</DialogTitle>
-      <Divider />
-      <DialogContent>
-        <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            Business Details
-          </Typography>
-
-          <Grid2 container spacing={3}>
+    <Dialog open={open} maxWidth={'sm'} fullWidth>
+      <DialogTitle>Add Entity Details</DialogTitle>
+      <DialogContent dividers>
+        <Box component="form" onSubmit={handleSubmit}>
+          <Grid2 container spacing={1.5}>
             {renderFields(BusinessFields)}
           </Grid2>
-          <Typography variant="h6" sx={{ mb: 2, mt: 2 }}>
+          <Typography variant="h6" sx={{ mb: 1.5, mt: 3 }}>
             Head Office Details
           </Typography>
-          <Grid2 container spacing={3}>
+          <Grid2 container spacing={1.5}>
             {renderFields(HeadOfficeFields)}
           </Grid2>
         </Box>

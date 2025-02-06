@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 
 // @project
 import Notification from './Notification';
+import AccountSwitcher from './AccountSwitcher';
 import Profile from './Profile';
 import SearchBar from './SearchBar';
 import Breadcrumbs from '@/components/CustomBreadcrumbs';
@@ -19,6 +20,7 @@ export default function HeaderContent() {
         </Box>
         <Stack direction="row" sx={{ alignItems: 'center', gap: { xs: 1, sm: 1.5 } }}>
           <SearchBar />
+          <AccountSwitcher />
           <Notification />
           <Profile />
         </Stack>

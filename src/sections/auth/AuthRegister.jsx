@@ -22,6 +22,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Link from '@mui/material/Link';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import { Box, ButtonGroup } from '@mui/material';
+import { motion } from 'framer-motion';
 
 // @third-party
 import { useForm } from 'react-hook-form';
@@ -33,12 +35,13 @@ import { AuthRole } from '@/enum';
 import { APP_DEFAULT_PATH, AUTH_USER_KEY } from '@/config';
 import { BASE_URL } from 'constants';
 import axios from '@/utils/axios';
-import { emailSchema, passwordSchema } from '@/utils/validationSchema';
+import { emailSchema, passwordSchema, userNameSchema } from '@/utils/validationSchema';
 
 // @icons
 import { IconEye, IconEyeOff } from '@tabler/icons-react';
 
 /***************************  AUTH - REGISTER  ***************************/
+const options = ['Individual', 'CA Firm', 'Corporate Entity', 'Service Provider'];
 
 export default function AuthRegister({ inputSx }) {
   const router = useRouter();
@@ -49,6 +52,7 @@ export default function AuthRegister({ inputSx }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [registerError, setRegisterError] = useState('');
   const [loginError, setLoginError] = useState('');
+  const [selected, setSelected] = useState(null);
 
   // Initialize react-hook-form
   const {
@@ -89,8 +93,88 @@ export default function AuthRegister({ inputSx }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      <Box display="flex" justifyContent="center" mt={4} mb={3}>
+        <Box
+          sx={{
+            position: 'relative',
+            display: 'inline-flex',
+            // backgroundColor: '#e0e0e0',
+            borderRadius: '50px',
+            padding: '4px',
+            width: '1200px', // Adjust width based on your design
+            boxSizing: 'border-box',
+            border: '1px solid #006397'
+          }}
+        >
+          {/* Animated Background Pill */}
+          {selected !== null && (
+            <motion.div
+              layout
+              transition={{ type: 'spring', stiffness: 500, damping: 50 }}
+              style={{
+                position: 'absolute',
+                top: '4px',
+                bottom: '4px',
+                left: `calc(${options.indexOf(selected)} * (100% / ${options.length}) + 4px)`,
+                width: `calc((100% / ${options.length}) - 8px)`,
+                backgroundColor: '#006397',
+                borderRadius: '50px',
+                zIndex: 0
+              }}
+            />
+          )}
+
+          {/* Buttons */}
+          <ButtonGroup
+            sx={{
+              position: 'relative',
+              zIndex: 1,
+              width: '100%',
+              boxSizing: 'border-box',
+              '&:hover': { bgcolor: 'none' }
+            }}
+          >
+            {options.map((option) => (
+              <Button
+                variant="text"
+                key={option}
+                onClick={() => setSelected(option)}
+                sx={{
+                  flex: 1,
+                  px: 3,
+                  py: 1,
+                  fontSize: '14px',
+                  color: selected === option ? 'white' : 'grey.800',
+                  transition: 'color 0.3s',
+                  textTransform: 'none',
+                  '&:hover': { bgcolor: 'none' }
+                }}
+              >
+                {option}
+              </Button>
+            ))}
+          </ButtonGroup>
+        </Box>
+      </Box>
       <Stack sx={{ gap: 2.5 }}>
         <Stack sx={{ gap: 0.5 }}>
+          <Stack sx={{ gap: 0.5 }}>
+            <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+              Username
+            </Typography>
+            <OutlinedInput
+              {...register('username', userNameSchema)}
+              placeholder="Enter your user Name"
+              slotProps={{ input: { 'aria-label': 'Email address' } }}
+              error={errors.username && Boolean(errors.username)}
+              sx={{ ...inputSx }}
+            />
+            {errors.username?.message && (
+              <Typography variant="caption" sx={{ color: 'error.main' }}>
+                {errors.username?.message}
+              </Typography>
+            )}
+          </Stack>
           <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
             Email
           </Typography>

@@ -8,16 +8,19 @@ import { Box } from '@mui/material';
 
 /***************************  PRESENTATION CARD  ***************************/
 
-export default function HomeCard({ title, tagline, children }) {
+export default function HomeCard({ title, tagline, CustomElement, children }) {
   return (
     <Box>
-      <Stack sx={{ gap: 0, mb: 2 }}>
-        <Typography variant="h4" sx={{ fontWeight: 400 }}>
-          {title}
-        </Typography>
-        <Typography variant="caption" sx={{ color: 'grey.700' }}>
-          {tagline}
-        </Typography>
+      <Stack direction={'row'} sx={{ justifyContent: 'space-between' }}>
+        <Stack direction={'column'} sx={{ gap: 0, mb: 2 }}>
+          <Typography variant="h4" sx={{ fontWeight: 400 }}>
+            {title}
+          </Typography>
+          <Typography variant="caption" sx={{ color: 'grey.700' }}>
+            {tagline}
+          </Typography>
+        </Stack>
+        {CustomElement && <CustomElement />}
       </Stack>
       {children}
     </Box>
