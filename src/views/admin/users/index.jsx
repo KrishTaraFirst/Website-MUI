@@ -18,7 +18,6 @@ import Modal from '@/components/Modal';
 import { ModalSize } from '@/enum';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import useCurrentUser from '@/hooks/useCurrentUser';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="right" ref={ref} {...props} />;
@@ -34,7 +33,6 @@ const userTypes = {
 export default function EditUser({ type, open, setOpen, user_id, setRefresh, user_type, getUsers }) {
   const { showSnackbar } = useSnackbar();
   const [isOpen, setIsOpen] = useState(false);
-  const { userData } = useCurrentUser();
 
   const [data, setData] = useState({
     user_name: '',
@@ -43,7 +41,6 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
     mobile_number: '',
     email: '',
     password: '',
-    created_by: userData.id,
     id: user_id || ''
   });
   const [errors, setErrors] = useState({ first_name: '', last_name: '', id: user_id });
@@ -182,7 +179,6 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
     const { res } = await Factory('post', url, { ...__data });
 
     if (res.status_cd === 1) {
-      console.log(res.data);
       showSnackbar(JSON.stringify(res.data.data), 'error');
     } else {
       showSnackbar('Saved Successfully', 'success');

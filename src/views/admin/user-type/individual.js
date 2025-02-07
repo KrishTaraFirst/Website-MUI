@@ -12,6 +12,7 @@ import { statesAndUTs } from '@/utils/helperData';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import { APP_DEFAULT_PATH } from '@/config';
 import { useSnackbar } from '@/components/CustomSnackbar';
+import useCurrentUser from '@/hooks/useCurrentUser';
 
 const individualFieldData = [
   { name: 'name', label: 'Full Name', type: 'text' },
@@ -29,6 +30,7 @@ const individualFieldData = [
 ];
 
 export default function IndividualForm() {
+  const { userData } = useCurrentUser();
   const router = useRouter();
   const [kycDialogOpen, setKycDialogOpen] = useState(true);
   const [selectedDate, setSelectedDate] = useState(dayjs());
@@ -42,8 +44,8 @@ export default function IndividualForm() {
 
   const formik = useFormik({
     initialValues: {
-      name: '',
-      email: '',
+      name: userData.firstname,
+      email: userData.email,
       mobile: '',
       dob: dayjs().format('YYYY-MM-DD'),
       address_line1: '',
@@ -152,7 +154,7 @@ export default function IndividualForm() {
               onBlur={formik.handleBlur}
               error={formik.touched[field.name] && Boolean(formik.errors[field.name])}
               helperText={formik.touched[field.name] && formik.errors[field.name]}
-              disabled={field.name === 'country'}
+              disabled={field.name === 'country' || field.name === 'name' || field.name === 'email'}
             />
           </Grid2>
         );

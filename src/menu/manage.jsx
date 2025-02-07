@@ -33,7 +33,7 @@ const manage = {
       id: 'manageCorporateEntities',
       title: <FormattedMessage id="manageCorporateEntities" />,
       type: 'item',
-      url: '/manage-corporate-entities',
+      url: '/dashboard/user/corporate-entities',
       icon: 'IconBuilding',
       roles: [AuthRole.INDIVIDUAL, AuthRole.CHARTED_ACCOUNTANT_FIRM]
     },
@@ -41,9 +41,17 @@ const manage = {
       id: 'manageIndividuals',
       title: <FormattedMessage id="manageIndividuals" />,
       type: 'item',
-      url: '/manage-individuals',
+      url: '/dashboard/user/indivial',
       icon: 'IconUsers',
       roles: [AuthRole.CHARTED_ACCOUNTANT_FIRM]
+    },
+    {
+      id: 'manageTeam',
+      title: <FormattedMessage id="manageTeam" />,
+      type: 'item',
+      url: '/dashboard/user/team',
+      icon: 'IconChartHistogram',
+      roles: [AuthRole.SUPER_ADMIN, AuthRole.CORPORATE_ADMIN, AuthRole.SERVICE_PROVIDER, AuthRole.INDIVIDUAL]
     },
     // anand
     {

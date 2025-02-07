@@ -30,13 +30,13 @@ const restrictedRoutes = {
     '/dashboard/user/service-providers'
   ],
   'charted-accountant-firm': [
-    '/dashboard/user/corporate-entities',
-    '/dashboard/user/indivial',
-    '/dashboard/user/ca-firms',
-    '/dashboard/user/service-providers'
+    // '/dashboard/user/corporate-entities',
+    // '/dashboard/user/indivial',
+    '/dashboard/user/ca-firms'
+    // '/dashboard/user/service-providers'
   ],
   individual: [
-    '/dashboard/user/corporate-entities',
+    // '/dashboard/user/corporate-entities',
     '/dashboard/user/indivial',
     '/dashboard/user/ca-firms',
     '/dashboard/user/service-providers'
