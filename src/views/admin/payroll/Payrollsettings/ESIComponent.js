@@ -15,59 +15,53 @@ import {
   FormControlLabel,
   Typography,
   Stack,
-  Grid2
+  Grid2,
+  FormGroup
 } from '@mui/material';
-import { IconPlus } from '@tabler/icons-react';
-
+import EmptyTable from '@/components/third-party/table/EmptyTable';
+import { IconPlus, IconEdit } from '@tabler/icons-react';
+import Modal from '@/components/Modal';
+import { ModalSize } from '@/enum';
 const esiDetails = [
-  { name: 'epf_number', label: 'EPF Number' },
+  { name: 'esi_number', label: 'ESI Number' },
   { name: 'employees_contribution_rate', label: 'Employees Contribution' },
   { name: 'employers_contribution_rate', label: 'Employers Contribution' }
 ];
 
-function ESIComponent() {
+function ESIComponent({ handleNext, handleBack }) {
   const [open, setOpen] = useState(false);
-  const [dummyData, setDummyData] = useState(null);
+  const [esiData, setEsiData] = useState(null);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const formik = useFormik({
     initialValues: {
-      epf_number: '',
-      employees_contribution_rate: '',
-      employers_contribution_rate: '',
-      contribution_rates: []
+      esi_number: '',
+      employees_contribution_rate: '0.75 %',
+      employers_contribution_rate: '3.25 %',
+      include_employer_ctc: false
     },
     validationSchema: Yup.object({
-      // Add validation rules if needed
+      esi_number: Yup.string()
+        .matches(/^\d{17}$/, 'ESI number must be exactly 17 digits')
+        .required('ESI number is required')
     }),
     onSubmit: (values) => {
       console.log(values);
     }
   });
 
-  const { values, handleChange, errors, touched, handleSubmit, handleBlur, setFieldValue } = formik;
-
-  // Handle checkbox changes
-  const handleCheckboxChange = (event, fieldName) => {
-    const updatedRates = event.target.checked
-      ? [...values.contribution_rates, fieldName]
-      : values.contribution_rates.filter((rate) => rate !== fieldName);
-
-    setFieldValue('contribution_rates', updatedRates);
-  };
-
   // Simulate setting dummy values
   useEffect(() => {
     const fetchDummyData = () => {
       const data = {
-        epf_number: 'A1234',
-        employees_contribution_rate: '10%',
-        employers_contribution_rate: '12%',
-        contribution_rates: ['Employers Contribution']
+        esi_number: 'A1234',
+        employees_contribution_rate: '0.75 %',
+        employers_contribution_rate: '3.25 %',
+        include_employer_ctc: false
       };
-      setDummyData(data); // Set dummy data
+      setEsiData(data); // Set dummy data
       formik.setValues(data); // Update formik values
     };
 
@@ -76,116 +70,178 @@ function ESIComponent() {
 
   const renderFields = (fields) => {
     return fields.map((field) => (
-      <Grid2 item key={field.name} xs={12} sm={6} md={4}>
+      <Grid2 key={field.name} size={{ xs: 12 }}>
         <div style={{ paddingBottom: '5px' }}>
           <label>{field.label}</label>
         </div>
-        <TextField
-          fullWidth
-          name={field.name}
-          value={values[field.name]}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          error={touched[field.name] && Boolean(errors[field.name])}
-          helperText={touched[field.name] && errors[field.name]}
-        />
+        <Box sx={{ display: 'flex' }}>
+          <TextField
+            fullWidth
+            name={field.name}
+            value={values[field.name]}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={touched[field.name] && Boolean(errors[field.name])}
+            helperText={touched[field.name] && errors[field.name]}
+            disabled={field.name !== 'esi_number'}
+          />
+          {field.name !== 'esi_number' && (
+            <Typography variant="subtitle2" sx={{ whiteSpace: 'nowrap', ml: 1 }} alignContent="center">
+              of Gross Pay
+            </Typography>
+          )}
+        </Box>
       </Grid2>
     ));
   };
+  const { values, handleChange, errors, touched, handleSubmit, handleBlur, setFieldValue, resetForm } = formik;
 
   return (
     <Grid2 container spacing={{ xs: 2, sm: 3 }}>
       <Grid2 size={12}>
-        <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-          <Typography variant="h6">Employees State Insurance</Typography>
-          <Button variant="contained" startIcon={<IconPlus size={16} />} onClick={handleOpen}>
-            Enable ESI
-          </Button>
-        </Stack>
-      </Grid2>
-      <Grid2 size={12}>
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', textAlign: 'center' }}>
           <Grid2 container spacing={2} sx={{ maxWidth: '600px' }}>
-            {dummyData ? (
-              <Grid2 container spacing={2}>
-                <Grid2 size={12}>
-                  <Typography variant="body1" sx={{ textAlign: 'left' }}>
-                    ESI Number:
-                  </Typography>
-                  <Typography variant="body1" sx={{ textAlign: 'right' }}>
-                    {dummyData.epf_number}
-                  </Typography>
-                </Grid2>
+            <Grid2 container spacing={2}>
+              {esiData && (
+                <>
+                  {' '}
+                  <Grid2 size={6}>
+                    <Typography variant="subtitle1" sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
+                      Employees State Insurence
+                    </Typography>
+                  </Grid2>
+                  <Grid2 size={6}>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      startIcon={esiData ? <IconEdit size={16} /> : <IconPlus size={16} />}
+                      onClick={handleOpen}
+                    >
+                      Edit ESI
+                    </Button>
+                  </Grid2>
+                </>
+              )}
+              {esiData ? (
+                <>
+                  {/* EPF Data display */}
+                  <Grid2 size={6}>
+                    <Typography variant="body1" sx={{ textAlign: 'left' }}>
+                      ESI Number:
+                    </Typography>
+                  </Grid2>
+                  <Grid2 size={6}>
+                    <Typography variant="body1" sx={{ textAlign: 'left' }}>
+                      {esiData.esi_number}
+                    </Typography>
+                  </Grid2>
+                  <Grid2 size={6}>
+                    <Typography variant="body1" sx={{ textAlign: 'left' }}>
+                      Employee Contribution Rate:
+                    </Typography>
+                  </Grid2>
+                  <Grid2 size={6}>
+                    <Typography variant="body1" sx={{ textAlign: 'left' }}>
+                      {esiData.employees_contribution_rate} of Gross Pay
+                    </Typography>
+                  </Grid2>
 
-                <Grid2 size={12}>
-                  <Typography variant="body1" sx={{ textAlign: 'left' }}>
-                    EPF Contribution Rate:
-                  </Typography>
-                  <Typography variant="body1" sx={{ textAlign: 'right' }}>
-                    {dummyData.employees_contribution_rate}
-                  </Typography>
-                </Grid2>
+                  <Grid2 size={6}>
+                    <Typography variant="body1" sx={{ textAlign: 'left' }}>
+                      Employer Contribution Rate:
+                    </Typography>
+                  </Grid2>
+                  <Grid2 size={6}>
+                    <Typography variant="body1" sx={{ textAlign: 'left' }}>
+                      {esiData.employers_contribution_rate} of Gross Pay
+                    </Typography>
+                  </Grid2>
 
-                <Grid2 item size={12}>
-                  <Typography variant="body1" sx={{ textAlign: 'left' }}>
-                    Employers Contribution Rate:
-                  </Typography>
-                  <Typography variant="body1" sx={{ textAlign: 'right' }}>
-                    {dummyData.employers_contribution_rate}
-                  </Typography>
-                </Grid2>
-
-                <Grid2 item size={12}>
-                  <Typography variant="h6" sx={{ textAlign: 'left' }}>
-                    CTC Conclusions:
-                  </Typography>
-                  {dummyData.contribution_rates.map((rate, index) => (
-                    <Grid2 item xs={12} key={index} sx={{ paddingTop: 0 }}>
-                      <FormControlLabel control={<Checkbox checked={true} />} label={rate} />
-                    </Grid2>
-                  ))}
-                </Grid2>
-              </Grid2>
-            ) : (
-              <Typography>Loading data...</Typography>
-            )}
-
-            <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-              <DialogTitle sx={{ textAlign: 'center' }}>Add ESI Details</DialogTitle>
-              <DialogContent>
-                <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
-                  <Typography variant="h6" sx={{ mb: 2 }}>
-                    ESI Details
-                  </Typography>
-                  <Grid2 container spacing={3}>
-                    {renderFields(esiDetails)}
-                    <Grid2 item xs={12}>
+                  <Grid2 size={6}>
+                    <Typography variant="body1" sx={{ textAlign: 'left' }}>
+                      CTC Inclusions:
+                    </Typography>
+                  </Grid2>
+                  <Grid2 size={6}>
+                    <FormGroup>
                       <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={values.contribution_rates.includes('Employers Contribution')}
-                            onChange={(e) => handleCheckboxChange(e, 'Employers Contribution')}
-                          />
-                        }
-                        label="Include employers contribution in the CTC"
+                        control={<Checkbox checked={esiData.include_employer_ctc} />}
+                        label="Include Employer's Contribution in the CTC"
+                        sx={{ whiteSpace: 'nowrap' }}
                       />
-                    </Grid2>
+                    </FormGroup>
+                  </Grid2>
+                  <Grid2 size={12} textAlign="center" sx={{ mt: 2 }}>
+                    <Box>
+                      <Button size="small" variant="contained" onClick={handleBack} sx={{ mr: 2 }}>
+                        Back
+                      </Button>
+                      <Button size="small" variant="contained" onClick={handleNext}>
+                        Next
+                      </Button>
+                    </Box>
+                  </Grid2>
+                </>
+              ) : (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                  {/* Empty Table */}
+                  <Box>
+                    <EmptyTable msg="No ESI YET!" sx={{ height: 300, fontWeight: 'bold' }} />
+                  </Box>
+                  {/* Add EPF Button */}
+                  <Grid2 container justifyContent="center" mt={2}>
+                    <Button variant="contained" startIcon={<IconPlus size={16} />} onClick={handleOpen}>
+                      Enable ESI
+                    </Button>
                   </Grid2>
                 </Box>
-              </DialogContent>
-
-              <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Button onClick={handleClose} variant="outlined" color="error">
-                  Cancel
-                </Button>
-                <Button onClick={handleSubmit} type="submit" variant="contained" color="primary">
-                  Submit
-                </Button>
-              </DialogActions>
-            </Dialog>
+              )}
+            </Grid2>
           </Grid2>
         </Box>
       </Grid2>
+
+      <Modal
+        open={open}
+        maxWidth={ModalSize.MD}
+        header={{ title: 'Employees State Insurence', subheader: '' }}
+        modalContent={
+          <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
+            <Grid2 container spacing={3}>
+              {renderFields(esiDetails)}
+            </Grid2>
+            <br />
+            <Grid2 size={{ xs: 12 }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={values.include_employer_ctc}
+                    onChange={(e) => formik.setFieldValue('include_employer_ctc', e.target.checked)}
+                  />
+                }
+                label="Include employers contribution in the CTC"
+              />
+            </Grid2>
+          </Box>
+        }
+        footer={
+          <Stack direction="row" sx={{ width: 1, justifyContent: 'space-between', gap: 2 }}>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => {
+                resetForm();
+                handleClose();
+              }}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" variant="contained" onClick={handleSubmit}>
+              Save
+            </Button>
+          </Stack>
+        }
+      />
     </Grid2>
   );
 }

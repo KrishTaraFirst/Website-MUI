@@ -50,6 +50,7 @@ export default function Modal({ open, onClose, maxWidth = ModalSize.SM, header, 
                   </IconButton>
                 )
               })}
+              sx={{ textAlign: 'center' }}
             />
           )}
           <CardContent sx={{ maxHeight: 'calc(100vh - 210px)', overflowY: 'auto' }}>{modalContent}</CardContent>

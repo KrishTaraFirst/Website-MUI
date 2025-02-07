@@ -1,6 +1,19 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Paper, Button, Stack, Grid2, Typography } from '@mui/material';
+import {
+  Table,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  Button,
+  Stack,
+  Grid2,
+  Typography,
+  Box
+} from '@mui/material';
 import DesignationDialog from './DesignationDialog'; // Import the DepartmentDialog
 import EmptyTable from '@/components/third-party/table/EmptyTable';
 import HomeCard from '@/components/cards/HomeCard';
@@ -8,6 +21,7 @@ import Factory from '@/utils/Factory';
 import { useSearchParams } from 'next/navigation';
 import ActionCell from '@/utils/ActionCell';
 import { useSnackbar } from '@/components/CustomSnackbar';
+import { useRouter } from 'next/navigation';
 
 function Designations() {
   const [openDialog, setOpenDialog] = useState(false); // State to manage dialog visibility
@@ -16,6 +30,7 @@ function Designations() {
   const [postType, setPostType] = useState(''); // Payroll ID fetched from URL
   const [selectedRecord, setSelectedRecord] = useState(null);
   const { showSnackbar } = useSnackbar();
+  const router = useRouter();
 
   const searchParams = useSearchParams();
 
@@ -80,17 +95,31 @@ function Designations() {
         <Grid2 size={12}>
           <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
             <Typography variant="h6">Designations</Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                setPostType('post');
-                handleOpenDialog();
-              }}
-              sx={{ marginBottom: 2 }}
-            >
-              Add Designation
-            </Button>
+
+            <Stack direction="row" sx={{ gap: 2 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  setPostType('post');
+                  handleOpenDialog();
+                }}
+                sx={{ marginBottom: 2 }}
+              >
+                Add Designation
+              </Button>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => {
+                  // setPostType('post');
+                  // handleOpenDialog();
+                }}
+                sx={{ marginBottom: 2 }}
+              >
+                Import
+              </Button>
+            </Stack>
             <DesignationDialog
               open={openDialog}
               handleClose={handleCloseDialog}
@@ -110,7 +139,7 @@ function Designations() {
                 <TableRow>
                   <TableCell>S No</TableCell>
                   <TableCell>Designation Name</TableCell>
-                  <TableCell>Description</TableCell>
+                  <TableCell>No of Employees</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -126,7 +155,7 @@ function Designations() {
                     <TableRow key={designation.id}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>{designation.designation_name}</TableCell>
-                      <TableCell>{designation.description}</TableCell>
+                      <TableCell>{designation.numOfEmployees || 0}</TableCell>
                       <TableCell>
                         <ActionCell
                           row={designation} // Pass the customer row data
@@ -150,6 +179,16 @@ function Designations() {
           </TableContainer>
         </Grid2>
       </Grid2>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 2 }}>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            router.back();
+          }}
+        >
+          Back
+        </Button>
+      </Box>
     </HomeCard>
   );
 }

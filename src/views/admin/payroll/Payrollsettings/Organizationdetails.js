@@ -9,6 +9,8 @@ import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import CustomInput from '@/utils/CustomInput';
 import CustomUpload from '@/utils/CustomUpload';
 import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
+import { industries } from '@/utils/industries';
+
 import { useSnackbar } from '@/components/CustomSnackbar';
 import Factory from '@/utils/Factory';
 import { useRouter } from 'next/navigation';
@@ -135,7 +137,7 @@ function Organizationdetails({ tab }) {
         );
       }
 
-      if (field.name === 'org_address_state' || field.name === 'filling_address_state') {
+      if (field.name === 'org_address_state' || field.name === 'filling_address_state' || field.name === 'industry') {
         return (
           <Grid2 key={field.name} size={{ xs: 12, sm: 6, md: 4 }}>
             <div style={{ paddingBottom: '5px' }}>
@@ -145,7 +147,7 @@ function Organizationdetails({ tab }) {
               value={values[field.name]}
               name={field.name}
               onChange={(e, newValue) => setFieldValue(field.name, newValue)}
-              options={indian_States_And_UTs}
+              options={field.name === 'industry' ? industries : indian_States_And_UTs}
               error={touched[field.name] && Boolean(errors[field.name])}
               helperText={touched[field.name] && errors[field.name]}
               sx={{ width: '100%' }}

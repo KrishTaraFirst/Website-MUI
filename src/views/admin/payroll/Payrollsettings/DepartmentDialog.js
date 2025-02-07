@@ -78,6 +78,8 @@ export default function DepartmentDialog({ open, handleClose, fetchDepartments, 
         <CustomInput
           fullWidth
           name={field.name}
+          multiline={field.name === 'description'}
+          minRows={field.name === 'description' && 6}
           value={values[field.name]}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -90,7 +92,7 @@ export default function DepartmentDialog({ open, handleClose, fetchDepartments, 
   const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, resetForm } = formik;
   return (
     <Dialog open={open} maxWidth="md" fullWidth>
-      <DialogTitle textAlign="center">Add Department Details</DialogTitle>
+      <DialogTitle textAlign="center">Add Department</DialogTitle>
       <Divider />
       <DialogContent>
         <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>

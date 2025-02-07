@@ -7,6 +7,9 @@ import CustomInput from '@/utils/CustomInput';
 import Factory from '@/utils/Factory';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import { useSearchParams } from 'next/navigation';
+import Modal from '@/components/Modal';
+import { ModalSize } from '@/enum';
+import Stack from '@mui/material/Stack';
 
 export default function DesignationDialog({ open, handleClose, fetchDesignations, selectedRecord, type, setType }) {
   const { showSnackbar } = useSnackbar();
@@ -24,22 +27,17 @@ export default function DesignationDialog({ open, handleClose, fetchDesignations
   const handleOpenDialog = () => {
     setOpenDialog(true);
   };
-  const departmentFields = [
-    { name: 'designation_name', label: 'Designation Name' },
-    { name: 'description', label: 'Description' }
-  ];
+  const departmentFields = [{ name: 'designation_name', label: 'Designation Name' }];
 
   // Formik validation schema
   const validationSchema = Yup.object({
-    designation_name: Yup.string().required('Designation name is required'),
-    description: Yup.string().required('Description is required')
+    designation_name: Yup.string().required('Designation name is required')
   });
 
   // Initialize Formik with initial values and validation schema
   const formik = useFormik({
     initialValues: {
-      designation_name: '',
-      description: ''
+      designation_name: ''
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -87,35 +85,35 @@ export default function DesignationDialog({ open, handleClose, fetchDesignations
   const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, resetForm } = formik;
 
   return (
-    <Dialog open={open} maxWidth="md" fullWidth>
-      <DialogTitle textAlign="center">Add Designation Details</DialogTitle>
-      <Divider />
-      <DialogContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-        <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%', maxWidth: 600 }}>
-          <Grid2 container spacing={3}>
-            {/* Render dynamic fields for department */}
-            {renderFields(departmentFields)}
-          </Grid2>
-        </Box>
-      </DialogContent>
-
-      <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Button
-          onClick={() => {
-            resetForm();
-            setType('');
-
-            handleClose(); // Reset form and close dialog
-          }}
-          variant="outlined"
-          color="error"
-        >
-          Cancel
-        </Button>
-        <Button onClick={handleSubmit} type="submit" variant="contained" color="primary">
-          Submit
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <Modal
+      open={open}
+      onClose={() => handleClose()}
+      maxWidth={ModalSize.MD}
+      header={{ title: 'Add designation', subheader: '' }}
+      modalContent={
+        <Grid2 container spacing={3}>
+          {/* Render dynamic fields for department */}
+          {renderFields(departmentFields)}
+        </Grid2>
+      }
+      footer={
+        <Stack direction="row" sx={{ width: 1, justifyContent: 'space-between', gap: 2 }}>
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={() => {
+              resetForm();
+              setType('');
+              handleClose(); // Reset form and close dialog
+            }}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" variant="contained" onClick={handleSubmit}>
+            Save
+          </Button>
+        </Stack>
+      }
+    />
   );
 }

@@ -1,6 +1,19 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Paper, Button, Stack, Grid2, Typography } from '@mui/material';
+import {
+  Table,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  Button,
+  Stack,
+  Grid2,
+  Typography,
+  Box
+} from '@mui/material';
 import WorkLocationDialog from './WorkLocationDialog';
 import EmptyTable from '@/components/third-party/table/EmptyTable';
 import HomeCard from '@/components/cards/HomeCard';
@@ -8,6 +21,7 @@ import Factory from '@/utils/Factory';
 import { useSearchParams } from 'next/navigation';
 import ActionCell from '@/utils/ActionCell';
 import { useSnackbar } from '@/components/CustomSnackbar';
+import { useRouter } from 'next/navigation';
 
 function Worklocation() {
   const [openDialog, setOpenDialog] = useState(false); // Controls dialog visibility
@@ -16,6 +30,7 @@ function Worklocation() {
   const [postType, setPostType] = useState(''); // Payroll ID fetched from URL
   const [selectedRecord, setSelectedRecord] = useState(null);
   const { showSnackbar } = useSnackbar();
+  const router = useRouter();
 
   const searchParams = useSearchParams();
 
@@ -76,17 +91,31 @@ function Worklocation() {
         <Grid2 size={12}>
           <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
             <Typography variant="h6">Work Locations</Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                setPostType('post');
-                handleOpenDialog();
-              }}
-              sx={{ marginBottom: 2 }}
-            >
-              Add Work Location
-            </Button>
+            <Stack direction="row" sx={{ gap: 2 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  setPostType('post');
+                  handleOpenDialog();
+                }}
+                sx={{ marginBottom: 2 }}
+              >
+                Add Work Location
+              </Button>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => {
+                  // setPostType('post');
+                  // handleOpenDialog();
+                }}
+                sx={{ marginBottom: 2 }}
+              >
+                Import
+              </Button>
+            </Stack>
+
             <WorkLocationDialog
               open={openDialog}
               handleClose={handleCloseDialog}
@@ -105,8 +134,7 @@ function Worklocation() {
                 <TableRow>
                   <TableCell>S No</TableCell>
                   <TableCell>Name</TableCell>
-                  <TableCell>Address Line 1</TableCell>
-                  <TableCell>Address Line 2</TableCell>
+                  <TableCell>Address</TableCell>
                   <TableCell>State</TableCell>
                   <TableCell>No of Employees</TableCell>
                   <TableCell>Actions</TableCell>
@@ -125,10 +153,13 @@ function Worklocation() {
                     <TableRow key={location.id}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>{location.location_name || 'N/A'}</TableCell>
-                      <TableCell>{location.address_line1 || 'N/A'}</TableCell>
-                      <TableCell>{location.address_line2 || 'N/A'}</TableCell>
+                      <TableCell>
+                        {`${location.address_line1}, ${location.address_line2}`?.length > 30
+                          ? `${location.address_line1?.substring(0, 20)}...`
+                          : `${location.address_line1} , ${location.address_line2}` || 'N/A'}
+                      </TableCell>
                       <TableCell>{location.address_state || 'N/A'}</TableCell>
-                      <TableCell>{location.employees || 'NA'}</TableCell>
+                      <TableCell>{location.employees || 0}</TableCell>
                       <TableCell>
                         {/* ActionCell to handle actions */}
                         <ActionCell
@@ -153,6 +184,16 @@ function Worklocation() {
           </TableContainer>
         </Grid2>
       </Grid2>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 2 }}>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            router.back();
+          }}
+        >
+          Back
+        </Button>
+      </Box>
     </HomeCard>
   );
 }

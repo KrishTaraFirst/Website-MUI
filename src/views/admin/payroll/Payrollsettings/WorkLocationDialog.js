@@ -11,7 +11,7 @@ import { useSnackbar } from '@/components/CustomSnackbar';
 import { useSearchParams } from 'next/navigation';
 
 const filingAddress = [
-  { name: 'location_name', label: 'Work Location Name' },
+  { name: 'location_name', label: 'Location Name' },
   { name: 'address_line1', label: 'Address Line 1' },
   { name: 'address_line2', label: 'Address Line 2' },
   { name: 'address_state', label: 'State' },
@@ -34,9 +34,7 @@ export default function WorkLocationDialog({ open, handleClose, fetchWorkLocatio
   const validationSchema = Yup.object({
     location_name: Yup.string().required('Work Location Name is required'),
     address_line1: Yup.string().required('Address Line 1 is required'),
-    address_line2: Yup.string().required('Address Line 2 is required'),
     address_state: Yup.string().required('State is required'),
-
     address_city: Yup.string().required('City is required'),
     address_pincode: Yup.string()
       .required('Pincode is required')
@@ -115,7 +113,7 @@ export default function WorkLocationDialog({ open, handleClose, fetchWorkLocatio
 
   return (
     <Dialog open={open} maxWidth={'md'} fullWidth>
-      <DialogTitle textAlign="center">Add Location Details</DialogTitle>
+      <DialogTitle textAlign="center">Add work Location</DialogTitle>
       <Divider />
       <DialogContent>
         <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
@@ -138,7 +136,7 @@ export default function WorkLocationDialog({ open, handleClose, fetchWorkLocatio
           Cancel
         </Button>
         <Button onClick={handleSubmit} type="submit" variant="contained" color="primary">
-          Submit
+          Save
         </Button>
       </DialogActions>
     </Dialog>
