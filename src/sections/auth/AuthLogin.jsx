@@ -43,6 +43,7 @@ const roles = {
   Individual: AuthRole.INDIVIDUAL
 };
 const options = ['Individual', 'CA Firm', 'Corporate Entity', 'Service Provider'];
+const optionValues = { Individual: 'Individual', 'CA Firm': 'CA', 'Corporate Entity': 'Business', 'Service Provider': 'ServiceProvider' };
 
 export default function AuthLogin({ inputSx }) {
   const { showSnackbar } = useSnackbar();
@@ -59,7 +60,7 @@ export default function AuthLogin({ inputSx }) {
     handleSubmit,
     reset,
     formState: { errors }
-  } = useForm({ defaultValues: { email: '', password: '' } });
+  } = useForm({ defaultValues: { password: '' } });
 
   // Handle form submission
   const onSubmit = async (formData) => {
@@ -67,10 +68,7 @@ export default function AuthLogin({ inputSx }) {
     setLoginError('');
     try {
       const url = `/token_auth/`;
-      const postData = {
-        email_or_mobile: formData.email,
-        password: formData.password
-      };
+      const postData = { ...formData, user_type: optionValues[selected] };
 
       const res = await axios.post(BASE_URL + url, postData);
       if (res.status === 200) {
@@ -185,39 +183,21 @@ export default function AuthLogin({ inputSx }) {
       <Stack sx={{ gap: 2.5 }}>
         <Stack sx={{ gap: 0.5 }}>
           <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-            Username
+            Username / Email
           </Typography>
           <OutlinedInput
-            {...register('username', userNameSchema)}
-            placeholder="Enter your user Name"
+            {...register('email_or_user_name', userNameSchema)}
+            placeholder="Enter email or user Name"
             slotProps={{ input: { 'aria-label': 'Email address' } }}
-            error={errors.username && Boolean(errors.username)}
+            error={errors.email_or_user_name && Boolean(errors.email_or_user_name)}
             sx={{ ...inputSx }}
           />
-          {errors.username?.message && (
+          {errors.email_or_user_name?.message && (
             <Typography variant="caption" sx={{ color: 'error.main' }}>
-              {errors.username?.message}
+              {errors.email_or_user_name?.message}
             </Typography>
           )}
         </Stack>
-        <Stack sx={{ gap: 0.5 }}>
-          <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-            Email
-          </Typography>
-          <OutlinedInput
-            {...register('email', emailSchema)}
-            placeholder="example@gmail.com"
-            slotProps={{ input: { 'aria-label': 'Email address' } }}
-            error={errors.email && Boolean(errors.email)}
-            sx={{ ...inputSx }}
-          />
-          {errors.email?.message && (
-            <Typography variant="caption" sx={{ color: 'error.main' }}>
-              {errors.email?.message}
-            </Typography>
-          )}
-        </Stack>
-
         <Stack sx={{ gap: 0.5 }}>
           <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
             Password

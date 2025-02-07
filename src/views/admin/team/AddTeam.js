@@ -15,72 +15,46 @@ import dayjs from 'dayjs';
 import useCurrentUser from '@/hooks/useCurrentUser';
 
 const BusinessFields = [
-  { name: 'first_name', label: 'First Name' },
-  { name: 'last_name', label: 'Last Name' },
   { name: 'username', label: 'Username' },
-  { name: 'nameOfBusiness', label: 'Entity Name' },
-  { name: 'email', label: 'Entity Email' },
-  { name: 'mobile_number', label: 'Mobile Number' },
-  { name: 'pan', label: 'Entity PAN' },
-  { name: 'dob_or_incorp_date', label: 'Date of Incorporation' },
-  { name: 'entityType', label: 'Entity Type' },
-  { name: 'business_nature', label: 'Entity Nature' },
-  { name: 'registrationNumber', label: 'Registration Number' },
-  { name: 'trade_name', label: 'Trade Name' }
-];
-
-const HeadOfficeFields = [
-  { name: 'address_line1', label: 'Address Line 1' },
-  { name: 'address_line2', label: 'Address Line 2' },
-  { name: 'city', label: 'City' },
-  { name: 'state', label: 'State' },
-  { name: 'pincode', label: 'Pincode' }
+  { name: 'first_name', label: 'First Name', type: 'text' },
+  { name: 'last_name', label: 'Last Name', type: 'text' },
+  { name: 'email', label: 'Email Address', type: 'email' },
+  { name: 'mobile', label: 'Mobile Number', type: 'text' },
+  { name: 'dob', label: 'Date of Birth', type: 'date' },
+  { name: 'role', label: 'Role', type: 'text' },
+  { name: 'pan_number', label: 'PAN Number', type: 'text' },
+  { name: 'address_line1', label: 'Address Line 1', type: 'text' },
+  { name: 'address_line2', label: 'Address Line 2', type: 'text' },
+  { name: 'city', label: 'City', type: 'text' },
+  { name: 'state', label: 'State', type: 'text' },
+  { name: 'aadharcardnumber', label: 'Aadhar Card Number', type: 'text' },
+  { name: 'country', label: 'Country', type: 'text', defaultValue: 'IN' },
+  { name: 'zip', label: 'Pin Code (Zip)', type: 'text' }
 ];
 
 // Validation schema for Formik
 const validationSchema = Yup.object({
-  first_name: Yup.string().required('First name is required'),
-  last_name: Yup.string().required('Last name is required'),
-  nameOfBusiness: Yup.string().required('Entity name is required'),
-
-  pan: Yup.string()
-    // .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN format')
-    .required('PAN is required'),
-
-  dob_or_incorp_date: Yup.date()
-    .required('Date of incorporation is required')
-    .max(new Date(), 'Incorporation date cannot be in the future')
-    .nullable(),
-
-  entityType: Yup.string().required('Entity type is required'),
-
-  business_nature: Yup.string().required('Entity nature is required'),
-
-  registrationNumber: Yup.string()
-    .matches(/^[A-Za-z0-9]+$/, 'Registration number must be alphanumeric')
-    .required('Registration number is required'),
-
-  trade_name: Yup.string().required('Trade name is required'),
-
-  mobile_number: Yup.string()
-    .matches(/^[6-9]\d{9}$/, 'Invalid mobile number format')
+  first_name: Yup.string().required('First Name is required'),
+  last_name: Yup.string().required('Last Name is required'),
+  email: Yup.string().email('Invalid email format').required('Email is required'),
+  mobile: Yup.string()
+    .matches(/^\d{10}$/, 'Mobile number must be 10 digits')
     .required('Mobile number is required'),
-
-  email: Yup.string().email('Invalid email format').required('Entity Email is required'),
-
-  username: Yup.string().required('Username is required'),
-
+  dob: Yup.date().nullable().required('Date of Birth is required'),
   address_line1: Yup.string().required('Address Line 1 is required'),
-
-  address_line2: Yup.string(),
-
   city: Yup.string().required('City is required'),
-
   state: Yup.string().required('State is required'),
-
-  pincode: Yup.string()
-    .matches(/^[1-9][0-9]{5}$/, 'Invalid Pincode format')
-    .required('Pincode is required')
+  role: Yup.string().required('Role is required'),
+  zip: Yup.string()
+    .matches(/^\d{6}$/, 'Zip code must be 6 digits')
+    .required('Zip code is required'),
+  aadharcardnumber: Yup.string()
+    .matches(/^\d{12}$/, 'Aadhar Card must be 12 digits')
+    .required('Aadhar Card number is required'),
+  pan_number: Yup.string()
+    .required('PAN Number is required')
+    .matches(/^[A-Z]{5}[0-9]{4}[A-Z]$/, 'Invalid PAN Number format'),
+  username: Yup.string().required('Username is required')
 });
 
 export default function AddBusinessDialog({ open, handleClose, getBusinessList, selectedRecord, type, setType }) {
@@ -101,21 +75,19 @@ export default function AddBusinessDialog({ open, handleClose, getBusinessList, 
     initialValues: {
       first_name: '',
       last_name: '',
-      nameOfBusiness: '',
-      pan: '',
-      dob_or_incorp_date: dayjs().format('YYYY-MM-DD'),
-      entityType: '',
-      business_nature: '',
-      registrationNumber: '',
-      trade_name: '',
-      mobile_number: '',
       email: '',
-      client: '',
+      mobile: '',
+      dob: dayjs().format('YYYY-MM-DD'),
       address_line1: '',
       address_line2: '',
       city: '',
+      role: '',
       state: '',
-      pincode: ''
+      zip: '',
+      aadharcardnumber: '',
+      pan_number: '',
+      country: 'IN',
+      username: ''
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -147,26 +119,27 @@ export default function AddBusinessDialog({ open, handleClose, getBusinessList, 
     }
   });
 
-  useEffect(() => {
-    if (type === 'edit' && selectedRecord) {
-      formik.setValues({
-        ...selectedRecord,
-        headOffice: {
-          ...selectedRecord.headOffice, // Spread the existing headOffice values first
-          address_line1: selectedRecord.headOffice.address_line1,
-          address_line2: selectedRecord.headOffice.address_line2,
-          city: selectedRecord.headOffice.city,
-          state: selectedRecord.headOffice.state,
-          pincode: selectedRecord.headOffice.pincode
-        }
-      });
-    }
-  }, [type, selectedRecord]);
-
   // Render dynamic fields based on the field configuration
   const renderFields = (fields) => {
     return fields.map((field) => {
       if (field.name === 'state') {
+        return (
+          <Grid2 size={{ xs: 12, sm: 6 }} key={field.name} sx={{ mb: 1 }}>
+            <Typography variant="subtitle2" color="grey.800" sx={{ mb: 0.5 }}>
+              {field.label}
+            </Typography>
+            <CustomAutocomplete
+              value={values[field.name]}
+              name={field.name}
+              onChange={(e, newValue) => setFieldValue(field.name, newValue)}
+              options={indian_States_And_UTs}
+              error={touched[field.name] && Boolean(errors[field.name])}
+              helperText={touched[field.name] && errors[field.name]}
+              sx={{ width: '100%' }}
+            />
+          </Grid2>
+        );
+      } else if (field.name === 'role') {
         return (
           <Grid2 size={{ xs: 12, sm: 6 }} key={field.name} sx={{ mb: 1 }}>
             <Typography variant="subtitle2" color="grey.800" sx={{ mb: 0.5 }}>
@@ -227,14 +200,11 @@ export default function AddBusinessDialog({ open, handleClose, getBusinessList, 
   const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, resetForm, setFieldValue } = formik;
   return (
     <Dialog open={open} maxWidth={'sm'} fullWidth>
-      <DialogTitle>Add Entity Details</DialogTitle>
+      <DialogTitle>Add Team Member</DialogTitle>
       <DialogContent dividers>
         <Box component="form" onSubmit={handleSubmit}>
           <Grid2 container spacing={1.5}>
             {renderFields(BusinessFields)}
-          </Grid2>
-          <Grid2 container spacing={1.5}>
-            {renderFields(HeadOfficeFields)}
           </Grid2>
         </Box>
       </DialogContent>

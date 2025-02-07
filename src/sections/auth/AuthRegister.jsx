@@ -35,13 +35,14 @@ import { AuthRole } from '@/enum';
 import { APP_DEFAULT_PATH, AUTH_USER_KEY } from '@/config';
 import { BASE_URL } from 'constants';
 import axios from '@/utils/axios';
-import { emailSchema, passwordSchema, userNameSchema } from '@/utils/validationSchema';
+import { firstNameSchema, lastNameSchema, emailSchema, passwordSchema, userNameSchema } from '@/utils/validationSchema';
 
 // @icons
 import { IconEye, IconEyeOff } from '@tabler/icons-react';
 
 /***************************  AUTH - REGISTER  ***************************/
 const options = ['Individual', 'CA Firm', 'Corporate Entity', 'Service Provider'];
+const optionValues = { Individual: 'Individual', 'CA Firm': 'CA', 'Corporate Entity': 'Business', 'Service Provider': 'ServiceProvider' };
 
 export default function AuthRegister({ inputSx }) {
   const router = useRouter();
@@ -52,7 +53,7 @@ export default function AuthRegister({ inputSx }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [registerError, setRegisterError] = useState('');
   const [loginError, setLoginError] = useState('');
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState(options[0]);
 
   // Initialize react-hook-form
   const {
@@ -61,6 +62,7 @@ export default function AuthRegister({ inputSx }) {
     watch,
     control,
     setValue,
+    reset,
     formState: { errors }
   } = useForm({ defaultValues: {} });
 
@@ -73,15 +75,14 @@ export default function AuthRegister({ inputSx }) {
     setRegisterError('');
     try {
       const url = `/user_management/register/`;
-      const payload = {
-        email: formData.email,
-        password: formData.password
-      };
+      const payload = { ...formData, user_type: optionValues[selected] };
+      console.log(payload);
       const res = await axios.post(BASE_URL + url, payload);
       if (res.status === 201) {
         setIsProcessing(false);
         showSnackbar('Activation link has been sent to given email', 'success');
       }
+      reset();
     } catch (error) {
       // CustomSnackbar
       showSnackbar(JSON.stringify(error), 'error');
@@ -158,23 +159,59 @@ export default function AuthRegister({ inputSx }) {
       </Box>
       <Stack sx={{ gap: 2.5 }}>
         <Stack sx={{ gap: 0.5 }}>
-          <Stack sx={{ gap: 0.5 }}>
+          <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+            Username
+          </Typography>
+          <OutlinedInput
+            {...register('user_name', userNameSchema)}
+            placeholder="Enter your user Name"
+            slotProps={{ input: { 'aria-label': 'Email address' } }}
+            error={errors.user_name && Boolean(errors.user_name)}
+            sx={{ ...inputSx }}
+          />
+          {errors.user_name?.message && (
+            <Typography variant="caption" sx={{ color: 'error.main' }}>
+              {errors.user_name?.message}
+            </Typography>
+          )}
+        </Stack>
+        <Stack sx={{ gap: 1 }} direction={'row'}>
+          <Stack sx={{ gap: 0.5 }} style={{ minWidth: '50%', maxWidth: '50%' }}>
             <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-              Username
+              First Name
             </Typography>
             <OutlinedInput
-              {...register('username', userNameSchema)}
-              placeholder="Enter your user Name"
-              slotProps={{ input: { 'aria-label': 'Email address' } }}
-              error={errors.username && Boolean(errors.username)}
+              {...register('first_name', firstNameSchema)}
+              placeholder="Enter your first name"
+              slotProps={{ input: { 'aria-label': 'First Name' } }}
+              error={errors.first_name && Boolean(errors.first_name)}
               sx={{ ...inputSx }}
             />
-            {errors.username?.message && (
+            {errors.first_name?.message && (
               <Typography variant="caption" sx={{ color: 'error.main' }}>
-                {errors.username?.message}
+                {errors.first_name?.message}
               </Typography>
             )}
           </Stack>
+          <Stack sx={{ gap: 0.5 }} style={{ minWidth: '50%', maxWidth: '50%' }}>
+            <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+              Last Name
+            </Typography>
+            <OutlinedInput
+              {...register('last_name', lastNameSchema)}
+              placeholder="Enter your last name"
+              slotProps={{ input: { 'aria-label': 'Last Name' } }}
+              error={errors.last_name && Boolean(errors.last_name)}
+              sx={{ ...inputSx }}
+            />
+            {errors.last_name?.message && (
+              <Typography variant="caption" sx={{ color: 'error.main' }}>
+                {errors.last_name?.message}
+              </Typography>
+            )}
+          </Stack>
+        </Stack>
+        <Stack sx={{ gap: 0.5 }}>
           <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
             Email
           </Typography>

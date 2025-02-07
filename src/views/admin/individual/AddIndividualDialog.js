@@ -16,21 +16,42 @@ import useCurrentUser from '@/hooks/useCurrentUser';
 
 const BusinessFields = [
   { name: 'username', label: 'Username' },
-  { name: 'name', label: 'Name' },
-  { name: 'email', label: 'Email' },
-  { name: 'mobile_number', label: 'Mobile Number' }
+  { name: 'first_name', label: 'First Name', type: 'text' },
+  { name: 'last_name', label: 'Last Name', type: 'text' },
+  { name: 'email', label: 'Email Address', type: 'email' },
+  { name: 'mobile', label: 'Mobile Number', type: 'text' },
+  { name: 'dob', label: 'Date of Birth', type: 'date' },
+  { name: 'pan_number', label: 'PAN Number', type: 'text' },
+  { name: 'address_line1', label: 'Address Line 1', type: 'text' },
+  { name: 'address_line2', label: 'Address Line 2', type: 'text' },
+  { name: 'city', label: 'City', type: 'text' },
+  { name: 'state', label: 'State', type: 'text' },
+  { name: 'aadharcardnumber', label: 'Aadhar Card Number', type: 'text' },
+  { name: 'country', label: 'Country', type: 'text', defaultValue: 'IN' },
+  { name: 'zip', label: 'Pin Code (Zip)', type: 'text' }
 ];
 
 // Validation schema for Formik
 const validationSchema = Yup.object({
-  name: Yup.string().required('Name is required'),
-
-  mobile_number: Yup.string()
-    .matches(/^[6-9]\d{9}$/, 'Invalid mobile number format')
-    .required('Mobile number is required'),
-
+  first_name: Yup.string().required('First Name is required'),
+  last_name: Yup.string().required('Last Name is required'),
   email: Yup.string().email('Invalid email format').required('Email is required'),
-
+  mobile: Yup.string()
+    .matches(/^\d{10}$/, 'Mobile number must be 10 digits')
+    .required('Mobile number is required'),
+  dob: Yup.date().nullable().required('Date of Birth is required'),
+  address_line1: Yup.string().required('Address Line 1 is required'),
+  city: Yup.string().required('City is required'),
+  state: Yup.string().required('State is required'),
+  zip: Yup.string()
+    .matches(/^\d{6}$/, 'Zip code must be 6 digits')
+    .required('Zip code is required'),
+  aadharcardnumber: Yup.string()
+    .matches(/^\d{12}$/, 'Aadhar Card must be 12 digits')
+    .required('Aadhar Card number is required'),
+  pan_number: Yup.string()
+    .required('PAN Number is required')
+    .matches(/^[A-Z]{5}[0-9]{4}[A-Z]$/, 'Invalid PAN Number format'),
   username: Yup.string().required('Username is required')
 });
 
@@ -50,9 +71,19 @@ export default function AddBusinessDialog({ open, handleClose, getBusinessList, 
   // Formik setup
   const formik = useFormik({
     initialValues: {
-      name: '',
-      mobile_number: '',
+      first_name: '',
+      last_name: '',
       email: '',
+      mobile: '',
+      dob: dayjs().format('YYYY-MM-DD'),
+      address_line1: '',
+      address_line2: '',
+      city: '',
+      state: '',
+      zip: '',
+      aadharcardnumber: '',
+      pan_number: '',
+      country: 'IN',
       username: ''
     },
     validationSchema,

@@ -19,6 +19,8 @@ export default function Dashboard({ tab }) {
         return <ServiceProvider setOpen={setOpen} refresh={refresh} />;
       case 'ca-firms':
         return <CAFirm setOpen={setOpen} refresh={refresh} />;
+      case 'team':
+        return <Team setOpen={setOpen} refresh={refresh} />;
       case 'individual':
       default:
         return <Individual setOpen={setOpen} refresh={refresh} />;
@@ -95,6 +97,14 @@ function Individual({ setOpen, refresh }) {
   return (
     <RenderHead title="Individual" subTitle="List of users under Individual" setOpen={setOpen}>
       <AnalyticsBehaviorTable type={'Individual'} refresh={refresh} />
+    </RenderHead>
+  );
+}
+
+function Team({ setOpen, refresh }) {
+  return (
+    <RenderHead title="Team" subTitle="List of users under your team" setOpen={setOpen}>
+      <AnalyticsBehaviorTable type={'Team'} refresh={refresh} />
     </RenderHead>
   );
 }

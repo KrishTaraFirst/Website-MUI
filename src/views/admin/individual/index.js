@@ -10,7 +10,7 @@ import ActionCell from '@/utils/ActionCell';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import useCurrentUser from '@/hooks/useCurrentUser';
 
-function BusinessList() {
+function Individual() {
   const [openDialog, setOpenDialog] = useState(false); // State to manage dialog visibility
   const [businessList, setBusinessList] = useState([]); // State to store businessList data
   const [postType, setPostType] = useState(''); // Payroll ID fetched from URL
@@ -144,4 +144,4 @@ function BusinessList() {
   );
 }
 
-export default BusinessList;
+export default Individual;

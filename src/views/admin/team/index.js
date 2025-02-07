@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Paper, Button, Stack, Grid2, Typography } from '@mui/material';
-import AddCorporateEntityDialog from './AddCorporateEntityDialog';
+import AddTeam from './AddTeam';
 import EmptyTable from '@/components/third-party/table/EmptyTable';
 import HomeCard from '@/components/cards/HomeCard';
 import Factory from '@/utils/Factory';
@@ -10,12 +10,11 @@ import ActionCell from '@/utils/ActionCell';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import useCurrentUser from '@/hooks/useCurrentUser';
 
-function BusinessList() {
+function Team() {
   const [openDialog, setOpenDialog] = useState(false); // State to manage dialog visibility
   const [businessList, setBusinessList] = useState([]); // State to store businessList data
   const [postType, setPostType] = useState(''); // Payroll ID fetched from URL
   const [selectedRecord, setSelectedRecord] = useState(null);
-  const [user, setUser] = useState('');
   const { showSnackbar } = useSnackbar();
   const { userData } = useCurrentUser();
 
@@ -62,8 +61,8 @@ function BusinessList() {
   }, []);
   return (
     <HomeCard
-      title="Corporate Entities"
-      tagline="Setup your organization before starting Entities"
+      title="Team Members"
+      tagline="Tagline for team members"
       CustomElement={() => (
         <Button
           variant="contained"
@@ -74,7 +73,7 @@ function BusinessList() {
           }}
           sx={{ marginBottom: 2 }}
         >
-          Add Entity
+          Add Team Member
         </Button>
       )}
     >
@@ -100,25 +99,25 @@ function BusinessList() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  businessList.map((entity, index) => (
-                    <TableRow key={entity.id}>
+                  businessList.map((individual, index) => (
+                    <TableRow key={individual.id}>
                       <TableCell>{index + 1}</TableCell>
-                      <TableCell>{entity.nameOfBusiness}</TableCell>
-                      <TableCell>{entity.pan}</TableCell>
-                      <TableCell>{entity.entityType}</TableCell>
-                      <TableCell>{entity.business_nature}</TableCell>
+                      <TableCell>{individual.nameOfBusiness}</TableCell>
+                      <TableCell>{individual.pan}</TableCell>
+                      <TableCell>{individual.entityType}</TableCell>
+                      <TableCell>{individual.business_nature}</TableCell>
 
                       <TableCell>
                         <ActionCell
-                          row={entity} // Pass the customer row data
-                          onEdit={() => handleEdit(entity)} // Edit handler
-                          onDelete={() => handleDelete(entity)} // Delete handler
+                          row={individual} // Pass the customer row data
+                          onEdit={() => handleEdit(individual)} // Edit handler
+                          onDelete={() => handleDelete(individual)} // Delete handler
                           open={openDialog}
                           onClose={handleCloseDialog}
                           deleteDialogData={{
                             title: 'Delete Record',
                             heading: 'Are you sure you want to delete this Record?',
-                            description: `This action will remove ${entity.name} from the list.`,
+                            description: `This action will remove ${individual.name} from the list.`,
                             successMessage: 'Record has been deleted.'
                           }}
                         />
@@ -132,17 +131,17 @@ function BusinessList() {
         </Grid2>
       </Grid2>
 
-      <AddCorporateEntityDialog
+      <AddTeam
         open={openDialog}
-        setOpen={setOpenDialog}
-        type={'add'}
-        getUsers={getBusinessList}
-        user_type={'corporate-entities'}
-        user_id={user}
-        // setRefresh
+        handleClose={handleCloseDialog}
+        handleOpenDialog={handleOpenDialog}
+        selectedRecord={selectedRecord}
+        type={postType}
+        setType={setPostType}
+        getBusinessList={getBusinessList}
       />
     </HomeCard>
   );
 }
 
-export default BusinessList;
+export default Team;

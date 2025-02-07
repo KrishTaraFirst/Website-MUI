@@ -12,7 +12,7 @@ export default async function UsersDataPage({ params }) {
 
 // Return a list of `params` to populate the [slug] dynamic segment
 export async function generateStaticParams() {
-  const response = ['individual', 'ca-firms', 'service-providers', 'corporate-entities'];
+  const response = ['individual', 'ca-firms', 'service-providers', 'corporate-entities', 'team'];
 
   return response.map((tab) => ({
     tab: tab
