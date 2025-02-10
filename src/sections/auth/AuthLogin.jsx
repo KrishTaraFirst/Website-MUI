@@ -91,7 +91,10 @@ export default function AuthLogin({ inputSx }) {
           user_kyc: res.data.user_kyc,
           user_groups: res.data.user_groups,
           associated_services: res.data.associated_services,
-          business_exists: res.data.business_exists
+          business_exists: res.data.business_exists,
+          business_affiliated: res.data.business_affiliated,
+          individual_affiliated: res.data.individual_affiliated,
+          service_provider_affiliated: res.data.service_provider_affiliated
         };
         setIsProcessing(false);
         localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));

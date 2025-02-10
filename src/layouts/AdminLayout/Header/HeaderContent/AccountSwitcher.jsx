@@ -25,6 +25,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { Typography } from '@mui/material';
 import { APP_DEFAULT_PATH, AUTH_USER_KEY } from '@/config';
 import { AuthRole } from '@/enum';
+import Factory from '@/utils/Factory';
 
 // @project
 import { ThemeDirection } from '@/config';
@@ -56,8 +57,14 @@ const swing = keyframes`
 `;
 
 /***************************  HEADER - NOTIFICATION  ***************************/
-const listcontent1 = ['Krishna Sai', 'Sai Kiran', 'Anand', 'Surya', 'Sadanand', 'Hemanth Kumar'];
-const listcontent2 = ['Akshath Biz Brains', 'Seven Sports', 'Madhu Travels', 'Sai Vegetables', 'Kakadurga Liquor Mart'];
+
+const roles = {
+  TaraTeam: AuthRole.SUPER_ADMIN,
+  CA: AuthRole.CHARTED_ACCOUNTANT_FIRM,
+  Business: AuthRole.CORPORATE_ADMIN,
+  ServiceProvider: AuthRole.SERVICE_PROVIDER,
+  Individual: AuthRole.INDIVIDUAL
+};
 
 export default function AccountSwitcher() {
   const theme = useTheme();
@@ -68,7 +75,7 @@ export default function AccountSwitcher() {
   const [innerAnchorEl, setInnerAnchorEl] = useState(null);
   const [allRead, setAllRead] = useState(false);
   const [showEmpty, setShowEmpty] = useState(true);
-  const [poperOptions, setPoperOptions] = useState([...listcontent1]);
+  const [poperOptions, setPoperOptions] = useState([]);
 
   const open = Boolean(anchorEl);
   const innerOpen = Boolean(innerAnchorEl);
@@ -83,26 +90,62 @@ export default function AccountSwitcher() {
     setAnchorEl(anchorEl ? null : event.currentTarget);
   };
 
-  const handleInnerActionClick = (event, data) => {
+  const handleInnerActionClick = (event, data = []) => {
     setPoperOptions([...data]);
     setInnerAnchorEl(innerAnchorEl ? null : event.currentTarget);
   };
 
-  const handleAccountSelection = (event, item) => {
-    let localStorageData = typeof window !== 'undefined' ? localStorage.getItem(AUTH_USER_KEY) : null;
-    localStorageData = JSON.parse(localStorageData);
-    let __userData = { ...localStorageData };
-    if (item === 'Surya') {
-      __userData.role = AuthRole.INDIVIDUAL;
-      __userData.user_type = AuthRole.INDIVIDUAL;
-    } else if (item === 'Madhu Travels') {
-      __userData.role = AuthRole.CORPORATE_ADMIN;
-      __userData.user_type = AuthRole.CORPORATE_ADMIN;
+  const handleAccountSelection = async (event, item) => {
+    let url = `/user_management/account-switch?user_id=${item.id}`;
+    const { res } = await Factory('post', url, {});
+    if (res.status_cd === 0) {
+      let userDAta = {
+        id: res.data.id,
+        email: res.data.email,
+        role: roles[res.data.user_type],
+        // role: AuthRole.SUPER_ADMIN,
+        contact: '123456789',
+        dialcode: '+1',
+        firstname: res.data.name,
+        lastname: '',
+        user_groups: res.data.user_groups,
+        associated_services: res.data.associated_services,
+        // password: 'Super@123',
+        mobile: res.data.mobile_number,
+        access_token: res.data.access,
+        user_role: res.data.user_role,
+        user_type: res.data.user_type,
+        user_kyc: res.data.user_kyc,
+        user_groups: res.data.user_groups,
+        associated_services: res.data.associated_services,
+        business_exists: res.data.business_exists,
+        business_affiliated: res.data.business_affiliated,
+        individual_affiliated: res.data.individual_affiliated,
+        service_provider_affiliated: res.data.service_provider_affiliated
+      };
+      localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));
+      setInnerAnchorEl(innerAnchorEl ? null : event.currentTarget);
+      // localStorage.setItem(AUTH_USER_KEY, JSON.stringify(__userData));
+      router.push(APP_DEFAULT_PATH);
+      window.location.reload();
+    } else {
+      console.log(res);
     }
-    setInnerAnchorEl(innerAnchorEl ? null : event.currentTarget);
-    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(__userData));
-    router.push(APP_DEFAULT_PATH);
-    window.location.reload();
+
+    // let localStorageData = typeof window !== 'undefined' ? localStorage.getItem(AUTH_USER_KEY) : null;
+    // localStorageData = JSON.parse(localStorageData);
+    // let __userData = { ...localStorageData };
+    // if (item === 'Surya') {
+    //   __userData.role = AuthRole.INDIVIDUAL;
+    //   __userData.user_type = AuthRole.INDIVIDUAL;
+    // } else if (item === 'Madhu Travels') {
+    //   __userData.role = AuthRole.CORPORATE_ADMIN;
+    //   __userData.user_type = AuthRole.CORPORATE_ADMIN;
+    // }
+    // setInnerAnchorEl(innerAnchorEl ? null : event.currentTarget);
+    // // localStorage.setItem(AUTH_USER_KEY, JSON.stringify(__userData));
+    // router.push(APP_DEFAULT_PATH);
+    // window.location.reload();
     // router.refresh();
   };
 
@@ -177,7 +220,7 @@ export default function AccountSwitcher() {
                           startIcon={<IconUser size={16} />}
                           endIcon={<IconChevronDown size={16} />}
                           onClick={(e) => {
-                            handleInnerActionClick(e, listcontent1);
+                            handleInnerActionClick(e, userData.individual_affiliated);
                           }}
                         >
                           Individual
@@ -199,10 +242,10 @@ export default function AccountSwitcher() {
                             startIcon={<IconBuildingEstate size={16} />}
                             endIcon={<IconChevronDown size={16} />}
                             onClick={(e) => {
-                              handleInnerActionClick(e, listcontent2);
+                              handleInnerActionClick(e, userData.business_affiliated);
                             }}
                           >
-                            Corporate Entities
+                            Corporate Entity
                           </Button>
                           <Popper
                             placement="bottom-start"
@@ -225,7 +268,7 @@ export default function AccountSwitcher() {
                                             handleAccountSelection(e, item);
                                           }}
                                         >
-                                          <ListItemText>{item}</ListItemText>
+                                          <ListItemText>{item.full_name}</ListItemText>
                                         </ListItemButton>
                                       ))}
                                     </List>
@@ -238,6 +281,25 @@ export default function AccountSwitcher() {
                       }
                     />
                   )}
+                  <CardHeader
+                    sx={{ p: 1 }}
+                    title={
+                      <Stack direction="row" sx={{ gap: 1, justifyContent: 'space-between' }}>
+                        <Button
+                          color="secondary"
+                          size="small"
+                          sx={{ typography: 'subtitle1' }}
+                          startIcon={<IconUser size={16} />}
+                          endIcon={<IconChevronDown size={16} />}
+                          onClick={(e) => {
+                            handleInnerActionClick(e, userData.ca_firm_affiliated);
+                          }}
+                        >
+                          CA Firm
+                        </Button>
+                      </Stack>
+                    }
+                  />
                 </Box>
               </ClickAwayListener>
             </MainCard>
