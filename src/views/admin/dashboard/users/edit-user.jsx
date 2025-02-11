@@ -295,11 +295,10 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
                 <TextField
                   id="outlined-disabled"
                   value={data.mobile_number}
-                  type="number"
+                  type="tel" // Change type from "number" to "tel"
+                  inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} // Ensures only numbers are entered
                   onBlur={(e) => handleBlur('mobile_number', e.target.value)}
-                  onChange={(e) => {
-                    handleChange('mobile_number', e.target.value);
-                  }}
+                  onChange={(e) => handleChange('mobile_number', e.target.value)}
                   error={!!errors.mobile_number}
                   helperText={errors.mobile_number}
                 />
