@@ -40,7 +40,7 @@ function Organizationdetails({ tab }) {
     { name: 'logo', label: 'Logo' },
     { name: 'industry', label: 'Industry' },
     { name: 'contact_email', label: 'Contact Email' },
-    { name: 'sender_email', label: 'Sender' }
+    { name: 'sender_email', label: 'Sender Email' }
   ];
 
   const organizationAddress = [
@@ -65,14 +65,14 @@ function Organizationdetails({ tab }) {
     contact_email: Yup.string().email('Invalid email address').required('Email is required'),
     sender_email: Yup.string().email('Invalid email address').required('Email is required'),
     org_address_line1: Yup.string().required('Address Line 1 is required'),
-    org_address_line2: Yup.string().required('Address Line 2 is required'),
+    // org_address_line2: Yup.string().required('Address Line 2 is required'),
     org_address_state: Yup.string().required('State is required'),
     org_address_city: Yup.string().required('City is required'),
     org_address_pincode: Yup.string()
       .required('Pincode is required')
       .matches(/^[0-9]{6}$/, 'Invalid Pincode format. It must be exactly 6 digits.'),
     filling_address_line1: Yup.string().required('Address Line 1 is required'),
-    filling_address_line2: Yup.string().required('Address Line 2 is required'),
+    // filling_address_line2: Yup.string().required('Address Line 2 is required'),
     filling_address_state: Yup.string().required('State is required'),
     filling_address_city: Yup.string().required('City is required'),
     filling_address_pincode: Yup.string()
@@ -223,7 +223,15 @@ function Organizationdetails({ tab }) {
           {renderFields(filingAddress)}
         </Grid2>
 
-        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Button
+            variant="outlined"
+            onClick={() => {
+              router.back();
+            }}
+          >
+            Back to Dashboard
+          </Button>
           <Button type="submit" variant="contained" color="primary">
             Submit
           </Button>

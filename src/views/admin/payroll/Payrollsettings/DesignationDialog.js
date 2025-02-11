@@ -87,8 +87,7 @@ export default function DesignationDialog({ open, handleClose, fetchDesignations
   return (
     <Modal
       open={open}
-      onClose={() => handleClose()}
-      maxWidth={ModalSize.MD}
+      maxWidth={ModalSize.SM}
       header={{ title: 'Add designation', subheader: '' }}
       modalContent={
         <Grid2 container spacing={3}>

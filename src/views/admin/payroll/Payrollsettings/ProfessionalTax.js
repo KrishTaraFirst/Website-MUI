@@ -28,6 +28,9 @@ import {
 import { IconPlus, IconTrash } from '@tabler/icons-react';
 import Modal from '@/components/Modal';
 import { ModalSize } from '@/enum';
+import { useRouter } from 'next/navigation';
+import CustomAutocomplete from '@/utils/CustomAutocomplete';
+import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
 
 const details = [
   { name: 'work_location', label: 'Work Location' },
@@ -58,6 +61,7 @@ const validationSchema = Yup.object({
 function ProfessionalTax({ handleBack, handleNext }) {
   const [open, setOpen] = useState(false);
   const [dummyData, setDummyData] = useState(null);
+  const router = useRouter();
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -104,22 +108,44 @@ function ProfessionalTax({ handleBack, handleNext }) {
   }, []);
 
   const renderFields = (fields) => {
-    return fields.map((field) => (
-      <Grid2 key={field.name} size={{ sx: 12 }} sx={{ mt: 1 }}>
-        <div style={{ paddingBottom: '5px' }}>
-          <label>{field.label}</label>
-        </div>
-        <TextField
-          fullWidth
-          name={field.name}
-          value={values[field.name]}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          error={touched[field.name] && Boolean(errors[field.name])}
-          helperText={touched[field.name] && errors[field.name]}
-        />
-      </Grid2>
-    ));
+    return fields.map((field) => {
+      if (field.name === 'state') {
+        return (
+          <Grid2 key={field.name} size={{ xs: 12, sm: 6, md: 4 }} sx={{ mt: 1 }}>
+            <div style={{ paddingBottom: '5px' }}>
+              <label>{field.label}</label>
+            </div>
+            <CustomAutocomplete
+              value={values[field.name]}
+              name={field.name}
+              onChange={(e, newValue) => setFieldValue(field.name, newValue)}
+              options={indian_States_And_UTs}
+              error={touched[field.name] && Boolean(errors[field.name])}
+              helperText={touched[field.name] && errors[field.name]}
+              sx={{ width: '100%' }}
+            />
+          </Grid2>
+        );
+      }
+
+      // For other fields (not 'state'), render a TextField
+      return (
+        <Grid2 key={field.name} size={{ xs: 12, sm: 4 }} sx={{ mt: 1 }}>
+          <div style={{ paddingBottom: '5px' }}>
+            <label>{field.label}</label>
+          </div>
+          <TextField
+            fullWidth
+            name={field.name}
+            value={values[field.name]}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={touched[field.name] && Boolean(errors[field.name])}
+            helperText={touched[field.name] && errors[field.name]}
+          />
+        </Grid2>
+      );
+    });
   };
 
   const handleAddItemRow = () => {
@@ -187,12 +213,13 @@ function ProfessionalTax({ handleBack, handleNext }) {
 
       <Modal
         open={open}
-        maxWidth={ModalSize.MD}
+        maxWidth={ModalSize.LG}
         header={{ title: 'Professional Tax', subheader: '' }}
         modalContent={
           <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
-            {renderFields(details)}
-
+            <Grid2 container spacing={3}>
+              {renderFields(details)}
+            </Grid2>
             <Box sx={{ mt: 3 }}>
               <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2 }}>
                 Tax Slabs
@@ -285,7 +312,15 @@ function ProfessionalTax({ handleBack, handleNext }) {
         }
       />
       <Grid2 size={12} textAlign="center" sx={{ mt: 2 }}>
-        <Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
+          <Button
+            variant="outlined"
+            onClick={() => {
+              router.back();
+            }}
+          >
+            Back to Dashboard
+          </Button>
           <Button size="small" variant="contained" onClick={handleBack} sx={{ mr: 2 }}>
             Back
           </Button>

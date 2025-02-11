@@ -85,46 +85,47 @@ function Departments() {
     fetchDepartments();
   }, [payrollid]);
   return (
-    <HomeCard title="Departments Details" tagline="Setup your organization before starting payroll">
+    <HomeCard
+      title="Departments Details"
+      tagline="Setup your organization before starting payroll"
+      CustomElement={() => (
+        <Stack direction="row" sx={{ gap: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              setPostType('post');
+              handleOpenDialog();
+            }}
+            sx={{ marginBottom: 2 }}
+          >
+            Add Department
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => {
+              // setPostType('post');
+              // handleOpenDialog();
+            }}
+            sx={{ marginBottom: 2 }}
+          >
+            Import
+          </Button>
+        </Stack>
+      )}
+    >
       <Grid2 container spacing={{ xs: 2, sm: 3 }}>
         <Grid2 size={12}>
-          <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-            <Typography variant="h6">Departments</Typography>
-            <Stack direction="row" sx={{ gap: 2 }}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  setPostType('post');
-                  handleOpenDialog();
-                }}
-                sx={{ marginBottom: 2 }}
-              >
-                Add Department
-              </Button>
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={() => {
-                  // setPostType('post');
-                  // handleOpenDialog();
-                }}
-                sx={{ marginBottom: 2 }}
-              >
-                Import
-              </Button>
-            </Stack>
-
-            <DepartmentDialog
-              open={openDialog}
-              handleClose={handleCloseDialog}
-              handleOpenDialog={handleOpenDialog}
-              selectedRecord={selectedRecord}
-              type={postType}
-              setType={setPostType}
-              fetchDepartments={fetchDepartments}
-            />
-          </Stack>
+          <DepartmentDialog
+            open={openDialog}
+            handleClose={handleCloseDialog}
+            handleOpenDialog={handleOpenDialog}
+            selectedRecord={selectedRecord}
+            type={postType}
+            setType={setPostType}
+            fetchDepartments={fetchDepartments}
+          />
         </Grid2>
 
         <Grid2 size={12}>
@@ -182,14 +183,14 @@ function Departments() {
           </TableContainer>
         </Grid2>
       </Grid2>
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
         <Button
           variant="outlined"
           onClick={() => {
             router.back();
           }}
         >
-          Back
+          Back to Dashboard
         </Button>
       </Box>
     </HomeCard>
