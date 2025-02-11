@@ -1,13 +1,13 @@
 'use client';
+import PropTypes from 'prop-types';
+import { useTheme } from '@mui/material/styles';
+import { Tab, Tabs } from '@mui/material';
+import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import {
   Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Box,
   TextField,
   Checkbox,
@@ -23,54 +23,52 @@ import {
   TableHead,
   Paper,
   TableRow,
+  InputAdornment,
   Divider
 } from '@mui/material';
 import EmptyTable from '@/components/third-party/table/EmptyTable';
-import HomeCard from '@/components/cards/HomeCard';
-import CustomInput from '@/utils/CustomInput';
+import Modal from '@/components/Modal';
+import { ModalSize } from '@/enum';
+import { useRouter } from 'next/navigation';
 
 const validationSchema = Yup.object({
   name: Yup.string().required('Name is required'),
-  type: Yup.string().required('Type is required'),
-  calculationType: Yup.string().required('Select a calculation type'),
-  amount: Yup.number().when('calculationType', {
-    is: 'flatAmount',
-    then: Yup.number().required('Enter an amount').positive('Amount must be positive')
-  })
+  type: Yup.string().required('Type is required')
 });
 
-function SalaryComponents() {
-  const [open, setOpen] = useState(false);
+function SalaryComponents({ open, setOpen, handleNext, handleBack }) {
   const [dummyData, setDummyData] = useState([]);
+  const router = useRouter();
 
-  const handleOpen = (data) => {
-    // Pre-fill form with clicked row data
+  const handleOpen = (item) => {
     formik.setValues({
       ...formik.values,
-      name: data.componentName,
-      type: data.type,
-      calculationType: data.calculation,
-      amount: data.calculation === 'Flat Amount' ? data.amount : '',
-      isActive: data.status === 'Active',
-      configurations: {
-        partOfSalary: data.considerForEPF,
-        taxable: data.considerForESI,
-        proRata: false, // You can add more logic if required
-        considerEPF: data.considerForEPF,
-        considerESI: data.considerForESI
-      }
+      id: item.id, // Setting the id of the clicked item
+      name: item.name,
+      type: item.type,
+      calculationType: item.calculationType,
+      amount: item.amount,
+      percentage_of_basic: item.percentage_of_basic,
+      considerForEPF: item.considerForEPF,
+      considerForESI: item.considerForESI,
+      isActive: item.status === 'Active', // Map status to boolean
+      configurations: item.configurations // Assign configurations directly
     });
-    setOpen(true);
+    setOpen(true); // Open the modal to edit the details
   };
 
   const handleClose = () => setOpen(false);
 
   const formik = useFormik({
     initialValues: {
+      id: 1,
       name: '',
       type: '',
       calculationType: '',
-      amount: '',
+      amount: false,
+      percentage_of_basic: false,
+      considerForEPF: false,
+      considerForESI: false,
       isActive: false,
       configurations: {
         partOfSalary: false,
@@ -95,23 +93,71 @@ function SalaryComponents() {
       const data = [
         {
           id: 1,
-          componentName: 'HRA',
-          type: 'Allowance',
-          calculation: 'Percentage of Basic',
-          considerForEPF: true,
-          considerForESI: false,
+          name: 'Basic',
+          type: 'Fixed',
+          calculationType: 'percentage_of_bsic',
+          amount: '',
+          percentage_of_basic: true,
           status: 'Active',
-          amount: 2000
+          isActive: false,
+          configurations: {
+            partOfSalary: true,
+            taxable: true,
+            proRata: true,
+            considerEPF: true,
+            considerESI: true
+          }
         },
         {
           id: 2,
-          componentName: 'Basic Salary',
+          name: 'HRA',
           type: 'Fixed',
-          calculation: 'Flat Amount',
-          considerForEPF: true,
-          considerForESI: true,
+          calculationType: 'percentage_of_bsic',
+          amount: '',
+          percentage_of_basic: true,
           status: 'Active',
-          amount: 3000
+          isActive: false,
+          configurations: {
+            partOfSalary: true,
+            taxable: true,
+            proRata: true,
+            considerEPF: false,
+            considerESI: true
+          }
+        },
+        {
+          id: 3,
+          name: 'Special Allowance',
+          type: 'Fixed',
+          calculationType: 'flatAmount',
+          amount: '',
+          percentage_of_basic: false,
+          status: 'Active',
+          isActive: false,
+          configurations: {
+            partOfSalary: true,
+            taxable: true,
+            proRata: true,
+            considerEPF: true,
+            considerESI: true
+          }
+        },
+        {
+          id: 4,
+          name: 'Conveyance Allowance',
+          type: 'Fixed',
+          calculationType: '',
+          amount: '',
+          percentage_of_basic: false,
+          status: 'Active',
+          isActive: false,
+          configurations: {
+            partOfSalary: true,
+            taxable: true,
+            proRata: false,
+            considerEPF: true,
+            considerESI: true
+          }
         }
       ];
       setDummyData(data);
@@ -121,71 +167,76 @@ function SalaryComponents() {
   }, []);
 
   return (
-    <HomeCard title="Salary Components" tagline="Setup your organization before starting payroll">
+    <Box>
       <Box>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h6">Salary Components</Typography>
-          <Button variant="contained" onClick={() => setOpen(true)}>
-            Add New Component
-          </Button>
-        </Stack>
-        {dummyData ? (
-          <Grid2 size={12}>
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
+        <Grid2 size={12}>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Component Name</TableCell>
+                  <TableCell>Type</TableCell>
+                  <TableCell>Calculation</TableCell>
+                  <TableCell>Consider for EPF</TableCell>
+                  <TableCell>Consider for ESI</TableCell>
+                  <TableCell>Status</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {dummyData.length === 0 ? (
                   <TableRow>
-                    <TableCell>Component Name</TableCell>
-                    <TableCell>Type</TableCell>
-                    <TableCell>Calculation</TableCell>
-                    <TableCell>Consider for EPF</TableCell>
-                    <TableCell>Consider for ESI</TableCell>
-                    <TableCell>Status</TableCell>
+                    <TableCell colSpan={6} sx={{ height: 300 }}>
+                      <EmptyTable msg="No Data available" />
+                    </TableCell>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {dummyData.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={6} sx={{ height: 300 }}>
-                        <EmptyTable msg="No work locations available" />
+                ) : (
+                  dummyData.map((item, index) => (
+                    <TableRow key={item.id}>
+                      <TableCell
+                        style={{ cursor: 'pointer', textDecoration: 'underline', color: '#007bff' }}
+                        onClick={() => handleOpen(item)} // Handle row click and open dialog
+                      >
+                        {item.name}
                       </TableCell>
+                      <TableCell>{item.type}</TableCell>
+                      <TableCell>{item.calculationType}</TableCell>
+                      <TableCell>{item.considerForEPF ? 'Yes' : 'No'}</TableCell>
+                      <TableCell>{item.considerForESI ? 'Yes' : 'No'}</TableCell>
+                      <TableCell>{item.status}</TableCell>
                     </TableRow>
-                  ) : (
-                    dummyData.map((item, index) => (
-                      <TableRow key={item.id}>
-                        <TableCell
-                          style={{ cursor: 'pointer', textDecoration: 'underline', color: '#007bff' }}
-                          onClick={() => handleOpen(item)} // Handle row click and open dialog
-                        >
-                          {item.componentName}
-                        </TableCell>
-                        <TableCell>{item.type}</TableCell>
-                        <TableCell>{item.calculation}</TableCell>
-                        <TableCell>{item.considerForEPF ? 'Yes' : 'No'}</TableCell>
-                        <TableCell>{item.considerForESI ? 'Yes' : 'No'}</TableCell>
-                        <TableCell>{item.status}</TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Grid2>
-        ) : (
-          <Grid2 size={12}>
-            <EmptyTable msg="No Professional tax yet" />
-          </Grid2>
-        )}
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid2>
+        <Grid2 size={12}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                router.back();
+              }}
+            >
+              Back to Dashboard
+            </Button>
+            <Button size="small" variant="contained" onClick={handleNext}>
+              Next
+            </Button>
+          </Box>
+        </Grid2>
 
-        {/* Dialog to Edit/Save Component */}
-        <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-          <DialogTitle textAlign="center">New Component</DialogTitle>
-          <Divider />
-          <DialogContent>
+        <Modal
+          open={open}
+          maxWidth={ModalSize.MD}
+          header={{ title: 'New Component', subheader: '' }}
+          modalContent={
             <Box component="form" onSubmit={handleSubmit}>
               <Grid2 container spacing={3}>
                 <Grid2 size={{ xs: 12, sm: 6 }}>
-                  <div>Name</div>
+                  <Typography variant="body1" sx={{ mb: 0.5 }}>
+                    Name
+                  </Typography>
                   <TextField
                     fullWidth
                     name="name"
@@ -198,15 +249,19 @@ function SalaryComponents() {
                 </Grid2>
 
                 <Grid2 size={{ xs: 12, sm: 6 }}>
-                  <div>Type</div>
-                  <TextField
-                    fullWidth
-                    name="type"
+                  <Typography variant="body1" sx={{ mb: 0.5 }}>
+                    Type
+                  </Typography>
+
+                  <CustomAutocomplete
                     value={values.type}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
+                    name="type"
+                    onChange={(e, newValue) => setFieldValue('type', newValue)}
+                    options={['Fixed', 'Variable']}
                     error={touched.type && Boolean(errors.type)}
                     helperText={touched.type && errors.type}
+                    sx={{ width: '100%' }}
+                    disabled={values.name === 'Basic' || values.name === 'HRA'}
                   />
                 </Grid2>
 
@@ -219,6 +274,7 @@ function SalaryComponents() {
                         <Checkbox
                           checked={values.calculationType === 'flatAmount'}
                           onChange={() => setFieldValue('calculationType', 'flatAmount')}
+                          disabled={values.name === 'Basic' || values.name === 'HRA'}
                         />
                       }
                       label="Flat Amount"
@@ -226,8 +282,14 @@ function SalaryComponents() {
                     <FormControlLabel
                       control={
                         <Checkbox
-                          checked={values.calculationType === 'percentage'}
-                          onChange={() => setFieldValue('calculationType', 'percentage')}
+                          checked={values.percentage_of_basic}
+                          onChange={(e) => {
+                            if (values.name !== 'Basic' && values.name !== 'HRA') {
+                              let val = e.target.checked;
+                              setFieldValue('calculationType', 'percentage_of_basic');
+                              setFieldValue('percentage_of_basic', val);
+                            }
+                          }}
                         />
                       }
                       label="Percentage of Basic"
@@ -237,22 +299,43 @@ function SalaryComponents() {
 
                 {/* Amount Field */}
                 <Grid2 size={{ xs: 12, sm: 6 }}>
-                  <div>{values.calculationType === 'flatAmount' ? 'Enter Amount ' : 'Enter Percentage'}</div>
+                  <Typography sx={{ mb: 0.5 }}>{values.calculationType === 'flatAmount' ? 'Enter Amount ' : 'Enter Percentage'}</Typography>
                   <TextField
                     fullWidth
                     name="amount"
                     value={values.amount}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      setFieldValue('amount', e.target.value);
+                    }}
                     onBlur={handleBlur}
                     error={touched.amount && Boolean(errors.amount)}
                     helperText={touched.amount && errors.amount}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start" sx={{ display: 'flex', alignItems: 'center' }}>
+                          <span>{values.calculationType === 'flatAmount' ? '₹' : '%'}</span>
+                          <Divider orientation="vertical" flexItem sx={{ mx: 1, height: '24px' }} />
+                        </InputAdornment>
+                      )
+                    }}
                   />
                 </Grid2>
 
                 {/* Active Checkbox */}
                 <Grid2 size={{ xs: 12 }}>
                   <FormControlLabel
-                    control={<Checkbox name="isActive" checked={values.isActive} onChange={handleChange} />}
+                    control={
+                      <Checkbox
+                        name="isActive"
+                        checked={values.isActive}
+                        onChange={(e) => {
+                          if (values.name !== 'Basic') {
+                            let val = e.target.checked;
+                            setFieldValue('isActive', val);
+                          }
+                        }}
+                      />
+                    }
                     label="Mark this as Active"
                   />
                 </Grid2>
@@ -263,27 +346,71 @@ function SalaryComponents() {
                   <FormGroup>
                     <FormControlLabel
                       control={
-                        <Checkbox name="configurations.partOfSalary" checked={values.configurations.partOfSalary} onChange={handleChange} />
+                        <Checkbox
+                          checked={values.configurations.partOfSalary}
+                          onChange={(e) => {
+                            if (values.name !== 'Basic' && values.name !== 'HRA') {
+                              let val = e.target.checked;
+                              setFieldValue('configurations.partOfSalary', val);
+                            }
+                          }}
+                        />
                       }
                       label="1. This is part of salary structure"
                     />
                     <FormControlLabel
-                      control={<Checkbox name="configurations.taxable" checked={values.configurations.taxable} onChange={handleChange} />}
+                      control={
+                        <Checkbox
+                          checked={values.configurations.taxable}
+                          onChange={(e) => {
+                            if (values.name !== 'Basic' && values.name !== 'HRA') {
+                              let val = e.target.checked;
+                              setFieldValue('configurations.taxable', val);
+                            }
+                          }}
+                        />
+                      }
                       label="2. This is taxable"
                     />
                     <FormControlLabel
-                      control={<Checkbox name="configurations.proRata" checked={values.configurations.proRata} onChange={handleChange} />}
+                      control={
+                        <Checkbox
+                          checked={values.configurations.proRata}
+                          onChange={(e) => {
+                            if (values.name !== 'Basic' && values.name !== 'HRA') {
+                              let val = e.target.checked;
+                              setFieldValue('configurations.proRata', val);
+                            }
+                          }}
+                        />
+                      }
                       label="3. Calculate Pro rata basis"
                     />
                     <FormControlLabel
                       control={
-                        <Checkbox name="configurations.considerEPF" checked={values.configurations.considerEPF} onChange={handleChange} />
+                        <Checkbox
+                          checked={values.configurations.considerEPF}
+                          onChange={(e) => {
+                            if (values.name !== 'Basic') {
+                              let val = e.target.checked;
+                              setFieldValue('configurations.considerEPF', val);
+                            }
+                          }}
+                        />
                       }
                       label="4. Consider for EPF"
                     />
                     <FormControlLabel
                       control={
-                        <Checkbox name="configurations.considerESI" checked={values.configurations.considerESI} onChange={handleChange} />
+                        <Checkbox
+                          checked={values.configurations.considerESI}
+                          onChange={(e) => {
+                            if (values.name !== 'Basic' && values.name !== 'HRA') {
+                              let val = e.target.checked;
+                              setFieldValue('configurations.considerESI', val);
+                            }
+                          }}
+                        />
                       }
                       label="5. Consider for ESI"
                     />
@@ -291,27 +418,98 @@ function SalaryComponents() {
                 </Grid2>
               </Grid2>
             </Box>
-          </DialogContent>
-
-          <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Button
-              onClick={() => {
-                handleClose();
-                resetForm();
-              }}
-              variant="outlined"
-              color="error"
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleSubmit} type="submit" variant="contained" color="primary">
-              Save
-            </Button>
-          </DialogActions>
-        </Dialog>
+          }
+          footer={
+            <Stack direction="row" sx={{ width: 1, justifyContent: 'space-between', gap: 2 }}>
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() => {
+                  resetForm();
+                  handleClose(); // Reset form and close dialog
+                }}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" variant="contained" onClick={handleSubmit}>
+                Save
+              </Button>
+            </Stack>
+          }
+        />
       </Box>
-    </HomeCard>
+    </Box>
   );
 }
 
-export default SalaryComponents;
+/***************************  NAVIGATION - TABS  ***************************/
+
+// TabPanel component to render the content for each tab
+const TabPanel = ({ children, value, index }) => (
+  <div role="tabpanel" hidden={value !== index} id={`simple-tabpanel-${index}`} aria-labelledby={`simple-tab-${index}`}>
+    {value === index && <Box sx={{ pt: 2.5 }}>{children}</Box>}
+  </div>
+);
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  value: PropTypes.number.isRequired,
+  index: PropTypes.number.isRequired
+};
+
+const SalaryComponnetTabs = ({ type }) => {
+  const [activeTab, setActiveTab] = useState(0); // State to manage active tab
+  const theme = useTheme(); // Getting the theme
+  const [open, setOpen] = useState(false);
+
+  // Function to handle tab changes
+  const handleTabChange = (_event, newTabIndex) => setActiveTab(newTabIndex);
+
+  // Accessibility props for tabs
+  const a11yProps = (index) => ({
+    value: index,
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`
+  });
+
+  // Tab labels
+  const tabLabels = ['Earnings', 'Deductions'];
+  const handleNext = () => {
+    setActiveTab((prev) => (prev < 3 ? prev + 1 : prev));
+  };
+  const handleBack = () => {
+    setActiveTab((prev) => (prev < 3 ? prev - 1 : prev));
+  };
+  return (
+    <Box>
+      <Typography textAlign="center" variant="h5">
+        Salary Components
+      </Typography>
+      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+        <Tabs value={activeTab} onChange={handleTabChange} aria-label="Statutory Components Tabs">
+          {tabLabels.map((label, index) => (
+            <Tab key={index} label={label} {...a11yProps(index)} />
+          ))}
+        </Tabs>
+        <Stack direction="row" spacing={2} alignItems="center">
+          <Button variant="contained" onClick={() => setOpen(true)}>
+            Add Component
+          </Button>
+        </Stack>
+      </Box>
+
+      <TabPanel value={activeTab} index={0}>
+        <SalaryComponents handleNext={handleNext} open={open} setOpen={setOpen} />
+      </TabPanel>
+      <TabPanel value={activeTab} index={1}>
+        {/* <ESIComponent handleNext={handleNext} handleBack={handleBack} /> */}
+      </TabPanel>
+    </Box>
+  );
+};
+
+SalaryComponnetTabs.propTypes = {
+  type: PropTypes.any
+};
+
+export default SalaryComponnetTabs;

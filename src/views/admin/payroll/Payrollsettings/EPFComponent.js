@@ -8,6 +8,8 @@ import Modal from '@/components/Modal';
 import { ModalSize } from '@/enum';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import EmptyTable from '@/components/third-party/table/EmptyTable';
+import MainCard from '@/components/MainCard';
+import { useRouter } from 'next/navigation';
 
 const pfFields = [
   { name: 'epf_number', label: 'EPF Number' },
@@ -29,6 +31,7 @@ const employeeContributionRates = ['12% of Actual PF Wage', '12% of Restricted W
 function EpfComponent({ handleNext }) {
   const [open, setOpen] = useState(false);
   const [epfData, setEpfData] = useState(null);
+  const router = useRouter();
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -82,285 +85,299 @@ function EpfComponent({ handleNext }) {
 
   console.log(values);
   return (
-    <Grid2 container spacing={2}>
-      <Grid2 size={12}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', textAlign: 'center' }}>
-          <Grid2 container spacing={2} sx={{ maxWidth: '600px' }}>
-            <Grid2 container spacing={2}>
-              {epfData && (
-                <>
-                  {' '}
-                  <Grid2 size={6}>
-                    <Typography variant="subtitle1" sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
-                      Employees Provident Fund
-                    </Typography>
-                  </Grid2>
-                  <Grid2 size={6}>
-                    <Button
-                      size="small"
-                      variant="contained"
-                      startIcon={epfData ? <IconEdit size={16} /> : <IconPlus size={16} />}
-                      onClick={handleOpen}
-                    >
-                      {epfData ? 'Edit EPF' : 'AD EPF'}
-                    </Button>
-                  </Grid2>
-                </>
-              )}
-              {epfData ? (
-                <>
-                  {/* EPF Data display */}
-                  <Grid2 size={6}>
-                    <Typography variant="body1" sx={{ textAlign: 'left' }}>
-                      EPF Number:
-                    </Typography>
-                  </Grid2>
-                  <Grid2 size={6}>
-                    <Typography variant="body1" sx={{ textAlign: 'left' }}>
-                      {epfData.epf_number}
-                    </Typography>
-                  </Grid2>
-                  <Grid2 size={6}>
-                    <Typography variant="body1" sx={{ textAlign: 'left' }}>
-                      Employee Contribution Rate:
-                    </Typography>
-                  </Grid2>
-                  <Grid2 size={6}>
-                    <Typography variant="body1" sx={{ textAlign: 'left' }}>
-                      {epfData.employee_contribution_rate}
-                    </Typography>
-                  </Grid2>
+    <MainCard sx={{ maxWidth: 800, margin: '0 auto', padding: 2 }}>
+      <Grid2 container spacing={2}>
+        <Grid2 size={12}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', textAlign: 'center' }}>
+            <Grid2 container spacing={2} sx={{ maxWidth: '600px' }}>
+              <Grid2 container spacing={2}>
+                {epfData && (
+                  <>
+                    {' '}
+                    <Grid2 size={6}>
+                      <Typography variant="subtitle1" sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>
+                        Employees Provident Fund
+                      </Typography>
+                    </Grid2>
+                    <Grid2 size={6}>
+                      <Box sx={{ textAlign: 'left' }}>
+                        <Button
+                          size="small"
+                          variant="contained"
+                          startIcon={epfData ? <IconEdit size={16} /> : <IconPlus size={16} />}
+                          onClick={handleOpen}
+                          style={{ textAlign: 'left' }}
+                        >
+                          Edit EPF
+                        </Button>
+                      </Box>
+                    </Grid2>
+                  </>
+                )}
+                {epfData ? (
+                  <>
+                    {/* EPF Data display */}
+                    <Grid2 size={6}>
+                      <Typography variant="body1" sx={{ textAlign: 'left' }}>
+                        EPF Number:
+                      </Typography>
+                    </Grid2>
+                    <Grid2 size={6}>
+                      <Typography variant="body1" sx={{ textAlign: 'left' }}>
+                        {epfData.epf_number}
+                      </Typography>
+                    </Grid2>
+                    <Grid2 size={6}>
+                      <Typography variant="body1" sx={{ textAlign: 'left' }}>
+                        Employee Contribution Rate:
+                      </Typography>
+                    </Grid2>
+                    <Grid2 size={6}>
+                      <Typography variant="body1" sx={{ textAlign: 'left' }}>
+                        {epfData.employee_contribution_rate}
+                      </Typography>
+                    </Grid2>
 
-                  <Grid2 size={6}>
-                    <Typography variant="body1" sx={{ textAlign: 'left' }}>
-                      Employer Contribution Rate:
-                    </Typography>
-                  </Grid2>
-                  <Grid2 size={6}>
-                    <Typography variant="body1" sx={{ textAlign: 'left' }}>
-                      {epfData.contribution_rates}
-                    </Typography>
-                  </Grid2>
+                    <Grid2 size={6}>
+                      <Typography variant="body1" sx={{ textAlign: 'left' }}>
+                        Employer Contribution Rate:
+                      </Typography>
+                    </Grid2>
+                    <Grid2 size={6}>
+                      <Typography variant="body1" sx={{ textAlign: 'left' }}>
+                        {epfData.contribution_rates}
+                      </Typography>
+                    </Grid2>
 
-                  <Grid2 size={6}>
-                    <Typography variant="body1" sx={{ textAlign: 'left' }}>
-                      CTC Inclusions:
-                    </Typography>
-                  </Grid2>
-                  <Grid2 size={6}>
-                    <FormGroup>
-                      <FormControlLabel
-                        control={<Checkbox checked={epfData.include_employer_ctc} />}
-                        label="Include Employer's Contribution in the CTC"
-                        sx={{ whiteSpace: 'nowrap' }}
-                      />
-                      <FormControlLabel
-                        control={<Checkbox checked={epfData.include_edil_ctc} />}
-                        label="Include Employer's EDIL Contribution in the CTC"
-                        sx={{ whiteSpace: 'nowrap' }}
-                      />
-                      <FormControlLabel
-                        control={<Checkbox checked={epfData.include_admin_ctc} />}
-                        label="Include Admin Charges in the CTC"
-                      />
-                    </FormGroup>
-                  </Grid2>
+                    <Grid2 size={6}>
+                      <Typography variant="body1" sx={{ textAlign: 'left' }}>
+                        CTC Inclusions:
+                      </Typography>
+                    </Grid2>
+                    <Grid2 size={6}>
+                      <FormGroup>
+                        <FormControlLabel
+                          control={<Checkbox checked={epfData.include_employer_ctc} />}
+                          label="Include Employer's Contribution in the CTC"
+                          sx={{ whiteSpace: 'nowrap' }}
+                        />
+                        <FormControlLabel
+                          control={<Checkbox checked={epfData.include_edil_ctc} />}
+                          label="Include Employer's EDIL Contribution in the CTC"
+                          sx={{ whiteSpace: 'nowrap' }}
+                        />
+                        <FormControlLabel
+                          control={<Checkbox checked={epfData.include_admin_ctc} />}
+                          label="Include Admin Charges in the CTC"
+                        />
+                      </FormGroup>
+                    </Grid2>
 
-                  <Grid2 size={6}>
-                    <Typography variant="body1" sx={{ textAlign: 'left' }}>
-                      Allow employee level over ride:
-                    </Typography>
-                  </Grid2>
-                  <Grid2 size={6}>
-                    <Typography variant="body1" sx={{ textAlign: 'left' }}>
-                      {epfData?.allow_override === true ? 'Yes' : 'No'}
-                    </Typography>
-                  </Grid2>
+                    <Grid2 size={6}>
+                      <Typography variant="body1" sx={{ textAlign: 'left' }}>
+                        Allow employee level over ride:
+                      </Typography>
+                    </Grid2>
+                    <Grid2 size={6}>
+                      <Typography variant="body1" sx={{ textAlign: 'left' }}>
+                        {epfData?.allow_override === true ? 'Yes' : 'No'}
+                      </Typography>
+                    </Grid2>
 
-                  <Grid2 size={6}>
-                    <Typography variant="body1" sx={{ textAlign: 'left' }}>
-                      Pro rate restricted PF wage:
-                    </Typography>
-                  </Grid2>
-                  <Grid2 size={6}>
-                    <Typography variant="body1" sx={{ textAlign: 'left' }}>
-                      {epfData?.pro_rate_wage === true ? 'Yes' : 'No'}
-                    </Typography>
-                  </Grid2>
-
-                  <Grid2 size={12} textAlign="center" sx={{ mt: 2 }}>
-                    <Button size="small" variant="contained" onClick={handleNext}>
-                      Next
-                    </Button>
-                  </Grid2>
-                </>
-              ) : (
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-                  {/* Empty Table */}
-                  <Box>
-                    <EmptyTable msg="No EPF YET!" sx={{ height: 300, fontWeight: 'bold' }} />
+                    <Grid2 size={6}>
+                      <Typography variant="body1" sx={{ textAlign: 'left' }}>
+                        Pro rate restricted PF wage:
+                      </Typography>
+                    </Grid2>
+                    <Grid2 size={6}>
+                      <Typography variant="body1" sx={{ textAlign: 'left' }}>
+                        {epfData?.pro_rate_wage === true ? 'Yes' : 'No'}
+                      </Typography>
+                    </Grid2>
+                    <Grid2 size={12}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
+                        <Button
+                          variant="outlined"
+                          onClick={() => {
+                            router.back();
+                          }}
+                        >
+                          Back to Dashboard
+                        </Button>
+                        <Button size="small" variant="contained" onClick={handleNext}>
+                          Next
+                        </Button>
+                      </Box>
+                    </Grid2>
+                  </>
+                ) : (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                    {/* Empty Table */}
+                    <Box>
+                      <EmptyTable msg="No EPF YET!" sx={{ height: 300, fontWeight: 'bold' }} />
+                    </Box>
+                    {/* Add EPF Button */}
+                    <Grid2 container justifyContent="center" mt={2}>
+                      <Button variant="contained" startIcon={<IconPlus size={16} />} onClick={handleOpen}>
+                        Enable EPF
+                      </Button>
+                    </Grid2>
                   </Box>
-                  {/* Add EPF Button */}
-                  <Grid2 container justifyContent="center" mt={2}>
-                    <Button variant="contained" startIcon={<IconPlus size={16} />} onClick={handleOpen}>
-                      Enable EPF
-                    </Button>
+                )}
+              </Grid2>
+            </Grid2>
+          </Box>
+        </Grid2>
+
+        <Modal
+          open={open}
+          maxWidth={ModalSize.MD}
+          header={{ title: 'Employees Provident Fund', subheader: '' }}
+          modalContent={
+            <Box component="form" onSubmit={handleSubmit} p={2}>
+              <Grid2 container spacing={2}>
+                {pfFields.map((field) => (
+                  <Grid2 size={{ xs: 12 }} key={field.name}>
+                    {field.name === 'employee_contribution_rate' ? (
+                      <div style={{ paddingBottom: '5px' }}>
+                        <label>{field.label}</label>
+                        <CustomAutocomplete
+                          value={values[field.name]}
+                          name={field.name}
+                          onChange={(e, newValue) => setValues({ ...values, [field.name]: newValue })}
+                          options={employeeContributionRates}
+                          error={touched[field.name] && Boolean(errors[field.name])}
+                          helperText={touched[field.name] && errors[field.name]}
+                          sx={{ width: '100%' }}
+                        />
+                      </div>
+                    ) : (
+                      <div style={{ paddingBottom: '8px' }}>
+                        <Typography variant="body2">{field.label}</Typography>
+                        <TextField
+                          fullWidth
+                          name={field.name}
+                          value={values[field.name]}
+                          onChange={handleChange}
+                          error={touched[field.name] && Boolean(errors[field.name])}
+                          helperText={touched[field.name] && errors[field.name]}
+                        />
+                      </div>
+                    )}
                   </Grid2>
-                </Box>
-              )}
-            </Grid2>
-          </Grid2>
-        </Box>
-      </Grid2>
+                ))}
+              </Grid2>
 
-      <Modal
-        open={open}
-        maxWidth={ModalSize.MD}
-        header={{ title: 'Employees Provident Fund', subheader: '' }}
-        modalContent={
-          <Box component="form" onSubmit={handleSubmit} p={2}>
-            <Grid2 container spacing={2}>
-              {pfFields.map((field) => (
-                <Grid2 size={{ xs: 12 }} key={field.name}>
-                  {field.name === 'employee_contribution_rate' ? (
-                    <div style={{ paddingBottom: '5px' }}>
-                      <label>{field.label}</label>
-                      <CustomAutocomplete
-                        value={values[field.name]}
-                        name={field.name}
-                        onChange={(e, newValue) => setValues({ ...values, [field.name]: newValue })}
-                        options={employeeContributionRates}
-                        error={touched[field.name] && Boolean(errors[field.name])}
-                        helperText={touched[field.name] && errors[field.name]}
-                        sx={{ width: '100%' }}
-                      />
-                    </div>
-                  ) : (
-                    <div style={{ paddingBottom: '8px' }}>
-                      <Typography variant="body2">{field.label}</Typography>
-                      <TextField
-                        fullWidth
-                        name={field.name}
-                        value={values[field.name]}
-                        onChange={handleChange}
-                        error={touched[field.name] && Boolean(errors[field.name])}
-                        helperText={touched[field.name] && errors[field.name]}
-                      />
-                    </div>
-                  )}
-                </Grid2>
-              ))}
-            </Grid2>
-
-            <Typography variant="subtitle1" mt={3} mb={1}>
-              Employer Contribution Rates
-            </Typography>
-            <Grid2 container spacing={2}>
-              {contributionOptions.map((field) => (
-                <Grid2 xs={12} sm={6} key={field.name}>
-                  {' '}
-                  {/* Ensure proper Grid sizing */}
+              <Typography variant="subtitle1" mt={3} mb={1}>
+                Employer Contribution Rates
+              </Typography>
+              <Grid2 container spacing={2}>
+                {contributionOptions.map((field) => (
+                  <Grid2 xs={12} sm={6} key={field.name}>
+                    {' '}
+                    {/* Ensure proper Grid sizing */}
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={values.contribution_rates.includes(field.name)}
+                          onChange={(e) => handleCheckboxChange(e, field.name)}
+                        />
+                      }
+                      label={field.label}
+                    />
+                  </Grid2>
+                ))}
+              </Grid2>
+              <br />
+              <Grid2 size={{ xs: 12, sm: 6 }}>
+                <div>
                   <FormControlLabel
+                    label="Include Employer's Contribution in the CTC"
                     control={
                       <Checkbox
-                        checked={values.contribution_rates.includes(field.name)}
-                        onChange={(e) => handleCheckboxChange(e, field.name)}
+                        checked={formik.values.include_employer_ctc}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          formik.setFieldValue('include_employer_ctc', checked);
+                          // When the employer CTC is checked, enable EDIL and Admin CTC
+                          if (!checked) {
+                            formik.setFieldValue('include_edil_ctc', false); // Reset EDIL CTC
+                            formik.setFieldValue('include_admin_ctc', false); // Reset Admin CTC
+                          }
+                        }}
                       />
                     }
-                    label={field.label}
                   />
-                </Grid2>
-              ))}
-            </Grid2>
-            <br />
-            <Grid2 size={{ xs: 12, sm: 6 }}>
-              <div>
+
+                  <Box sx={{ display: 'flex', flexDirection: 'column', ml: 3 }}>
+                    <FormControlLabel
+                      label="Include Employer's EDIL Contribution in the CTC"
+                      control={
+                        <Checkbox
+                          checked={formik.values.include_edil_ctc}
+                          onChange={(e) => formik.setFieldValue('include_edil_ctc', e.target.checked)}
+                          disabled={!formik.values.include_employer_ctc} // Disabled if Employer CTC is not checked
+                        />
+                      }
+                    />
+                    <FormControlLabel
+                      label="Include Admin Charges in the CTC"
+                      control={
+                        <Checkbox
+                          checked={formik.values.include_admin_ctc}
+                          onChange={(e) => formik.setFieldValue('include_admin_ctc', e.target.checked)}
+                          disabled={!formik.values.include_employer_ctc} // Disabled if Employer CTC is not checked
+                        />
+                      }
+                    />
+                  </Box>
+                </div>
+              </Grid2>
+
+              <br />
+
+              <FormGroup>
                 <FormControlLabel
-                  label="Include Employer's Contribution in the CTC"
                   control={
                     <Checkbox
-                      checked={formik.values.include_employer_ctc}
-                      onChange={(e) => {
-                        const checked = e.target.checked;
-                        formik.setFieldValue('include_employer_ctc', checked);
-                        // When the employer CTC is checked, enable EDIL and Admin CTC
-                        if (!checked) {
-                          formik.setFieldValue('include_edil_ctc', false); // Reset EDIL CTC
-                          formik.setFieldValue('include_admin_ctc', false); // Reset Admin CTC
-                        }
-                      }}
+                      checked={formik.values.allow_override}
+                      onChange={(e) => formik.setFieldValue('allow_override', e.target.checked)}
                     />
                   }
+                  label="Allow Employee Level Override"
                 />
-
-                <Box sx={{ display: 'flex', flexDirection: 'column', ml: 3 }}>
-                  <FormControlLabel
-                    label="Include Employer's EDIL Contribution in the CTC"
-                    control={
-                      <Checkbox
-                        checked={formik.values.include_edil_ctc}
-                        onChange={(e) => formik.setFieldValue('include_edil_ctc', e.target.checked)}
-                        disabled={!formik.values.include_employer_ctc} // Disabled if Employer CTC is not checked
-                      />
-                    }
-                  />
-                  <FormControlLabel
-                    label="Include Admin Charges in the CTC"
-                    control={
-                      <Checkbox
-                        checked={formik.values.include_admin_ctc}
-                        onChange={(e) => formik.setFieldValue('include_admin_ctc', e.target.checked)}
-                        disabled={!formik.values.include_employer_ctc} // Disabled if Employer CTC is not checked
-                      />
-                    }
-                  />
-                </Box>
-              </div>
-            </Grid2>
-
-            <br />
-
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={formik.values.allow_override}
-                    onChange={(e) => formik.setFieldValue('allow_override', e.target.checked)}
-                  />
-                }
-                label="Allow Employee Level Override"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={formik.values.pro_rate_wage}
-                    onChange={(e) => formik.setFieldValue('pro_rate_wage', e.target.checked)}
-                  />
-                }
-                label="Pro-rate Restricted PF Wage"
-              />{' '}
-            </FormGroup>
-          </Box>
-        }
-        footer={
-          <Stack direction="row" sx={{ width: 1, justifyContent: 'space-between', gap: 2 }}>
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={() => {
-                resetForm();
-                handleClose(); // Reset form and close dialog
-              }}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" variant="contained" onClick={handleSubmit}>
-              Save
-            </Button>
-          </Stack>
-        }
-      />
-    </Grid2>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={formik.values.pro_rate_wage}
+                      onChange={(e) => formik.setFieldValue('pro_rate_wage', e.target.checked)}
+                    />
+                  }
+                  label="Pro-rate Restricted PF Wage"
+                />{' '}
+              </FormGroup>
+            </Box>
+          }
+          footer={
+            <Stack direction="row" sx={{ width: 1, justifyContent: 'space-between', gap: 2 }}>
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() => {
+                  resetForm();
+                  handleClose(); // Reset form and close dialog
+                }}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" variant="contained" onClick={handleSubmit}>
+                Save
+              </Button>
+            </Stack>
+          }
+        />
+      </Grid2>
+    </MainCard>
   );
 }
 

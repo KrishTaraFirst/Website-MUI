@@ -86,36 +86,39 @@ function Worklocation() {
     if (payrollid !== null) fetchWorkLocations();
   }, [payrollid]);
   return (
-    <HomeCard title="Work Location Details" tagline="Setup your organization before starting payroll">
+    <HomeCard
+      title="Work Location Details"
+      tagline="Setup your organization before starting payroll"
+      CustomElement={() => (
+        <Stack direction="row" sx={{ gap: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              setPostType('post');
+              handleOpenDialog();
+            }}
+            sx={{ marginBottom: 2 }}
+          >
+            Add Work Location
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => {
+              // setPostType('post');
+              // handleOpenDialog();
+            }}
+            sx={{ marginBottom: 2 }}
+          >
+            Import
+          </Button>
+        </Stack>
+      )}
+    >
       <Grid2 container spacing={{ xs: 2, sm: 3 }}>
         <Grid2 size={12}>
           <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-            <Typography variant="h6">Work Locations</Typography>
-            <Stack direction="row" sx={{ gap: 2 }}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  setPostType('post');
-                  handleOpenDialog();
-                }}
-                sx={{ marginBottom: 2 }}
-              >
-                Add Work Location
-              </Button>
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={() => {
-                  // setPostType('post');
-                  // handleOpenDialog();
-                }}
-                sx={{ marginBottom: 2 }}
-              >
-                Import
-              </Button>
-            </Stack>
-
             <WorkLocationDialog
               open={openDialog}
               handleClose={handleCloseDialog}
@@ -184,14 +187,14 @@ function Worklocation() {
           </TableContainer>
         </Grid2>
       </Grid2>
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 2 }}>
+      <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Button
           variant="outlined"
           onClick={() => {
             router.back();
           }}
         >
-          Back
+          Back to Dashboard
         </Button>
       </Box>
     </HomeCard>

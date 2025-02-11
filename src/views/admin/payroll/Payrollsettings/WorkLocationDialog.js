@@ -2,14 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Dialog, DialogActions, DialogContent, DialogTitle, Button, Box, Divider, Grid2 } from '@mui/material';
+import { Button, Box, Stack, Grid2 } from '@mui/material';
 import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
 import CustomInput from '@/utils/CustomInput';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import Factory from '@/utils/Factory';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import { useSearchParams } from 'next/navigation';
-
+import Modal from '@/components/Modal';
+import { ModalSize } from '@/enum';
 const filingAddress = [
   { name: 'location_name', label: 'Location Name' },
   { name: 'address_line1', label: 'Address Line 1' },
@@ -112,33 +113,35 @@ export default function WorkLocationDialog({ open, handleClose, fetchWorkLocatio
   };
 
   return (
-    <Dialog open={open} maxWidth={'md'} fullWidth>
-      <DialogTitle textAlign="center">Add work Location</DialogTitle>
-      <Divider />
-      <DialogContent>
+    <Modal
+      open={open}
+      maxWidth={ModalSize.MD}
+      header={{ title: 'Add work Location', subheader: '' }}
+      modalContent={
         <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
           <Grid2 container spacing={3}>
             {renderFields(filingAddress)}
           </Grid2>
         </Box>
-      </DialogContent>
-
-      <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Button
-          onClick={() => {
-            setType('');
-            resetForm();
-            handleClose();
-          }}
-          variant="outlined"
-          color="error"
-        >
-          Cancel
-        </Button>
-        <Button onClick={handleSubmit} type="submit" variant="contained" color="primary">
-          Save
-        </Button>
-      </DialogActions>
-    </Dialog>
+      }
+      footer={
+        <Stack direction="row" sx={{ width: 1, justifyContent: 'space-between', gap: 2 }}>
+          <Button
+            onClick={() => {
+              setType('');
+              resetForm();
+              handleClose();
+            }}
+            variant="outlined"
+            color="error"
+          >
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} type="submit" variant="contained" color="primary">
+            Save
+          </Button>
+        </Stack>
+      }
+    />
   );
 }

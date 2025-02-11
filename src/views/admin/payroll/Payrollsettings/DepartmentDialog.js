@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Box, Grid, Typography, Divider } from '@mui/material';
+import { Button, Box, Stack, Typography, Divider } from '@mui/material';
 import Grid2 from '@mui/material/Grid2'; // Import Grid2 from MUI system
 import CustomInput from '@/utils/CustomInput';
 import Factory from '@/utils/Factory';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import { useSearchParams } from 'next/navigation';
-
+import Modal from '@/components/Modal';
+import { ModalSize } from '@/enum';
 export default function DepartmentDialog({ open, handleClose, fetchDepartments, selectedRecord, type, setType }) {
   const { showSnackbar } = useSnackbar();
   const searchParams = useSearchParams();
@@ -91,34 +92,36 @@ export default function DepartmentDialog({ open, handleClose, fetchDepartments, 
   };
   const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, resetForm } = formik;
   return (
-    <Dialog open={open} maxWidth="md" fullWidth>
-      <DialogTitle textAlign="center">Add Department</DialogTitle>
-      <Divider />
-      <DialogContent>
+    <Modal
+      open={open}
+      maxWidth={ModalSize.SM}
+      header={{ title: 'Add work Location', subheader: '' }}
+      modalContent={
         <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
           <Grid2 container spacing={3}>
             {/* Render dynamic fields for department */}
             {renderFields(departmentFields)}
           </Grid2>
         </Box>
-      </DialogContent>
-
-      <DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Button
-          onClick={() => {
-            setType('');
-            resetForm();
-            handleClose(); // Reset form and close dialog
-          }}
-          variant="outlined"
-          color="error"
-        >
-          Cancel
-        </Button>
-        <Button onClick={handleSubmit} type="submit" variant="contained" color="primary">
-          Submit
-        </Button>
-      </DialogActions>
-    </Dialog>
+      }
+      footer={
+        <Stack direction="row" sx={{ width: 1, justifyContent: 'space-between', gap: 2 }}>
+          <Button
+            onClick={() => {
+              setType('');
+              resetForm();
+              handleClose(); // Reset form and close dialog
+            }}
+            variant="outlined"
+            color="error"
+          >
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} type="submit" variant="contained" color="primary">
+            Submit
+          </Button>
+        </Stack>
+      }
+    />
   );
 }
