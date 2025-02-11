@@ -17,7 +17,7 @@ import DialogDelete from '@/components/dialog/DialogDelete';
 import MainCard from '@/components/MainCard';
 
 // @assets
-import { IconDotsVertical, IconSettingsCode, IconPencil, IconShare, IconTrash } from '@tabler/icons-react';
+import { IconDotsVertical, IconSettingsCode, IconPencil, IconShare, IconTrash, IconUser } from '@tabler/icons-react';
 
 /***************************  DIALOG - DATA  ***************************/
 
@@ -83,6 +83,20 @@ export default function ActionCell({ row, onDelete, setAccessDialog, onEdit, set
                     </ListItemIcon>
                     <ListItemText>Manage Access</ListItemText>
                   </ListItemButton>
+
+                  <ListItemButton
+                    sx={buttonStyle}
+                    onClick={() => {
+                      setAccessDialog(true);
+                      handleActionClick();
+                    }}
+                  >
+                    <ListItemIcon>
+                      <IconUser size={iconSize} />
+                    </ListItemIcon>
+                    <ListItemText>Manage Users</ListItemText>
+                  </ListItemButton>
+
                   <ListItemButton
                     sx={{ ...buttonStyle }}
                     onClick={() => {
@@ -95,6 +109,7 @@ export default function ActionCell({ row, onDelete, setAccessDialog, onEdit, set
                     </ListItemIcon>
                     <ListItemText sx={{ color: 'inherit' }}>Edit</ListItemText>
                   </ListItemButton>
+
                   {/* <ListItemButton sx={{ ...buttonStyle }}>
                     <ListItemIcon sx={{ color: 'inherit' }}>
                       <IconShare size={iconSize} />

@@ -29,7 +29,7 @@ import { AuthRole } from '@/enum';
 import { useForm } from 'react-hook-form';
 
 // @project
-import { emailSchema, passwordSchema, userNameSchema } from '@/utils/validationSchema';
+import { emailSchema, passwordSchema, userNameSchema, userNameOrEmailSchema } from '@/utils/validationSchema';
 import { useSnackbar } from '@/components/CustomSnackbar';
 
 // @assets
@@ -189,7 +189,7 @@ export default function AuthLogin({ inputSx }) {
             Username / Email
           </Typography>
           <OutlinedInput
-            {...register('email_or_user_name', userNameSchema)}
+            {...register('email_or_user_name', userNameOrEmailSchema)}
             placeholder="Enter email or user Name"
             slotProps={{ input: { 'aria-label': 'Email address' } }}
             error={errors.email_or_user_name && Boolean(errors.email_or_user_name)}

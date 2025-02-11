@@ -41,7 +41,7 @@ const manage = {
       id: 'manageIndividuals',
       title: <FormattedMessage id="manageIndividuals" />,
       type: 'item',
-      url: '/dashboard/user/indivial',
+      url: '/dashboard/user/individual',
       icon: 'IconUsers',
       roles: [AuthRole.CHARTED_ACCOUNTANT_FIRM]
     },

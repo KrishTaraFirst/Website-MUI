@@ -160,12 +160,15 @@ export default function AuthRegister({ inputSx }) {
       <Stack sx={{ gap: 2.5 }}>
         <Stack sx={{ gap: 0.5 }}>
           <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-            Username
+            Username&nbsp;
+            <Typography component="span" color="error">
+              *
+            </Typography>
           </Typography>
           <OutlinedInput
             {...register('user_name', userNameSchema)}
             placeholder="Enter your user Name"
-            slotProps={{ input: { 'aria-label': 'Email address' } }}
+            slotProps={{ input: { 'aria-label': 'Username' } }}
             error={errors.user_name && Boolean(errors.user_name)}
             sx={{ ...inputSx }}
           />
@@ -178,7 +181,10 @@ export default function AuthRegister({ inputSx }) {
         <Stack sx={{ gap: 1 }} direction={'row'}>
           <Stack sx={{ gap: 0.5 }} style={{ minWidth: '50%', maxWidth: '50%' }}>
             <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-              First Name
+              First Name&nbsp;
+              <Typography component="span" color="error">
+                *
+              </Typography>
             </Typography>
             <OutlinedInput
               {...register('first_name', firstNameSchema)}
@@ -213,7 +219,10 @@ export default function AuthRegister({ inputSx }) {
         </Stack>
         <Stack sx={{ gap: 0.5 }}>
           <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-            Email
+            Email&nbsp;
+            <Typography component="span" color="error">
+              *
+            </Typography>
           </Typography>
           <OutlinedInput
             {...register('email', emailSchema)}
@@ -230,7 +239,10 @@ export default function AuthRegister({ inputSx }) {
         </Stack>
         <Stack sx={{ gap: 0.5 }}>
           <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-            Password
+            Password&nbsp;
+            <Typography component="span" color="error">
+              *
+            </Typography>
           </Typography>
           <OutlinedInput
             {...register('password', passwordSchema)}
