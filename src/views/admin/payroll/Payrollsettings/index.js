@@ -5,6 +5,10 @@ import MainCard from '@/components/MainCard';
 import HomeCard from '@/components/cards/HomeCard';
 import useCurrentUser from '@/hooks/useCurrentUser';
 import Factory from '@/utils/Factory';
+import Loader from '@/components/PageLoader';
+{
+  /* <Loader /> */
+}
 
 import { Stepper, Step, StepLabel, Button, Typography, Box, Stack, LinearProgress, Grid2 } from '@mui/material';
 
@@ -29,16 +33,16 @@ const PayrollSetup = () => {
   const completionPercentage = Math.round((completedSteps / totalSteps) * 100);
 
   const getData = async () => {
-    const url = `/payroll/business-payroll/${userData.id}/`;
+    const url = `/user_management/businesses-by-client/?user_id=${userData.id}`;
     const { res, error } = await Factory('get', url, {});
-
-    if (res?.status_cd === 0) {
-      setPayrollDetails(res?.data);
-    } else {
-      setPayrollDetails({}); // Ensure workLocations is reset if there's an error or invalid data
-      // Optionally show a snackbar error here if needed
-      // showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
-    }
+    console.log(res);
+    // if (res?.status_cd === 0) {
+    //   setPayrollDetails(res?.data);
+    // } else {
+    //   setPayrollDetails({}); // Ensure workLocations is reset if there's an error or invalid data
+    //   // Optionally show a snackbar error here if needed
+    //   // showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
+    // }
   };
 
   useEffect(() => {
@@ -58,6 +62,7 @@ const PayrollSetup = () => {
       <Grid2 container spacing={{ xs: 2, sm: 3 }}>
         <Grid2 size={12}>
           <MainCard sx={{ maxWidth: 800, margin: '0 auto', padding: 2 }}>
+            {/* <Box sx={{border: '2px solid'}}> */}
             <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
               <Stack direction="column" sx={{ flexGrow: 1, gap: 1 }}>
                 <Typography variant="h6" sx={{ color: '#4A4A4A', fontWeight: 600 }}>
@@ -87,7 +92,7 @@ const PayrollSetup = () => {
                 </Typography>
               </Stack>
             </Stack>
-
+            {/* </Box> */}
             <Stack direction="column" spacing={2}>
               {steps.map((step, index) => (
                 <Stack

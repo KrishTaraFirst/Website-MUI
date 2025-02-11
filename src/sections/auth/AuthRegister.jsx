@@ -168,7 +168,7 @@ export default function AuthRegister({ inputSx }) {
           </Typography>
           <OutlinedInput
             {...register('user_name', userNameSchema)}
-            placeholder="Enter your user Name"
+            placeholder="Create your user Name"
             slotProps={{ input: { 'aria-label': 'Username' } }}
             error={errors.user_name && Boolean(errors.user_name)}
             sx={{ ...inputSx }}
@@ -267,7 +267,7 @@ export default function AuthRegister({ inputSx }) {
                 {errors.password?.message}
               </Typography>
             )}
-            <Link
+            {/* <Link
               component={NextLink}
               underline="hover"
               variant="caption2"
@@ -275,7 +275,7 @@ export default function AuthRegister({ inputSx }) {
               sx={{ textAlign: 'right', '&:hover': { color: 'primary.dark' } }}
             >
               Forgot Password?
-            </Link>
+            </Link> */}
           </Stack>
         </Stack>
         <Button

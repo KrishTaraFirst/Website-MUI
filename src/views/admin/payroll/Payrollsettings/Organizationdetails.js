@@ -23,13 +23,6 @@ function Organizationdetails({ tab }) {
   const [payrollid, setPayrollId] = useState(null);
   const searchParams = useSearchParams();
 
-  useEffect(() => {
-    const id = searchParams.get('payrollid');
-    if (id) {
-      setPayrollId(id);
-    }
-  }, [searchParams]);
-
   const { showSnackbar } = useSnackbar();
   const [postType, setPostType] = useState('');
   const [logoDetails, setLogoDetails] = useState([]);
@@ -176,7 +169,8 @@ function Organizationdetails({ tab }) {
   };
 
   const get_org_details = async () => {
-    const url = `/payroll/orgs/${payrollid}/`;
+    const url = `/payroll/business-payroll/${userData.id}/`;
+
     const { res, error } = await Factory('get', url, {});
 
     if (res.status_cd === 0) {

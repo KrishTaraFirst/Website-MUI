@@ -129,7 +129,10 @@ export default function AuthLogin({ inputSx }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Box display="flex" justifyContent="center" mt={4} mb={3}>
+      <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+        Choose a User Type
+      </Typography>
+      <Box display="flex" justifyContent="center" mt={0.5} mb={3}>
         <Box
           sx={{
             position: 'relative',
