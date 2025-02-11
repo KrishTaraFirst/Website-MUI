@@ -16,7 +16,9 @@ import {
   ListItemButton,
   ListItemIcon,
   Button,
-  Grid2
+  Grid2,
+  InputAdornment,
+  Divider
 } from '@mui/material';
 import HomeCard from '@/components/cards/HomeCard';
 import CustomInput from '@/utils/CustomInput';
@@ -122,7 +124,7 @@ function SalaryTemplate() {
   };
   const renderFields = (fields) => {
     return fields.map((field) => (
-      <Grid2 key={field.name} size={{ sx: 12, sm: 6, md: 4 }}>
+      <Grid2 key={field.name} size={{ xs: 12, sm: 6 }}>
         <div style={{ paddingBottom: '5px' }}>
           <label>{field.label}</label>
         </div>
@@ -148,20 +150,34 @@ function SalaryTemplate() {
           </Grid2>
 
           {/* Annual CTC */}
-
-          <Grid2 size={{ sx: 12, sm: 6, md: 4 }}>
-            <div style={{ paddingBottom: '5px' }}>
-              <label>Annual CTC</label>
-            </div>
-            <CustomInput
-              fullWidth
-              name="annual_ctc"
-              value={values.annual_ctc}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={touched.annual_ctc && Boolean(errors.annual_ctc)}
-              helperText={touched.annual_ctc && errors.annual_ctc}
-            />
+          <Grid2 container spacing={3}>
+            <Grid2 size={{ xs: 12, sm: 6 }}>
+              <Box style={{ paddingBottom: '5px' }}>
+                <Typography variant="subtitle1">Annual CTC</Typography>
+              </Box>
+              <Box sx={{ display: 'flex' }}>
+                <CustomInput
+                  fullWidth
+                  name="annual_ctc"
+                  value={values.annual_ctc}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.annual_ctc && Boolean(errors.annual_ctc)}
+                  helperText={touched.annual_ctc && errors.annual_ctc}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start" sx={{ display: 'flex', alignItems: 'center' }}>
+                        <span>₹</span>
+                        <Divider orientation="vertical" flexItem sx={{ mx: 1, height: '24px' }} />
+                      </InputAdornment>
+                    )
+                  }}
+                />
+                <Typography variant="body1" sx={{ whiteSpace: 'nowrap', ml: 1, textAlign: 'center' }}>
+                  Per Year
+                </Typography>
+              </Box>
+            </Grid2>
           </Grid2>
 
           {/* Earnings Table */}
@@ -226,13 +242,16 @@ function SalaryTemplate() {
                     </TableCell>
                   </TableRow>
                 ))}
-                <Box sx={{ mt: 2 }}>
+                <Box sx={{ m: 2 }}>
                   <Button variant="outlined" onClick={handleAddEarnings}>
                     Add Component
                   </Button>
                 </Box>
-                <TableRow>
-                  <TableCell colSpan={2} sx={{ fontWeight: 'bold' }}>
+                <TableRow sx={{ backgroundColor: '#f6f2fc' }}>
+                  <TableCell
+                    colSpan={2}
+                    sx={{ fontWeight: 'bold', borderRadius: '16px 0 0 16px' }} // Rounded on the left
+                  >
                     Gross Salary
                   </TableCell>
                   <TableCell>
@@ -241,7 +260,7 @@ function SalaryTemplate() {
                   <TableCell>
                     <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.annually || 0), 0)}</Typography>
                   </TableCell>
-                  <TableCell></TableCell>
+                  <TableCell sx={{ borderRadius: '0 16px 16px 0' }}></TableCell>
                 </TableRow>
                 {values.employer_contributions.map((earning, index) => (
                   <TableRow key={index}>
