@@ -330,7 +330,15 @@ export default function FirmForm() {
           </DialogContent>
 
           <DialogActions sx={{ justifyContent: 'space-between' }}>
-            <Button onClick={() => setDialogOpen(false)} variant="outlined" color="error" type="button">
+            <Button
+              onClick={() => {
+                setDialogOpen(false);
+                router.push(APP_DEFAULT_PATH);
+              }}
+              variant="outlined"
+              color="error"
+              type="button"
+            >
               Skip
             </Button>
             <Button variant="contained" type="submit">

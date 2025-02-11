@@ -87,7 +87,11 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
             setErrors((prev) => ({ ...prev, [field]: '' }));
           }
           break;
-
+        case 'user_name':
+          if (value.trim().length >= 3 && /^[a-zA-Z0-9_-]+$/.test(value.trim())) {
+            setErrors((prev) => ({ ...prev, [field]: '' }));
+          }
+          break;
         default:
           break;
       }
@@ -100,10 +104,16 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
     switch (field) {
       case 'first_name':
       case 'last_name':
+        const fieldName = field.replace('_', ' '); // Convert 'first_name' to 'first name'
+        const capitalizedField = fieldName
+          .split(' ')
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' '); // Capitalize both words → "First Name" or "Last Name"
+
         if (value.trim().length < 3) {
-          error = `${field.replace('_', ' ')} must be at least 3 characters.`;
-        } else if (!/^[A-Za-z]+$/.test(value.trim())) {
-          error = `${field.replace('_', ' ')} must only contain alphabets.`;
+          error = `${capitalizedField} must be at least 3 characters.`;
+        } else if (!/^[A-Z][a-zA-Z]+$/.test(value.trim())) {
+          error = `${capitalizedField} must start with a capital letter and contain only alphabets.`;
         }
         break;
 
@@ -126,6 +136,13 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
         // else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}/.test(value.trim())) {
         //   error = 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.';
         // }
+        break;
+      case 'user_name':
+        if (value.trim().length < 3) {
+          error = 'Username must be at least 3 characters.';
+        } else if (!/^[a-zA-Z0-9_-]+$/.test(value.trim())) {
+          error = 'Username can only contain letters, numbers, underscores, and hyphens.';
+        }
         break;
 
       default:
@@ -154,7 +171,7 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
 
   const handleSubmit = () => {
     const fieldsToValidate =
-      type === 'add' ? ['first_name', 'last_name', 'mobile_number', 'email', 'password'] : ['first_name', 'last_name'];
+      type === 'add' ? ['first_name', 'last_name', 'mobile_number', 'email', 'password', 'user_name'] : ['first_name', 'last_name'];
     let valid = true;
 
     fieldsToValidate.forEach((field) => {

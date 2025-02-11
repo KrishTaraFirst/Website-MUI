@@ -95,7 +95,7 @@ function CAFirm({ setOpen, refresh }) {
 
 function Individual({ setOpen, refresh }) {
   return (
-    <RenderHead title="Individual" subTitle="List of users under Individual" setOpen={setOpen}>
+    <RenderHead title="Individual" subTitle="Individual Users" setOpen={setOpen}>
       <AnalyticsBehaviorTable type={'Individual'} refresh={refresh} />
     </RenderHead>
   );
