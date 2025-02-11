@@ -65,7 +65,7 @@ function SalaryComponents({ open, setOpen, handleNext, handleBack }) {
       name: '',
       type: '',
       calculationType: '',
-      amount: false,
+      amount: 0,
       percentage_of_basic: false,
       considerForEPF: false,
       considerForESI: false,
@@ -95,7 +95,7 @@ function SalaryComponents({ open, setOpen, handleNext, handleBack }) {
           id: 1,
           name: 'Basic',
           type: 'Fixed',
-          calculationType: 'percentage_of_bsic',
+          calculationType: 'percentage_of_basic',
           amount: '',
           percentage_of_basic: true,
           status: 'Active',
@@ -112,7 +112,7 @@ function SalaryComponents({ open, setOpen, handleNext, handleBack }) {
           id: 2,
           name: 'HRA',
           type: 'Fixed',
-          calculationType: 'percentage_of_bsic',
+          calculationType: 'percentage_of_basic',
           amount: '',
           percentage_of_basic: true,
           status: 'Active',
@@ -129,7 +129,7 @@ function SalaryComponents({ open, setOpen, handleNext, handleBack }) {
           id: 3,
           name: 'Special Allowance',
           type: 'Fixed',
-          calculationType: 'flatAmount',
+          calculationType: '',
           amount: '',
           percentage_of_basic: false,
           status: 'Active',
@@ -245,6 +245,12 @@ function SalaryComponents({ open, setOpen, handleNext, handleBack }) {
                     onBlur={handleBlur}
                     error={touched.name && Boolean(errors.name)}
                     helperText={touched.name && errors.name}
+                    disabled={
+                      values.name === 'Special Allowance' ||
+                      values.name === 'Conveyance Allowance' ||
+                      values.name === 'HRA' ||
+                      values.name === 'Basic'
+                    }
                   />
                 </Grid2>
 
@@ -261,7 +267,7 @@ function SalaryComponents({ open, setOpen, handleNext, handleBack }) {
                     error={touched.type && Boolean(errors.type)}
                     helperText={touched.type && errors.type}
                     sx={{ width: '100%' }}
-                    disabled={values.name === 'Basic' || values.name === 'HRA'}
+                    disabled={values.name === 'Basic' || values.name === 'HRA' || values.name === 'Special Allowance'}
                   />
                 </Grid2>
 
