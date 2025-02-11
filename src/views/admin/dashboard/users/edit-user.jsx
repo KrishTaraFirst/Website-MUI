@@ -200,7 +200,7 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
 
     if (res.status_cd === 1) {
       console.log(res.data);
-      showSnackbar(JSON.stringify(res.data.data), 'error');
+      showSnackbar(JSON.stringify(res.data.details), 'error');
     } else {
       showSnackbar('Saved Successfully', 'success');
       setRefresh((prev) => !prev);
@@ -226,6 +226,7 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
       setOpen(false);
     }
   };
+
   return (
     <Modal
       open={open}

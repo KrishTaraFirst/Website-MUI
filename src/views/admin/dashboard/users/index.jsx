@@ -46,6 +46,7 @@ const RenderHead = ({ children, title, subTitle, setOpen }) => {
             {subTitle}
           </Typography>
         </Stack>
+
         <Stack direction="row">
           <Button
             variant="contained"
@@ -53,8 +54,18 @@ const RenderHead = ({ children, title, subTitle, setOpen }) => {
               setOpen(true);
             }}
             startIcon={<IconSparkles size={16} />}
+            sx={{ mr: 1 }}
           >
-            Add {title}
+            Create Affiliation
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setOpen(true);
+            }}
+            startIcon={<IconSparkles size={16} />}
+          >
+            Create {title === 'Team' ? 'User' : title + ' User'}
           </Button>
         </Stack>
       </Stack>

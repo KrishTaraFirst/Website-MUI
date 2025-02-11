@@ -100,17 +100,17 @@ export default function AccountSwitcher() {
     const { res } = await Factory('post', url, {});
     if (res.status_cd === 0) {
       let userDAta = {
+        ...userData,
         id: res.data.id,
         email: res.data.email,
         role: roles[res.data.user_type],
         // role: AuthRole.SUPER_ADMIN,
         contact: '123456789',
-        dialcode: '+1',
+        dialcode: '+91',
         firstname: res.data.name,
         lastname: '',
         user_groups: res.data.user_groups,
         associated_services: res.data.associated_services,
-        // password: 'Super@123',
         mobile: res.data.mobile_number,
         access_token: res.data.access,
         user_role: res.data.user_role,
@@ -118,14 +118,9 @@ export default function AccountSwitcher() {
         user_kyc: res.data.user_kyc,
         user_groups: res.data.user_groups,
         associated_services: res.data.associated_services,
-        business_exists: res.data.business_exists,
-        business_affiliated: res.data.business_affiliated,
-        individual_affiliated: res.data.individual_affiliated,
-        service_provider_affiliated: res.data.service_provider_affiliated
+        business_exists: res.data.business_exists
       };
       localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));
-      setInnerAnchorEl(innerAnchorEl ? null : event.currentTarget);
-      // localStorage.setItem(AUTH_USER_KEY, JSON.stringify(__userData));
       router.push(APP_DEFAULT_PATH);
       window.location.reload();
     } else {

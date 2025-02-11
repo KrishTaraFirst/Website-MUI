@@ -56,7 +56,7 @@ export const userNameOrEmailSchema = {
 
 export const firstNameSchema = {
   required: 'First Name is required',
-  pattern: { value: /^[a-zA-Z\s]+$/, message: 'Invalid First Name' },
+  pattern: { value: /^[a-zA-Z0-9\s]+$/, message: 'First Name can only contain letters, numbers, and spaces' },
   validate: {
     trim: (value) => {
       const trimmedValue = value.trim();
@@ -70,16 +70,16 @@ export const firstNameSchema = {
 
 export const lastNameSchema = {
   // required: 'Last name is required',
-  // pattern: { value: /^[a-zA-Z\s]+$/, message: 'Invalid last name' },
-  // validate: {
-  //   trim: (value) => {
-  //     const trimmedValue = value.trim();
-  //     return trimmedValue.length > 0 || 'Last name cannot be empty or contain only spaces';
-  //   }
-  // },
-  // onBlur: (e) => {
-  //   e.target.value = e.target.value.trim();
-  // }
+  pattern: { value: /^[a-zA-Z0-9\s]+$/, message: 'First Name can only contain letters, numbers, and spaces' },
+  validate: {
+    trim: (value) => {
+      const trimmedValue = value.trim();
+      return trimmedValue.length > 0 || 'First Name cannot be empty or contain only spaces';
+    }
+  },
+  onBlur: (e) => {
+    e.target.value = e.target.value.trim();
+  }
 };
 
 export const contactSchema = {
