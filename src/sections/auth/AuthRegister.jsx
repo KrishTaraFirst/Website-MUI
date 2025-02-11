@@ -81,6 +81,7 @@ export default function AuthRegister({ inputSx }) {
       if (res.status === 201) {
         setIsProcessing(false);
         showSnackbar('Activation link has been sent to given email', 'success');
+        router.push('/login');
       }
       reset();
     } catch (error) {

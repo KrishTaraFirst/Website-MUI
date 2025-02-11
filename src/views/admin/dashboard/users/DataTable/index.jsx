@@ -19,10 +19,12 @@ import ManageAccess from '../manage-access';
 import Factory from '@/utils/Factory';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import EditUser from '../edit-user';
+import useCurrentUser from '@/hooks/useCurrentUser';
 
 /***************************  COMPONENT - TABLE  ***************************/
 
 export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
+  const { userData } = useCurrentUser();
   const [data, setData] = useState([]);
   const [user, setUser] = useState('');
   const { showSnackbar } = useSnackbar();
@@ -32,12 +34,15 @@ export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
   const [editUserDialog, setEditUserDialog] = useState(false);
 
   const getUsers = async () => {
-    let url = `/user_management/users/by-type/?user_type=${type}`;
+    let url = '';
+    if (userData.user_type === 'super-admin') url = `/user_management/users/by-type/?user_type=${type}`;
+    else url = `/user_management/affiliated-details?user_id=${userData.id}&type=${type}`;
+
     const { res } = await Factory('get', url, {});
     if (res.status_cd === 0) {
       setData(res.data.users);
     } else {
-      showSnackbar(JSON.stringify(res.data), 'error');
+      // showSnackbar(JSON.stringify(res.data), 'error');
     }
   };
 

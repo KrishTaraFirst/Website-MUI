@@ -74,11 +74,17 @@ export default function AuthLogin({ inputSx }) {
       if (res.status === 200) {
         let userDAta = {
           id: res.data.id,
+          constants: {
+            id: res.data.id,
+            access_token: res.data.access,
+            user_role: res.data.user_role,
+            user_type: res.data.user_type
+          },
           email: res.data.email,
           role: roles[res.data.user_type],
           // role: AuthRole.SUPER_ADMIN,
           contact: '123456789',
-          dialcode: '+1',
+          dialcode: '+91',
           firstname: res.data.name,
           lastname: '',
           user_groups: res.data.user_groups,
@@ -94,6 +100,7 @@ export default function AuthLogin({ inputSx }) {
           business_exists: res.data.business_exists,
           business_affiliated: res.data.business_affiliated,
           individual_affiliated: res.data.individual_affiliated,
+          ca_firm_affiliated: res.data.ca_firm_affiliated,
           service_provider_affiliated: res.data.service_provider_affiliated
         };
         setIsProcessing(false);
