@@ -11,7 +11,7 @@ export default function Dashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace('/dashboard/user/corporate-entities');
+    router.replace('/dashboard/user/business');
   }, [router]);
 
   return null;

@@ -4,6 +4,7 @@ export const breadcrumbData = {
   'manage-access': 'Manage Access',
   payrollsetup: 'payrollsetup',
   'corporate-entities': 'Corporate Entities',
+  business: 'Business',
   individual: 'Individual',
   'ca-firms': 'CA Firms',
   'service-providers': 'Service Providers',
