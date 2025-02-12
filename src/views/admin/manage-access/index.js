@@ -407,7 +407,7 @@ export default function ManageAccess() {
         </Accordion>
         <Accordion expanded={expanded === 'corporateEntity'} onChange={handleChange('corporateEntity')}>
           <AccordionSummary aria-controls="corporateEntityd-content" id="corporateEntityd-header">
-            <Typography component="span">Corporate Entity</Typography>
+            <Typography component="span">Business</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Checkboxes />

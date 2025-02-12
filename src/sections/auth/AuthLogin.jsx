@@ -42,8 +42,8 @@ const roles = {
   ServiceProvider: AuthRole.SERVICE_PROVIDER,
   Individual: AuthRole.INDIVIDUAL
 };
-const options = ['Individual', 'CA Firm', 'Corporate Entity', 'Service Provider'];
-const optionValues = { Individual: 'Individual', 'CA Firm': 'CA', 'Corporate Entity': 'Business', 'Service Provider': 'ServiceProvider' };
+const options = ['Individual', 'CA Firm', 'Business', 'Service Provider'];
+const optionValues = { Individual: 'Individual', 'CA Firm': 'CA', Business: 'Business', 'Service Provider': 'ServiceProvider' };
 
 export default function AuthLogin({ inputSx }) {
   const { showSnackbar } = useSnackbar();

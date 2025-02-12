@@ -153,7 +153,7 @@ const RenderHead = ({ children, title, subTitle, setOpen, setAffiliationDialog }
             }}
             startIcon={<IconSparkles size={16} />}
           >
-            Create {title === 'Team' ? 'User' : title + ' User'}
+            {title === 'Team' ? 'Add User' : title === 'Business' ? 'Add Business' : 'Add' + title}
           </Button>
         </Stack>
       </Stack>
@@ -170,12 +170,7 @@ function CorporateEntity({ setOpen, refresh, setAffiliationDialog }) {
   // }, []);
 
   return (
-    <RenderHead
-      title="Corporate Entity"
-      subTitle="List of users under Corporate Entity"
-      setOpen={setOpen}
-      setAffiliationDialog={setAffiliationDialog}
-    >
+    <RenderHead title="Business" subTitle="List of users under businesses" setOpen={setOpen} setAffiliationDialog={setAffiliationDialog}>
       <AnalyticsBehaviorTable type={'Business'} refresh={refresh} />
     </RenderHead>
   );

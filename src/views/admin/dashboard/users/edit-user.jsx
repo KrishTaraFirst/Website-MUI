@@ -64,7 +64,6 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
     if (errors[field]) {
       switch (field) {
         case 'first_name':
-        case 'last_name':
           if (value.trim().length >= 3 && /^[A-Za-z]+$/.test(value.trim())) {
             setErrors((prev) => ({ ...prev, [field]: '' }));
           }
@@ -103,7 +102,6 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
 
     switch (field) {
       case 'first_name':
-      case 'last_name':
         const fieldName = field.replace('_', ' '); // Convert 'first_name' to 'first name'
         const capitalizedField = fieldName
           .split(' ')
@@ -170,8 +168,7 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
   }, [user_id]);
 
   const handleSubmit = () => {
-    const fieldsToValidate =
-      type === 'add' ? ['first_name', 'last_name', 'mobile_number', 'email', 'password', 'user_name'] : ['first_name', 'last_name'];
+    const fieldsToValidate = type === 'add' ? ['first_name', 'mobile_number', 'email', 'password', 'user_name'] : ['first_name'];
     let valid = true;
 
     fieldsToValidate.forEach((field) => {
@@ -258,7 +255,7 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
           )}
           <Stack direction="column" sx={{ gap: 0.5 }}>
             <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
-              First Name
+              {user_type === 'corporate-entities' ? 'Business Name' : 'First Name'}
             </Typography>
             <TextField
               id="outlined-required"
@@ -271,21 +268,23 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
               helperText={errors.first_name}
             />
           </Stack>
-          <Stack direction="column" sx={{ gap: 0.5 }}>
-            <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
-              Last Name
-            </Typography>
-            <TextField
-              id="outlined-disabled"
-              value={data.last_name}
-              onBlur={(e) => handleBlur('last_name', e.target.value)}
-              onChange={(e) => {
-                handleChange('last_name', e.target.value);
-              }}
-              error={!!errors.last_name}
-              helperText={errors.last_name}
-            />
-          </Stack>
+          {user_type !== 'corporate-entities' && (
+            <Stack direction="column" sx={{ gap: 0.5 }}>
+              <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
+                Last Name
+              </Typography>
+              <TextField
+                id="outlined-disabled"
+                value={data.last_name}
+                onBlur={(e) => handleBlur('last_name', e.target.value)}
+                onChange={(e) => {
+                  handleChange('last_name', e.target.value);
+                }}
+                error={!!errors.last_name}
+                helperText={errors.last_name}
+              />
+            </Stack>
+          )}
           {type === 'add' && (
             <>
               <Stack direction="column" sx={{ gap: 0.5 }}>
