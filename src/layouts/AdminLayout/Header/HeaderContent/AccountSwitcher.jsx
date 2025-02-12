@@ -240,7 +240,7 @@ export default function AccountSwitcher() {
                               handleInnerActionClick(e, userData.business_affiliated);
                             }}
                           >
-                            Corporate Entity
+                            Business
                           </Button>
                           <Popper
                             placement="bottom-start"

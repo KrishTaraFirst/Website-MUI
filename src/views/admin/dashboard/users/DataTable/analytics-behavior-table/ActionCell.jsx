@@ -85,19 +85,6 @@ export default function ActionCell({ row, onDelete, setAccessDialog, onEdit, set
                   </ListItemButton>
 
                   <ListItemButton
-                    sx={buttonStyle}
-                    onClick={() => {
-                      setAccessDialog(true);
-                      handleActionClick();
-                    }}
-                  >
-                    <ListItemIcon>
-                      <IconUser size={iconSize} />
-                    </ListItemIcon>
-                    <ListItemText>Manage Users</ListItemText>
-                  </ListItemButton>
-
-                  <ListItemButton
                     sx={{ ...buttonStyle }}
                     onClick={() => {
                       setUser(row.id);

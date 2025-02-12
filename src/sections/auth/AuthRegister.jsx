@@ -41,8 +41,8 @@ import { firstNameSchema, lastNameSchema, emailSchema, passwordSchema, userNameS
 import { IconEye, IconEyeOff } from '@tabler/icons-react';
 
 /***************************  AUTH - REGISTER  ***************************/
-const options = ['Individual', 'CA Firm', 'Corporate Entity', 'Service Provider'];
-const optionValues = { Individual: 'Individual', 'CA Firm': 'CA', 'Corporate Entity': 'Business', 'Service Provider': 'ServiceProvider' };
+const options = ['Individual', 'CA Firm', 'Business', 'Service Provider'];
+const optionValues = { Individual: 'Individual', 'CA Firm': 'CA', Business: 'Business', 'Service Provider': 'ServiceProvider' };
 
 export default function AuthRegister({ inputSx }) {
   const router = useRouter();
