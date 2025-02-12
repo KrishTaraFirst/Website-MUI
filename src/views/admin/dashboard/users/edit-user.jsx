@@ -224,14 +224,30 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
     }
   };
 
+  const getTitle = (textType) => {
+    if (type === 'add') {
+      if (textType === 'head') {
+        return user_type === 'business' ? 'Create your Business' : 'Add User';
+      } else {
+        return user_type === 'business' ? 'Please enter details of your Business below' : 'Please enter details of user below';
+      }
+    } else {
+      if (textType === 'head') {
+        return user_type === 'business' ? 'Edit your Business' : 'Edit User';
+      } else {
+        return user_type === 'business' ? 'Please enter details of your Business below' : 'Please enter details of user below';
+      }
+    }
+  };
+
   return (
     <Modal
       open={open}
       onClose={() => setOpen(false)}
       maxWidth={ModalSize.SM}
       header={{
-        title: type === 'add' ? 'Add User' : `Edit User`,
-        subheader: type === 'add' ? 'Enter the user details below' : 'You can change name here.'
+        title: getTitle('head'),
+        subheader: getTitle('subtitle')
       }}
       modalContent={
         <Stack direction="column" sx={{ gap: 2 }}>
@@ -255,7 +271,7 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
           )}
           <Stack direction="column" sx={{ gap: 0.5 }}>
             <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
-              {user_type === 'corporate-entities' ? 'Business Name' : 'First Name'}
+              {user_type === 'business' ? 'Business Name' : 'First Name'}
             </Typography>
             <TextField
               id="outlined-required"
@@ -268,7 +284,7 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
               helperText={errors.first_name}
             />
           </Stack>
-          {user_type !== 'corporate-entities' && (
+          {user_type !== 'business' && (
             <Stack direction="column" sx={{ gap: 0.5 }}>
               <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
                 Last Name

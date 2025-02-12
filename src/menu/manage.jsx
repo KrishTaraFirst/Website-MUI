@@ -30,10 +30,10 @@ const manage = {
       roles: [AuthRole.SUPER_ADMIN]
     },
     {
-      id: 'manageCorporateEntities',
-      title: <FormattedMessage id="manageCorporateEntities" />,
+      id: 'manageBusiness',
+      title: <FormattedMessage id="manageBusiness" />,
       type: 'item',
-      url: '/dashboard/user/corporate-entities',
+      url: '/dashboard/user/business',
       icon: 'IconBuilding',
       roles: [AuthRole.INDIVIDUAL, AuthRole.CHARTED_ACCOUNTANT_FIRM]
     },

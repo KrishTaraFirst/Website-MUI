@@ -1,9 +1,22 @@
 'use client';
-import React, { useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import AnalyticsBehaviorTable from './DataTable';
 import { useRouter } from 'next/navigation';
 import ManageAccess from './manage-access';
-import { Stack, Typography, Button, Dialog, DialogActions, DialogContent, DialogTitle, OutlinedInput } from '@mui/material';
+import { AuthRole } from '@/enum';
+import {
+  Stack,
+  Typography,
+  Button,
+  Dialog,
+  ButtonGroup,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  OutlinedInput,
+  Divider,
+  Box
+} from '@mui/material';
 import { IconSparkles } from '@tabler/icons-react';
 import EditUser from './edit-user';
 import { Subtitles } from '@mui/icons-material';
@@ -11,22 +24,60 @@ import { useTheme } from '@mui/material/styles';
 import Factory from '@/utils/Factory';
 import SvgIcon from '@/components/SvgIcon';
 import { useSnackbar } from '@/components/CustomSnackbar';
+import { motion } from 'framer-motion';
+
+// const masterOptions = ['Individual', 'CA Firm', 'Business', 'Service Provider'];
+const optionValues = { Individual: 'Individual', 'CA Firm': 'CA', Business: 'Business', 'Service Provider': 'ServiceProvider' };
 
 export default function Dashboard({ tab }) {
+  const [options, setOptions] = useState(['Individual', 'CA Firm', 'Business']);
   const { showSnackbar } = useSnackbar();
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [affiliationDialog, setAffiliationDialog] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [results, setResults] = useState([]);
-
+  const [affiliated, setAffiliated] = useState([]);
   const [searchEmail, setSearchEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [selected, setSelected] = useState('');
 
+  useEffect(() => {
+    let valueToRemove;
+    let newArray = [''];
+    switch (options) {
+      case AuthRole.CORPORATE_ADMIN: {
+        valueToRemove = 'Business';
+        newArray = options.filter((item) => item !== valueToRemove);
+        setOptions(newArray);
+      }
+      case AuthRole.CHARTED_ACCOUNTANT_FIRM: {
+        valueToRemove = 'CA Firm';
+        newArray = options.filter((item) => item !== valueToRemove);
+        setOptions(newArray);
+      }
+      case AuthRole.SERVICE_PROVIDER: {
+        valueToRemove = 'Service Provider';
+        newArray = options.filter((item) => item !== valueToRemove);
+        setOptions(newArray);
+      }
+      case AuthRole.INDIVIDUAL: {
+        valueToRemove = 'Individual';
+        newArray = options.filter((item) => item !== valueToRemove);
+        setOptions(newArray);
+      }
+      default: {
+        valueToRemove = 'Individual';
+        newArray = options.filter((item) => item !== valueToRemove);
+        setOptions(newArray);
+      }
+    }
+    setSelected(newArray[0]);
+  }, []);
   const renderComponent = () => {
     switch (tab) {
-      case 'corporate-entities':
+      case 'business':
         return <CorporateEntity setOpen={setOpen} setAffiliationDialog={setAffiliationDialog} refresh={refresh} />;
       case 'service-providers':
         return <ServiceProvider setOpen={setOpen} setAffiliationDialog={setAffiliationDialog} refresh={refresh} />;
@@ -54,6 +105,10 @@ export default function Dashboard({ tab }) {
     }
   };
 
+  const requestAffiliation = async (userId) => {
+    setAffiliated((prev) => [...prev, userId]);
+  };
+
   return (
     <>
       {renderComponent()}
@@ -66,8 +121,72 @@ export default function Dashboard({ tab }) {
       >
         <DialogTitle id="block-dialog-title">{'Request Affiliation'}</DialogTitle>
         <DialogContent dividers>
+          <Typography variant="subtitle2" sx={{ pl: 0.8 }} color="grey.700">
+            Choose a User Type
+          </Typography>
+          <Box display="flex" justifyContent="center" mt={0.5} mb={3}>
+            <Box
+              sx={{
+                position: 'relative',
+                display: 'inline-flex',
+                // backgroundColor: '#e0e0e0',
+                borderRadius: '50px',
+                padding: '4px',
+                width: '1200px', // Adjust width based on your design
+                boxSizing: 'border-box',
+                border: '1px solid #006397'
+              }}
+            >
+              {/* Animated Background Pill */}
+              <motion.div
+                layout
+                transition={{ type: 'spring', stiffness: 500, damping: 50 }}
+                style={{
+                  position: 'absolute',
+                  top: '4px',
+                  bottom: '4px',
+                  left: `calc(${options.indexOf(selected)} * (100% / ${options.length}) + 4px)`,
+                  width: `calc((100% / ${options.length}) - 8px)`,
+                  backgroundColor: '#006397',
+                  borderRadius: '50px',
+                  zIndex: 0
+                }}
+              />
+
+              {/* Buttons */}
+              <ButtonGroup
+                sx={{
+                  position: 'relative',
+                  zIndex: 1,
+                  width: '100%',
+                  boxSizing: 'border-box',
+                  '&:hover': { bgcolor: 'none' }
+                }}
+              >
+                {options.map((option) => (
+                  <Button
+                    variant="text"
+                    key={option}
+                    onClick={() => setSelected(option)}
+                    sx={{
+                      flex: 1,
+                      px: 3,
+                      py: 1,
+                      fontSize: '14px',
+                      color: selected === option ? 'white' : 'grey.800',
+                      transition: 'color 0.3s',
+                      textTransform: 'none',
+                      '&:hover': { bgcolor: 'none' }
+                    }}
+                  >
+                    {option}
+                  </Button>
+                ))}
+              </ButtonGroup>
+            </Box>
+          </Box>
           <Stack sx={{ gap: 0.5 }}>
-            <Typography variant="subtitle2" color="grey.700">
+            <Typography variant="subtitle2" sx={{ pl: 0.8 }} color="grey.700">
               Enter an email to search
             </Typography>
             <Stack direction={'row'} sx={{ gap: 1 }}>
@@ -78,6 +197,7 @@ export default function Dashboard({ tab }) {
                 slotProps={{ input: { 'aria-label': 'Search area' } }}
                 sx={{
                   ...theme.typography.body2,
+
                   color: 'text.secondary',
                   width: 1,
                   pr: 2,
@@ -101,19 +221,59 @@ export default function Dashboard({ tab }) {
           </Stack>
           <Stack sx={{ gap: 1.5, mt: 1.5 }}>
             {results.map((item, idx) => (
-              <Stack direction={'row'} key={item.user_name} sx={{ gap: 1 }}>
-                <Typography variant="subtitle2" color="grey.900">
-                  {item.first_name + ' ' + item.last_name}
-                </Typography>
-              </Stack>
+              <Fragment key={item.user_name}>
+                <Divider />
+                <Stack direction={'row'} sx={{ gap: 1, justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Stack direction={'row'} sx={{ gap: 0.5 }}>
+                    <Typography variant="subtitle2" color="grey.700" sx={{ pl: 1 }}>
+                      Name:
+                    </Typography>
+                    <Typography variant="subtitle2" color="grey.900">
+                      {item.first_name + ' ' + item.last_name}
+                    </Typography>
+                  </Stack>
+                  {/* <Typography variant="subtitle2" color="grey.900">
+                  Username: {item.user_name}
+                </Typography> */}
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      requestAffiliation(item.id);
+                    }}
+                    size="small"
+                    disabled={affiliated.includes(item.id)}
+                  >
+                    Request
+                  </Button>
+                </Stack>
+              </Fragment>
             ))}
           </Stack>
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'space-between' }}>
-          <Button variant="outlined" color="error" onClick={() => setAffiliationDialog(false)} autoFocus>
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={() => {
+              setAffiliated([]);
+              setSearchEmail('');
+              setResults([]);
+              setAffiliationDialog(false);
+            }}
+            autoFocus
+          >
             Cancel
           </Button>
-          <Button variant="contained" color="primary" onClick={() => console.log('hi')}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              setAffiliated([]);
+              setSearchEmail('');
+              setResults([]);
+              setAffiliationDialog(false);
+            }}
+          >
             Save
           </Button>
         </DialogActions>
@@ -164,11 +324,6 @@ const RenderHead = ({ children, title, subTitle, setOpen, setAffiliationDialog }
 
 function CorporateEntity({ setOpen, refresh, setAffiliationDialog }) {
   const router = useRouter();
-  // const [editUserDialog, setEditUserDialog] = useState(false);
-  // useEffect(() => {
-  //   getUsers();
-  // }, []);
-
   return (
     <RenderHead title="Business" subTitle="List of users under businesses" setOpen={setOpen} setAffiliationDialog={setAffiliationDialog}>
       <AnalyticsBehaviorTable type={'Business'} refresh={refresh} />

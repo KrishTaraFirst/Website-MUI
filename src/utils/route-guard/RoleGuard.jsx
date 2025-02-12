@@ -18,25 +18,25 @@ import menuItems from '@/menu';
 
 const restrictedRoutes = {
   'service-provider': [
-    '/dashboard/user/corporate-entities',
+    '/dashboard/user/business',
     '/dashboard/user/indivial',
     '/dashboard/user/ca-firms',
     '/dashboard/user/service-providers'
   ],
   'corporate-admin': [
-    '/dashboard/user/corporate-entities',
+    '/dashboard/user/business',
     '/dashboard/user/indivial',
     '/dashboard/user/ca-firms',
     '/dashboard/user/service-providers'
   ],
   'charted-accountant-firm': [
-    // '/dashboard/user/corporate-entities',
+    // '/dashboard/user/business',
     // '/dashboard/user/indivial',
     '/dashboard/user/ca-firms'
     // '/dashboard/user/service-providers'
   ],
   individual: [
-    // '/dashboard/user/corporate-entities',
+    // '/dashboard/user/business',
     '/dashboard/user/indivial',
     '/dashboard/user/ca-firms',
     '/dashboard/user/service-providers'
