@@ -30,6 +30,7 @@ function PayrollPage() {
   useEffect(() => {
     getData();
   }, []);
+  console.log('anans');
   return <div>{PayrollSetup ? <Payrollsettings /> : <PayrollDashboard setPayrollSetup={setPayrollSetup} />}</div>;
 }
 

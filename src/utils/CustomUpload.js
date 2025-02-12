@@ -68,7 +68,7 @@ const CustomUpload = ({ title, setData, logoDetails, onDelete }) => {
               alt="Current Logo"
               style={{
                 maxWidth: '60px', // Reduce width
-                maxHeight: '60px', // Reduce height
+                maxHeight: '40px', // Reduce height
                 objectFit: 'cover',
                 borderRadius: '8px'
               }}

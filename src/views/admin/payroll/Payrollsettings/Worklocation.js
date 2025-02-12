@@ -22,6 +22,7 @@ import { useSearchParams } from 'next/navigation';
 import ActionCell from '@/utils/ActionCell';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import { useRouter } from 'next/navigation';
+import Loader from '@/components/PageLoader';
 
 function Worklocation() {
   const [openDialog, setOpenDialog] = useState(false); // Controls dialog visibility
@@ -29,6 +30,8 @@ function Worklocation() {
   const [payrollid, setPayrollId] = useState(null); // Payroll ID fetched from URL
   const [postType, setPostType] = useState(''); // Payroll ID fetched from URL
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [loading, setLoading] = useState(false); // State for loader
+
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
 
@@ -42,15 +45,12 @@ function Worklocation() {
     }
   }, [searchParams]);
 
-  // Open the dialog
   const handleOpenDialog = () => setOpenDialog(true);
 
-  // Close the dialog
   const handleCloseDialog = () => setOpenDialog(false);
 
-  // Fetch the work locations based on payrollid
   const fetchWorkLocations = async () => {
-    if (!payrollid) return; // If there's no payroll id, exit early
+    if (!payrollid) return;
 
     const url = `/payroll/work-locations/?payroll_id=${payrollid}`;
     const { res, error } = await Factory('get', url, {});
@@ -58,9 +58,8 @@ function Worklocation() {
     if (res?.status_cd === 0 && Array.isArray(res?.data)) {
       setWorkLocations(res?.data); // Successfully set work locations
     } else {
-      setWorkLocations([]); // Reset to empty if data is invalid or an error occurred
-      // Optionally show a snackbar error here if needed
-      // showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
+      setWorkLocations([]);
+      showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
     }
   };
   const handleEdit = (location) => {

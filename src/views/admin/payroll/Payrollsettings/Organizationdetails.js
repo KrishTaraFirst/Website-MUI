@@ -10,26 +10,39 @@ import CustomInput from '@/utils/CustomInput';
 import CustomUpload from '@/utils/CustomUpload';
 import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
 import { industries } from '@/utils/industries';
-
 import { useSnackbar } from '@/components/CustomSnackbar';
 import Factory from '@/utils/Factory';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import useCurrentUser from '@/hooks/useCurrentUser';
+import Loader from '@/components/PageLoader';
 
 function Organizationdetails({ tab }) {
   const { userData } = useCurrentUser();
   const router = useRouter();
-  const [payrollid, setPayrollId] = useState(null);
   const searchParams = useSearchParams();
-
+  const [payrollid, setPayrollId] = useState(null);
+  const [businessId, setBusinessId] = useState(null);
+  const [loading, setLoading] = useState(false);
   const { showSnackbar } = useSnackbar();
   const [postType, setPostType] = useState('');
   const [logoDetails, setLogoDetails] = useState([]);
 
-  // Define fields for dynamic rendering
+  useEffect(() => {
+    const business_id = searchParams.get('business-id');
+    if (business_id) {
+      setBusinessId(business_id);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const id = searchParams.get('payrollid');
+    if (id) {
+      setPayrollId(id);
+    }
+  }, [searchParams]);
   const fields = [
-    { name: 'org_name', label: 'Organization Name' },
+    { name: 'organisation_name', label: 'Organization Name' },
     { name: 'logo', label: 'Logo' },
     { name: 'industry', label: 'Industry' },
     { name: 'contact_email', label: 'Contact Email' },
@@ -53,19 +66,17 @@ function Organizationdetails({ tab }) {
   ];
 
   const validationSchema = Yup.object({
-    org_name: Yup.string().required('Organization name is required'),
+    organisation_name: Yup.string().required('Organization name is required'),
     industry: Yup.string().required('Industry is required'),
     contact_email: Yup.string().email('Invalid email address').required('Email is required'),
     sender_email: Yup.string().email('Invalid email address').required('Email is required'),
     org_address_line1: Yup.string().required('Address Line 1 is required'),
-    // org_address_line2: Yup.string().required('Address Line 2 is required'),
     org_address_state: Yup.string().required('State is required'),
     org_address_city: Yup.string().required('City is required'),
     org_address_pincode: Yup.string()
       .required('Pincode is required')
       .matches(/^[0-9]{6}$/, 'Invalid Pincode format. It must be exactly 6 digits.'),
     filling_address_line1: Yup.string().required('Address Line 1 is required'),
-    // filling_address_line2: Yup.string().required('Address Line 2 is required'),
     filling_address_state: Yup.string().required('State is required'),
     filling_address_city: Yup.string().required('City is required'),
     filling_address_pincode: Yup.string()
@@ -75,7 +86,7 @@ function Organizationdetails({ tab }) {
 
   const formik = useFormik({
     initialValues: {
-      org_name: '',
+      organisation_name: '',
       logo: null,
       industry: '',
       contact_email: '',
@@ -93,8 +104,9 @@ function Organizationdetails({ tab }) {
     },
     validationSchema,
     onSubmit: async (values) => {
-      let postData = new FormData();
-      postData.append('business_id', userData.id);
+      setLoading(true);
+      const postData = new FormData();
+      postData.append('business', businessId);
       Object.keys(values).forEach((key) => {
         if (key === 'logo' && values[key]) {
           postData.append(key, values[key]);
@@ -102,10 +114,9 @@ function Organizationdetails({ tab }) {
           postData.append(key, values[key]);
         }
       });
-
-      let url = postType === 'post' ? `/payroll/orgs/` : `/payroll/orgs/${payrollid}/`;
+      const url = postType === 'post' ? `/payroll/orgs/` : `/payroll/orgs/${payrollid}/`;
       const { res, error } = await Factory(postType, url, postData);
-
+      setLoading(false);
       if (res.status_cd === 0) {
         showSnackbar(postType === 'post' ? 'Data Saved Successfully' : 'Data Updated Successfully', 'success');
         router.back();
@@ -120,12 +131,7 @@ function Organizationdetails({ tab }) {
       if (field.name === 'logo') {
         return (
           <Grid2 key={field.name} size={{ xs: 12, sm: 6, md: 4 }}>
-            <CustomUpload
-              title="Upload Logo"
-              setData={setLogoDetails} // This function will update the parent state with the selected file
-              logoDetails={values.logo} // Pass the file object for display if needed (optional)
-              existingImageUrl={values.logo} // The URL of the existing image (e.g., from S3 or API response)
-            />
+            <CustomUpload title="Upload Logo" setData={setLogoDetails} logoDetails={values.logo} existingImageUrl={values.logo} />
           </Grid2>
         );
       }
@@ -144,6 +150,7 @@ function Organizationdetails({ tab }) {
               error={touched[field.name] && Boolean(errors[field.name])}
               helperText={touched[field.name] && errors[field.name]}
               sx={{ width: '100%' }}
+              disabled={field.name === 'org_address_state'}
             />
           </Grid2>
         );
@@ -162,76 +169,95 @@ function Organizationdetails({ tab }) {
             error={touched[field.name] && Boolean(errors[field.name])}
             helperText={touched[field.name] && errors[field.name]}
             sx={{ width: '100%' }}
+            disabled={
+              field.name === 'organisation_name' ||
+              field.name === 'org_address_line1' ||
+              field.name === 'org_address_line2' ||
+              field.name === 'org_address_city' ||
+              field.name === 'org_address_pincode'
+            }
           />
         </Grid2>
       );
     });
   };
-
-  const get_org_details = async () => {
-    const url = `/payroll/business-payroll/${userData.id}/`;
-
+  const getOrgDetails = async (id) => {
+    setLoading(true); // Start loading when an ID is available
+    // const id = businessId || payrollid; // Use whichever ID is available
+    const url = `/payroll/orgs/${id}/`;
     const { res, error } = await Factory('get', url, {});
+    setLoading(false); // Stop loading after the request completes
 
     if (res.status_cd === 0) {
       setValues((prev) => ({
         ...prev,
-        ...res.data
+        ...res.data,
+        org_address_line1: res.data.organisation_address.address_line1,
+        org_address_line2: res.data.organisation_address.address_line2,
+        org_address_state: res.data.organisation_address.state,
+        org_address_city: res.data.organisation_address.city,
+        org_address_pincode: res.data.organisation_address.pincode
       }));
       setPostType('put');
     } else {
       setPostType('post');
     }
   };
-  const handleDeleteLogo = () => {
-    setLogoDetails(null); // Clear the logo details
-    setExistingImageUrl(null); // Clear the existing image URL
-  };
-  const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, setFieldValue } = formik;
 
+  // Effect to trigger API call when either businessId or payrollid is set
   useEffect(() => {
-    if (payrollid !== null) get_org_details();
-  }, [payrollid]);
+    if (payrollid) {
+      getOrgDetails(payrollid); // Trigger API call only when an ID is available
+    }
+  }, [payrollid]); // Dependencies ensure it runs again if the ID changes
 
   useEffect(() => {
     setFieldValue('logo', logoDetails);
   }, [logoDetails]);
+  const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, setFieldValue } = formik;
+
   return (
-    <HomeCard title="Organization Details" tagline="Setup your organization before starting payroll">
-      <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
-        <Grid2 container spacing={3}>
-          {renderFields(fields)}
-        </Grid2>
+    <>
+      {loading ? (
+        <Loader />
+      ) : (
+        <HomeCard title="Organization Details" tagline="Setup your organization before starting payroll">
+          <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
+            <Grid2 container spacing={3}>
+              {renderFields(fields)}
+            </Grid2>
 
-        <Typography variant="h6" gutterBottom sx={{ mt: 4, mb: 2 }}>
-          Organization Address
-        </Typography>
-        <Grid2 container spacing={3}>
-          {renderFields(organizationAddress)}
-        </Grid2>
+            <Typography variant="h6" gutterBottom sx={{ mt: 4, mb: 2 }}>
+              Organization Address
+            </Typography>
+            <Grid2 container spacing={3}>
+              {renderFields(organizationAddress)}
+            </Grid2>
 
-        <Typography variant="h6" gutterBottom sx={{ mt: 4, mb: 2 }}>
-          Filing Address
-        </Typography>
-        <Grid2 container spacing={3}>
-          {renderFields(filingAddress)}
-        </Grid2>
+            <Typography variant="h6" gutterBottom sx={{ mt: 4, mb: 2 }}>
+              Filing Address
+            </Typography>
+            <Grid2 container spacing={3}>
+              {renderFields(filingAddress)}
+            </Grid2>
 
-        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Button
-            variant="outlined"
-            onClick={() => {
-              router.back();
-            }}
-          >
-            Back to Dashboard
-          </Button>
-          <Button type="submit" variant="contained" color="primary">
-            Submit
-          </Button>
-        </Box>
-      </Box>
-    </HomeCard>
+            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  router.back();
+                }}
+              >
+                Back to Dashboard
+              </Button>
+              <Button type="submit" variant="contained" color="primary">
+                Submit
+              </Button>
+            </Box>
+          </Box>
+        </HomeCard>
+      )}
+    </>
   );
 }
 
