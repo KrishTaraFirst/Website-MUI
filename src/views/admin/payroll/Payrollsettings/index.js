@@ -71,6 +71,9 @@ const PayrollSetup = () => {
           if (step.path === '/set_up_statutory_components') {
             return { ...step, completed: res.data.statutory_component };
           }
+          if (step.path === '/set_up_salary_components') {
+            return { ...step, completed: res.data.salary_component };
+          }
           return step; // Leave other steps unchanged
         })
       );

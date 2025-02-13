@@ -37,7 +37,6 @@ function Worklocation() {
 
   const searchParams = useSearchParams();
 
-  // Update payroll ID from search params
   useEffect(() => {
     const id = searchParams.get('payrollid');
     if (id) {
@@ -50,11 +49,10 @@ function Worklocation() {
   const handleCloseDialog = () => setOpenDialog(false);
 
   const fetchWorkLocations = async () => {
-    if (!payrollid) return;
-
+    setLoading(true);
     const url = `/payroll/work-locations/?payroll_id=${payrollid}`;
     const { res, error } = await Factory('get', url, {});
-
+    setLoading(false);
     if (res?.status_cd === 0 && Array.isArray(res?.data)) {
       setWorkLocations(res?.data); // Successfully set work locations
     } else {
@@ -85,118 +83,124 @@ function Worklocation() {
     if (payrollid !== null) fetchWorkLocations();
   }, [payrollid]);
   return (
-    <HomeCard
-      title="Work Location Details"
-      tagline="Setup your organization before starting payroll"
-      CustomElement={() => (
-        <Stack direction="row" sx={{ gap: 2 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              setPostType('post');
-              handleOpenDialog();
-            }}
-            sx={{ marginBottom: 2 }}
-          >
-            Add Work Location
-          </Button>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => {
-              // setPostType('post');
-              // handleOpenDialog();
-            }}
-            sx={{ marginBottom: 2 }}
-          >
-            Import
-          </Button>
-        </Stack>
-      )}
-    >
-      <Grid2 container spacing={{ xs: 2, sm: 3 }}>
-        <Grid2 size={12}>
-          <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-            <WorkLocationDialog
-              open={openDialog}
-              handleClose={handleCloseDialog}
-              fetchWorkLocations={fetchWorkLocations} // Pass the fetch function to the dialog
-              selectedRecord={selectedRecord}
-              type={postType}
-              setType={setPostType}
-            />
-          </Stack>
-        </Grid2>
-
-        <Grid2 size={12}>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>S No</TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Address</TableCell>
-                  <TableCell>State</TableCell>
-                  <TableCell>No of Employees</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {/* Check if workLocations is valid and has data */}
-                {workLocations?.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} sx={{ height: 300 }}>
-                      <EmptyTable msg="No work locations available" />
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  workLocations?.map((location, index) => (
-                    <TableRow key={location.id}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>{location.location_name || 'N/A'}</TableCell>
-                      <TableCell>
-                        {`${location.address_line1}, ${location.address_line2}`?.length > 30
-                          ? `${location.address_line1?.substring(0, 20)}...`
-                          : `${location.address_line1} , ${location.address_line2}` || 'N/A'}
-                      </TableCell>
-                      <TableCell>{location.address_state || 'N/A'}</TableCell>
-                      <TableCell>{location.employees || 0}</TableCell>
-                      <TableCell>
-                        {/* ActionCell to handle actions */}
-                        <ActionCell
-                          row={location} // Pass the customer row data
-                          onEdit={() => handleEdit(location)} // Edit handler
-                          onDelete={() => handleDelete(location)} // Delete handler
-                          open={openDialog}
-                          onClose={handleCloseDialog}
-                          deleteDialogData={{
-                            title: 'Delete Record',
-                            heading: 'Are you sure you want to delete this Record?',
-                            description: `This action will remove ${location.name} from the list.`,
-                            successMessage: 'Record has been deleted.'
-                          }}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Grid2>
-      </Grid2>
-      <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Button
-          variant="outlined"
-          onClick={() => {
-            router.back();
-          }}
+    <>
+      {loading ? (
+        <Loader />
+      ) : (
+        <HomeCard
+          title="Work Location Details"
+          tagline="Setup your organization before starting payroll"
+          CustomElement={() => (
+            <Stack direction="row" sx={{ gap: 2 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  setPostType('post');
+                  handleOpenDialog();
+                }}
+                sx={{ marginBottom: 2 }}
+              >
+                Add Work Location
+              </Button>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => {
+                  // setPostType('post');
+                  // handleOpenDialog();
+                }}
+                sx={{ marginBottom: 2 }}
+              >
+                Import
+              </Button>
+            </Stack>
+          )}
         >
-          Back to Dashboard
-        </Button>
-      </Box>
-    </HomeCard>
+          <Grid2 container spacing={{ xs: 2, sm: 3 }}>
+            <Grid2 size={12}>
+              <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
+                <WorkLocationDialog
+                  open={openDialog}
+                  handleClose={handleCloseDialog}
+                  fetchWorkLocations={fetchWorkLocations} // Pass the fetch function to the dialog
+                  selectedRecord={selectedRecord}
+                  type={postType}
+                  setType={setPostType}
+                />
+              </Stack>
+            </Grid2>
+
+            <Grid2 size={12}>
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>S No</TableCell>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Address</TableCell>
+                      <TableCell>State</TableCell>
+                      <TableCell>No of Employees</TableCell>
+                      <TableCell>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {/* Check if workLocations is valid and has data */}
+                    {workLocations?.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} sx={{ height: 300 }}>
+                          <EmptyTable msg="No work locations available" />
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      workLocations?.map((location, index) => (
+                        <TableRow key={location.id}>
+                          <TableCell>{index + 1}</TableCell>
+                          <TableCell>{location.location_name || 'N/A'}</TableCell>
+                          <TableCell>
+                            {`${location.address_line1}, ${location.address_line2}`?.length > 30
+                              ? `${location.address_line1?.substring(0, 20)}...`
+                              : `${location.address_line1} , ${location.address_line2}` || 'N/A'}
+                          </TableCell>
+                          <TableCell>{location.address_state || 'N/A'}</TableCell>
+                          <TableCell>{location.employees || 0}</TableCell>
+                          <TableCell>
+                            {/* ActionCell to handle actions */}
+                            <ActionCell
+                              row={location} // Pass the customer row data
+                              onEdit={() => handleEdit(location)} // Edit handler
+                              onDelete={() => handleDelete(location)} // Delete handler
+                              open={openDialog}
+                              onClose={handleCloseDialog}
+                              deleteDialogData={{
+                                title: 'Delete Record',
+                                heading: 'Are you sure you want to delete this Record?',
+                                description: `This action will remove ${location.name} from the list.`,
+                                successMessage: 'Record has been deleted.'
+                              }}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Grid2>
+          </Grid2>
+          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                router.back();
+              }}
+            >
+              Back to Dashboard
+            </Button>
+          </Box>
+        </HomeCard>
+      )}
+    </>
   );
 }
 
