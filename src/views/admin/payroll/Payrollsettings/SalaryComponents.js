@@ -25,7 +25,6 @@ TabPanel.propTypes = {
 const SalaryComponnetTabs = ({ type }) => {
   const [activeTab, setActiveTab] = useState(0); // State to manage active tab
   const theme = useTheme(); // Getting the theme
-  const [open, setOpen] = useState(false);
 
   // Function to handle tab changes
   const handleTabChange = (_event, newTabIndex) => setActiveTab(newTabIndex);
@@ -56,15 +55,10 @@ const SalaryComponnetTabs = ({ type }) => {
             <Tab key={index} label={label} {...a11yProps(index)} />
           ))}
         </Tabs>
-        <Stack direction="row" spacing={2} alignItems="center">
-          <Button variant="contained" onClick={() => setOpen(true)}>
-            Add Component
-          </Button>
-        </Stack>
       </Box>
 
       <TabPanel value={activeTab} index={0}>
-        <EarningsComponent handleNext={handleNext} open={open} setOpen={setOpen} />
+        <EarningsComponent handleNext={handleNext} />
       </TabPanel>
       <TabPanel value={activeTab} index={1}>
         {/* <ESIComponent handleNext={handleNext} handleBack={handleBack} /> */}
