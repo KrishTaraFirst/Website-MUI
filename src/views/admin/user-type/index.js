@@ -41,7 +41,6 @@ const UserType = () => {
     const postData = { user_type: user_type[selectedType] };
 
     const { res, error } = await Factory('patch', url, postData);
-    console.log(res);
     if (res.status_cd === 0) {
       setDialogOpen(false);
       const userDetails = JSON.parse(localStorage.getItem('auth-user'));

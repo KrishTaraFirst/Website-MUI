@@ -76,7 +76,6 @@ export default function AuthRegister({ inputSx }) {
     try {
       const url = `/user_management/register/`;
       const payload = { ...formData, user_type: optionValues[selected] };
-      console.log(payload);
       const res = await axios.post(BASE_URL + url, payload);
       if (res.status === 201) {
         setIsProcessing(false);
