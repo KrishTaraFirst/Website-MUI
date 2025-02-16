@@ -11,7 +11,7 @@ import { styled } from '@mui/material/styles';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { Box, Card, Stack, Checkbox, FormControlLabel, FormGroup, Grid2, TextField } from '@mui/material';
+import { Autocomplete, Card, Stack, Checkbox, FormControlLabel, FormGroup, Grid2, TextField } from '@mui/material';
 import Factory from '@/utils/Factory';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import Modal from '@/components/Modal';
@@ -31,6 +31,8 @@ const userTypes = {
   'service-providers': 'ServiceProvider'
 };
 
+const permissionList = ['Admin', 'Partner', 'Manager', 'Employee'];
+
 export default function EditUser({ type, open, setOpen, user_id, setRefresh, user_type, getUsers }) {
   const { showSnackbar } = useSnackbar();
   const [isOpen, setIsOpen] = useState(false);
@@ -39,6 +41,7 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
   const [data, setData] = useState({
     user_name: '',
     first_name: '',
+    permission: '',
     last_name: '',
     mobile_number: '',
     email: '',
@@ -110,8 +113,6 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
 
         if (value.trim().length < 3) {
           error = `${capitalizedField} must be at least 3 characters.`;
-        } else if (!/^[A-Z][a-zA-Z]+$/.test(value.trim())) {
-          error = `${capitalizedField} must start with a capital letter and contain only alphabets.`;
         }
         break;
 
@@ -193,10 +194,11 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
     __data['is_active'] = true;
     delete __data.id;
     let url = `/user_management/admin/user-registration/`;
+    if (user_type === 'team') {
+      __data['user_type'] = userData.role;
+    }
     const { res } = await Factory('post', url, { ...__data });
-
     if (res.status_cd === 1) {
-      console.log(res.data);
       showSnackbar(JSON.stringify(res.data.details), 'error');
     } else {
       showSnackbar('Saved Successfully', 'success');
@@ -303,6 +305,30 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
           )}
           {type === 'add' && (
             <>
+              {user_type === 'team' && (
+                <Stack direction="column" sx={{ gap: 0.5 }}>
+                  <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
+                    User Role
+                  </Typography>
+                  <Autocomplete
+                    options={permissionList}
+                    value={data.permission}
+                    onChange={(_event, newValue) => {
+                      handleChange('permission', newValue);
+                    }}
+                    disableClearable
+                    renderOption={({ key: optionKey, ...optionProps }, option) => (
+                      <li key={optionKey} {...optionProps}>
+                        {option}
+                      </li>
+                    )}
+                    renderInput={(params) => (
+                      <TextField {...params} slotProps={{ htmlInput: { ...params.inputProps, 'aria-label': 'language' } }} />
+                    )}
+                    sx={{ width: 1 }}
+                  />
+                </Stack>
+              )}
               <Stack direction="column" sx={{ gap: 0.5 }}>
                 <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
                   Mobile
