@@ -10,6 +10,7 @@ export const breadcrumbData = {
   'service-providers': 'Service Providers',
   user: 'User',
   dashboard: 'Dashboard',
+  team: 'Team',
 
   //Invoicing
   settings: 'Settings',
