@@ -2,10 +2,13 @@
 import React from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { FormControlLabel, Checkbox, TextField, Button, Box, Grid2, Typography, Divider } from '@mui/material';
+import { FormControlLabel, Checkbox, Stack, Button, Box, Grid2, Typography, Divider } from '@mui/material';
 import CustomInput from '@/utils/CustomInput';
+import { useRouter } from 'next/navigation';
 
 function BasicDetails() {
+  const router = useRouter();
+
   const employeeFields = [
     { name: 'employee_name', label: 'Employee Name' },
     { name: 'employee_id', label: 'Employee Id' },
@@ -67,9 +70,9 @@ function BasicDetails() {
   const renderFields = (fields) => {
     return fields.map((field) => (
       <Grid2 key={field.name} size={{ xs: 12, sm: 6 }}>
-        <div style={{ paddingBottom: '8px' }}>
-          <Typography variant="body2">{field.label}</Typography>
-        </div>
+        <Typography variant="body2" sx={{ mb: 0.5 }}>
+          {field.label}
+        </Typography>
         <CustomInput
           fullWidth
           name={field.name}
@@ -101,15 +104,28 @@ function BasicDetails() {
       <Divider sx={{ my: 2 }} />
 
       {/* Render statutory fields */}
+      <Typography variant="h6" sx={{ mb: 1 }}>
+        Statuitory Components
+      </Typography>
       {statutoryFields.map((field) => (
-        <FormControlLabel
-          key={field.name}
-          control={<Checkbox checked={values[field.name]} onChange={handleChange} name={field.name} />}
-          label={field.label}
-        />
+        <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+          <FormControlLabel
+            key={field.name}
+            control={<Checkbox checked={values[field.name]} onChange={handleChange} name={field.name} />}
+            label={field.label}
+          />
+        </Stack>
       ))}
 
-      <Box sx={{ mt: 2, textAlign: 'center' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 2, gap: 2 }}>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            router.back();
+          }}
+        >
+          Back to Dashboard
+        </Button>
         <Button variant="contained" color="primary" onClick={handleSubmit}>
           Submit
         </Button>

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Button, Box, Stack, Grid2 } from '@mui/material';
+import { Button, Box, Stack, Grid2, Typography } from '@mui/material';
 import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
 import CustomInput from '@/utils/CustomInput';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
@@ -81,7 +81,9 @@ export default function WorkLocationDialog({ open, handleClose, fetchWorkLocatio
       if (field.name === 'address_state') {
         return (
           <Grid2 key={field.name} size={{ xs: 12, sm: 6 }}>
-            <label>{field.label}</label>
+            <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+              {field.label}
+            </Typography>
             <CustomAutocomplete
               value={values[field.name]}
               name={field.name}
@@ -97,7 +99,9 @@ export default function WorkLocationDialog({ open, handleClose, fetchWorkLocatio
 
       return (
         <Grid2 key={field.name} size={{ xs: 12, sm: 6 }}>
-          <label>{field.label}</label>
+          <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+            {field.label}
+          </Typography>
           <CustomInput
             name={field.name}
             value={values[field.name]}

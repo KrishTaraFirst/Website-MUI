@@ -2,54 +2,93 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import MainCard from '@/components/MainCard';
-import HomeCard from '@/components/cards/HomeCard';
-import useCurrentUser from '@/hooks/useCurrentUser';
+import { Box, Stack, Typography, LinearProgress, Button, Grid2 } from '@mui/material';
 import Factory from '@/utils/Factory';
 import Loader from '@/components/PageLoader';
-{
-  /* <Loader /> */
-}
-
-import { Stepper, Step, StepLabel, Button, Typography, Box, Stack, LinearProgress, Grid2 } from '@mui/material';
+import { useSearchParams } from 'next/navigation';
+import useCurrentUser from '@/hooks/useCurrentUser';
 
 const PayrollSetup = () => {
   const { userData } = useCurrentUser();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(false); // State for loader
   const [payrollDetails, setPayrollDetails] = useState({});
-  const steps = [
-    { nameKey: 'Organization Details', path: '/organization_details', completed: true },
-    { nameKey: 'Set up Work Location', path: '/set_up_work_location', completed: true },
-    { nameKey: 'Set up Departments', path: '/set_up_departments', completed: true },
+  const [businessId, setBusinessId] = useState(null);
+  const [steps, setSteps] = useState([
+    { nameKey: 'Organization Details', path: '/organization_details', completed: false },
+    { nameKey: 'Set up Work Location', path: '/set_up_work_location', completed: false },
+    { nameKey: 'Set up Departments', path: '/set_up_departments', completed: false },
     { nameKey: 'Set up Designations', path: '/set_up_designations', completed: false },
     { nameKey: 'Set up Statutory Components', path: '/set_up_statutory_components', completed: false },
     { nameKey: 'Set up Salary Components', path: '/set_up_salary_components', completed: false },
-    { nameKey: 'Set up Salary Template', path: '/set_up_salary_template', completed: false }
-  ];
+    { nameKey: 'Set up Salary Template', path: '/set_up_salary_template', completed: false },
+    { nameKey: 'Set up Employee Master', path: '/set_up_employee_master', completed: false },
+    { nameKey: 'Pay Schedule', path: '/pay_schedule', completed: false },
+    { nameKey: 'Leave & Attendance', path: '/leave_and_attendance', completed: false }
+  ]);
 
-  const router = useRouter();
+  useEffect(() => {
+    const business_id = searchParams.get('business-id');
+    if (business_id) {
+      setBusinessId(business_id);
+    }
+  }, [searchParams]);
 
-  // Calculate completion percentage
+  useEffect(() => {
+    const id = searchParams.get('payrollid');
+    if (id) {
+      setPayrollId(id);
+    }
+  }, [searchParams]);
+
   const totalSteps = steps.length;
   const completedSteps = steps.filter((step) => step.completed).length;
   const completionPercentage = Math.round((completedSteps / totalSteps) * 100);
 
-  const getData = async () => {
-    const url = `/user_management/businesses-by-client/?user_id=${userData.id}`;
+  const payroll_details = async () => {
+    setLoading(true);
+    const url = `/payroll/business-payroll/${businessId}/`;
     const { res, error } = await Factory('get', url, {});
-    console.log(res);
-    // if (res?.status_cd === 0) {
-    //   setPayrollDetails(res?.data);
-    // } else {
-    //   setPayrollDetails({}); // Ensure workLocations is reset if there's an error or invalid data
-    //   // Optionally show a snackbar error here if needed
-    //   // showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
-    // }
+    setLoading(false);
+    if (res.status_cd === 0) {
+      setPayrollDetails((prev) => ({
+        ...prev,
+        ...res.data
+      }));
+      setSteps((prevSteps) =>
+        prevSteps.map((step) => {
+          if (step.path === '/organization_details') {
+            return { ...step, completed: res.data.organisation_details };
+          }
+          if (step.path === '/set_up_work_location') {
+            return { ...step, completed: res.data.work_locations };
+          }
+          if (step.path === '/set_up_departments') {
+            return { ...step, completed: res.data.departments };
+          }
+          if (step.path === '/set_up_designations') {
+            return { ...step, completed: res.data.designations };
+          }
+          if (step.path === '/set_up_statutory_components') {
+            return { ...step, completed: res.data.statutory_component };
+          }
+          if (step.path === '/set_up_salary_components') {
+            return { ...step, completed: res.data.salary_component };
+          }
+          return step; // Leave other steps unchanged
+        })
+      );
+    } else {
+    }
   };
-
   useEffect(() => {
-    getData();
-  }, []);
+    if (businessId) {
+      payroll_details();
+    }
+  }, [businessId]);
   return (
-    <Box sx={{}}>
+    <Box>
       <Box sx={{ mb: 2 }}>
         <Typography variant="h4" textAlign="center" sx={{ mb: 1 }}>
           Welcome {userData.firstname}
@@ -62,7 +101,6 @@ const PayrollSetup = () => {
       <Grid2 container spacing={{ xs: 2, sm: 3 }}>
         <Grid2 size={12}>
           <MainCard sx={{ maxWidth: 800, margin: '0 auto', padding: 2 }}>
-            {/* <Box sx={{border: '2px solid'}}> */}
             <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
               <Stack direction="column" sx={{ flexGrow: 1, gap: 1 }}>
                 <Typography variant="h6" sx={{ color: '#4A4A4A', fontWeight: 600 }}>
@@ -73,14 +111,14 @@ const PayrollSetup = () => {
                 </Typography>
               </Stack>
 
-              <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
+              <Stack direction="row" spacing={1} alignItems="center">
                 <LinearProgress
                   variant="determinate"
                   value={completionPercentage}
                   sx={{
                     height: 8,
                     borderRadius: 4,
-                    width: 250, // Adjust width as needed
+                    width: 250,
                     backgroundColor: '#EDEDED',
                     '& .MuiLinearProgress-bar': {
                       backgroundColor: '#4A90E2'
@@ -92,7 +130,7 @@ const PayrollSetup = () => {
                 </Typography>
               </Stack>
             </Stack>
-            {/* </Box> */}
+
             <Stack direction="column" spacing={2}>
               {steps.map((step, index) => (
                 <Stack
@@ -134,21 +172,20 @@ const PayrollSetup = () => {
                   </Stack>
                   <Button
                     variant="outlined"
-                    type="button"
                     sx={{
                       color: step.completed ? '#4CAF50' : '#4A90E2',
                       fontWeight: step.completed ? 500 : 400
                     }}
                     onClick={() => {
                       const routeBase = `/payrollsetup${step.path}`;
-
-                      // if (step.nameKey === 'Organization Details' && !payrollDetails?.id) {
-                      //   router.push(routeBase); // Navigate to route without payroll ID
-                      // } else if (payrollDetails?.id) {
-                      router.push(`${routeBase}?payrollid=${payrollDetails.id}`); // Navigate with payroll ID
-                      // } else {
-                      //   alert('Payroll ID not available!');
-                      // }
+                      if (step.nameKey === 'Organization Details' && !payrollDetails?.payroll_id) {
+                        router.push(`${routeBase}?business-id=${businessId}`); // Navigate to route without payroll ID
+                      } else if (payrollDetails?.payroll_id) {
+                        router.push(`${routeBase}?payrollid=${payrollDetails.payroll_id}`); // Navigate with payroll ID
+                      } else {
+                        alert('Payroll ID not available!');
+                        showSnackbar('Payroll ID not available. Please Continue with Origanization Details', 'error');
+                      }
                     }}
                   >
                     {step.completed ? 'Completed' : 'Complete Now'}
