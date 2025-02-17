@@ -27,16 +27,16 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const userTypes = {
   individual: 'Individual',
   'ca-firms': 'CA',
-  'corporate-entities': 'Business',
+  business: 'Business',
   'service-providers': 'ServiceProvider'
 };
-
-const permissionList = ['Admin', 'Partner', 'Manager', 'Employee'];
 
 export default function EditUser({ type, open, setOpen, user_id, setRefresh, user_type, getUsers }) {
   const { showSnackbar } = useSnackbar();
   const [isOpen, setIsOpen] = useState(false);
   const { userData } = useCurrentUser();
+
+  const [permissionList, setPermissionList] = useState(['Admin', 'Partner', 'Manager', 'Employee']);
 
   const [data, setData] = useState({
     user_name: '',
@@ -49,12 +49,28 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
     created_by: userData.id,
     id: user_id || ''
   });
+
   const [errors, setErrors] = useState({ first_name: '', last_name: '', id: user_id });
 
   const resetForm = () => {
     setData({ first_name: '', last_name: '', id: user_id });
     setErrors({ first_name: '', last_name: '', id: user_id });
   };
+
+  useEffect(() => {
+    async function getPermissionGroups() {
+      let url = `/user_management/groups/`;
+      const { res } = await Factory('get', url, {});
+      if (res.status_cd !== 1) {
+        console.log('data', res.data);
+        console.log('data2', res.data);
+        setPermissionList([...res.data]);
+      } else {
+        setPermissionList([]);
+      }
+    }
+    getPermissionGroups();
+  }, []);
 
   const handleChange = (field, value) => {
     // Update the data
@@ -197,15 +213,16 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
     if (user_type === 'team') {
       __data['user_type'] = userData.role;
     }
-    const { res } = await Factory('post', url, { ...__data });
-    if (res.status_cd === 1) {
-      showSnackbar(JSON.stringify(res.data.details), 'error');
-    } else {
-      showSnackbar('Saved Successfully', 'success');
-      setRefresh((prev) => !prev);
-      resetForm();
-      setOpen(false);
-    }
+    console.log(__data);
+    // const { res } = await Factory('post', url, { ...__data });
+    // if (res.status_cd === 1) {
+    //   showSnackbar(JSON.stringify(res.data.details), 'error');
+    // } else {
+    //   showSnackbar('Saved Successfully', 'success');
+    //   setRefresh((prev) => !prev);
+    //   resetForm();
+    //   setOpen(false);
+    // }
   };
 
   const __editUser = async () => {
@@ -312,19 +329,18 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
                   </Typography>
                   <Autocomplete
                     options={permissionList}
-                    value={data.permission}
+                    getOptionLabel={(option) => (option && option.name ? option.name : '')}
+                    value={data.permission ?? null} // Ensure it's always controlled
                     onChange={(_event, newValue) => {
                       handleChange('permission', newValue);
                     }}
                     disableClearable
-                    renderOption={({ key: optionKey, ...optionProps }, option) => (
-                      <li key={optionKey} {...optionProps}>
-                        {option}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option.id}>
+                        {option.name}
                       </li>
                     )}
-                    renderInput={(params) => (
-                      <TextField {...params} slotProps={{ htmlInput: { ...params.inputProps, 'aria-label': 'language' } }} />
-                    )}
+                    renderInput={(params) => <TextField {...params} label="" placeholder="Select Permission" />}
                     sx={{ width: 1 }}
                   />
                 </Stack>
@@ -336,10 +352,14 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
                 <TextField
                   id="outlined-disabled"
                   value={data.mobile_number}
-                  type="tel" // Change type from "number" to "tel"
-                  inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} // Ensures only numbers are entered
-                  onBlur={(e) => handleBlur('mobile_number', e.target.value)}
-                  onChange={(e) => handleChange('mobile_number', e.target.value)}
+                  type="tel"
+                  onChange={(e) => {
+                    const numericValue = e.target.value.replace(/\D/g, '');
+                    handleChange('mobile_number', numericValue);
+                  }}
+                  slotProps={{
+                    input: { inputMode: 'numeric' }
+                  }}
                   error={!!errors.mobile_number}
                   helperText={errors.mobile_number}
                 />
