@@ -71,20 +71,19 @@ function EarningsComponent({ handleNext, handleBack }) {
     handleOpen();
   };
   const handleDelete = async (item) => {
-    let url = `/payroll/earnings/${item.id}/`;
+    let url = `/payroll/earnings/${item.id}`;
     const { res } = await Factory('delete', url, {});
     if (res.status_cd === 1) {
       showSnackbar(JSON.stringify(res.data), 'error');
     } else {
       showSnackbar('Record Deleted Successfully', 'success');
-      fetchDepartments();
+      getEarnings_Details(payrollid);
     }
   };
   const formik = useFormik({
     initialValues: {
       component_name: '',
       component_type: '',
-      amount_value: '',
       is_active: false,
       calculation_type: {
         type: '',
@@ -105,7 +104,6 @@ function EarningsComponent({ handleNext, handleBack }) {
       setLoading(true);
       const postData = { ...values };
       postData.payroll = Number(payrollid);
-      console.log(postData);
       const url = postType === 'post' ? `/payroll/earnings` : `/payroll/earnings/${selectedRecord.id}`;
       const { res, error } = await Factory(postType, url, postData);
       setLoading(false);
@@ -183,9 +181,8 @@ function EarningsComponent({ handleNext, handleBack }) {
                           style={{ cursor: 'pointer', textDecoration: 'underline', color: '#007bff' }}
                           onClick={() => {
                             setPostType('put');
-                            setValues(item);
-                            handleOpen(item);
-                          }} // Handle row click and open dialog
+                            handleEdit(item);
+                          }}
                         >
                           {item.component_name}
                         </TableCell>
@@ -323,18 +320,17 @@ function EarningsComponent({ handleNext, handleBack }) {
                         </Typography>
                         <TextField
                           fullWidth
-                          component_name="amount_value"
-                          value={values.amount_value}
+                          value={values.calculation_type.value}
                           onChange={(e) => {
                             // Allow only numbers and one decimal point
                             const numericValue = e.target.value
                               .replace(/[^0-9.]/g, '') // Remove non-numeric and non-decimal characters
                               .replace(/(\..*)\./g, '$1'); // Ensure only one decimal point is allowed
-                            setFieldValue('amount_value', numericValue);
+                            setFieldValue('calculation_type.value', numericValue);
                           }}
                           onBlur={handleBlur}
-                          error={touched.amount_value && Boolean(errors.amount_value)}
-                          helperText={touched.amount_value && errors.amount_value}
+                          // error={touched.calculation_type.value && Boolean(errors.calculation_type.value)}
+                          // helperText={touched.calculation_type.value && errors.calculation_type.value}
                           InputProps={{
                             startAdornment: (
                               <InputAdornment position="start" sx={{ display: 'flex', alignItems: 'center' }}>

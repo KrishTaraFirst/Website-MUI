@@ -56,5 +56,6 @@ export const breadcrumbData = {
   set_up_employee_master: 'Set up Employee Master',
   pay_schedule: 'Pay Schedule',
   leave_and_attendance: 'Leave & Attendance',
+  'create-salary-template': 'Salary Template',
   'add-employee': 'Add Employee'
 };

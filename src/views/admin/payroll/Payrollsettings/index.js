@@ -51,7 +51,6 @@ const PayrollSetup = () => {
     const url = `/payroll/business-payroll/${businessId}/`;
     const { res, error } = await Factory('get', url, {});
     setLoading(false);
-    console.log(res);
     if (res.status_cd === 0) {
       setPayrollDetails((prev) => ({
         ...prev,

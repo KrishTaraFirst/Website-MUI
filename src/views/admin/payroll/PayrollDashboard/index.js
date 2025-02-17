@@ -26,7 +26,6 @@ export default function PayrollDashboard({ setPayrollSetup }) {
     setLoading(true);
     const url = `/payroll/payroll-setup-status?user_id=${userData.id}`;
     const { res, error } = await Factory('get', url, {});
-    console.log(res);
     if (res?.status_cd === 0) {
       setBusinessDetails(res?.data);
       setLoading(false);
@@ -61,7 +60,11 @@ export default function PayrollDashboard({ setPayrollSetup }) {
           </Typography>
         </Stack>
         <Stack direction="row" sx={{ gap: 1.5 }}>
-          <Button variant="outlined" onClick={() => router.push(`/payrollsetup`)} startIcon={<IconSettings2 size={18} />}>
+          <Button
+            variant="outlined"
+            onClick={() => router.push(`/payrollsetup?business-id=${businessDetails.id}`)}
+            startIcon={<IconSettings2 size={18} />}
+          >
             Payroll Settings
           </Button>
           <Button variant="contained" onClick={() => router.push(`${pathname}/add-employee`)} startIcon={<IconSparkles size={16} />}>
