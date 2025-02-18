@@ -4,6 +4,7 @@ import { useTheme } from '@mui/material/styles';
 import { Tab, Tabs } from '@mui/material';
 import React, { useState } from 'react';
 import { Button, Box, Typography, Stack } from '@mui/material';
+import HomeCard from '@/components/cards/HomeCard';
 
 import HolidayManagement from './HolidayManagement';
 import LeaveManagement from './LeaveManagement';
@@ -45,11 +46,8 @@ const LeaveAttendance = ({ type }) => {
     setActiveTab((prev) => (prev < 3 ? prev - 1 : prev));
   };
   return (
-    <Box>
-      <Typography textAlign="center" variant="h5">
-        Salary Components
-      </Typography>
-      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+    <HomeCard title="Leave & Attendance" tagline="Setup your organization before starting payroll">
+      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', mb: 2 }}>
         <Tabs value={activeTab} onChange={handleTabChange} aria-label="Statutory Components Tabs">
           {tabLabels.map((label, index) => (
             <Tab key={index} label={label} {...a11yProps(index)} />
@@ -63,7 +61,7 @@ const LeaveAttendance = ({ type }) => {
       <TabPanel value={activeTab} index={1}>
         <LeaveManagement handleNext={handleNext} />
       </TabPanel>
-    </Box>
+    </HomeCard>
   );
 };
 

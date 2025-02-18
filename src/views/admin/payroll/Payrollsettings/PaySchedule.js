@@ -1,40 +1,56 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import {
-  Table,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Paper,
-  Button,
-  Stack,
-  Grid2,
-  Typography,
-  Box
-} from '@mui/material';
-import DesignationDialog from './DesignationDialog'; // Import the DepartmentDialog
-import EmptyTable from '@/components/third-party/table/EmptyTable';
+import { Button, Card, Stack, Box, Typography, Grid2 } from '@mui/material';
+import { useSearchParams, useRouter } from 'next/navigation';
 import HomeCard from '@/components/cards/HomeCard';
+import MainCard from '@/components/MainCard';
 import Factory from '@/utils/Factory';
-import { useSearchParams } from 'next/navigation';
-import ActionCell from '@/utils/ActionCell';
 import { useSnackbar } from '@/components/CustomSnackbar';
-import { useRouter } from 'next/navigation';
+import dayjs from 'dayjs';
+import CustomDatePicker from '@/utils/CustomDateInput';
 
 function PaySchedule() {
-  const [openDialog, setOpenDialog] = useState(false); // State to manage dialog visibility
-  const [designations, setDesignations] = useState([]); // State to store designations data
-  const [payrollid, setPayrollId] = useState(null); // Payroll ID fetched from URL
-  const [postType, setPostType] = useState(''); // Payroll ID fetched from URL
-  const [selectedRecord, setSelectedRecord] = useState(null);
+  const [payrollId, setPayrollId] = useState(null);
+  const [weekOffSelection, setWeekOffSelection] = useState({
+    SUN: false,
+    MON: false,
+    TUE: false,
+    WED: false,
+    THU: false,
+    FRI: false,
+    SAT: false,
+    second_saturday: false,
+    fourth_saturday: true,
+    '2nd SAT': false,
+    '4th SAT': false
+  });
+
+  const [dateValue, setDateValue] = useState(null);
+
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
-
   const searchParams = useSearchParams();
+  const [pay_schedule_data, setPay_schedule_data] = useState(null);
+  const [postType, setPostType] = useState('');
 
-  // Update payroll ID from search params
+  useEffect(() => {
+    const id = searchParams.get('payrollid');
+    if (id) {
+      setPayrollId(id);
+    }
+  }, [searchParams]);
+  const weekOffOptions = [
+    { short: 'SUN', full: 'Sunday' },
+    { short: 'MON', full: 'Monday' },
+    { short: 'TUE', full: 'Tuesday' },
+    { short: 'WED', full: 'Wednesday' },
+    { short: 'THU', full: 'Thursday' },
+    { short: 'FRI', full: 'Friday' },
+    { short: 'SAT', full: 'Saturday' },
+    { short: '2nd SAT', full: '2nd Saturday' },
+    { short: '4th SAT', full: '4th Saturday' }
+  ];
+
   useEffect(() => {
     const id = searchParams.get('payrollid');
     if (id) {
@@ -42,83 +58,146 @@ function PaySchedule() {
     }
   }, [searchParams]);
 
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
+  const handleDaySelect = (day) => {
+    setWeekOffSelection((prevSelection) => ({
+      ...prevSelection,
+      [day]: !prevSelection[day]
+    }));
   };
 
-  // Close dialog
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
+  const postFetch = async () => {
+    const selectedDays = Object.keys(weekOffSelection).filter((day) => weekOffSelection[day]);
 
-  // Example to simulate adding a designation
-  const addDepartment = (newDepartment) => {
-    setDesignations((prevDepartments) => [...prevDepartments, newDepartment]);
-  };
-  const fetch_pay_schedules = async () => {
-    if (!payrollid) return; // If there's no payroll id, exit early
+    if (selectedDays.length === 0) {
+      showSnackbar('Please select at least one day for your week off.', 'error');
+      return;
+    }
+    if (!dateValue) {
+      showSnackbar('Please select a start month for the payroll.', 'error');
+      return;
+    }
+    const postData = {
+      payroll: payrollId,
+      payroll_start_month: dateValue ? dayjs(dateValue).format('MMMM, YYYY') : ''
+    };
+    const dayMapping = {
+      SUN: 'sunday',
+      MON: 'monday',
+      TUE: 'tuesday',
+      WED: 'wednesday',
+      THU: 'thursday',
+      FRI: 'friday',
+      SAT: 'saturday',
+      '2nd SAT': 'second_saturday',
+      '4th SAT': 'fourth_saturday'
+    };
 
-    const url = `/payroll/pay-schedules/?payroll_id=${payrollid}`;
+    selectedDays.forEach((day) => {
+      postData[dayMapping[day]] = true;
+    });
+
+    const url = postType === 'put' ? `/payroll/pay-schedules/${pay_schedule_data.id}` : `/payroll/pay-schedules`;
+    const { res, error } = await Factory(postType, url, postData);
+
+    if (res?.status_cd === 0) {
+      showSnackbar(postType === 'put' ? 'Data Updated successfully!' : 'Data saved successfully!', 'success');
+    } else {
+      showSnackbar(res?.message || 'Something went wrong. Please try again.', 'error');
+    }
+  };
+  const get_paySchedule_Details = async (id) => {
+    const url = `/payroll/pay-schedules?payroll_id=${id}`;
     const { res, error } = await Factory('get', url, {});
 
-    if (res?.status_cd === 0 && Array.isArray(res?.data)) {
-      setDesignations(res?.data); // Successfully set work locations
-    } else {
-      setDesignations([]);
-    }
-  };
+    if (res?.status_cd === 0) {
+      const scheduleData = res?.data?.data[0];
+      if (scheduleData) {
+        setDateValue(scheduleData?.payroll_start_month ? dayjs(scheduleData.payroll_start_month, 'MMMM, YYYY') : null);
 
-  const handleDelete = async (designation) => {
-    console.log(designation);
-    let url = `/payroll/designations/${designation.id}/`;
-    const { res } = await Factory('delete', url, {});
-    console.log(res);
-    if (res.status_cd === 1) {
-      showSnackbar(JSON.stringify(res.data), 'error');
+        const updatedSelection = { ...weekOffSelection };
+
+        weekOffOptions.forEach(({ short, full }) => {
+          if (short === '2nd SAT') {
+            updatedSelection['2nd SAT'] = scheduleData['second_saturday'] || false;
+          } else if (short === '4th SAT') {
+            updatedSelection['4th SAT'] = scheduleData['fourth_saturday'] || false;
+          } else {
+            updatedSelection[short] = scheduleData[full.toLowerCase()] || false;
+          }
+        });
+
+        setWeekOffSelection(updatedSelection);
+        setPay_schedule_data(scheduleData);
+      }
+      setPostType('put');
     } else {
-      showSnackbar('Record Deleted Successfully', 'success');
+      // Handle error if response is not successful
+      showSnackbar('Failed to fetch pay schedule details.', 'error');
+      setPostType('post');
     }
   };
-  // Fetch data when payrollid changes
 
   useEffect(() => {
-    if (payrollid !== null) fetch_pay_schedules();
-  }, [payrollid]);
+    if (payrollId) {
+      get_paySchedule_Details(payrollId);
+    }
+  }, [payrollId]);
+
   return (
     <HomeCard
       title="Pay Schedule"
       tagline="Setup your organization before starting payroll"
-      CustomElement={() => (
-        <Stack direction="row" sx={{ gap: 2 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              setPostType('post');
-              handleOpenDialog();
-            }}
-            sx={{ marginBottom: 2 }}
-          >
-            Add Designation
-          </Button>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => {
-              // setPostType('post');
-              // handleOpenDialog();
-            }}
-            sx={{ marginBottom: 2 }}
-          >
-            Import
-          </Button>
-        </Stack>
-      )}
+      CustomElement={() => <Stack direction="row" sx={{ gap: 2 }}></Stack>}
     >
-      <Grid2 container spacing={{ xs: 2, sm: 3 }}>
-        <Grid2 size={12}></Grid2>
-      </Grid2>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
+      <MainCard sx={{ padding: 2 }}>
+        <Typography variant="h6">Select your week off</Typography>
+        <Typography variant="body2" sx={{ mt: 1 }}>
+          Choose your week off days from the calendar
+        </Typography>
+
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
+          {weekOffOptions.map((day) => (
+            <Card
+              key={day.short}
+              sx={{
+                padding: 2,
+                borderRadius: 1,
+                boxShadow: 1,
+                cursor: 'pointer',
+                color: weekOffSelection[day.short] ? 'white' : 'inherit',
+                backgroundColor: weekOffSelection[day.short] ? '#006397' : 'white'
+              }}
+              onClick={() => handleDaySelect(day.short)}
+            >
+              <Typography>{day.full}</Typography>
+            </Card>
+          ))}
+        </Box>
+
+        <Box sx={{ mt: 5 }}>
+          <Typography mb={1}>Start your first payroll from</Typography>
+          <Grid2 container>
+            <Grid2 size={{ xs: 12, sm: 4 }}>
+              <CustomDatePicker
+                views={['year', 'month', 'day']}
+                value={dateValue ? dayjs(dateValue) : null}
+                onChange={(newDate) => {
+                  setDateValue(newDate);
+                }}
+                sx={{
+                  width: '100%',
+                  '& .MuiInputBase-root': {
+                    fontSize: '0.75rem',
+                    height: '40px'
+                  }
+                }}
+              />
+            </Grid2>
+          </Grid2>
+        </Box>
+      </MainCard>
+
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 3 }}>
         <Button
           variant="outlined"
           onClick={() => {
@@ -126,6 +205,9 @@ function PaySchedule() {
           }}
         >
           Back to Dashboard
+        </Button>
+        <Button variant="contained" onClick={postFetch}>
+          Save Pay Schedule
         </Button>
       </Box>
     </HomeCard>
