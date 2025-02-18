@@ -313,7 +313,7 @@ const RenderHead = ({ children, title, subTitle, setOpen, setAffiliationDialog }
             }}
             startIcon={<IconSparkles size={16} />}
           >
-            {title === 'Team' ? 'Add User' : title === 'Business' ? 'Add Business' : 'Add' + title}
+            {title === 'Team' ? 'Add User' : title === 'Business' ? 'Add Business' : 'Add ' + title}
           </Button>
         </Stack>
       </Stack>
