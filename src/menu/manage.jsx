@@ -38,6 +38,14 @@ const manage = {
       roles: [AuthRole.INDIVIDUAL, AuthRole.CHARTED_ACCOUNTANT_FIRM]
     },
     {
+      id: 'manageCAFirm',
+      title: <FormattedMessage id="manageCAFirm" />,
+      type: 'item',
+      url: '/dashboard/user/ca-firms',
+      icon: 'IconBuilding',
+      roles: [AuthRole.INDIVIDUAL, AuthRole.CHARTED_ACCOUNTANT_FIRM, AuthRole.CORPORATE_ADMIN]
+    },
+    {
       id: 'manageIndividuals',
       title: <FormattedMessage id="manageIndividuals" />,
       type: 'item',
@@ -46,12 +54,20 @@ const manage = {
       roles: [AuthRole.CHARTED_ACCOUNTANT_FIRM]
     },
     {
+      id: 'manageServiceProvider',
+      title: <FormattedMessage id="manageServiceProvider" />,
+      type: 'item',
+      url: '/dashboard/user/service-providers',
+      icon: 'IconBuilding',
+      roles: [AuthRole.INDIVIDUAL, AuthRole.CHARTED_ACCOUNTANT_FIRM, AuthRole.CORPORATE_ADMIN]
+    },
+    {
       id: 'manageTeam',
       title: <FormattedMessage id="manageTeam" />,
       type: 'item',
       url: '/dashboard/user/team',
       icon: 'IconChartHistogram',
-      roles: [AuthRole.SUPER_ADMIN, AuthRole.CORPORATE_ADMIN, AuthRole.SERVICE_PROVIDER, AuthRole.INDIVIDUAL]
+      roles: [AuthRole.SUPER_ADMIN, AuthRole.CORPORATE_ADMIN, AuthRole.SERVICE_PROVIDER]
     },
     // anand
     {

@@ -24,10 +24,10 @@ const restrictedRoutes = {
     '/dashboard/user/service-providers'
   ],
   'corporate-admin': [
-    '/dashboard/user/business',
-    '/dashboard/user/indivial',
-    '/dashboard/user/ca-firms',
-    '/dashboard/user/service-providers'
+    '/dashboard/user/business'
+    // '/dashboard/user/indivial',
+    // '/dashboard/user/ca-firms',
+    // '/dashboard/user/service-providers'
   ],
   'charted-accountant-firm': [
     // '/dashboard/user/business',
@@ -37,9 +37,9 @@ const restrictedRoutes = {
   ],
   individual: [
     // '/dashboard/user/business',
-    '/dashboard/user/indivial',
-    '/dashboard/user/ca-firms',
-    '/dashboard/user/service-providers'
+    '/dashboard/user/indivial'
+    // '/dashboard/user/ca-firms',
+    // '/dashboard/user/service-providers'
   ],
   'super-admin': []
 };

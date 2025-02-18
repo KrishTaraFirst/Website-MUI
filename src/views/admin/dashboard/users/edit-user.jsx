@@ -277,7 +277,7 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
               </Typography>
               <TextField
                 id="outlined-disabled"
-                value={data.user_name}
+                value={data.user_name || ''}
                 type="text"
                 onBlur={(e) => handleBlur('user_name', e.target.value)}
                 onChange={(e) => {
@@ -294,7 +294,7 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
             </Typography>
             <TextField
               id="outlined-required"
-              value={data.first_name}
+              value={data.first_name || ''}
               onBlur={(e) => handleBlur('first_name', e.target.value)}
               onChange={(e) => {
                 handleChange('first_name', e.target.value);
@@ -310,7 +310,7 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
               </Typography>
               <TextField
                 id="outlined-disabled"
-                value={data.last_name}
+                value={data.last_name || ''}
                 onBlur={(e) => handleBlur('last_name', e.target.value)}
                 onChange={(e) => {
                   handleChange('last_name', e.target.value);
@@ -351,7 +351,7 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
                 </Typography>
                 <TextField
                   id="outlined-disabled"
-                  value={data.mobile_number}
+                  value={data.mobile_number || ''}
                   type="tel"
                   onChange={(e) => {
                     const numericValue = e.target.value.replace(/\D/g, '');
@@ -371,7 +371,7 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
                 </Typography>
                 <TextField
                   id="outlined-disabled"
-                  value={data.email}
+                  value={data.email || ''}
                   onBlur={(e) => handleBlur('email', e.target.value)}
                   onChange={(e) => {
                     handleChange('email', e.target.value);
@@ -386,7 +386,7 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
                 </Typography>
                 <TextField
                   id="outlined-disabled"
-                  value={data.password}
+                  value={data.password || ''}
                   onBlur={(e) => handleBlur('password', e.target.value)}
                   onChange={(e) => {
                     handleChange('password', e.target.value);
