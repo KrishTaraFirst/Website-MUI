@@ -26,6 +26,7 @@ export default function PayrollDashboard({ setPayrollSetup }) {
     setLoading(true);
     const url = `/payroll/payroll-setup-status?user_id=${userData.id}`;
     const { res, error } = await Factory('get', url, {});
+    console.log(res);
     if (res?.status_cd === 0) {
       setBusinessDetails(res?.data);
       setLoading(false);
@@ -37,8 +38,8 @@ export default function PayrollDashboard({ setPayrollSetup }) {
     } else {
       setBusinessDetails({});
       setLoading(false);
-      showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
-      router.push('/user-type');
+      showSnackbar(JSON.stringify(res?.data?.error), 'error');
+      // router.push('/user-type');
     }
   };
 

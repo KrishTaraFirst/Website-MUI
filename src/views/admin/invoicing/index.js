@@ -11,19 +11,22 @@ import OverviewCard from './InvoiceCards/OverviewCard';
 import { Button, Stack, Typography } from '@mui/material';
 import { IconSparkles, IconSettings2 } from '@tabler/icons-react';
 import AddInvoice from './InvoicingComponent/AddInvoice';
+import useCurrentUser from '@/hooks/useCurrentUser';
 
 /***************************  ANALYTICS - OVERVIEW  ***************************/
 
 export default function AnalyticsOverview() {
+  const { userData } = useCurrentUser();
+
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [businessDetails, setBusinessDetails] = useState({});
-  // const [customers, setCustomers] = useState([]);
   const [invoicesList, setInvoicesList] = useState([]);
   const chipDefaultProps = { color: 'black', variant: 'text', size: 'small' };
   const { showSnackbar } = useSnackbar();
   const [clientListData, setClientListData] = useState({});
+  const [businessId, setBusinessId] = useState(null);
   const [type, setType] = useState('');
   const handleClose = () => {
     setOpen(false);
@@ -42,30 +45,33 @@ export default function AnalyticsOverview() {
       }
     }
   };
+  const fetchBusinessDetails = async () => {
+    const { res } = await Factory('get', `/invoicing/invoicing-profiles/?business_id=${businessId}`, {});
+    if (res.status_cd === 0) {
+      const businessData = { ...res.data, state: 'Telangana' };
+      setBusinessDetails(businessData);
+    } else {
+      router.push(`invoicing/settings`);
+    }
+  };
   useEffect(() => {
-    const fetchBusinessDetails = async () => {
-      const { res } = await Factory('get', '/invoicing/invoicing-profiles/?business_id=3', {});
-      if (res.status_cd === 0) {
-        const businessData = { ...res.data, state: 'Telangana' };
-        setBusinessDetails(businessData);
-      } else {
-        router.push(`invoicing/settings`);
-      }
-    };
-    fetchBusinessDetails();
+    if (businessId) {
+      fetchBusinessDetails(businessId);
+    }
+  }, [businessId]);
+
+  const fetch_business_Details = async () => {
+    const url = `/payroll/payroll-setup-status?user_id=${userData.id}`;
+    const { res, error } = await Factory('get', url, {});
+    if (res?.status_cd === 0) {
+      setBusinessId(res?.data.id);
+    } else {
+      showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
+    }
+  };
+  useEffect(() => {
+    fetch_business_Details();
   }, []);
-
-  // const getCustomersData = async () => {
-  //   const { res } = await Factory('get', '/invoicing/customer_profiles/', {});
-  //   if (res.status_cd === 0) {
-  //     setCustomers(res.data.customer_profiles);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getCustomersData();
-  // }, []);
-
   return (
     <Stack sx={{ gap: 3 }}>
       <Stack direction="row" sx={{ alignItems: 'end', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
@@ -105,7 +111,6 @@ export default function AnalyticsOverview() {
           <OverviewCard
             invoicesList={invoicesList}
             businessDetailsData={businessDetails}
-            // customers={customers}
             open={open}
             onClose={handleClose}
             getInvoicesList={getInvoicesList}

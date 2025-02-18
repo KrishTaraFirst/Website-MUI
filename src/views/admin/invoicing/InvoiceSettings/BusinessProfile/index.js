@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
-import { FormControl, TextField, Radio, RadioGroup, FormControlLabel, FormLabel, Grid, Box } from '@mui/material';
+import { FormControl, TextField, Radio, RadioGroup, FormControlLabel, FormLabel, Grid2, Box } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import CustomInput from '@/utils/CustomInput';
@@ -14,9 +14,9 @@ import { useSnackbar } from '@/components/CustomSnackbar';
 export default function TabOne({ businessDetails, onNext }) {
   const [busineesprofileFields, setBusineesprofileFields] = useState({
     basic_details: [
-      { name: 'business_name', label: 'Business Name' },
-      { name: 'registration_number', label: 'Business Registration Number' },
-      { name: 'business_type', label: 'Business Type' },
+      { name: 'nameOfBusiness', label: 'Business Name' },
+      { name: 'registrationNumber', label: 'Business Registration Number' },
+      { name: 'entityType', label: 'Business Type' },
       { name: 'gst_registered', label: 'GST Registered' },
       { name: 'gstin', label: 'GSTIN' },
       { name: 'state', label: 'State' },
@@ -38,13 +38,16 @@ export default function TabOne({ businessDetails, onNext }) {
 
   // Formik validation schema
   const validationSchema = Yup.object({
-    business_name: Yup.string().required('Business Name is required'),
-    registration_number: Yup.string().required('Registration Number is required'),
-    business_type: Yup.string().required('Business Type is required'),
+    nameOfBusiness: Yup.string().required('Business Name is required'),
+    registrationNumber: Yup.string().required('Registration Number is required'),
+    entityType: Yup.string().required('Business Type is required'),
     gst_registered: Yup.string().required('GST Registration status is required'),
+
     gstin: Yup.string().when('gst_registered', {
       is: 'Yes',
-      then: Yup.string().required('GSTIN is required')
+      then: () => Yup.string().required('GSTIN is required'),
+      // .matches(/^[0-9A-Z]{15}$/, 'Invalid GSTIN, Format must be: 22AAAAA0000A1Z5'),
+      otherwise: () => Yup.string().oneOf(['NA'], 'GSTIN must be "NA" when GST Registered is "No"') // Ensure "NA" for "No"
     }),
     state: Yup.string().required('State is required'),
     email: Yup.string().email('Invalid email format').required('Email is required'),
@@ -78,10 +81,10 @@ export default function TabOne({ businessDetails, onNext }) {
 
   const formik = useFormik({
     initialValues: {
-      business_name: 'Tara Finance',
-      registration_number: '124563',
-      business_type: 'Individual',
-      gst_registered: 'No',
+      nameOfBusiness: '',
+      registrationNumber: '',
+      entityType: '',
+      gst_registered: '',
       gstin: '',
       state: 'Telangana',
       email: 'anand@gmail.com',
@@ -126,6 +129,17 @@ export default function TabOne({ businessDetails, onNext }) {
     if (businessDetails && businessDetails.id) {
       setValues((prev) => ({
         ...prev,
+        nameOfBusiness: businessDetails.nameOfBusiness,
+        registrationNumber: businessDetails.registrationNumber,
+        entityType: businessDetails.entityType,
+        gst_registered: businessDetails.gst_registered === true ? 'Yes' : 'No',
+        gstin: businessDetails.gstin,
+        state: businessDetails.state,
+        email: businessDetails.email,
+        pincode: businessDetails.pincode,
+        mobile: businessDetails.mobile,
+        addresslane1: businessDetails.addresslane1,
+        addresslane2: businessDetails.addresslane2,
         pan_number: businessDetails.pan_number,
         bank_name: businessDetails.bank_name,
         account_number: businessDetails.account_number,
@@ -145,9 +159,9 @@ export default function TabOne({ businessDetails, onNext }) {
         Basic Details
       </Typography>
 
-      <Grid container spacing={2}>
+      <Grid2 container spacing={2}>
         {busineesprofileFields.basic_details.map((item, index) => (
-          <Grid item xs={12} sm={6} key={item.name}>
+          <Grid2 size={{ xs: 12, sm: 6 }} key={item.name}>
             <FormControl fullWidth>
               {item.name === 'gst_registered' ? (
                 <>
@@ -189,17 +203,17 @@ export default function TabOne({ businessDetails, onNext }) {
                 </>
               )}
             </FormControl>
-          </Grid>
+          </Grid2>
         ))}
-      </Grid>
+      </Grid2>
 
       <Typography variant="h6" sx={{ fontWeight: 'bold', pt: 3, mb: 2 }}>
         Bank Details
       </Typography>
 
-      <Grid container spacing={2}>
+      <Grid2 container spacing={2}>
         {busineesprofileFields.bank_details.map((item) => (
-          <Grid item xs={12} sm={6} key={item.name}>
+          <Grid2 size={{ xs: 12, sm: 6 }} key={item.name}>
             <FormControl fullWidth>
               <label>{item.label}</label>
               <TextField
@@ -218,9 +232,9 @@ export default function TabOne({ businessDetails, onNext }) {
                 required
               />
             </FormControl>
-          </Grid>
+          </Grid2>
         ))}
-      </Grid>
+      </Grid2>
 
       <Box textAlign="center">
         <Button variant="contained" onClick={handleSubmit} sx={{ mt: 3 }}>

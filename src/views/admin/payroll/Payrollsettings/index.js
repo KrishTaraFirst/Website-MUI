@@ -7,6 +7,7 @@ import Factory from '@/utils/Factory';
 import Loader from '@/components/PageLoader';
 import { useSearchParams } from 'next/navigation';
 import useCurrentUser from '@/hooks/useCurrentUser';
+import { useSnackbar } from '@/components/CustomSnackbar';
 
 const PayrollSetup = () => {
   const { userData } = useCurrentUser();
@@ -15,6 +16,8 @@ const PayrollSetup = () => {
   const [loading, setLoading] = useState(false); // State for loader
   const [payrollDetails, setPayrollDetails] = useState({});
   const [businessId, setBusinessId] = useState(null);
+  const { showSnackbar } = useSnackbar();
+
   const [steps, setSteps] = useState([
     { nameKey: 'Organization Details', path: '/organization_details', completed: false },
     { nameKey: 'Set up Work Location', path: '/set_up_work_location', completed: false },
@@ -76,6 +79,19 @@ const PayrollSetup = () => {
           if (step.path === '/set_up_salary_components') {
             return { ...step, completed: res.data.salary_component };
           }
+          if (step.path === '/set_up_salary_template') {
+            return { ...step, completed: res.data.salary_component };
+          }
+          if (step.path === '/set_up_employee_master') {
+            return { ...step, completed: res.data.employee_master };
+          }
+          if (step.path === '/pay_schedule') {
+            return { ...step, completed: res.data.pay_schedule };
+          }
+          if (step.path === '/leave_and_attendance') {
+            return { ...step, completed: res.data.salary_component };
+          }
+
           return step; // Leave other steps unchanged
         })
       );
@@ -183,8 +199,7 @@ const PayrollSetup = () => {
                       } else if (payrollDetails?.payroll_id) {
                         router.push(`${routeBase}?payrollid=${payrollDetails.payroll_id}`); // Navigate with payroll ID
                       } else {
-                        alert('Payroll ID not available!');
-                        showSnackbar('Payroll ID not available. Please Continue with Origanization Details', 'error');
+                        showSnackbar('Payroll ID not available', 'error');
                       }
                     }}
                   >
