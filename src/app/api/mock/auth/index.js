@@ -42,7 +42,6 @@ export async function login(request) {
 export async function verifyOtp(request) {
   try {
     const body = await request.json();
-    console.log(body);
     return NextResponse.json({ status: 200 });
   } catch {
     return NextResponse.json({ error: 'Server error' }, { status: 500 });

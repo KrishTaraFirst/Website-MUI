@@ -88,8 +88,6 @@ export default function AnalyticsBehaviorTable({ tab }) {
         quantity: editedService.quantity
       }
     };
-    console.log(editedService);
-    console.log(putData);
     const url = `/user_management/service-details/${editedService.service_id}/`;
     const { res, error } = await Factory('put', url, putData);
     if (res.status_cd === 0) {

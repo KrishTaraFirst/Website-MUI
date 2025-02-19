@@ -19,7 +19,6 @@ const SalaryTemplateDialog = dynamic(() => import('@/views/admin/payroll/Payroll
 
 export default async function Dashboard({ params }) {
   const { tab } = await params;
-  console.log(tab);
 
   return (
     <>

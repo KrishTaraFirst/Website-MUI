@@ -104,7 +104,6 @@ export default function AddNewAccount({ open, onClose, formData }) {
   });
 
   const onSubmit = (data) => {
-    console.log(data);
     setSnackbar({ open: true, message: formData ? 'Account has been updated' : 'Account has been created', severity: 'success' });
     reset();
     onClose();

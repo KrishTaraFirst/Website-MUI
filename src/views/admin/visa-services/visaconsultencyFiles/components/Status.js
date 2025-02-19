@@ -207,7 +207,6 @@ const FormPage = () => {
           : selectedClient.services[selectedClient.services.length - 1]?.destination_country,
       services: filteredServices
     };
-    console.log(postData);
 
     const url = '/user_management/visa-servicetasks/';
 

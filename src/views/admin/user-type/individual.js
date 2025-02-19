@@ -96,7 +96,6 @@ export default function IndividualForm() {
       };
       const url = `/user_management/users-kyc/`;
       const { res, error } = await Factory('post', url, postData);
-      console.log(res);
       if (res.status_cd === 0) {
         setKycDialogOpen(false);
         showSnackbar(res?.detail, 'success');
@@ -162,7 +161,6 @@ export default function IndividualForm() {
     });
   };
   const userDetails = JSON.parse(localStorage.getItem('auth-user'));
-  console.log(userDetails);
   return (
     <Box>
       <Dialog maxWidth="sm" open={kycDialogOpen}>

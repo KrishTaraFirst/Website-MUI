@@ -81,7 +81,6 @@ export default function ContactUsForm2() {
 
   // Handle form submission
   const onSubmit = (data) => {
-    console.log(data);
     reset();
   };
 

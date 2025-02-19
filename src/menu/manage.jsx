@@ -42,7 +42,7 @@ const manage = {
       title: <FormattedMessage id="manageCAFirm" />,
       type: 'item',
       url: '/dashboard/user/ca-firms',
-      icon: 'IconBuilding',
+      icon: 'IconBuildingCottage',
       roles: [AuthRole.INDIVIDUAL, AuthRole.CHARTED_ACCOUNTANT_FIRM, AuthRole.CORPORATE_ADMIN]
     },
     {
@@ -58,7 +58,7 @@ const manage = {
       title: <FormattedMessage id="manageServiceProvider" />,
       type: 'item',
       url: '/dashboard/user/service-providers',
-      icon: 'IconBuilding',
+      icon: 'IconPlaneInflight',
       roles: [AuthRole.INDIVIDUAL, AuthRole.CHARTED_ACCOUNTANT_FIRM, AuthRole.CORPORATE_ADMIN]
     },
     {

@@ -67,10 +67,10 @@ export default function ProfileSection() {
   const id = open ? 'profile-action-popper' : undefined;
   const innerId = innerOpen ? 'profile-inner-popper' : undefined;
   const buttonStyle = { borderRadius: 2, p: 1 };
-
+  console.log(userData);
   if (userData && Object.keys(userData).length > 0) {
     const name = `${userData?.firstname ?? ''} ${userData?.lastname ?? ''}`.trim();
-    profileData.caption = userData?.role ? RoleTitles[userData.role] : undefined;
+    profileData.caption = userData?.user_type ? RoleTitles[userData.user_type] : undefined;
     profileData.title = name || userData?.email;
   }
 
