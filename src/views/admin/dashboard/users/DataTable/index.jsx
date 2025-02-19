@@ -1,12 +1,14 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 // @mui
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
+import { Switch, Button, Stack } from '@mui/material';
 import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
 
 // @third-party
 import { getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
@@ -15,16 +17,21 @@ import { getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable 
 import Table from './analytics-behavior-table/Table';
 import ActionCell from './analytics-behavior-table/ActionCell';
 import Profile from '@/components/Profile';
+import SvgIcon from '@/components/SvgIcon';
 import ManageAccess from '../manage-access';
 import Factory from '@/utils/Factory';
+import { APP_DEFAULT_PATH, AUTH_USER_KEY } from '@/config';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import EditUser from '../edit-user';
 import useCurrentUser from '@/hooks/useCurrentUser';
+import { IconDotsVertical } from '@tabler/icons-react';
+import { roles } from '@/enum';
 
 /***************************  COMPONENT - TABLE  ***************************/
 
 export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
   const { userData } = useCurrentUser();
+  const router = useRouter();
   const [data, setData] = useState([]);
   const [user, setUser] = useState('');
   const { showSnackbar } = useSnackbar();
@@ -42,8 +49,14 @@ export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
     if (res.status_cd === 0) {
       setData(res.data.users);
     } else {
+      setData([]);
       // showSnackbar(JSON.stringify(res.data), 'error');
     }
+  };
+
+  const handleCellClick = (row, columnId) => {
+    console.log(`Clicked on column: ${columnId} with data:`, row.original);
+    // Perform any action you need (e.g., open a modal, update state, etc.)
   };
 
   useEffect(() => {
@@ -65,6 +78,17 @@ export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
     }
   };
 
+  const toggleDashboard = (row) => {
+    let rowData = row.original;
+    let userDAta = {
+      ...userData,
+      role: roles[rowData.user_type]
+    };
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));
+    router.push(APP_DEFAULT_PATH);
+    window.location.reload();
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -72,7 +96,7 @@ export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
         accessorKey: 'user',
         header: 'Name',
         cell: ({ row }) => (
-          <Typography variant="body2" color="text.secondary">
+          <Typography onClick={() => handleCellClick(row, 'user')} variant="body2" color="text.secondary">
             {`${row.original.first_name} ${row.original.last_name}`}
           </Typography>
         )
@@ -115,6 +139,31 @@ export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
             />
           );
         }
+      },
+
+      {
+        header: 'Business',
+        id: 'moreInfo',
+        cell: ({ row }) => (
+          <Link
+            variant="body2"
+            color="primary"
+            sx={{ cursor: 'pointer', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+            onClick={(e) => {
+              e.preventDefault();
+              toggleDashboard(row);
+            }}
+            rel="noopener noreferrer"
+            aria-label="Usefull Links"
+          >
+            <Stack direction={'row'}>
+              <Typography variant="subtitle2" color="primary">
+                More Info&nbsp;
+              </Typography>
+              <SvgIcon name="tabler-info-circle" size={16} color="primary" stroke={1} />
+            </Stack>
+          </Link>
+        )
       },
       {
         header: 'Actions',

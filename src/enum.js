@@ -93,6 +93,21 @@ export let AuthRole;
   AuthRole['SERVICE_PROVIDER'] = 'service-provider';
 })(AuthRole || (AuthRole = {}));
 
+export const roles = {
+  TaraTeam: AuthRole.SUPER_ADMIN,
+  CA: AuthRole.CHARTED_ACCOUNTANT_FIRM,
+  Business: AuthRole.CORPORATE_ADMIN,
+  ServiceProvider: AuthRole.SERVICE_PROVIDER,
+  Individual: AuthRole.INDIVIDUAL
+};
+
+export const userTypes = {
+  individual: 'Individual',
+  'ca-firms': 'CA',
+  business: 'Business',
+  'service-providers': 'ServiceProvider'
+};
+
 /** Auth type enum */
 export let AuthType;
 

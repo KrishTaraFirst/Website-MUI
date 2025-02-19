@@ -86,14 +86,11 @@ export default function SmallHero6({ tagline = data.tagline, list = data.list, p
       try {
         const url = `/user_management/activate?uid=${UID}&token=${token}`;
         const res = await axios.get(BASE_URL + url, {});
-        console.log(res);
         if (res.status === 200) {
-          console.log('activated');
           setIsProcessing(false);
           setIsActivated(true);
         }
       } catch (error) {
-        console.log('error', error);
         setIsActivated(false);
         setIsProcessing(false);
       }

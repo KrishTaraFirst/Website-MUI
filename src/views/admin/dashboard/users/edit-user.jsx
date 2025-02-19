@@ -62,8 +62,6 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
       let url = `/user_management/groups/`;
       const { res } = await Factory('get', url, {});
       if (res.status_cd !== 1) {
-        console.log('data', res.data);
-        console.log('data2', res.data);
         setPermissionList([...res.data]);
       } else {
         setPermissionList([]);

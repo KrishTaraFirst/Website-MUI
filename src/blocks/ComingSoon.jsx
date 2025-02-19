@@ -47,7 +47,6 @@ export default function ComingSoon({ chip, primaryBtn, description }) {
 
     try {
       const response = await axios.post('/api/subscribe', { email });
-      console.log('response', response);
       if (response.status === 200) {
         setSnackbar({ open: true, message: response.data.message, severity: 'success' });
         setEmail('');

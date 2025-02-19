@@ -157,7 +157,6 @@ export default function FirmForm() {
 
       const url = `/user_management/users-kyc/`;
       const { res, error } = await Factory('post', url, postData);
-      console.log(res);
       if (res.status_cd === 0) {
         if (postData.have_firm === 'true') {
           setDialogOpen(false);
@@ -206,7 +205,6 @@ export default function FirmForm() {
       };
       const url = `/user_management/firmkyc/`;
       const { res, error } = await Factory('post', url, postData);
-      console.log(res); // Log the response
 
       if (res.status_cd === 0) {
         setFirmKycDialogOpen(false);
