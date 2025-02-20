@@ -10,8 +10,12 @@ import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import Factory from '@/utils/Factory';
 import { useSnackbar } from '@/components/CustomSnackbar';
+import useCurrentUser from '@/hooks/useCurrentUser';
 
-export default function TabOne({ businessDetails, onNext }) {
+export default function TabOne({ onNext }) {
+  const [businessDetails, setBusinessDetails] = useState(null);
+  const { userData } = useCurrentUser();
+
   const [busineesprofileFields, setBusineesprofileFields] = useState({
     basic_details: [
       { name: 'nameOfBusiness', label: 'Business Name' },
@@ -38,23 +42,22 @@ export default function TabOne({ businessDetails, onNext }) {
 
   // Formik validation schema
   const validationSchema = Yup.object({
-    nameOfBusiness: Yup.string().required('Business Name is required'),
-    registrationNumber: Yup.string().required('Registration Number is required'),
-    entityType: Yup.string().required('Business Type is required'),
-    gst_registered: Yup.string().required('GST Registration status is required'),
+    // nameOfBusiness: Yup.string().required('Business Name is required'),
+    // registrationNumber: Yup.string().required('Registration Number is required'),
+    // entityType: Yup.string().required('Business Type is required'),
+    // gst_registered: Yup.string().required('GST Registration status is required'),
 
-    gstin: Yup.string().when('gst_registered', {
-      is: 'Yes',
-      then: () => Yup.string().required('GSTIN is required'),
-      // .matches(/^[0-9A-Z]{15}$/, 'Invalid GSTIN, Format must be: 22AAAAA0000A1Z5'),
-      otherwise: () => Yup.string().oneOf(['NA'], 'GSTIN must be "NA" when GST Registered is "No"') // Ensure "NA" for "No"
-    }),
-    state: Yup.string().required('State is required'),
-    email: Yup.string().email('Invalid email format').required('Email is required'),
-    pincode: Yup.string().required('Pincode is required'),
-    mobile: Yup.string().required('Mobile is required'),
-    addresslane1: Yup.string().required('Address Lane 1 is required'),
-    addresslane2: Yup.string().required('Address Lane 2 is required'),
+    // gstin: Yup.string().when('gst_registered', {
+    //   is: 'Yes',
+    //   then: () => Yup.string().required('GSTIN is required'),
+    //   otherwise: () => Yup.string().oneOf(['NA'], 'GSTIN must be "NA" when GST Registered is "No"') // Ensure "NA" for "No"
+    // }),
+    // state: Yup.string().required('State is required'),
+    // email: Yup.string().email('Invalid email format').required('Email is required'),
+    // pincode: Yup.string().required('Pincode is required'),
+    // mobile: Yup.string().required('Mobile is required'),
+    // addresslane1: Yup.string().required('Address Lane 1 is required'),
+    // addresslane2: Yup.string().required('Address Lane 2 is required'),
     pan_number: Yup.string()
       .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN format')
       .required('PAN is required'),
@@ -86,12 +89,12 @@ export default function TabOne({ businessDetails, onNext }) {
       entityType: '',
       gst_registered: '',
       gstin: '',
-      state: 'Telangana',
-      email: 'anand@gmail.com',
-      pincode: '500018',
-      mobile: '9182043376',
-      addresslane1: 'Hyd',
-      addresslane2: 'MADHAPUR',
+      state: '',
+      email: '',
+      pincode: '',
+      mobile: '',
+      addresslane1: '',
+      addresslane2: '',
       pan_number: '',
       bank_name: '',
       account_number: '',
@@ -125,6 +128,20 @@ export default function TabOne({ businessDetails, onNext }) {
 
   const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue } = formik;
 
+  const fetch_business_Details = async () => {
+    let url = `/user_management/businesses-by-client/?user_id=${userData.id}`;
+    const { res, error } = await Factory('get', url, {});
+    console.log(res);
+    if (res?.status_cd === 0) {
+      setBusinessDetails(res?.data);
+    } else {
+      showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
+    }
+  };
+
+  useEffect(() => {
+    fetch_business_Details();
+  }, []);
   useEffect(() => {
     if (businessDetails && businessDetails.id) {
       setValues((prev) => ({
@@ -148,7 +165,6 @@ export default function TabOne({ businessDetails, onNext }) {
       }));
     }
   }, [businessDetails]);
-
   return (
     <>
       <Typography variant="h5" textAlign="center" sx={{ fontWeight: 'bold', fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' } }}>

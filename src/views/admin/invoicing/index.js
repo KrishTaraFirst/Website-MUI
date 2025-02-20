@@ -12,6 +12,7 @@ import { Button, Stack, Typography } from '@mui/material';
 import { IconSparkles, IconSettings2 } from '@tabler/icons-react';
 import AddInvoice from './InvoicingComponent/AddInvoice';
 import useCurrentUser from '@/hooks/useCurrentUser';
+import { CoPresentOutlined } from '@mui/icons-material';
 
 /***************************  ANALYTICS - OVERVIEW  ***************************/
 
@@ -47,11 +48,14 @@ export default function AnalyticsOverview() {
   };
   const fetchBusinessDetails = async () => {
     const { res } = await Factory('get', `/invoicing/invoicing-profiles/?business_id=${businessId}`, {});
+    console.log(res);
     if (res.status_cd === 0) {
       const businessData = { ...res.data, state: 'Telangana' };
       setBusinessDetails(businessData);
-    } else {
+    } else if (res.status === 404) {
       router.push(`invoicing/settings`);
+    } else {
+      return;
     }
   };
   useEffect(() => {
@@ -61,17 +65,20 @@ export default function AnalyticsOverview() {
   }, [businessId]);
 
   const fetch_business_Details = async () => {
-    const url = `/payroll/payroll-setup-status?user_id=${userData.id}`;
+    let url = `/user_management/businesses-by-client/?user_id=${userData.id}`;
     const { res, error } = await Factory('get', url, {});
+    console.log(res);
     if (res?.status_cd === 0) {
       setBusinessId(res?.data.id);
     } else {
       showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
     }
   };
+
   useEffect(() => {
     fetch_business_Details();
   }, []);
+
   return (
     <Stack sx={{ gap: 3 }}>
       <Stack direction="row" sx={{ alignItems: 'end', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>

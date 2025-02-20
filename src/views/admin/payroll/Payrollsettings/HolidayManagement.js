@@ -12,16 +12,14 @@ import {
   Stack,
   Typography,
   Button,
-  Box
+  Box,
+  Pagination
 } from '@mui/material';
 import { IconPlus } from '@tabler/icons-react';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
-import NewAccount from '@/sections/account/NewAccount';
 import HolidayManagementDialog from './HolidayManagementDialog';
-import ActionCell from '@/utils/ActionCell';
 
 function HolidayManagement() {
-  // State to manage the selected financial year
   const [financialYear, setFinancialYear] = useState('2024-25');
   const [holidayManagementData, setHolidayManagementData] = useState([
     {
@@ -30,17 +28,215 @@ function HolidayManagement() {
       description: 'Celebration of the New Year.',
       applicable_for: 'All Employees',
       location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
+    },
+    {
+      holiday_name: 'New Year',
+      date: '2025-01-01',
+      description: 'Celebration of the New Year.',
+      applicable_for: 'All Employees',
+      location: 's'
     }
+    // Add more holiday data here
   ]);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [postType, setPostType] = useState('');
 
-  // Handle opening the dialog
-  const handleOpenDialog = () => setOpenDialog(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 5;
 
-  // Handle closing the dialog
+  const handleOpenDialog = () => setOpenDialog(true);
   const handleCloseDialog = () => setOpenDialog(false);
+
+  // Handle page change
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  // Get paginated data
+  const paginatedData = holidayManagementData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
   return (
     <Grid2 container spacing={3}>
@@ -58,7 +254,7 @@ function HolidayManagement() {
             </Box>
             <Box>
               <Typography sx={{ mb: 1 }}>Select Location</Typography>
-              <CustomAutocomplete options={['Hyderabd']} sx={{ minWidth: 200, maxWidth: 200 }} />
+              <CustomAutocomplete options={['Hyderabad']} sx={{ minWidth: 200, maxWidth: 200 }} />
             </Box>
           </Stack>
 
@@ -72,7 +268,7 @@ function HolidayManagement() {
 
       <Grid2 size={{ xs: 12 }}>
         <TableContainer component={Paper}>
-          <Table>
+          <Table size="large">
             <TableHead>
               <TableRow>
                 <TableCell>Holiday Name</TableCell>
@@ -83,45 +279,37 @@ function HolidayManagement() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {/* {holidayManagementData.length === 0 ? (
+              {paginatedData.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} sx={{ height: 300 }}>
-                    <EmptyTable msg="No Data available" />
+                    No Data available
                   </TableCell>
                 </TableRow>
               ) : (
-                holidayManagementData.map((item, index) => (
+                paginatedData.map((item, index) => (
                   <TableRow key={item.id}>
                     <TableCell>{item.holiday_name}</TableCell>
                     <TableCell>{item.date}</TableCell>
                     <TableCell>
-                      {`${item.description}`?.length > 30 ? `${item.description?.substring(0, 20)}...` : `${item.description}` || 'N/A'}
+                      {item.description.length > 30 ? `${item.description.substring(0, 30)}...` : item.description || 'N/A'}
                     </TableCell>
                     <TableCell>{item.applicable_for}</TableCell>
-
-                    <TableCell>
-                      <ActionCell
-                        row={item} // Pass the customer row data
-                        onEdit={() => handleEdit(item)} // Edit handler
-                        onDelete={() => handleDelete(item)} // Delete handler
-                        open={openDialog}
-                        onClose={handleCloseDialog}
-                        deleteDialogData={{
-                          title: 'Delete Record',
-                          heading: 'Are you sure you want to delete this Record?',
-                          description: `This action will remove ${item.name} from the list.`,
-                          successMessage: 'Record has been deleted.'
-                        }}
-                      />
-                    </TableCell>
+                    <TableCell>{/* Add actions here */}</TableCell>
                   </TableRow>
                 ))
-              )} */}
+              )}
             </TableBody>
           </Table>
         </TableContainer>
+
+        {holidayManagementData.length > 0 && (
+          <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'center', px: { xs: 0.5, sm: 2.5 }, py: 1.5 }}>
+            <Pagination count={Math.ceil(holidayManagementData.length / rowsPerPage)} page={currentPage} onChange={handlePageChange} />
+          </Stack>
+        )}
       </Grid2>
-      {/* Department Dialog */}
+
+      {/* Holiday Management Dialog */}
       <Grid2 size={{ xs: 12 }}>
         <HolidayManagementDialog
           open={openDialog}

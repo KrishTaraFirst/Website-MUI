@@ -196,7 +196,7 @@ const PayrollSetup = () => {
                       const routeBase = `/payrollsetup${step.path}`;
                       if (step.nameKey === 'Organization Details' && !payrollDetails?.payroll_id) {
                         router.push(`${routeBase}?business-id=${businessId}`); // Navigate to route without payroll ID
-                      } else if (payrollDetails?.payroll_id) {
+                      } else if (!payrollDetails?.payroll_id) {
                         router.push(`${routeBase}?payrollid=${payrollDetails.payroll_id}`); // Navigate with payroll ID
                       } else {
                         showSnackbar('Payroll ID not available', 'error');
