@@ -69,7 +69,7 @@ export default function NavItem({ item, level = 0 }) {
       disabled={item.disabled}
       onClick={() => {
         itemHandler();
-        getNavPermissions(item.id);
+        // getNavPermissions(item.id);
       }}
       sx={{
         color: 'text.primary',

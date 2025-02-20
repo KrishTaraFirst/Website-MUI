@@ -7,11 +7,16 @@ import Typography from '@mui/material/Typography';
 import NavCollapse from './NavCollapse';
 import NavItem from './NavItem';
 import useCurrentUser from '@/hooks/useCurrentUser';
+import { Stack } from '@mui/material';
+import { roles } from '@/enum';
+import { useRouter } from 'next/navigation';
+import { APP_DEFAULT_PATH, AUTH_USER_KEY } from '@/config';
 
 /***************************  RESPONSIVE DRAWER - GROUP  ***************************/
 
 export default function NavGroup({ item }) {
   const { userData } = useCurrentUser();
+  const router = useRouter();
 
   const renderNavItem = (menuItem) => {
     const userRole = userData?.role;
@@ -36,13 +41,38 @@ export default function NavGroup({ item }) {
     }
   };
 
+  const getHome = () => {
+    let bool = userData.role === roles[userData.user_type];
+    return !bool;
+  };
+
+  const returnHome = () => {
+    let userDAta = {
+      ...userData,
+      role: roles[userData.user_type]
+    };
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));
+    router.push(APP_DEFAULT_PATH);
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  };
+
   return (
     <List
       component="div"
       subheader={
-        <Typography component="div" variant="caption" sx={{ mb: 0.75, color: 'grey.700' }}>
-          {item.title}
-        </Typography>
+        <Stack direction={'row'} sx={{ justifyContent: 'space-between', mb: 0.75 }}>
+          <Typography variant="caption" sx={{ color: 'grey.700' }}>
+            {item.title}
+          </Typography>
+          {getHome() && (
+            <Typography variant="caption" onClick={returnHome} sx={{ cursor: 'pointer', color: 'grey.700' }}>
+              Back to Home
+            </Typography>
+          )}
+        </Stack>
       }
       sx={{ '&:not(:first-of-type)': { pt: 1, borderTop: '1px solid', borderColor: 'divider' } }}
     >
