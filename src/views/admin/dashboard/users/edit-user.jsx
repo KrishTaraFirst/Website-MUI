@@ -19,6 +19,8 @@ import { ModalSize } from '@/enum';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import useCurrentUser from '@/hooks/useCurrentUser';
+import CustomDatePicker from '@/utils/CustomDateInput';
+import dayjs from 'dayjs';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="right" ref={ref} {...props} />;
@@ -49,7 +51,16 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
     created_by: userData.id,
     id: user_id || ''
   });
-
+  useEffect(() => {
+    if (type === 'business') {
+      setData((prev) => ({
+        ...prev,
+        pan: '',
+        entityType: '',
+        dob_or_incorp_date: dayjs().format('YYYY-MM-DD')
+      }));
+    }
+  }, [type]);
   const [errors, setErrors] = useState({ first_name: '', last_name: '', id: user_id });
 
   const resetForm = () => {
@@ -204,14 +215,32 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
 
   const __addUser = async () => {
     let __data = { ...data };
-    __data['user_type'] = userTypes[user_type];
-    __data['is_active'] = true;
-    delete __data.id;
-    let url = `/user_management/admin/user-registration/`;
-    if (user_type === 'team') {
-      __data['user_type'] = userData.role;
-    }
-    console.log(__data);
+    let postData = {
+      user_creation: {
+        password: __data.password,
+        email: __data.email,
+        user_name: __data.user_name,
+        first_name: __data.first_name,
+        last_name: __data.last_name,
+        created_by: __data.created_by
+      },
+      group: 11,
+      custom_permission: [],
+      business: {
+        nameOfBusiness: __data.first_name,
+        pan: __data.pan,
+        entityType: __data.entityType,
+        dob_or_incorp_date: __data.dob_or_incorp_date
+      }
+    };
+    // postData['user_type'] = userTypes[user_type];
+    // __data['is_active'] = true;
+    // delete __data.id;
+    // let url = `/user_management/admin/user-registration/`;
+    // if (user_type === 'team') {
+    //   __data['user_type'] = userData.role;
+    // }
+    console.log(postData);
     // const { res } = await Factory('post', url, { ...__data });
     // if (res.status_cd === 1) {
     //   showSnackbar(JSON.stringify(res.data.details), 'error');
@@ -256,7 +285,6 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
       }
     }
   };
-
   return (
     <Modal
       open={open}
@@ -404,6 +432,64 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
                 />
               </Stack>
             </>
+          )}
+          {/* anand */}
+          {user_type == 'business' && (
+            <Stack direction="column" sx={{ gap: 0.5 }}>
+              <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
+                PAN
+              </Typography>
+              <TextField
+                id="outlined-disabled"
+                value={data.pan || ''}
+                onBlur={(e) => handleBlur('pan', e.target.value)}
+                onChange={(e) => {
+                  handleChange('pan', e.target.value);
+                }}
+                error={!!errors.pan}
+                helperText={errors.pan}
+              />
+              <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
+                Entity Type
+              </Typography>
+              <TextField
+                id="outlined-disabled"
+                value={data.entityType || ''}
+                onBlur={(e) => handleBlur('entityType', e.target.value)}
+                onChange={(e) => {
+                  handleChange('entityType', e.target.value);
+                }}
+                error={!!errors.entityType}
+                helperText={errors.entityType}
+              />
+              <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
+                DOB or Incorporation Date
+              </Typography>
+              {/* <TextField
+                id="outlined-disabled"
+                value={data.dob_or_incorp_date || ''}
+                onBlur={(e) => handleBlur('dob_or_incorp_date', e.target.value)}
+                onChange={(e) => {
+                  handleChange('dob_or_incorp_date', e.target.value);
+                }}
+                error={!!errors.dob_or_incorp_date}
+                helperText={errors.dob_or_incorp_date}
+              /> */}
+              <CustomDatePicker
+                views={['year', 'month', 'day']}
+                value={data.dob_or_incorp_date ? dayjs(data.dob_or_incorp_date) : null}
+                onChange={(newDate) => {
+                  handleChange('dob_or_incorp_date', dayjs(newDate).format('YYYY-MM-DD'));
+                }}
+                sx={{
+                  width: '100%',
+                  '& .MuiInputBase-root': {
+                    fontSize: '0.75rem',
+                    height: '40px'
+                  }
+                }}
+              />
+            </Stack>
           )}
         </Stack>
       }
