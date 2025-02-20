@@ -27,10 +27,10 @@ export default function LeaveManagementDialog({ open, handleClose, fetchDepartme
     setOpenDialog(true);
   };
   const departmentFields = [
-    { name: 'holiday_name', label: 'Holiday Name' },
-    { name: 'date', label: 'Start Date' },
-    { name: 'applicable_for', label: 'This holiday applicable for?' },
-    { name: 'description', label: 'Description' }
+    { name: 'leave_name', label: 'Name of the Leave' },
+    { name: 'code', label: 'Code' },
+    { name: 'type', label: 'Select Type' },
+    { name: 'no_of_leaves', label: 'How many leaves do employees get?' }
   ];
 
   // Formik validation schema
@@ -44,10 +44,12 @@ export default function LeaveManagementDialog({ open, handleClose, fetchDepartme
   // Initialize Formik with initial values and validation schema
   const formik = useFormik({
     initialValues: {
-      holiday_name: '',
-      date: '',
-      description: '',
-      applicable_for: ''
+      // leave_name: '',
+      // code: '',
+      // type: '',
+      // no_of_leaves: '',
+      // pro_rate_leave: '',
+      // pro_rate_leave: ''
     },
     validationSchema,
     onSubmit: async (values) => {}
@@ -84,7 +86,7 @@ export default function LeaveManagementDialog({ open, handleClose, fetchDepartme
     <Modal
       open={open}
       maxWidth={ModalSize.MD}
-      header={{ title: 'Add Holiday', subheader: '' }}
+      header={{ title: 'Add Leave', subheader: '' }}
       modalContent={
         <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
           <Grid2 container spacing={3}>

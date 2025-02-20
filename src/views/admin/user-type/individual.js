@@ -144,16 +144,17 @@ export default function IndividualForm() {
               name={field.name}
               value={formik.values[field.name]}
               onChange={(e) => {
-                if (field.name === 'pan_number') {
-                  formik.setFieldValue(field.name, e.target.value.toUpperCase());
-                } else {
-                  formik.setFieldValue(field.name, e.target.value);
+                const { value } = e.target;
+                if (field.name === 'pan_number' && value.length <= 10) {
+                  formik.setFieldValue(field.name, value.toUpperCase());
+                } else if (field.name !== 'pan_number') {
+                  formik.setFieldValue(field.name, value);
                 }
               }}
               onBlur={formik.handleBlur}
               error={formik.touched[field.name] && Boolean(formik.errors[field.name])}
               helperText={formik.touched[field.name] && formik.errors[field.name]}
-              disabled={field.name === 'country' || field.name === 'name' || field.name === 'email'}
+              disabled={['country', 'name', 'email'].includes(field.name)}
             />
           </Grid2>
         );
