@@ -86,7 +86,12 @@ export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
     };
     localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));
     router.push(APP_DEFAULT_PATH);
-    window.location.reload();
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+
+    // router.push(APP_DEFAULT_PATH);
+    // window.location.reload();
   };
 
   const columns = useMemo(

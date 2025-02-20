@@ -28,9 +28,7 @@ import { AuthRole, AvatarSize, ChipIconPosition } from '@/enum';
 import useConfig from '@/hooks/useConfig';
 import useCurrentUser from '@/hooks/useCurrentUser';
 import { logout } from '@/utils/api';
-
-// @types
-
+import { roles } from '@/enum';
 // @assets
 import { IconChevronRight, IconLanguage, IconLogout, IconSettings, IconSunMoon, IconTextDirectionLtr } from '@tabler/icons-react';
 
@@ -67,10 +65,10 @@ export default function ProfileSection() {
   const id = open ? 'profile-action-popper' : undefined;
   const innerId = innerOpen ? 'profile-inner-popper' : undefined;
   const buttonStyle = { borderRadius: 2, p: 1 };
-  console.log(userData);
+
   if (userData && Object.keys(userData).length > 0) {
     const name = `${userData?.firstname ?? ''} ${userData?.lastname ?? ''}`.trim();
-    profileData.caption = userData?.user_type ? RoleTitles[userData.user_type] : undefined;
+    profileData.caption = roles[userData?.user_type] ? RoleTitles[roles[userData.user_type]] : undefined;
     profileData.title = name || userData?.email;
   }
 
