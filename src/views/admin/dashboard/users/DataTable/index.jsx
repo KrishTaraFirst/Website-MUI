@@ -46,6 +46,7 @@ export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
     else url = `/user_management/affiliated-details?user_id=${userData.id}&type=${type}`;
 
     const { res } = await Factory('get', url, {});
+    console.log(res.data);
     if (res.status_cd === 0) {
       setData(res.data.users);
     } else {
@@ -82,7 +83,8 @@ export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
     let rowData = row.original;
     let userDAta = {
       ...userData,
-      role: roles[rowData.user_type]
+      role: roles[rowData.user_type],
+      businesssDetails: row.original
     };
     localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));
     router.push(APP_DEFAULT_PATH);

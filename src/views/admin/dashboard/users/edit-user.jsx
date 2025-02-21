@@ -21,6 +21,9 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import useCurrentUser from '@/hooks/useCurrentUser';
 import CustomDatePicker from '@/utils/CustomDateInput';
 import dayjs from 'dayjs';
+import { entity_choices } from '@/utils/Entity-types';
+import CustomAutocomplete from '@/utils/CustomAutocomplete';
+import { ConstructionOutlined } from '@mui/icons-material';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="right" ref={ref} {...props} />;
@@ -233,23 +236,24 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
         dob_or_incorp_date: __data.dob_or_incorp_date
       }
     };
-    // postData['user_type'] = userTypes[user_type];
-    // __data['is_active'] = true;
-    // delete __data.id;
+    postData.user_creation['user_type'] = userTypes[user_type];
+    postData.user_creation['is_active'] = true;
+    delete postData.id;
     // let url = `/user_management/admin/user-registration/`;
-    // if (user_type === 'team') {
-    //   __data['user_type'] = userData.role;
-    // }
-    console.log(postData);
-    // const { res } = await Factory('post', url, { ...__data });
-    // if (res.status_cd === 1) {
-    //   showSnackbar(JSON.stringify(res.data.details), 'error');
-    // } else {
-    //   showSnackbar('Saved Successfully', 'success');
-    //   setRefresh((prev) => !prev);
-    //   resetForm();
-    //   setOpen(false);
-    // }
+    let url = `/user_management/business-registration`;
+    if (user_type === 'team') {
+      postData.user_creation['user_type'] = userData.role;
+    }
+    const { res } = await Factory('post', url, { ...postData });
+    console.log(res);
+    if (res.status_cd === 1) {
+      showSnackbar(JSON.stringify(res.data.data.error_message), 'error');
+    } else {
+      showSnackbar('Saved Successfully', 'success');
+      setRefresh((prev) => !prev);
+      resetForm();
+      setOpen(false);
+    }
   };
 
   const __editUser = async () => {
@@ -444,7 +448,11 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
                 value={data.pan || ''}
                 onBlur={(e) => handleBlur('pan', e.target.value)}
                 onChange={(e) => {
-                  handleChange('pan', e.target.value);
+                  let val = e.target.value;
+                  if (val.length <= 10) {
+                    handleChange('pan', val.toUpperCase());
+                  }
+                  return;
                 }}
                 error={!!errors.pan}
                 helperText={errors.pan}
@@ -452,7 +460,7 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
               <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
                 Entity Type
               </Typography>
-              <TextField
+              {/* <TextField
                 id="outlined-disabled"
                 value={data.entityType || ''}
                 onBlur={(e) => handleBlur('entityType', e.target.value)}
@@ -461,7 +469,19 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
                 }}
                 error={!!errors.entityType}
                 helperText={errors.entityType}
+              /> */}
+              <CustomAutocomplete
+                value={data.entityType || ''} // Bind the value to your state or data
+                options={entity_choices}
+                onBlur={(e) => handleBlur('entityType', e.target.value)}
+                onChange={(e, newValue) => {
+                  handleChange('entityType', newValue);
+                }}
+                error={!!errors.entityType}
+                helperText={errors.entityType}
+                sx={{ width: '100%' }}
               />
+
               <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
                 DOB or Incorporation Date
               </Typography>

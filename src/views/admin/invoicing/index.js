@@ -36,49 +36,66 @@ export default function AnalyticsOverview() {
   const handleOpen = () => {
     setOpen(true);
   };
-
-  const getInvoicesList = async () => {
-    if (businessDetails?.id) {
-      let url = `/invoicing/invoice-retrieve/${businessDetails?.id}`;
-      const { res } = await Factory('get', url, {});
-      if (res.status_cd === 0) {
-        setInvoicesList(res.data.invoices);
-      }
-    }
-  };
+  // console.log(userData);
+  // const getInvoicesList = async () => {
+  //   if (businessDetails?.id) {
+  //     let url = `/invoicing/invoice-retrieve/${businessDetails?.id}`;
+  //     const { res } = await Factory('get', url, {});
+  //     if (res.status_cd === 0) {
+  //       setInvoicesList(res.data.invoices);
+  //     }
+  //   }
+  // };
   const fetchBusinessDetails = async () => {
-    const { res } = await Factory('get', `/invoicing/invoicing-profiles/?business_id=${businessId}`, {});
+    let id = userData.user_type === 'Business' ? userData.id : userData.businesssDetails.business[0].id;
+    let url = `/invoicing/invoicing-profiles/?business_id=${id}`;
+    const { res } = await Factory('get', url, {});
     console.log(res);
-    if (res.status_cd === 0) {
-      const businessData = { ...res.data, state: 'Telangana' };
-      setBusinessDetails(businessData);
-    } else if (res.status === 404) {
-      router.push(`invoicing/settings`);
-    } else {
-      return;
-    }
+    // if (res.status_cd === 0) {
+    //   const businessData = { ...res.data, state: 'Telangana' };
+    //   setBusinessDetails(businessData);
+    // } else if (res.status === 404) {
+    //   router.push(`invoicing/settings`);
+    // } else {
+    //   return;
+    // }
   };
-  useEffect(() => {
-    if (businessId) {
-      fetchBusinessDetails(businessId);
-    }
-  }, [businessId]);
+  // useEffect(() => {
+  //   if (businessId) {
+  //     fetchBusinessDetails(businessId);
+  //   }
+  // }, [businessId]);
 
-  const fetch_business_Details = async () => {
-    let url = `/user_management/businesses-by-client/?user_id=${userData.id}`;
-    const { res, error } = await Factory('get', url, {});
-    console.log(res);
-    if (res?.status_cd === 0) {
-      setBusinessId(res?.data.id);
+  // const fetch_business_Details = async () => {
+  //   let url = `/user_management/businesses-by-client/?user_id=${userData.id}`;
+  //   const { res, error } = await Factory('get', url, {});
+  //   console.log(res);
+  //   if (res?.status_cd === 0) {
+  //     setBusinessId(res?.data.id);
+  //   } else {
+  //     showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetch_business_Details();
+  // }, []);
+
+  const invoice_settings_status_check = async () => {
+    let id = userData.user_type === 'Business' ? userData.id : userData.businesssDetails.business[0].id;
+    let url = `/invoicing/invoicing-profile-check/?business_id=${id}`;
+    const { res } = await Factory('get', url, {});
+
+    if (res.status_cd === 0 && res.data.exists === false) {
+      // fetchBusinessDetails();
+      router.push(`invoicing/settings`);
     } else {
       showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
     }
   };
-
   useEffect(() => {
-    fetch_business_Details();
-  }, []);
-
+    invoice_settings_status_check();
+  }, [userData.user_type]);
   return (
     <Stack sx={{ gap: 3 }}>
       <Stack direction="row" sx={{ alignItems: 'end', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
@@ -120,7 +137,7 @@ export default function AnalyticsOverview() {
             businessDetailsData={businessDetails}
             open={open}
             onClose={handleClose}
-            getInvoicesList={getInvoicesList}
+            // getInvoicesList={getInvoicesList}
             clientListData={clientListData}
             type={type}
             setType={setType}
