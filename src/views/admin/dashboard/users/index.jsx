@@ -368,7 +368,7 @@ function Individual({ setOpen, refresh, setAffiliationDialog }) {
 function Team({ setOpen, refresh, setAffiliationDialog }) {
   return (
     <RenderHead title="Team" subTitle="List of users under your team" setAffiliationDialog={setAffiliationDialog} setOpen={setOpen}>
-      <AnalyticsBehaviorTable type={'Team'} refresh={refresh} />
+      {/* <AnalyticsBehaviorTable type={'Team'} refresh={refresh} /> */}
     </RenderHead>
   );
 }

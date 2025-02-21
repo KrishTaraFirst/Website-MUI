@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import { useTheme } from '@mui/material/styles';
 import { IconBolt } from '@tabler/icons-react';
-import { Avatar, Box, Grid, Tab, Tabs, Typography } from '@mui/material';
+import { Avatar, Box, Grid2, Tab, Tabs, Typography } from '@mui/material';
 
 import Factory from '@/utils/Factory';
 import ComponentsWrapper from '@/components/ComponentsWrapper';
@@ -13,6 +13,8 @@ import TabTwo from './Customers';
 import TabThree from './Goods&Services';
 import TabFour from './Invoices';
 import MainCard from '@/components/MainCard';
+import useCurrentUser from '@/hooks/useCurrentUser';
+
 /***************************  NAVIGATION - TABS  ***************************/
 
 // TabPanel component for rendering content based on active tab
@@ -29,58 +31,76 @@ TabPanel.propTypes = {
 };
 
 const BasicTabs = ({ type }) => {
+  const { userData } = useCurrentUser();
+  // console.log(userData);
   const [activeTab, setActiveTab] = useState(0);
   const [businessDetails, setBusinessDetails] = useState({});
   const [customers, setCustomers] = useState([]);
   const theme = useTheme();
 
-  // Fetch business details on tab change
-  useEffect(() => {
-    const fetchBusinessDetails = async () => {
-      const { res } = await Factory('get', '/invoicing/invoicing-profiles/', {});
-      if (res) {
-        setBusinessDetails(res.data);
-      }
-    };
-    fetchBusinessDetails();
-  }, [activeTab]);
+  // useEffect(() => {
+  //   const fetchBusinessDetails = async () => {
+  //     const { res } = await Factory('get', '/invoicing/invoicing-profiles/', {});
+  //     if (res) {
+  //       setBusinessDetails(res.data);
+  //     }
+  //   };
+  //   fetchBusinessDetails();
+  // }, [activeTab]);
 
-  // Fetch customer data initially
-  const getCustomersData = async () => {
-    const { res } = await Factory('get', '/invoicing/customer_profiles/', {});
-    if (res.status_cd === 0) {
-      setCustomers(res.data.customer_profiles);
-    }
-  };
+  // const getCustomersData = async () => {
+  //   const { res } = await Factory('get', '/invoicing/customer_profiles/', {});
+  //   if (res.status_cd === 0) {
+  //     setCustomers(res.data.customer_profiles);
+  //   }
+  // };
 
-  useEffect(() => {
-    getCustomersData();
-  }, []);
+  // useEffect(() => {
+  //   getCustomersData();
+  // }, []);
 
-  // Handle tab changes
   const handleTabChange = (_event, newTabIndex) => setActiveTab(newTabIndex);
 
-  // Handle next tab navigation
   const handleNext = () => {
     setActiveTab((prev) => (prev < 3 ? prev + 1 : prev));
   };
   const handleBack = () => {
     setActiveTab((prev) => (prev < 3 ? prev - 1 : prev));
   };
-  // Accessibility props for each tab
   const a11yProps = (index) => ({
     value: index,
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`
   });
 
-  // Tab labels for rendering
   const tabLabels = ['Business Profile', 'Customers', 'Goods & Services', 'Invoice Number Format'];
+  const fetchBusinessDetails = async () => {
+    // let id = userData.user_type === 'Business' ? userData.business_affiliated[0].id : userData.businesssDetails.business[0].id;
+    let id =
+      userData.user_type === 'Business' && userData.business_affiliated && userData.business_affiliated.length > 0
+        ? userData.business_affiliated[0].id
+        : userData.businesssDetails.business && userData.businesssDetails.business.length > 0
+          ? userData.businesssDetails.business[0].id
+          : null; // Or handle the case when no valid ID is found
 
+    let url = `/invoicing/invoicing-profiles/?business_id=${id}`;
+    const { res } = await Factory('get', url, {});
+    console.log(res);
+    // if (res.status_cd === 0) {
+    //   const businessData = { ...res.data, state: 'Telangana' };
+    //   setBusinessDetails(businessData);
+    // } else if (res.status === 404) {
+    // } else {
+    //   return;
+    // }
+  };
+  useEffect(() => {
+    fetchBusinessDetails();
+  }, []);
   return (
-    <Grid container spacing={{ xs: 2, sm: 3 }}>
+    <Grid2 container spacing={{ xs: 2, sm: 3 }}>
       {/* Tab navigation */}
-      <Grid item xs={12}>
+      <Grid2 size={{ xs: 12 }}>
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
           <Tabs
             variant="scrollable"
@@ -106,12 +126,12 @@ const BasicTabs = ({ type }) => {
             ))}
           </Tabs>
         </Box>
-      </Grid>
+      </Grid2>
 
       {/* Tab content with PresentationCard and ComponentsWrapper */}
-      <Grid item xs={12}>
+      <Grid2 size={{ xs: 12 }}>
         <MainCard>
-          {tabLabels.map((_, index) => (
+          {/* {tabLabels.map((_, index) => (
             <TabPanel key={index} value={activeTab} index={index}>
               {index === 0 && <TabOne businessDetails={businessDetails} setBusinessDetails={setBusinessDetails} onNext={handleNext} />}
               {index === 1 && (
@@ -142,10 +162,10 @@ const BasicTabs = ({ type }) => {
                 />
               )}
             </TabPanel>
-          ))}
+          ))} */}
         </MainCard>
-      </Grid>
-    </Grid>
+      </Grid2>
+    </Grid2>
   );
 };
 

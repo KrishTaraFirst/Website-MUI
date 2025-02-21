@@ -7,7 +7,8 @@ import IndividualForm from './individual';
 import BusinessForm from './business';
 import FirmForm from './firm';
 import useCurrentUser from '@/hooks/useCurrentUser';
-
+import { useRouter, usePathname } from 'next/navigation';
+import { APP_DEFAULT_PATH } from '@/config';
 const user_type = {
   individual: 'Individual',
   firm: 'CA',
@@ -21,6 +22,8 @@ const UserType = () => {
   const [selectedType, setSelectedType] = useState(null); // Selected type for navigation
   const [dialogOpen, setDialogOpen] = useState(true); // Dialog open state
   const { userData } = useCurrentUser();
+  const router = useRouter();
+
   const handleTabChange = (event, newValue) => {
     setSelectedIndex(newValue); // Set the selected tab index
   };
