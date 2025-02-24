@@ -56,7 +56,7 @@ export default function NavGroup({ item }) {
     router.push(APP_DEFAULT_PATH);
     setTimeout(() => {
       window.location.reload();
-    }, 1000);
+    }, 500);
   };
 
   return (

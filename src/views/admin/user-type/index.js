@@ -4,7 +4,7 @@ import { Box, Typography, Button, Dialog, Tabs, Tab, Link } from '@mui/material'
 import { useSnackbar } from '@/components/CustomSnackbar';
 import Factory from '@/utils/Factory';
 import IndividualForm from './individual';
-import BusinessForm from './business';
+import BusinessForm from './businessDetails';
 import FirmForm from './firm';
 import useCurrentUser from '@/hooks/useCurrentUser';
 import { useRouter, usePathname } from 'next/navigation';
@@ -28,16 +28,24 @@ const UserType = () => {
     setSelectedIndex(newValue); // Set the selected tab index
   };
   useEffect(() => {
-    const isUserTypeNull = userData.user_type === null;
-    const isUserTypeValidAndKycFalse = userData.user_type !== null && userData.user_kyc === false;
+    // const isUserTypeNull = userData.user_type === null;
+    // const isUserTypeValidAndKycFalse = userData.user_type !== null && userData.user_kyc === false;
 
-    if (isUserTypeNull) {
-      setDialogOpen(true);
-    } else if (isUserTypeValidAndKycFalse) {
-      setDialogOpen(false);
-      setSelectedType(userData.user_type);
+    // if (isUserTypeNull) {
+    //   setDialogOpen(true);
+    // } else if (isUserTypeValidAndKycFalse) {
+    //   setDialogOpen(false);
+    //   setSelectedType(userData.user_type);
+    // } else {
+    //   router.push(APP_DEFAULT_PATH);
+    // }
+
+    if (!userData.user_kyc || userData.role === 'super-admin' || userData.role === 'service-provider') {
+      router.push(APP_DEFAULT_PATH);
+    } else {
+      setSelectedType(userData.role);
     }
-  }, [userData, selectedType]);
+  }, [userData]);
 
   const handleNext = async () => {
     const url = `/user_management/update-users-info`;
@@ -68,7 +76,7 @@ const UserType = () => {
   };
   return (
     <>
-      <Dialog
+      {/* <Dialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
         maxWidth="md"
@@ -179,7 +187,6 @@ const UserType = () => {
             onClick={() => setSelectedType('Individual')}
           />
         </Tabs>
-        {/* Next Button */}
         <Box
           sx={{
             display: 'flex',
@@ -212,14 +219,14 @@ const UserType = () => {
             Next
           </Button>
         </Box>
-      </Dialog>
-      {!dialogOpen && selectedType !== null && (
-        <>
-          {selectedType === 'Individual' && <IndividualForm />}
-          {selectedType === 'Business' && <BusinessForm />}
-          {selectedType === 'CA' && <FirmForm />}
-        </>
-      )}
+      </Dialog> */}
+      {/* {!dialogOpen && selectedType !== null && (
+        <> */}
+      {selectedType === 'individual' && <IndividualForm />}
+      {selectedType === 'corporate-admin' && <BusinessForm />}
+      {selectedType === 'charted-accountant-firm' && <FirmForm />}
+      {/* </>
+      )} */}
     </>
   );
 };

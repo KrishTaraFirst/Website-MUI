@@ -90,10 +90,7 @@ export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
     router.push(APP_DEFAULT_PATH);
     setTimeout(() => {
       window.location.reload();
-    }, 1000);
-
-    // router.push(APP_DEFAULT_PATH);
-    // window.location.reload();
+    }, 500);
   };
 
   const columns = useMemo(
