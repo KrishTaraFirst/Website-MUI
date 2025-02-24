@@ -48,16 +48,16 @@ const BasicTabs = ({ type }) => {
   //   fetchBusinessDetails();
   // }, [activeTab]);
 
-  // const getCustomersData = async () => {
-  //   const { res } = await Factory('get', '/invoicing/customer_profiles/', {});
-  //   if (res.status_cd === 0) {
-  //     setCustomers(res.data.customer_profiles);
-  //   }
-  // };
+  const getCustomersData = async () => {
+    const { res } = await Factory('get', '/invoicing/customer_profiles/', {});
+    if (res.status_cd === 0) {
+      setCustomers(res.data.customer_profiles);
+    }
+  };
 
-  // useEffect(() => {
-  //   getCustomersData();
-  // }, []);
+  useEffect(() => {
+    getCustomersData();
+  }, []);
 
   const handleTabChange = (_event, newTabIndex) => setActiveTab(newTabIndex);
 
@@ -131,7 +131,7 @@ const BasicTabs = ({ type }) => {
       {/* Tab content with PresentationCard and ComponentsWrapper */}
       <Grid2 size={{ xs: 12 }}>
         <MainCard>
-          {/* {tabLabels.map((_, index) => (
+          {tabLabels.map((_, index) => (
             <TabPanel key={index} value={activeTab} index={index}>
               {index === 0 && <TabOne businessDetails={businessDetails} setBusinessDetails={setBusinessDetails} onNext={handleNext} />}
               {index === 1 && (
@@ -162,7 +162,7 @@ const BasicTabs = ({ type }) => {
                 />
               )}
             </TabPanel>
-          ))} */}
+          ))}
         </MainCard>
       </Grid2>
     </Grid2>

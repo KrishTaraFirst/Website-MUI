@@ -5,6 +5,7 @@ import { Tab, Tabs } from '@mui/material';
 import React, { useState } from 'react';
 import { Button, Box, Typography, Stack } from '@mui/material';
 import HomeCard from '@/components/cards/HomeCard';
+import { useRouter } from 'next/navigation';
 
 import HolidayManagement from './HolidayManagement';
 import LeaveManagement from './LeaveManagement';
@@ -26,6 +27,7 @@ TabPanel.propTypes = {
 
 const LeaveAttendance = ({ type }) => {
   const [activeTab, setActiveTab] = useState(0); // State to manage active tab
+  const router = useRouter();
 
   // Function to handle tab changes
   const handleTabChange = (_event, newTabIndex) => setActiveTab(newTabIndex);
@@ -40,11 +42,13 @@ const LeaveAttendance = ({ type }) => {
   // Tab labels
   const tabLabels = ['Holiday Management', 'leave Management'];
   const handleNext = () => {
-    setActiveTab((prev) => (prev < 3 ? prev + 1 : prev));
+    setActiveTab((prev) => (prev < 1 ? prev + 1 : prev));
   };
+
   const handleBack = () => {
-    setActiveTab((prev) => (prev < 3 ? prev - 1 : prev));
+    setActiveTab((prev) => (prev > 0 ? prev - 1 : prev));
   };
+
   return (
     <HomeCard title="Leave & Attendance" tagline="Setup your organization before starting payroll">
       <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', mb: 2 }}>
@@ -61,6 +65,32 @@ const LeaveAttendance = ({ type }) => {
       <TabPanel value={activeTab} index={1}>
         <LeaveManagement handleNext={handleNext} />
       </TabPanel>
+      <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            router.back();
+          }}
+        >
+          Back to Dashboard
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            handleBack();
+          }}
+        >
+          Back
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => {
+            handleNext();
+          }}
+        >
+          Next
+        </Button>
+      </Box>
     </HomeCard>
   );
 };

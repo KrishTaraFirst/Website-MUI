@@ -160,7 +160,7 @@ function PaySchedule() {
             <Card
               key={day.short}
               sx={{
-                padding: 2,
+                padding: 1,
                 borderRadius: 1,
                 boxShadow: 1,
                 cursor: 'pointer',

@@ -11,7 +11,7 @@ import {
   Button,
   Stack,
   Grid2,
-  Typography,
+  Pagination,
   Box
 } from '@mui/material';
 import WorkLocationDialog from './WorkLocationDialog';
@@ -31,7 +31,13 @@ function Worklocation() {
   const [postType, setPostType] = useState(''); // Payroll ID fetched from URL
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [loading, setLoading] = useState(false); // State for loader
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 8;
 
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+  const paginatedData = workLocations.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
 
@@ -103,17 +109,9 @@ function Worklocation() {
               >
                 Add Work Location
               </Button>
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={() => {
-                  // setPostType('post');
-                  // handleOpenDialog();
-                }}
-                sx={{ marginBottom: 2 }}
-              >
+              {/* <Button variant="outlined" color="primary" onClick={() => {}} sx={{ marginBottom: 2 }}>
                 Import
-              </Button>
+              </Button> */}
             </Stack>
           )}
         >
@@ -133,7 +131,7 @@ function Worklocation() {
 
             <Grid2 size={12}>
               <TableContainer component={Paper}>
-                <Table>
+                <Table size="large">
                   <TableHead>
                     <TableRow>
                       <TableCell>S No</TableCell>
@@ -146,16 +144,16 @@ function Worklocation() {
                   </TableHead>
                   <TableBody>
                     {/* Check if workLocations is valid and has data */}
-                    {workLocations?.length === 0 ? (
+                    {paginatedData?.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={6} sx={{ height: 300 }}>
                           <EmptyTable msg="No work locations available" />
                         </TableCell>
                       </TableRow>
                     ) : (
-                      workLocations?.map((location, index) => (
+                      paginatedData?.map((location, index) => (
                         <TableRow key={location.id}>
-                          <TableCell>{index + 1}</TableCell>
+                          <TableCell>{(currentPage - 1) * rowsPerPage + index + 1}</TableCell>
                           <TableCell>{location.location_name || 'N/A'}</TableCell>
                           <TableCell>
                             {`${location.address_line1}, ${location.address_line2}`?.length > 30
@@ -186,6 +184,11 @@ function Worklocation() {
                   </TableBody>
                 </Table>
               </TableContainer>
+              {workLocations.length > 0 && (
+                <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'center', px: { xs: 0.5, sm: 2.5 }, py: 1.5 }}>
+                  <Pagination count={Math.ceil(workLocations.length / rowsPerPage)} page={currentPage} onChange={handlePageChange} />
+                </Stack>
+              )}
             </Grid2>
           </Grid2>
           <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

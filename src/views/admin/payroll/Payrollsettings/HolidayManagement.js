@@ -18,6 +18,7 @@ import {
 import { IconPlus } from '@tabler/icons-react';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import HolidayManagementDialog from './HolidayManagementDialog';
+import ActionCell from '@/utils/ActionCell';
 
 function HolidayManagement() {
   const [financialYear, setFinancialYear] = useState('2024-25');
@@ -29,146 +30,7 @@ function HolidayManagement() {
       applicable_for: 'All Employees',
       location: 's'
     },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
+
     {
       holiday_name: 'New Year',
       date: '2025-01-01',
@@ -227,17 +89,13 @@ function HolidayManagement() {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 5;
 
-  const handleOpenDialog = () => setOpenDialog(true);
-  const handleCloseDialog = () => setOpenDialog(false);
-
-  // Handle page change
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
-
-  // Get paginated data
   const paginatedData = holidayManagementData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
+  const handleOpenDialog = () => setOpenDialog(true);
+  const handleCloseDialog = () => setOpenDialog(false);
   return (
     <Grid2 container spacing={3}>
       <Grid2 size={12}>
@@ -294,7 +152,21 @@ function HolidayManagement() {
                       {item.description.length > 30 ? `${item.description.substring(0, 30)}...` : item.description || 'N/A'}
                     </TableCell>
                     <TableCell>{item.applicable_for}</TableCell>
-                    <TableCell>{/* Add actions here */}</TableCell>
+                    <TableCell>
+                      <ActionCell
+                        row={location} // Pass the customer row data
+                        onEdit={() => handleEdit(location)} // Edit handler
+                        onDelete={() => handleDelete(location)} // Delete handler
+                        open={openDialog}
+                        onClose={handleCloseDialog}
+                        deleteDialogData={{
+                          title: 'Delete Record',
+                          heading: 'Are you sure you want to delete this Record?',
+                          description: `This action will remove ${location.name} from the list.`,
+                          successMessage: 'Record has been deleted.'
+                        }}
+                      />
+                    </TableCell>
                   </TableRow>
                 ))
               )}
