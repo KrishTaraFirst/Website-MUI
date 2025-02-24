@@ -37,7 +37,10 @@ const SalaryComponnetTabs = ({ type }) => {
   });
 
   // Tab labels
-  const tabLabels = ['Earnings', 'Deductions'];
+  const tabLabels = [
+    'Earnings'
+    //  'Deductions'
+  ];
   const handleNext = () => {
     setActiveTab((prev) => (prev < 3 ? prev + 1 : prev));
   };
@@ -60,9 +63,8 @@ const SalaryComponnetTabs = ({ type }) => {
       <TabPanel value={activeTab} index={0}>
         <EarningsComponent handleNext={handleNext} />
       </TabPanel>
-      <TabPanel value={activeTab} index={1}>
-        {/* <ESIComponent handleNext={handleNext} handleBack={handleBack} /> */}
-      </TabPanel>
+      {/* <TabPanel value={activeTab} index={1}>
+      </TabPanel> */}
     </Box>
   );
 };

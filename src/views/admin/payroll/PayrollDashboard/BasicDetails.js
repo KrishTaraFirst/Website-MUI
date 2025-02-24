@@ -66,7 +66,6 @@ function BasicDetails() {
 
   const { values, handleChange, errors, touched, handleSubmit, handleBlur } = formik;
 
-  // Render fields for employee data
   const renderFields = (fields) => {
     return fields.map((field) => (
       <Grid2 key={field.name} size={{ xs: 12, sm: 6 }}>
@@ -108,9 +107,8 @@ function BasicDetails() {
         Statuitory Components
       </Typography>
       {statutoryFields.map((field) => (
-        <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+        <Stack key={field.name} direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
           <FormControlLabel
-            key={field.name}
             control={<Checkbox checked={values[field.name]} onChange={handleChange} name={field.name} />}
             label={field.label}
           />
