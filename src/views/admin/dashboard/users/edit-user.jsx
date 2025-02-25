@@ -402,6 +402,7 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
                 <TextField
                   id="outlined-disabled"
                   value={data.email || ''}
+                  autoComplete="new-username"
                   onBlur={(e) => handleBlur('email', e.target.value)}
                   onChange={(e) => {
                     handleChange('email', e.target.value);
@@ -417,6 +418,7 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
                 <TextField
                   id="outlined-disabled"
                   value={data.password || ''}
+                  autoComplete="new-password"
                   onBlur={(e) => handleBlur('password', e.target.value)}
                   onChange={(e) => {
                     handleChange('password', e.target.value);
@@ -519,7 +521,7 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
             Cancel
           </Button>
           <Button type="submit" variant="contained" onClick={handleSubmit}>
-            Save
+            {user_type == 'business' ? 'Create Business' : 'Save'}
           </Button>
         </Stack>
       }

@@ -40,7 +40,7 @@ const UserType = () => {
     //   router.push(APP_DEFAULT_PATH);
     // }
 
-    if (!userData.user_kyc || userData.role === 'super-admin' || userData.role === 'service-provider') {
+    if (userData.user_kyc || userData.role === 'super-admin' || userData.role === 'service-provider') {
       router.push(APP_DEFAULT_PATH);
     } else {
       setSelectedType(userData.role);
