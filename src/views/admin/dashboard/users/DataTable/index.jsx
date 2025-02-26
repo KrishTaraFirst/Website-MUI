@@ -146,6 +146,30 @@ export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
       },
 
       {
+        header: 'KYC',
+        id: 'kyc',
+        cell: ({ row }) => (
+          <Link
+            variant="body2"
+            color="primary"
+            sx={{ cursor: 'pointer', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+            onClick={(e) => {
+              e.preventDefault();
+              router.push(`/business-profile?BID=${row.original.business[0].id}`);
+            }}
+            rel="noopener noreferrer"
+            aria-label="Usefull Links"
+          >
+            <Stack direction={'row'}>
+              <Typography variant="subtitle2" color="primary">
+                KYC Details&nbsp;
+              </Typography>
+              <SvgIcon name="tabler-info-circle" size={16} color="primary" stroke={1} />
+            </Stack>
+          </Link>
+        )
+      },
+      {
         header: 'Business',
         id: 'moreInfo',
         cell: ({ row }) => (
@@ -162,7 +186,7 @@ export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
           >
             <Stack direction={'row'}>
               <Typography variant="subtitle2" color="primary">
-                More Info&nbsp;
+                View Dashboard&nbsp;
               </Typography>
               <SvgIcon name="tabler-info-circle" size={16} color="primary" stroke={1} />
             </Stack>

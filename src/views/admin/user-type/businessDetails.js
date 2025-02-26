@@ -12,6 +12,8 @@ import MuiAccordionSummary, { AccordionSummaryProps, accordionSummaryClasses } f
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import DeleteIcon from '@mui/icons-material/Delete';
 import HomeCard from '@/components/cards/HomeCard';
+import Factory from '@/utils/Factory';
+import { usePathname, useSearchParams } from 'next/navigation';
 import * as Yup from 'yup';
 import {
   Avatar,
@@ -40,14 +42,13 @@ import {
   FormControl,
   FormHelperText
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import CustomDatePicker from '@/utils/CustomDateInput';
 import CustomInput from '@/utils/CustomInput';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import useCurrentUser from '@/hooks/useCurrentUser';
-import Factory from '@/utils/Factory';
 import { APP_DEFAULT_PATH } from '@/config';
 import { entity_choices } from '@/utils/Entity-types';
 import { business_nature_choices } from '@/utils/Nature-of-bsiness';
@@ -126,8 +127,11 @@ export default function BusinessKYC() {
   const router = useRouter();
   const theme = useTheme();
   const [dialogOpen, setDialogOpen] = useState(true);
+  const [businessData, setBusinessData] = useState({});
   const { showSnackbar } = useSnackbar();
   const { userData } = useCurrentUser();
+  const searchParams = useSearchParams();
+  const BID = searchParams.get('BID'); // Get BID from URL params
 
   const handleChange = (_event, newValue) => {
     setValue(newValue);
@@ -153,7 +157,16 @@ export default function BusinessKYC() {
     validationSchema,
     onSubmit: async (values) => {
       const postData = {
-        ...values,
+        business_nature: values.business_nature,
+        dob_or_incorp_date: values.dob_or_incorp_date,
+        email: values.email,
+        entityType: values.entityType,
+        id: 2,
+        mobile_number: values.mobile_number,
+        nameOfBusiness: values.nameOfBusiness,
+        pan: values.pan,
+        registrationNumber: values.registrationNumber,
+        trade_name: values.trade_name,
         headOffice: {
           address_line1: values.address_line1,
           address_line2: values.address_line2,
@@ -161,19 +174,19 @@ export default function BusinessKYC() {
           state: values.state,
           pincode: values.pincode
         },
-        client: userData.id
+        client: BID === null ? userData.id : values.client
       };
-      const url = `/user_management/businesses/`;
-      const method = 'post';
+      const url = BID === null ? `/user_management/businesses/` : `/user_management/businesses/${BID}/`;
+      const method = BID === null ? 'post' : 'put';
 
       const { res } = await Factory(method, url, postData);
       if (res?.status_cd === 0) {
-        showSnackbar('Business KYC done Successfully', 'success');
+        showSnackbar('Business KYC Updated', 'success');
         setDialogOpen(false);
         const userDetails = JSON.parse(localStorage.getItem('auth-user'));
         userDetails.business_exists = true;
         localStorage.setItem('auth-user', JSON.stringify(userDetails));
-        router.push(APP_DEFAULT_PATH);
+        setValue(value + 1);
       } else {
         showSnackbar(JSON.stringify(res.data.data.error_message), 'error');
       }
@@ -223,11 +236,12 @@ export default function BusinessKYC() {
         <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
           <div style={{ marginBottom: '2px' }}>{field.label}</div>
           <CustomAutocomplete
-            value={entity_choices.find((option) => option.key === values[field.name]) || null}
+            value={values[field.name]}
+            // value={entity_choices.find((option) => option.key === values[field.name]) || null}
             name={field.name}
-            onChange={(e, newValue) => setFieldValue(field.name, newValue ? newValue.key : '')}
+            onChange={(e, newValue) => setFieldValue(field.name, newValue)}
             options={entity_choices}
-            getOptionLabel={(option) => option.title}
+            // getOptionLabel={(option) => option.title}
             error={touched[field.name] && Boolean(errors[field.name])}
             helperText={touched[field.name] && errors[field.name]}
             sx={{ width: '100%' }}
@@ -278,7 +292,33 @@ export default function BusinessKYC() {
       </Grid2>
     );
   };
+
+  useEffect(() => {
+    console.log(BID);
+    console.log(value);
+  }, [value]);
+
   const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue, resetForm } = formik;
+
+  useEffect(() => {
+    const getBusinessDetails = async () => {
+      const url = `/user_management/businesses/${BID}/`;
+      const { res } = await Factory('get', url, '');
+      if (res?.status_cd === 0) {
+        // setBusinessData;
+        setBusinessData(res.data);
+        setValues({
+          ...values,
+          ...res.data,
+          ...res.data.headOffice
+        });
+      } else {
+        console.log(res.data);
+      }
+    };
+    getBusinessDetails();
+  }, [BID]);
+
   return (
     <HomeCard title="Business Details" tagline="Setup your organization details" CustomElement={false}>
       <Card sx={{ borderRadius: 2.5 }}>
@@ -319,46 +359,35 @@ export default function BusinessKYC() {
         </Tabs>
 
         <TabPanel value={value} index={0}>
-          <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
-            <Container>
+          <Container sx={{ mb: 2 }}>
+            <Box component="form" onSubmit={handleSubmit}>
               <Grid2 container spacing={3} sx={{ mb: 2 }}>
                 {BusinessFields.map(renderField)}
               </Grid2>
               <Grid2 container spacing={3}>
                 {HeadOfficeFields.map(renderField)}
               </Grid2>
-            </Container>
-
-            <DialogActions sx={{ justifyContent: 'space-between' }}>
-              <Button
-                variant="outlined"
-                color="error"
-                onClick={() => {
-                  setDialogOpen(false);
-                  router.push(APP_DEFAULT_PATH);
-                }}
-              >
-                Skip
-              </Button>
-              <Button variant="contained" type="submit">
-                Next
-              </Button>
-            </DialogActions>
-          </Box>
+              <Stack direction="row" sx={{ gap: 1.5, float: 'right', mt: 3 }}>
+                <Button type="submit" variant="outlined" color="primary">
+                  Save & Proceed
+                </Button>
+              </Stack>
+            </Box>
+          </Container>
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <Box sx={{ mt: 2 }}>
+          <Container sx={{ mb: 2 }}>
             <KeyManagerialPersonnel />
-          </Box>
+          </Container>
         </TabPanel>
         <TabPanel value={value} index={2}>
           <Container sx={{ mb: 2 }}>
-            <ComplianceProfile complianceItems={complianceItems} />
+            <ComplianceProfile BID={BID} setValue={setValue} complianceItems={complianceItems} />
           </Container>
         </TabPanel>
         <TabPanel value={value} index={3}>
           <Container sx={{ mb: 2 }}>
-            <ComplianceProfile complianceItems={licenses} />
+            <ComplianceProfile BID={BID} setValue={setValue} complianceItems={licenses} />
           </Container>
         </TabPanel>
         <TabPanel value={value} index={4}>
@@ -366,6 +395,31 @@ export default function BusinessKYC() {
             <DigitalSignatures />
           </Container>
         </TabPanel>
+        <Box>
+          <Stack direction={'row'} sx={{ justifyContent: 'space-between', mx: 3, my: 3 }}>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => {
+                router.push(APP_DEFAULT_PATH);
+              }}
+            >
+              Skip to Dashboard
+            </Button>
+            {value !== 4 && (
+              <Button
+                sx={{ mr: value === 0 ? 2 : 0 }}
+                variant="contained"
+                onClick={() => {
+                  setValue((prev) => prev + 1);
+                }}
+                color="primary"
+              >
+                Next
+              </Button>
+            )}
+          </Stack>
+        </Box>
       </Card>
     </HomeCard>
   );
@@ -402,25 +456,73 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   borderTop: '1px solid #e9e9e9'
 }));
 
-const ComplianceProfile = ({ complianceItems }) => {
+const ComplianceProfile = ({ complianceItems, setValue, BID }) => {
   const [expanded, setExpanded] = useState(false);
+  const [compliances, setCompliances] = useState({});
+  const { showSnackbar } = useSnackbar();
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
+  };
+
+  useEffect(() => {
+    if (BID === null) setValue(0);
+    const getComplianceDetails = async () => {
+      const url = `/user_management/gst-details/${BID}/`;
+      const { res } = await Factory('get', url, '');
+      if (res?.status_cd === 0) {
+        console.log(res);
+        setCompliances(res.data);
+      } else {
+        console.log(res.data);
+      }
+    };
+    getComplianceDetails();
+  }, [BID]);
+
+  const convertToFormData = (obj) => {
+    const formData = new FormData();
+    formData.append('business', BID);
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        const value = obj[key];
+        if (value instanceof File || value instanceof Blob) {
+          formData.append(key, value);
+        } else if (typeof value === 'object' && value !== null) {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, value);
+        }
+      }
+    }
+    return formData;
+  };
+
+  const __postData = async (__branches) => {
+    if (__branches.length === 0) return;
+    const formData = convertToFormData(__branches[0]);
+    const url = `/user_management/gst-details/`;
+    const { res, error } = await Factory('post', url, formData);
+    if (res.status_cd === 0) {
+      if (__branches.length === 1) showSnackbar('Saved Successfully', 'success');
+    } else {
+      console.log(error);
+    }
+    __postData(__branches.slice(1));
   };
 
   const formik = useFormik({
     initialValues: {
       gstBranches: [
         {
-          gstNumber: '',
-          gstUsername: '',
-          password: '',
+          gstin: '',
+          gst_username: '',
+          gst_password: '',
           address: '',
-          zipcode: '',
-          gstCertificate: null,
-          signatoryPAN: '',
-          branchName: '',
+          pinCode: '',
+          gst_document: null,
+          authorized_signatory_pan: '',
+          branch_name: '',
           state: ''
         }
       ]
@@ -428,26 +530,27 @@ const ComplianceProfile = ({ complianceItems }) => {
     validationSchema: Yup.object({
       gstBranches: Yup.array().of(
         Yup.object({
-          gstNumber: Yup.string()
+          gstin: Yup.string()
             .matches(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/, 'Invalid GST Number format (e.g., 22ABCDE1234F1Z5)')
             .required('GST Number is required'),
-          gstUsername: Yup.string().required('GST Username is required'),
-          password: Yup.string().required('Password is required'),
+          gst_username: Yup.string().required('GST Username is required'),
+          gst_password: Yup.string().required('Password is required'),
           address: Yup.string().required('Address is required'),
-          zipcode: Yup.string()
+          pinCode: Yup.string()
             .matches(/^\d{6}$/, 'Zipcode must be exactly 6 digits')
             .required('Zipcode is required'),
-          gstCertificate: Yup.mixed().required('GST Certificate is required'),
-          signatoryPAN: Yup.string()
+          gst_document: Yup.mixed().required('GST Certificate is required'),
+          authorized_signatory_pan: Yup.string()
             .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN format (e.g., ABCDE1234F)')
             .required('Signatory PAN is required'),
-          branchName: Yup.string().required('Branch Name is required'),
+          branch_name: Yup.string().required('Branch Name is required'),
           state: Yup.string().required('State is required')
         })
       )
     }),
     onSubmit: (values) => {
-      console.log('GST Form Data:', values);
+      let branches = values.gstBranches;
+      __postData(branches);
     }
   });
 
@@ -486,13 +589,11 @@ const ComplianceProfile = ({ complianceItems }) => {
                                 </Typography>
                                 <TextField
                                   fullWidth
-                                  name={`gstBranches[${idx}].gstNumber`}
-                                  value={branch.gstNumber}
+                                  name={`gstBranches[${idx}].gstin`}
+                                  value={branch.gstin}
                                   onChange={formik.handleChange}
-                                  error={
-                                    formik.touched.gstBranches?.[idx]?.gstNumber && Boolean(formik.errors.gstBranches?.[idx]?.gstNumber)
-                                  }
-                                  helperText={formik.touched.gstBranches?.[idx]?.gstNumber && formik.errors.gstBranches?.[idx]?.gstNumber}
+                                  error={formik.touched.gstBranches?.[idx]?.gstin && Boolean(formik.errors.gstBranches?.[idx]?.gstin)}
+                                  helperText={formik.touched.gstBranches?.[idx]?.gstin && formik.errors.gstBranches?.[idx]?.gstin}
                                 />
                               </Grid2>
 
@@ -502,15 +603,16 @@ const ComplianceProfile = ({ complianceItems }) => {
                                 </Typography>
                                 <TextField
                                   fullWidth
-                                  name={`gstBranches[${idx}].gstUsername`}
+                                  name={`gstBranches[${idx}].gst_username`}
                                   autoComplete="new-username"
-                                  value={branch.gstUsername}
+                                  value={branch.gst_username}
                                   onChange={formik.handleChange}
                                   error={
-                                    formik.touched.gstBranches?.[idx]?.gstUsername && Boolean(formik.errors.gstBranches?.[idx]?.gstUsername)
+                                    formik.touched.gstBranches?.[idx]?.gst_username &&
+                                    Boolean(formik.errors.gstBranches?.[idx]?.gst_username)
                                   }
                                   helperText={
-                                    formik.touched.gstBranches?.[idx]?.gstUsername && formik.errors.gstBranches?.[idx]?.gstUsername
+                                    formik.touched.gstBranches?.[idx]?.gst_username && formik.errors.gstBranches?.[idx]?.gst_username
                                   }
                                 />
                               </Grid2>
@@ -523,11 +625,16 @@ const ComplianceProfile = ({ complianceItems }) => {
                                   fullWidth
                                   type="text"
                                   autoComplete="new-password"
-                                  name={`gstBranches[${idx}].password`}
-                                  value={branch.password}
+                                  name={`gstBranches[${idx}].gst_password`}
+                                  value={branch.gst_password}
                                   onChange={formik.handleChange}
-                                  error={formik.touched.gstBranches?.[idx]?.password && Boolean(formik.errors.gstBranches?.[idx]?.password)}
-                                  helperText={formik.touched.gstBranches?.[idx]?.password && formik.errors.gstBranches?.[idx]?.password}
+                                  error={
+                                    formik.touched.gstBranches?.[idx]?.gst_password &&
+                                    Boolean(formik.errors.gstBranches?.[idx]?.gst_password)
+                                  }
+                                  helperText={
+                                    formik.touched.gstBranches?.[idx]?.gst_password && formik.errors.gstBranches?.[idx]?.gst_password
+                                  }
                                 />
                               </Grid2>
 
@@ -551,11 +658,11 @@ const ComplianceProfile = ({ complianceItems }) => {
                                 </Typography>
                                 <TextField
                                   fullWidth
-                                  name={`gstBranches[${idx}].zipcode`}
-                                  value={branch.zipcode}
+                                  name={`gstBranches[${idx}].pinCode`}
+                                  value={branch.pinCode}
                                   onChange={formik.handleChange}
-                                  error={formik.touched.gstBranches?.[idx]?.zipcode && Boolean(formik.errors.gstBranches?.[idx]?.zipcode)}
-                                  helperText={formik.touched.gstBranches?.[idx]?.zipcode && formik.errors.gstBranches?.[idx]?.zipcode}
+                                  error={formik.touched.gstBranches?.[idx]?.pinCode && Boolean(formik.errors.gstBranches?.[idx]?.pinCode)}
+                                  helperText={formik.touched.gstBranches?.[idx]?.pinCode && formik.errors.gstBranches?.[idx]?.pinCode}
                                 />
                               </Grid2>
 
@@ -567,27 +674,27 @@ const ComplianceProfile = ({ complianceItems }) => {
                                   variant="outlined"
                                   component="label"
                                   fullWidth
-                                  endIcon={branch.gstCertificate ? <DeleteIcon /> : null}
+                                  endIcon={branch.gst_document ? <DeleteIcon /> : null}
                                   onClick={() => {
-                                    if (branch.gstCertificate) {
-                                      formik.setFieldValue(`gstBranches[${idx}].gstCertificate`, null);
+                                    if (branch.gst_document) {
+                                      formik.setFieldValue(`gstBranches[${idx}].gst_document`, null);
                                     }
                                   }}
                                 >
-                                  {branch.gstCertificate ? `Uploaded: ${branch.gstCertificate.name}` : 'Upload'}
-                                  {!branch.gstCertificate && (
+                                  {branch.gst_document ? `Uploaded: ${branch.gst_document.name}` : 'Upload'}
+                                  {!branch.gst_document && (
                                     <input
                                       type="file"
                                       hidden
                                       onChange={(event) =>
-                                        formik.setFieldValue(`gstBranches[${idx}].gstCertificate`, event.currentTarget.files[0])
+                                        formik.setFieldValue(`gstBranches[${idx}].gst_document`, event.currentTarget.files[0])
                                       }
                                     />
                                   )}
                                 </Button>
-                                {formik.touched.gstBranches?.[idx]?.gstCertificate && formik.errors.gstBranches?.[idx]?.gstCertificate && (
+                                {formik.touched.gstBranches?.[idx]?.gst_document && formik.errors.gstBranches?.[idx]?.gst_document && (
                                   <Typography color="error" variant="body2">
-                                    {formik.errors.gstBranches[idx].gstCertificate}
+                                    {formik.errors.gstBranches[idx].gst_document}
                                   </Typography>
                                 )}
                               </Grid2>
@@ -598,15 +705,16 @@ const ComplianceProfile = ({ complianceItems }) => {
                                 </Typography>
                                 <TextField
                                   fullWidth
-                                  name={`gstBranches[${idx}].signatoryPAN`}
-                                  value={branch.signatoryPAN}
+                                  name={`gstBranches[${idx}].authorized_signatory_pan`}
+                                  value={branch.authorized_signatory_pan}
                                   onChange={formik.handleChange}
                                   error={
-                                    formik.touched.gstBranches?.[idx]?.signatoryPAN &&
-                                    Boolean(formik.errors.gstBranches?.[idx]?.signatoryPAN)
+                                    formik.touched.gstBranches?.[idx]?.authorized_signatory_pan &&
+                                    Boolean(formik.errors.gstBranches?.[idx]?.authorized_signatory_pan)
                                   }
                                   helperText={
-                                    formik.touched.gstBranches?.[idx]?.signatoryPAN && formik.errors.gstBranches?.[idx]?.signatoryPAN
+                                    formik.touched.gstBranches?.[idx]?.authorized_signatory_pan &&
+                                    formik.errors.gstBranches?.[idx]?.authorized_signatory_pan
                                   }
                                 />
                               </Grid2>
@@ -617,13 +725,15 @@ const ComplianceProfile = ({ complianceItems }) => {
                                 </Typography>
                                 <TextField
                                   fullWidth
-                                  name={`gstBranches[${idx}].branchName`}
-                                  value={branch.branchName}
+                                  name={`gstBranches[${idx}].branch_name`}
+                                  value={branch.branch_name}
                                   onChange={formik.handleChange}
                                   error={
-                                    formik.touched.gstBranches?.[idx]?.branchName && Boolean(formik.errors.gstBranches?.[idx]?.branchName)
+                                    formik.touched.gstBranches?.[idx]?.branch_name && Boolean(formik.errors.gstBranches?.[idx]?.branch_name)
                                   }
-                                  helperText={formik.touched.gstBranches?.[idx]?.branchName && formik.errors.gstBranches?.[idx]?.branchName}
+                                  helperText={
+                                    formik.touched.gstBranches?.[idx]?.branch_name && formik.errors.gstBranches?.[idx]?.branch_name
+                                  }
                                 />
                               </Grid2>
 
@@ -656,14 +766,14 @@ const ComplianceProfile = ({ complianceItems }) => {
                             onClick={() => {
                               if (formik.values.gstBranches.length < 5) {
                                 push({
-                                  gstNumber: '',
-                                  gstUsername: '',
-                                  password: '',
+                                  gstin: '',
+                                  gst_username: '',
+                                  gst_password: '',
                                   address: '',
-                                  zipcode: '',
-                                  gstCertificate: null,
-                                  signatoryPAN: '',
-                                  branchName: '',
+                                  pinCode: '',
+                                  gst_document: null,
+                                  authorized_signatory_pan: '',
+                                  branch_name: '',
                                   state: ''
                                 });
                               }
@@ -727,7 +837,7 @@ const KeyManagerialPersonnel = () => {
           {({ push, remove }) => (
             <>
               {formik.values.personnel.map((person, index) => (
-                <Box sx={{ px: 2, borderRadius: 2 }} key={'ChildBox' + index}>
+                <Box sx={{ borderRadius: 2 }} key={'ChildBox' + index}>
                   <Typography variant="h6" color="grey.800" sx={{ mb: 0.5 }}>
                     Director/ Authorized Signatory Details
                   </Typography>
@@ -747,7 +857,7 @@ const KeyManagerialPersonnel = () => {
                         />
                       </Grid2>
                     ))}
-                    {index !== 0 && (
+                    {index !== 0 ? (
                       <Grid2 size={{ xs: 12, sm: 4 }} key={'DeleteRow'}>
                         <Stack direction="column">
                           <Typography variant="caption" sx={{ ml: 0.2 }} color="grey.700">
@@ -765,23 +875,35 @@ const KeyManagerialPersonnel = () => {
                           </Button>
                         </Stack>
                       </Grid2>
+                    ) : (
+                      <Grid2 size={{ xs: 12, sm: 4 }} key={'EmptyGrid'}></Grid2>
+                    )}
+                    {index === formik.values.personnel.length - 1 && (
+                      <Grid2 size={{ xs: 12, sm: 4 }} key={'SubmitGrid'}>
+                        <Stack direction="column" sx={{ float: 'right' }}>
+                          <Typography variant="caption" sx={{ ml: 0.2 }} color="grey.700">
+                            &nbsp;
+                          </Typography>
+                          <Stack direction="row" sx={{ float: 'right', mb: 2, gap: 1.5 }}>
+                            <Button
+                              variant="outlined"
+                              startIcon={<Add />}
+                              onClick={() => push({ pan: '', name: '', mobile: '', email: '', din: '', designation: '', aadhar: '' })}
+                            >
+                              Add Personnel
+                            </Button>
+                            <Button type="submit" variant="contained" color="primary">
+                              Submit
+                            </Button>
+                          </Stack>
+                        </Stack>
+                      </Grid2>
                     )}
                   </Grid2>
+
                   <Divider sx={{ my: 3.5 }} />
                 </Box>
               ))}
-              <Stack direction="row" sx={{ float: 'right', mb: 2, mr: 2, gap: 1.5 }}>
-                <Button
-                  variant="outlined"
-                  startIcon={<Add />}
-                  onClick={() => push({ pan: '', name: '', mobile: '', email: '', din: '', designation: '', aadhar: '' })}
-                >
-                  Add Personnel
-                </Button>
-                <Button type="submit" variant="contained" color="primary">
-                  Submit
-                </Button>
-              </Stack>
             </>
           )}
         </FieldArray>
