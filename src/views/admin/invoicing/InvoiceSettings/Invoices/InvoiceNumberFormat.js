@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogActions, DialogContent, Button, Grid, Box } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, Button, Grid2, Box } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import CustomInput from '@/utils/CustomInput';
@@ -7,7 +7,7 @@ import Factory from '@/utils/Factory';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import { usePathname, useRouter } from 'next/navigation';
 
-const InvoiceNumberFormat = ({ businessDetailsData, handleBack }) => {
+const InvoiceNumberFormat = ({ businessDetailsData }) => {
   // State for invoice format data to be manually updated
   const pathname = usePathname();
 
@@ -33,9 +33,10 @@ const InvoiceNumberFormat = ({ businessDetailsData, handleBack }) => {
         .typeError('Invoice starting number must be an integer')
         .required('Invoice starting number is required')
         .integer('Invoice starting number must be an integer'),
-      prefix: Yup.string(),
-      suffix: Yup.string()
+      prefix: Yup.string().required('Prefix is required'),
+      suffix: Yup.string().required('Suffix is required')
     }),
+
     onSubmit: async (values) => {
       const url = `/invoicing/invoicing-profiles/${businessDetailsData?.id}/update/`;
 
@@ -48,18 +49,12 @@ const InvoiceNumberFormat = ({ businessDetailsData, handleBack }) => {
         }
       };
       console.log(postData);
-      try {
-        const { res } = await Factory('put', url, postData);
-        if (res.status_cd === 0) {
-          showSnackbar('Data Updated Successfully', 'success');
-          // router.push(`/invoicing`);
-        } else {
-          showSnackbar('Failed to update data', 'error');
-        }
-      } catch (error) {
-        // Catch and log any errors during the request
-        console.error('Error:', error);
-        showSnackbar('An error occurred during the request', 'error');
+      const { res } = await Factory('put', url, postData);
+      if (res.status_cd === 0) {
+        showSnackbar('Data Updated Successfully', 'success');
+        router.push(`/invoicing`);
+      } else {
+        showSnackbar(JSON.stringify(res.data.error), 'error');
       }
     }
   });
@@ -85,8 +80,8 @@ const InvoiceNumberFormat = ({ businessDetailsData, handleBack }) => {
   return (
     <Box sx={{}}>
       <DialogContent>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
+        <Grid2 container spacing={2}>
+          <Grid2 size={{ xs: 12, sm: 6 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <label htmlFor="startingNumber" style={{ marginRight: '8px' }}>
                 Invoice Starting Number:
@@ -102,13 +97,13 @@ const InvoiceNumberFormat = ({ businessDetailsData, handleBack }) => {
                 helperText={formik.touched.startingNumber && formik.errors.startingNumber}
               />
             </Box>
-          </Grid>
+          </Grid2>
 
-          <Grid item xs={12} sm={12}>
+          <Grid2 size={{ xs: 12 }}>
             <h2>Custom Settings:</h2>
-          </Grid>
+          </Grid2>
 
-          <Grid item xs={12} sm={6}>
+          <Grid2 size={{ xs: 12, sm: 6 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <label htmlFor="prefix" style={{ marginRight: '8px' }}>
                 Prefix:
@@ -124,9 +119,9 @@ const InvoiceNumberFormat = ({ businessDetailsData, handleBack }) => {
                 helperText={formik.touched.prefix && formik.errors.prefix}
               />
             </Box>
-          </Grid>
+          </Grid2>
 
-          <Grid item xs={12} sm={6}>
+          <Grid2 size={{ xs: 12, sm: 6 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <label htmlFor="suffix" style={{ marginRight: '8px' }}>
                 Suffix:
@@ -142,20 +137,16 @@ const InvoiceNumberFormat = ({ businessDetailsData, handleBack }) => {
                 helperText={formik.touched.suffix && formik.errors.suffix}
               />
             </Box>
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </DialogContent>
 
-      <DialogActions sx={{ display: 'flex', justifyContent: 'space-between', padding: 0 }}>
-        <Button variant="outlined" onClick={handleBack} sx={{ mt: 3 }}>
-          Back
-        </Button>
-
+      <DialogActions sx={{ display: 'flex', justifyContent: 'flex-end', padding: 0 }}>
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, gap: 2 }}>
           <Button onClick={formik.handleSubmit} color="primary" variant="contained">
             Save
           </Button>
-          <Button
+          {/* <Button
             onClick={() => {
               router.push(`/invoicing/generateInvoice`);
             }}
@@ -164,7 +155,7 @@ const InvoiceNumberFormat = ({ businessDetailsData, handleBack }) => {
             type="button"
           >
             New Invoice
-          </Button>
+          </Button> */}
         </Box>
       </DialogActions>
     </Box>

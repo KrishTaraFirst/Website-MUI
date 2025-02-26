@@ -104,114 +104,120 @@ const PayrollSetup = () => {
     }
   }, [businessId]);
   return (
-    <Box>
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="h4" textAlign="center" sx={{ mb: 1 }}>
-          Welcome {userData.firstname}
-        </Typography>
-        <Typography variant="subtitle1" textAlign="center" sx={{ color: 'text.disabled' }}>
-          Set up your organization before starting payroll
-        </Typography>
-      </Box>
+    <>
+      {loading ? (
+        <Loader />
+      ) : (
+        <Box>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="h4" textAlign="center" sx={{ mb: 1 }}>
+              Welcome {userData.firstname}
+            </Typography>
+            <Typography variant="subtitle1" textAlign="center" sx={{ color: 'text.disabled' }}>
+              Set up your organization before starting payroll
+            </Typography>
+          </Box>
 
-      <Grid2 container spacing={{ xs: 2, sm: 3 }}>
-        <Grid2 size={12}>
-          <MainCard sx={{ maxWidth: 800, margin: '0 auto', padding: 2 }}>
-            <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
-              <Stack direction="column" sx={{ flexGrow: 1, gap: 1 }}>
-                <Typography variant="h6" sx={{ color: '#4A4A4A', fontWeight: 600 }}>
-                  Payroll Setup
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#7D7D7D' }}>
-                  Follow these steps for an easy payroll process
-                </Typography>
-              </Stack>
-
-              <Stack direction="row" spacing={1} alignItems="center">
-                <LinearProgress
-                  variant="determinate"
-                  value={completionPercentage}
-                  sx={{
-                    height: 8,
-                    borderRadius: 4,
-                    width: 250,
-                    backgroundColor: '#EDEDED',
-                    '& .MuiLinearProgress-bar': {
-                      backgroundColor: '#4A90E2'
-                    }
-                  }}
-                />
-                <Typography variant="body2" sx={{ color: '#4A4A4A' }}>
-                  {completionPercentage}%
-                </Typography>
-              </Stack>
-            </Stack>
-
-            <Stack direction="column" spacing={2}>
-              {steps.map((step, index) => (
-                <Stack
-                  key={index}
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  sx={{
-                    p: 1,
-                    borderRadius: 2,
-                    backgroundColor: step.completed ? '#F9F9F9' : '#FFFFFF',
-                    boxShadow: step.completed ? 'none' : '0px 1px 3px rgba(0, 0, 0, 0.1)',
-                    '&:hover': {
-                      backgroundColor: '#F1F1F1'
-                    }
-                  }}
-                >
-                  <Stack direction="row" alignItems="center" spacing={2}>
-                    <Box
-                      sx={{
-                        width: 24,
-                        height: 24,
-                        borderRadius: '50%',
-                        backgroundColor: step.completed ? '#4A90E2' : '#E0E0E0',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      {step.completed && (
-                        <Typography variant="h6" sx={{ color: '#FFFFFF', fontSize: 16 }}>
-                          ✓
-                        </Typography>
-                      )}
-                    </Box>
-                    <Typography variant="body1" sx={{ fontWeight: 500, color: step.completed ? '#7D7D7D' : '#4A4A4A' }}>
-                      {index + 1}. {step.nameKey}
+          <Grid2 container spacing={{ xs: 2, sm: 3 }}>
+            <Grid2 size={12}>
+              <MainCard sx={{ maxWidth: 800, margin: '0 auto', padding: 2 }}>
+                <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                  <Stack direction="column" sx={{ flexGrow: 1, gap: 1 }}>
+                    <Typography variant="h6" sx={{ color: '#4A4A4A', fontWeight: 600 }}>
+                      Payroll Setup
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#7D7D7D' }}>
+                      Follow these steps for an easy payroll process
                     </Typography>
                   </Stack>
-                  <Button
-                    variant="outlined"
-                    sx={{
-                      color: step.completed ? '#4CAF50' : '#4A90E2',
-                      fontWeight: step.completed ? 500 : 400
-                    }}
-                    onClick={() => {
-                      const routeBase = `/payrollsetup${step.path}`;
-                      if (step.nameKey === 'Organization Details' && !payrollDetails?.payroll_id) {
-                        router.push(`${routeBase}?business-id=${businessId}`); // Navigate to route without payroll ID
-                      } else if (payrollDetails?.payroll_id) {
-                        router.push(`${routeBase}?payrollid=${payrollDetails.payroll_id}`); // Navigate with payroll ID
-                      } else {
-                        showSnackbar('Payroll ID not available', 'error');
-                      }
-                    }}
-                  >
-                    {step.completed ? 'Completed' : 'Complete Now'}
-                  </Button>
+
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <LinearProgress
+                      variant="determinate"
+                      value={completionPercentage}
+                      sx={{
+                        height: 8,
+                        borderRadius: 4,
+                        width: 250,
+                        backgroundColor: '#EDEDED',
+                        '& .MuiLinearProgress-bar': {
+                          backgroundColor: '#4A90E2'
+                        }
+                      }}
+                    />
+                    <Typography variant="body2" sx={{ color: '#4A4A4A' }}>
+                      {completionPercentage}%
+                    </Typography>
+                  </Stack>
                 </Stack>
-              ))}
-            </Stack>
-          </MainCard>
-        </Grid2>
-      </Grid2>
-    </Box>
+
+                <Stack direction="column" spacing={2}>
+                  {steps.map((step, index) => (
+                    <Stack
+                      key={index}
+                      direction="row"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      sx={{
+                        p: 1,
+                        borderRadius: 2,
+                        backgroundColor: step.completed ? '#F9F9F9' : '#FFFFFF',
+                        boxShadow: step.completed ? 'none' : '0px 1px 3px rgba(0, 0, 0, 0.1)',
+                        '&:hover': {
+                          backgroundColor: '#F1F1F1'
+                        }
+                      }}
+                    >
+                      <Stack direction="row" alignItems="center" spacing={2}>
+                        <Box
+                          sx={{
+                            width: 24,
+                            height: 24,
+                            borderRadius: '50%',
+                            backgroundColor: step.completed ? '#4A90E2' : '#E0E0E0',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}
+                        >
+                          {step.completed && (
+                            <Typography variant="h6" sx={{ color: '#FFFFFF', fontSize: 16 }}>
+                              ✓
+                            </Typography>
+                          )}
+                        </Box>
+                        <Typography variant="body1" sx={{ fontWeight: 500, color: step.completed ? '#7D7D7D' : '#4A4A4A' }}>
+                          {index + 1}. {step.nameKey}
+                        </Typography>
+                      </Stack>
+                      <Button
+                        variant="outlined"
+                        sx={{
+                          color: step.completed ? '#4CAF50' : '#4A90E2',
+                          fontWeight: step.completed ? 500 : 400
+                        }}
+                        onClick={() => {
+                          const routeBase = `/payrollsetup${step.path}`;
+                          if (step.nameKey === 'Organization Details' && !payrollDetails?.payroll_id) {
+                            router.push(`${routeBase}?business-id=${businessId}`); // Navigate to route without payroll ID
+                          } else if (payrollDetails?.payroll_id) {
+                            router.push(`${routeBase}?payrollid=${payrollDetails.payroll_id}`); // Navigate with payroll ID
+                          } else {
+                            showSnackbar('Payroll ID not available', 'error');
+                          }
+                        }}
+                      >
+                        {step.completed ? 'Completed' : 'Complete Now'}
+                      </Button>
+                    </Stack>
+                  ))}
+                </Stack>
+              </MainCard>
+            </Grid2>
+          </Grid2>
+        </Box>
+      )}
+    </>
   );
 };
 

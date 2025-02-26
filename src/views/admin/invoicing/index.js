@@ -13,6 +13,7 @@ import { IconSparkles, IconSettings2 } from '@tabler/icons-react';
 import AddInvoice from './InvoicingComponent/AddInvoice';
 import useCurrentUser from '@/hooks/useCurrentUser';
 import { CoPresentOutlined } from '@mui/icons-material';
+import Loader from '@/components/PageLoader';
 
 /***************************  ANALYTICS - OVERVIEW  ***************************/
 
@@ -23,12 +24,13 @@ export default function AnalyticsOverview() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [businessDetails, setBusinessDetails] = useState({});
-  const [invoicesList, setInvoicesList] = useState([]);
   const chipDefaultProps = { color: 'black', variant: 'text', size: 'small' };
   const { showSnackbar } = useSnackbar();
   const [clientListData, setClientListData] = useState({});
   const [businessId, setBusinessId] = useState(null);
   const [type, setType] = useState('');
+  const [loading, setLoading] = useState(false); // State for loader
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -36,61 +38,20 @@ export default function AnalyticsOverview() {
   const handleOpen = () => {
     setOpen(true);
   };
-  // console.log(userData);
-  // const getInvoicesList = async () => {
-  //   if (businessDetails?.id) {
-  //     let url = `/invoicing/invoice-retrieve/${businessDetails?.id}`;
-  //     const { res } = await Factory('get', url, {});
-  //     if (res.status_cd === 0) {
-  //       setInvoicesList(res.data.invoices);
-  //     }
-  //   }
-  // };
-  const fetchBusinessDetails = async () => {
-    let id = userData.user_type === 'Business' ? userData.id : userData.businesssDetails.business[0].id;
-    let url = `/invoicing/invoicing-profiles/?business_id=${id}`;
-    const { res } = await Factory('get', url, {});
-    console.log(res);
-    // if (res.status_cd === 0) {
-    //   const businessData = { ...res.data, state: 'Telangana' };
-    //   setBusinessDetails(businessData);
-    // } else if (res.status === 404) {
-    //   router.push(`invoicing/settings`);
-    // } else {
-    //   return;
-    // }
-  };
-  // useEffect(() => {
-  //   if (businessId) {
-  //     fetchBusinessDetails(businessId);
-  //   }
-  // }, [businessId]);
-
-  // const fetch_business_Details = async () => {
-  //   let url = `/user_management/businesses-by-client/?user_id=${userData.id}`;
-  //   const { res, error } = await Factory('get', url, {});
-  //   console.log(res);
-  //   if (res?.status_cd === 0) {
-  //     setBusinessId(res?.data.id);
-  //   } else {
-  //     showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetch_business_Details();
-  // }, []);
 
   const invoice_settings_status_check = async () => {
-    let id = userData.user_type === 'Business' ? userData.id : userData.businesssDetails.business[0].id;
+    setLoading(true);
+    // let id = userData.user_type === 'Business' ? userData.id : userData.businesssDetails.business[0].id;
+    let id = userData.user_type === 'Business' ? userData.business_affiliated[0].id : userData.businesssDetails.business[0].id;
     let url = `/invoicing/invoicing-profile-check/?business_id=${id}`;
     const { res } = await Factory('get', url, {});
-
+    setLoading(false);
     if (res.status_cd === 0 && res.data.exists === false) {
-      // fetchBusinessDetails();
       router.push(`invoicing/settings`);
+    } else if (res.status_cd === 0 && res.data.exists === true) {
+      setBusinessId(res.data.invoicing_profile_id);
     } else {
-      showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
+      showSnackbar(JSON.stringify(res?.statusText), 'error');
     }
   };
   useEffect(() => {
@@ -130,21 +91,23 @@ export default function AnalyticsOverview() {
           </Button>
         </Stack>
       </Stack>
-      <Grid container spacing={{ xs: 2, md: 3 }}>
-        <Grid size={12}>
-          <OverviewCard
-            invoicesList={invoicesList}
-            businessDetailsData={businessDetails}
-            open={open}
-            onClose={handleClose}
-            // getInvoicesList={getInvoicesList}
-            clientListData={clientListData}
-            type={type}
-            setType={setType}
-            handleOpen={handleOpen}
-          />
+      {loading ? (
+        <Loader />
+      ) : (
+        <Grid container spacing={{ xs: 2, md: 3 }}>
+          <Grid size={12}>
+            <OverviewCard
+              businessId={businessId}
+              open={open}
+              onClose={handleClose}
+              clientListData={clientListData}
+              type={type}
+              setType={setType}
+              handleOpen={handleOpen}
+            />
+          </Grid>
         </Grid>
-      </Grid>
+      )}
     </Stack>
   );
 }

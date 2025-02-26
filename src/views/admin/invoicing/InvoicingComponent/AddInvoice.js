@@ -16,6 +16,7 @@ import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import { IconPlus } from '@tabler/icons-react';
 import { IconTrash } from '@tabler/icons-react';
 import { indianCurrency } from '../../../../utils/CurrencyToggle';
+import HomeCard from '@/components/cards/HomeCard';
 
 import {
   Table,
@@ -46,6 +47,7 @@ import Factory from '@/utils/Factory';
 import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
 import BulkItems from './BulkItems';
 import { useSnackbar } from '@/components/CustomSnackbar';
+import MainCard from '@/components/MainCard';
 
 const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, businessDetailsData, customers, open, onClose, itemsList }) => {
   const [addInvoiceData] = useState({
@@ -483,7 +485,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
           onBlur={formik.handleBlur}
           error={formik.touched[section]?.[item.name] && Boolean(formik.errors[section]?.[item.name])}
           helperText={formik.touched[section]?.[item.name] && formik.errors[section]?.[item.name]}
-          textColor={selectedInvoice && '#776080'}
+          // textColor={selectedInvoice && '#776080'}
           disabled={item.name === 'country' || formik.values.same_address || formik.values.not_applicablefor_shipping}
         />
       );
@@ -723,391 +725,374 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
 
   const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue, resetForm } = formik;
   return (
-    <Stack sx={{ gap: 3 }}>
-      <Stack direction="row" sx={{ alignItems: 'end', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-        <Stack direction="column" sx={{ gap: 0.5 }}>
-          <Typography variant="h4" sx={{ fontWeight: 400 }}>
-            {selectedInvoice ? 'Edit' : 'Create'} Invoice
-          </Typography>
-          <Typography variant="caption" sx={{ color: 'grey.700' }}>
-            Some text tagline regarding invoicing.
-          </Typography>
-        </Stack>
-        <Stack direction="row" sx={{ gap: 1.5 }}></Stack>
-      </Stack>
+    <HomeCard title={selectedInvoice ? 'Edit Invoice' : 'Create Invoice'} tagline="Some text tagline regarding invoicing.">
+      <MainCard>
+        <Stack direction="row" sx={{ alignItems: 'end', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}></Stack>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            formik.setFieldValue('invoice_status', 'Pending Approval');
+            formik.handleSubmit(); // Calls Formik's submission logic
+          }}
+        >
+          <Box sx={{ mb: 1 }}>
+            <Typography variant="h6">Invoice Details</Typography>
+          </Box>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          formik.setFieldValue('invoice_status', 'Pending Approval');
-          formik.handleSubmit(); // Calls Formik's submission logic
-        }}
-      >
-        {/* Invoice Data Section */}
+          <Grid container spacing={2}>
+            {addInvoiceData.invoice_data.map((item) => (
+              <Grid item xs={12} sm={6} key={item.name}>
+                <div style={{ paddingBottom: '5px' }}>
+                  <Typography sx={{ color: 'grey.800' }}>{item.label}</Typography>
+                </div>
+                {renderField(item)}
+              </Grid>
+            ))}
+          </Grid>
+          <Divider sx={{ mb: 4, mt: 4 }} />
 
-        <Box sx={{ mb: 1 }}>
-          <Typography variant="h6">Invoice Details</Typography>
-        </Box>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="h6">Billing & Shipping Information</Typography>
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+              <FormControlLabel
+                control={<Checkbox checked={formik.values.same_address} onChange={sameAddressFunction} name="same_address" />}
+                label="Same as Billing Address"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={formik.values.not_applicablefor_shipping}
+                    onChange={notApplicablefor_shippingFunction}
+                    name="not_applicablefor_shipping"
+                  />
+                }
+                label="Not applicable for Shipping"
+              />
+            </Box>
+          </Box>
 
-        <Grid container spacing={2}>
-          {addInvoiceData.invoice_data.map((item) => (
-            <Grid item xs={12} sm={6} key={item.name}>
-              <div style={{ paddingBottom: '5px' }}>
-                <Typography sx={{ color: 'grey.800' }}>{item.label}</Typography>
-              </div>
-              {renderField(item)}
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="h6">Billing Information</Typography>
+              </Box>
+              {addInvoiceData.billing.map((item) => (
+                <Grid item xs={12} key={item.name} style={{ paddingBottom: '10px' }}>
+                  <div style={{ paddingBottom: '5px' }}>
+                    <Typography sx={{ color: 'grey.800' }}>{item.label}</Typography>
+                  </div>
+                  {renderField2(item, 'billing_address')}
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
-        <Divider sx={{ mb: 4, mt: 4 }} />
 
-        {/* Billing and Shipping Section - side by side */}
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="h6">Billing & Shipping Information</Typography>
-          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            <FormControlLabel
-              control={<Checkbox checked={formik.values.same_address} onChange={sameAddressFunction} name="same_address" />}
-              label="Same as Billing Address"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={formik.values.not_applicablefor_shipping}
-                  onChange={notApplicablefor_shippingFunction}
-                  name="not_applicablefor_shipping"
-                />
-              }
-              label="Not applicable for Shipping"
-            />
-          </Box>
-        </Box>
-        {/* Grid for Billing and Shipping Information */}
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="h6">Billing Information</Typography>
-            </Box>
-            {addInvoiceData.billing.map((item) => (
-              <Grid item xs={12} key={item.name} style={{ paddingBottom: '10px' }}>
-                <div style={{ paddingBottom: '5px' }}>
-                  <Typography sx={{ color: 'grey.800' }}>{item.label}</Typography>
-                </div>
-                {renderField2(item, 'billing_address')}
-              </Grid>
-            ))}
+            <Grid item xs={12} sm={6}>
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="h6">Shipping Information</Typography>
+              </Box>
+              {addInvoiceData.shipping.map((item) => (
+                <Grid item xs={12} key={item.name} style={{ paddingBottom: '10px' }}>
+                  <div style={{ paddingBottom: '5px' }}>
+                    <Typography sx={{ color: 'grey.800' }}>{item.label}</Typography>
+                  </div>
+                  {renderField2(item, 'shipping_address')}
+                </Grid>
+              ))}
+            </Grid>
           </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="h6">Shipping Information</Typography>
-            </Box>
-            {addInvoiceData.shipping.map((item) => (
-              <Grid item xs={12} key={item.name} style={{ paddingBottom: '10px' }}>
-                <div style={{ paddingBottom: '5px' }}>
-                  <Typography sx={{ color: 'grey.800' }}>{item.label}</Typography>
-                </div>
-                {renderField2(item, 'shipping_address')}
-              </Grid>
-            ))}
-          </Grid>
-        </Grid>
+          <Divider sx={{ mt: 4, mb: 4 }} />
+          <Grid item xs={12} md={6}>
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h6">Item Details</Typography>
 
-        {/* Item Details Section (Table) */}
-        <Divider sx={{ mt: 4, mb: 4 }} />
-        <Grid item xs={12} md={6}>
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h6">Item Details</Typography>
-
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Item</TableCell>
-                    <TableCell>Quantity</TableCell>
-                    <TableCell>Rate</TableCell>
-                    <TableCell>Discount type</TableCell>
-                    <TableCell>Discount</TableCell>
-                    <TableCell>Amount</TableCell>
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>Tax %</TableCell>
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>Tax Amount</TableCell>
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>Total Amount</TableCell>
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>Action</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {formik.values.item_details.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell>
-                        <CustomAutocomplete
-                          size="small"
-                          options={itemsList.map((item) => item.name)}
-                          value={item.item || null}
-                          onChange={(event, newValue) => handleItemChange(index, newValue)}
-                          style={{ minWidth: 230, maxWidth: 230 }}
-                          renderInput={(params) => <TextField {...params} />}
-                        />
-                      </TableCell>
-
-                      <TableCell>
-                        <CustomInput
-                          name={`item_details[${index}].quantity`}
-                          value={item.quantity}
-                          style={{ minWidth: 100, maxWidth: 100 }}
-                          onChange={(e) => handleQuantityChange(index, e.target.value)}
-                        />
-                      </TableCell>
-
-                      <TableCell>
-                        <CustomInput
-                          name={`item_details[${index}].rate`}
-                          value={item.rate}
-                          style={{ minWidth: 120, maxWidth: 120 }}
-                          onChange={(e) => handleRateChange(index, e.target.value)}
-                          placeholder={indianCurrency}
-                        />
-                      </TableCell>
-
-                      <TableCell>
-                        <CustomAutocomplete
-                          options={['%', '₹']}
-                          value={item.discount_type || ''}
-                          onChange={(event, newDiscountType) => handleDiscountTypeChange(index, newDiscountType)}
-                          renderInput={(params) => <TextField {...params} />}
-                        />
-                      </TableCell>
-
-                      <TableCell>
-                        <CustomInput
-                          name={`item_details[${index}].discount`}
-                          value={item.discount}
-                          style={{ minWidth: 100, maxWidth: 100 }}
-                          onChange={(e) => handleDiscountChange(index, e.target.value)}
-                        />
-                      </TableCell>
-
-                      <TableCell>
-                        {indianCurrency}&nbsp;{item.amount.toFixed(2)}
-                      </TableCell>
-
-                      <TableCell>{item.tax}</TableCell>
-
-                      <TableCell>
-                        {indianCurrency}&nbsp;{item.taxamount.toFixed(2)}
-                      </TableCell>
-
-                      <TableCell>
-                        {' '}
-                        {indianCurrency}&nbsp;{item.total_amount.toFixed(2)}
-                      </TableCell>
-                      <TableCell>
-                        <ListItemButton sx={{ color: '#d32f2f' }} onClick={() => handleDeleteItem(index)}>
-                          {' '}
-                          <ListItemIcon>
-                            <IconTrash size={16} style={{ color: '#d32f2f' }} /> {/* Apply color with inline style */}
-                          </ListItemIcon>
-                        </ListItemButton>
-                      </TableCell>
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Item</TableCell>
+                      <TableCell>Quantity</TableCell>
+                      <TableCell>Rate</TableCell>
+                      <TableCell>Discount type</TableCell>
+                      <TableCell>Discount</TableCell>
+                      <TableCell>Amount</TableCell>
+                      <TableCell sx={{ whiteSpace: 'nowrap' }}>Tax %</TableCell>
+                      <TableCell sx={{ whiteSpace: 'nowrap' }}>Tax Amount</TableCell>
+                      <TableCell sx={{ whiteSpace: 'nowrap' }}>Total Amount</TableCell>
+                      <TableCell sx={{ whiteSpace: 'nowrap' }}>Action</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  </TableHead>
+                  <TableBody>
+                    {formik.values.item_details.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell>
+                          <CustomAutocomplete
+                            size="small"
+                            options={itemsList.map((item) => item.name)}
+                            value={item.item || null}
+                            onChange={(event, newValue) => handleItemChange(index, newValue)}
+                            style={{ minWidth: 230, maxWidth: 230 }}
+                            renderInput={(params) => <TextField {...params} />}
+                          />
+                        </TableCell>
 
-            <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
-              <Button variant="contained" startIcon={<IconPlus size={16} />} onClick={handleAddItemRow}>
-                Add New Row
-              </Button>
-              <Button
-                variant="contained"
-                startIcon={<IconPlus size={16} />}
-                onClick={() => {
-                  setSaveButton(false);
-                  setBulkItemsDialogue(true);
-                }}
-              >
-                Add Items in Bulk
-              </Button>
+                        <TableCell>
+                          <CustomInput
+                            name={`item_details[${index}].quantity`}
+                            value={item.quantity}
+                            style={{ minWidth: 100, maxWidth: 100 }}
+                            onChange={(e) => handleQuantityChange(index, e.target.value)}
+                          />
+                        </TableCell>
+
+                        <TableCell>
+                          <CustomInput
+                            name={`item_details[${index}].rate`}
+                            value={item.rate}
+                            style={{ minWidth: 120, maxWidth: 120 }}
+                            onChange={(e) => handleRateChange(index, e.target.value)}
+                            placeholder={indianCurrency}
+                          />
+                        </TableCell>
+
+                        <TableCell>
+                          <CustomAutocomplete
+                            options={['%', '₹']}
+                            value={item.discount_type || ''}
+                            onChange={(event, newDiscountType) => handleDiscountTypeChange(index, newDiscountType)}
+                            renderInput={(params) => <TextField {...params} />}
+                          />
+                        </TableCell>
+
+                        <TableCell>
+                          <CustomInput
+                            name={`item_details[${index}].discount`}
+                            value={item.discount}
+                            style={{ minWidth: 100, maxWidth: 100 }}
+                            onChange={(e) => handleDiscountChange(index, e.target.value)}
+                          />
+                        </TableCell>
+
+                        <TableCell>
+                          {indianCurrency}&nbsp;{item.amount.toFixed(2)}
+                        </TableCell>
+
+                        <TableCell>{item.tax}</TableCell>
+
+                        <TableCell>
+                          {indianCurrency}&nbsp;{item.taxamount.toFixed(2)}
+                        </TableCell>
+
+                        <TableCell>
+                          {' '}
+                          {indianCurrency}&nbsp;{item.total_amount.toFixed(2)}
+                        </TableCell>
+                        <TableCell>
+                          <ListItemButton sx={{ color: '#d32f2f' }} onClick={() => handleDeleteItem(index)}>
+                            {' '}
+                            <ListItemIcon>
+                              <IconTrash size={16} style={{ color: '#d32f2f' }} />
+                            </ListItemIcon>
+                          </ListItemButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+
+              <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
+                <Button variant="contained" startIcon={<IconPlus size={16} />} onClick={handleAddItemRow}>
+                  Add New Row
+                </Button>
+                <Button
+                  variant="contained"
+                  startIcon={<IconPlus size={16} />}
+                  onClick={() => {
+                    setSaveButton(false);
+                    setBulkItemsDialogue(true);
+                  }}
+                >
+                  Add Items in Bulk
+                </Button>
+              </Box>
             </Box>
-          </Box>
-        </Grid>
+          </Grid>
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 3 }}>
-            <Box>
-              <Typography variant="subtitle2" gutterBottom>
-                Customer Notes
-              </Typography>
-              <CustomInput
-                multiline
-                minRows={4}
-                maxRows={6}
-                name="notes" // Assuming 'notes' is the key in your initialValues
-                value={formik.values.notes}
-                onChange={(e) => {
-                  setSaveButton(false);
-                  formik.setFieldValue('notes', e.target.value);
-                }}
-              />
-            </Box>
-
-            <Box>
-              <Typography variant="subtitle2" gutterBottom>
-                Terms & Conditions
-              </Typography>
-              <CustomInput
-                multiline
-                minRows={4}
-                maxRows={6}
-                name="terms_and_conditions" // Assuming 'terms_and_conditions' is the key in your initialValues
-                value={formik.values.terms_and_conditions}
-                onChange={(e) => {
-                  setSaveButton(false);
-                  formik.setFieldValue('terms_and_conditions', e.target.value);
-                }}
-              />
-            </Box>
-          </Box>
-
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            {/* Sub Total */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Typography variant="body1">Sub Total:</Typography>
-              <Typography variant="body1">
-                {indianCurrency} {formik.values.subtotal_amount.toFixed(2)}
-              </Typography>
-            </Box>
-
-            {/* Shipping Charges Section */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="body1" sx={{ whiteSpace: 'nowrap' }}>
-                  Shipping Charges:
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 3 }}>
+              <Box>
+                <Typography variant="subtitle2" gutterBottom>
+                  Customer Notes
                 </Typography>
                 <CustomInput
-                  name="shipping_amount"
-                  placeholder={indianCurrency}
-                  value={formik.values.shipping_amount}
-                  onChange={handleShippingAmountChange}
-                  sx={{ minWidth: '200px', maxWidth: '200px', ml: 1, mt: -1, mr: 2 }}
+                  multiline
+                  minRows={4}
+                  maxRows={6}
+                  name="notes" // Assuming 'notes' is the key in your initialValues
+                  value={formik.values.notes}
+                  onChange={(e) => {
+                    setSaveButton(false);
+                    formik.setFieldValue('notes', e.target.value);
+                  }}
                 />
+              </Box>
+
+              <Box>
+                <Typography variant="subtitle2" gutterBottom>
+                  Terms & Conditions
+                </Typography>
+                <CustomInput
+                  multiline
+                  minRows={4}
+                  maxRows={6}
+                  name="terms_and_conditions" // Assuming 'terms_and_conditions' is the key in your initialValues
+                  value={formik.values.terms_and_conditions}
+                  onChange={(e) => {
+                    setSaveButton(false);
+                    formik.setFieldValue('terms_and_conditions', e.target.value);
+                  }}
+                />
+              </Box>
+            </Box>
+
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Typography variant="body1">Sub Total:</Typography>
                 <Typography variant="body1">
-                  {indianCurrency} {formik.values.shipping_amount.toFixed(2)}
+                  {indianCurrency} {formik.values.subtotal_amount.toFixed(2)}
                 </Typography>
               </Box>
 
-              <FormControlLabel
-                control={<Checkbox checked={formik.values.applied_tax} onChange={handleApplyTaxChange} name="apply_tax_on_shipping" />}
-                label="Apply Tax on Shipping Charge"
-              />
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body1" sx={{ whiteSpace: 'nowrap' }}>
+                    Shipping Charges:
+                  </Typography>
+                  <CustomInput
+                    name="shipping_amount"
+                    placeholder={indianCurrency}
+                    value={formik.values.shipping_amount}
+                    onChange={handleShippingAmountChange}
+                    sx={{ minWidth: '200px', maxWidth: '200px', ml: 1, mt: -1, mr: 2 }}
+                  />
+                  <Typography variant="body1">
+                    {indianCurrency} {formik.values.shipping_amount.toFixed(2)}
+                  </Typography>
+                </Box>
+
+                <FormControlLabel
+                  control={<Checkbox checked={formik.values.applied_tax} onChange={handleApplyTaxChange} name="apply_tax_on_shipping" />}
+                  label="Apply Tax on Shipping Charge"
+                />
+
+                {formik.values.applied_tax && (
+                  <>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <InputLabel>GST Rate</InputLabel>
+                      <Select value={formik.values.selected_gst_rate} onChange={handleGSTRateChange} sx={{ minWidth: 120 }}>
+                        {gstRates.map((rate) => (
+                          <MenuItem key={rate} value={rate}>
+                            {rate}%
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </Box>
+                    <Typography variant="body2" sx={{ mt: 1 }}>
+                      Shipping Amount (With Tax): {indianCurrency} {formik.values.shipping_amount_with_tax.toFixed(2)}
+                    </Typography>
+                  </>
+                )}
+              </Box>
+
+              {formik.values.total_cgst_amount > 0 && (
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body1">CGST:</Typography>
+                  <Typography variant="body1">
+                    {indianCurrency} {formik.values.total_cgst_amount.toFixed(2)}
+                  </Typography>
+                </Box>
+              )}
+
+              {formik.values.total_sgst_amount > 0 && (
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body1">SGST:</Typography>
+                  <Typography variant="body1">
+                    {indianCurrency} {formik.values.total_sgst_amount.toFixed(2)}
+                  </Typography>
+                </Box>
+              )}
+
+              {formik.values.total_igst_amount > 0 && (
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body1">IGST:</Typography>
+                  <Typography variant="body1">
+                    {indianCurrency} {formik.values.total_igst_amount.toFixed(2)}
+                  </Typography>
+                </Box>
+              )}
 
               {formik.values.applied_tax && (
-                <>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <InputLabel>GST Rate</InputLabel>
-                    <Select value={formik.values.selected_gst_rate} onChange={handleGSTRateChange} sx={{ minWidth: 120 }}>
-                      {gstRates.map((rate) => (
-                        <MenuItem key={rate} value={rate}>
-                          {rate}%
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </Box>
-                  <Typography variant="body2" sx={{ mt: 1 }}>
-                    Shipping Amount (With Tax): {indianCurrency} {formik.values.shipping_amount_with_tax.toFixed(2)}
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body1">Tax on Shipping:</Typography>
+                  <Typography variant="body1">
+                    {indianCurrency} {formik.values.shipping_tax.toFixed(2)}
                   </Typography>
-                </>
+                </Box>
               )}
-            </Box>
 
-            {/* Taxes Section */}
-            {formik.values.total_cgst_amount > 0 && (
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="body1">CGST:</Typography>
-                <Typography variant="body1">
-                  {indianCurrency} {formik.values.total_cgst_amount.toFixed(2)}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
+                <Typography variant="h6" fontWeight="bold">
+                  Total:
+                </Typography>
+                <Typography variant="h6" fontWeight="bold">
+                  {indianCurrency} {formik.values.total_amount.toFixed(2)}
                 </Typography>
               </Box>
-            )}
-
-            {formik.values.total_sgst_amount > 0 && (
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="body1">SGST:</Typography>
-                <Typography variant="body1">
-                  {indianCurrency} {formik.values.total_sgst_amount.toFixed(2)}
-                </Typography>
-              </Box>
-            )}
-
-            {formik.values.total_igst_amount > 0 && (
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="body1">IGST:</Typography>
-                <Typography variant="body1">
-                  {indianCurrency} {formik.values.total_igst_amount.toFixed(2)}
-                </Typography>
-              </Box>
-            )}
-
-            {formik.values.applied_tax && (
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="body1">Tax on Shipping:</Typography>
-                <Typography variant="body1">
-                  {indianCurrency} {formik.values.shipping_tax.toFixed(2)}
-                </Typography>
-              </Box>
-            )}
-
-            {/* Total Amount */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
-              <Typography variant="h6" fontWeight="bold">
-                Total:
-              </Typography>
-              <Typography variant="h6" fontWeight="bold">
-                {indianCurrency} {formik.values.total_amount.toFixed(2)}
-              </Typography>
             </Box>
           </Box>
-        </Box>
-        <Divider sx={{ mt: 3, mb: 3 }} />
+          <Divider sx={{ mt: 3, mb: 3 }} />
 
-        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 6, gap: 2 }}>
-          <Button
-            variant="outlined"
-            color="error"
-            type="button"
-            onClick={() => {
-              router.push(`/invoicing`);
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            type="button"
-            onClick={() => {
-              formik.setFieldValue('invoice_status', 'Draft'); // 'Draft' should be a string
-              formik.handleSubmit();
-            }}
-            disabled={formik.values.invoice_status === 'Draft'}
-          >
-            Save as Draft
-          </Button>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 6, gap: 2 }}>
+            <Button
+              variant="outlined"
+              color="error"
+              type="button"
+              onClick={() => {
+                router.push(`/invoicing`);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              type="button"
+              onClick={() => {
+                formik.setFieldValue('invoice_status', 'Draft'); // 'Draft' should be a string
+                formik.handleSubmit();
+              }}
+              disabled={formik.values.invoice_status === 'Draft'}
+            >
+              Save as Draft
+            </Button>
 
-          <Button variant="contained" disabled={saveButton} type="submit">
-            Save
-          </Button>
-        </Box>
-      </form>
+            <Button variant="contained" disabled={saveButton} type="submit">
+              Save
+            </Button>
+          </Box>
+        </form>
 
-      <BulkItems
-        bulkItemsDialogue={bulkItemsDialogue}
-        setBulkItemsDialogue={setBulkItemsDialogue}
-        itemsList={itemsList}
-        aria-labelledby="form-dialog-title"
-        fullWidth
-        maxWidth="xl"
-        bulkItemSave={bulkItemSave}
-      />
-    </Stack>
+        <BulkItems
+          bulkItemsDialogue={bulkItemsDialogue}
+          setBulkItemsDialogue={setBulkItemsDialogue}
+          itemsList={itemsList}
+          aria-labelledby="form-dialog-title"
+          fullWidth
+          maxWidth="xl"
+          bulkItemSave={bulkItemSave}
+        />
+      </MainCard>
+    </HomeCard>
   );
 };
 
