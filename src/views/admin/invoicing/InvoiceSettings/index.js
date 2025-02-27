@@ -56,7 +56,6 @@ const BasicTabs = ({ type }) => {
   const getCustomersData = async (id) => {
     setLoading(true);
     const { res } = await Factory('get', `/invoicing/customer_profiles/?invoicing_profile_id=${id}`, {});
-    console.log(res);
     if (res.status_cd === 0) {
       setCustomers(res.data.customer_profiles);
     } else {
@@ -111,7 +110,6 @@ const BasicTabs = ({ type }) => {
 
     let url = `/invoicing/invoicing-profiles/?business_id=${id}`;
     const { res } = await Factory('get', url, {});
-    console.log(res);
     if (res.status_cd === 0) {
       const businessData = { ...res.data };
       setBusinessDetails(businessData);

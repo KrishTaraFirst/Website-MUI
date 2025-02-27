@@ -10,6 +10,7 @@ import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import { Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 // @project
 import GraphicsCard from '@/components/cards/GraphicsCard';
@@ -24,6 +25,7 @@ import { useSnackbar } from '@/components/CustomSnackbar';
 import Factory from '@/utils/Factory';
 import { ThemeDirection } from '@/config';
 import { SECTION_COMMON_PY } from '@/utils/constant';
+import { BASE_URL } from 'constants';
 
 /***************************  EARLY ACCESS  ***************************/
 
@@ -494,7 +496,30 @@ export default function EarlyAccess() {
       </div>
     );
   };
-
+  const downloadInvoice = async (id) => {
+    try {
+      const tokens = JSON.parse(localStorage.getItem('auth-user'));
+      const response = await axios.get(`${BASE_URL}/invoicing/create-pdf/${id}`, {
+        responseType: 'arraybuffer',
+        headers: {
+          Authorization: `Bearer ${tokens.access_token}`
+        }
+      });
+      if (response.data.byteLength > 0) {
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+        }, 10000);
+      } else {
+        showSnackbar('Invalid response from server', 'error');
+      }
+    } catch (error) {
+      console.error('Error fetching PDF:', error);
+      showSnackbar('Invalid response from server', 'error');
+    }
+  };
   return (
     <ContainerWrapper sx={{ py: SECTION_COMMON_PY }}>
       <Box
@@ -545,8 +570,15 @@ export default function EarlyAccess() {
                 <Button fullWidth onClick={updateStatus} disabled={invoice.invoice_status === 'Approved'} variant="contained">
                   Approve Invoice
                 </Button>
-                <Button fullWidth variant="contained" onClick={() => showSnackbar('Coming soon', 'success')}>
-                  Email Invoice
+                <Button
+                  fullWidth
+                  variant="contained"
+                  onClick={() => {
+                    downloadInvoice(invoice_id);
+                    // showSnackbar('Coming soon', 'success');
+                  }}
+                >
+                  View Invoice
                 </Button>
               </Stack>
               <Stack direction="column">

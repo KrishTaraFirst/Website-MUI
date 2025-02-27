@@ -5,6 +5,7 @@ import Factory from '@/utils/Factory';
 import { useSearchParams } from 'next/navigation';
 import { IconDivide } from '@tabler/icons-react';
 import { useSnackbar } from '@/components/CustomSnackbar';
+import useCurrentUser from '@/hooks/useCurrentUser';
 
 function Index() {
   const [invoicesList, setInvoicesList] = useState([]);
@@ -14,12 +15,16 @@ function Index() {
   const [itemsList, setItemsList] = useState([]);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const { showSnackbar } = useSnackbar();
+  const { userData } = useCurrentUser();
 
   const searchParams = useSearchParams();
   const invoiceId = searchParams.get('id');
 
   const fetchBusinessDetails = async () => {
-    const { res } = await Factory('get', '/invoicing/invoicing-profiles/', {});
+    let id = userData.user_type === 'Business' ? userData.business_affiliated[0].id : userData.businesssDetails.business[0].id;
+
+    let url = `/invoicing/invoicing-profiles/?business_id=${id}`;
+    const { res } = await Factory('get', url, {});
     if (res) {
       setBusinessDetails(res.data);
     }
