@@ -12,7 +12,8 @@ import {
   Stack,
   Typography,
   Button,
-  Box
+  Box,
+  Pagination
 } from '@mui/material';
 import { IconPlus } from '@tabler/icons-react';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
@@ -21,7 +22,6 @@ import LeaveManagementDialog from './LeaveManagementDialog';
 import ActionCell from '@/utils/ActionCell';
 
 function LeaveManagement() {
-  // State to manage the selected financial year
   const [leaveType, setLeaveType] = useState('2024-25');
   const [leaveManagementData, setLeaveManagementData] = useState([
     {
@@ -32,6 +32,14 @@ function LeaveManagement() {
       location: 's'
     }
   ]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 5;
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+  const paginatedData = leaveManagementData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [postType, setPostType] = useState('');
@@ -80,14 +88,14 @@ function LeaveManagement() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {/* {leaveManagementData.length === 0 ? (
+              {/* {paginatedData.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} sx={{ height: 300 }}>
                     <EmptyTable msg="No Data available" />
                   </TableCell>
                 </TableRow>
               ) : (
-                leaveManagementData.map((item, index) => (
+                paginatedData.map((item, index) => (
                   <TableRow key={item.id}>
                     <TableCell>{item.holiday_name}</TableCell>
                     <TableCell>{item.date}</TableCell>
@@ -117,6 +125,11 @@ function LeaveManagement() {
             </TableBody>
           </Table>
         </TableContainer>
+        {leaveManagementData.length > 0 && (
+          <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'center', px: { xs: 0.5, sm: 2.5 }, py: 1.5 }}>
+            <Pagination count={Math.ceil(leaveManagementData.length / rowsPerPage)} page={currentPage} onChange={handlePageChange} />
+          </Stack>
+        )}
       </Grid2>
       {/* Department Dialog */}
       <Grid2 size={{ xs: 12 }}>

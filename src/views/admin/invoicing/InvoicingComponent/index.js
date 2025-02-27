@@ -4,6 +4,7 @@ import AddInvoice from '../InvoicingComponent/AddInvoice';
 import Factory from '@/utils/Factory';
 import { useSearchParams } from 'next/navigation';
 import { IconDivide } from '@tabler/icons-react';
+import { useSnackbar } from '@/components/CustomSnackbar';
 
 function Index() {
   const [invoicesList, setInvoicesList] = useState([]);
@@ -12,18 +13,15 @@ function Index() {
   const [invoiceNumberFormat, setInvoiceNumberFormat] = useState('');
   const [itemsList, setItemsList] = useState([]);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const { showSnackbar } = useSnackbar();
 
   const searchParams = useSearchParams();
   const invoiceId = searchParams.get('id');
 
   const fetchBusinessDetails = async () => {
-    try {
-      const { res } = await Factory('get', '/invoicing/invoicing-profiles/', {});
-      if (res) {
-        setBusinessDetails({ ...res.data, state: 'Telangana' });
-      }
-    } catch (error) {
-      console.error('Failed to fetch business details:', error);
+    const { res } = await Factory('get', '/invoicing/invoicing-profiles/', {});
+    if (res) {
+      setBusinessDetails(res.data);
     }
   };
 
@@ -38,10 +36,12 @@ function Index() {
   };
 
   // Fetch Customers Data
-  const getCustomersData = async () => {
-    const { res } = await Factory('get', '/invoicing/customer_profiles/', {});
+  const getCustomersData = async (id) => {
+    const { res } = await Factory('get', `/invoicing/customer_profiles/?invoicing_profile_id=${id}`, {});
     if (res.status_cd === 0) {
       setCustomers(res.data.customer_profiles);
+    } else {
+      showSnackbar(JSON.stringify(res.data.error), 'error');
     }
   };
   const get_Goods_and_Services_Data = async () => {
@@ -74,6 +74,7 @@ function Index() {
   useEffect(() => {
     if (businessDetails?.id) {
       get_Goods_and_Services_Data();
+      getCustomersData(businessDetails?.id);
     }
   }, [businessDetails]);
   useEffect(() => {
@@ -82,9 +83,7 @@ function Index() {
       getInvoiceFormat();
     }
   }, [businessDetails]);
-  useEffect(() => {
-    getCustomersData();
-  }, []);
+
   useEffect(() => {
     if (invoiceId) {
       get_Individual_Invoice_Data();

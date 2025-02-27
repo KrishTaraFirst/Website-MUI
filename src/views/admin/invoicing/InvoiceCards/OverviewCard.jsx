@@ -141,7 +141,7 @@ const titles = {
   bad_debt: 'Bad Debt'
 };
 
-export default function OverviewCard({ businessDetailsData, open, onClose }) {
+export default function OverviewCard({ businessId, open, onClose }) {
   const theme = useTheme();
   const router = useRouter();
   const chipDefaultProps = { color: 'success', variant: 'text', size: 'small' };
@@ -152,11 +152,12 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [dashboardData, setDashboardData] = useState({});
   const { showSnackbar } = useSnackbar();
+  const [invoicesList, setInvoicesList] = useState([]);
 
   const getStatsData = async (type) => {
-    if (businessDetailsData.id) {
+    if (businessId) {
       setTitle(titles[type]);
-      let url = `/invoicing/detail-invoice?invoicing_profile_id=${businessDetailsData.id}&&filter_type=${type}&&financial_year=${financialYear}`;
+      let url = `/invoicing/detail-invoice?invoicing_profile_id=${businessId}&&filter_type=${type}&&financial_year=${financialYear}`;
       const { res } = await Factory('get', url, {});
       if (res.status_cd === 1) {
         if (res.status === 404) {
@@ -193,7 +194,18 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
       setInvoices(res.data.invoices);
     }
   };
-
+  const getInvoicesList = async (id) => {
+    if (businessId) {
+      let url = `/invoicing/invoice-retrieve/${id}`;
+      const { res } = await Factory('get', url, {});
+      if (res.status_cd === 0) {
+        setInvoicesList(res.data.invoices);
+      }
+    }
+  };
+  useEffect(() => {
+    getInvoicesList(businessId);
+  }, []);
   // Handle delete action
   const handleDelete = async (id) => {
     let url = `/invoicing/invoice-delete/${id}/`;
@@ -202,7 +214,7 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
       showSnackbar(JSON.stringify(res.data), 'error');
     } else {
       showSnackbar('Invoice Deleted Successfully', 'success');
-      getInvoices(businessDetailsData.id);
+      getInvoices(businessId);
     }
   };
   const handleWriteOff = async (id) => {
@@ -212,7 +224,7 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
       showSnackbar(JSON.stringify(res.data), 'error');
     } else {
       showSnackbar('Successfully wavedoff', 'success');
-      getInvoices(businessDetailsData.id);
+      getInvoices(businessId);
     }
   };
 
@@ -224,16 +236,16 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
     const { res } = await Factory('put', url, postData);
     if (res.status_cd === 0) {
       showSnackbar('Approved', 'success');
-      getInvoices(businessDetailsData.id);
+      getInvoices(businessId);
     }
   };
 
   useEffect(() => {
-    if (businessDetailsData.id && financialYear) {
-      getInvoices(businessDetailsData.id);
-      getDashboardData(businessDetailsData.id);
+    if (businessId && financialYear) {
+      getInvoices(businessId);
+      getDashboardData(businessId);
     }
-  }, [financialYear, businessDetailsData]);
+  }, [financialYear, businessId]);
 
   const handleChange = (val) => {
     router.replace(`/dashboard/user/${val}`);
@@ -263,7 +275,6 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
       showSnackbar('Invalid response from server', 'error');
     }
   };
-
   return (
     <Box>
       <Grid container sx={{ borderRadius: 4, boxShadow: theme.customShadows.section, ...applyBorderWithRadius(16, theme), mb: 3 }}>
@@ -313,7 +324,7 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
               <MainCard
                 onClick={() => {
                   if (item.title === title) {
-                    getInvoices(businessDetailsData.id);
+                    getInvoices(businessId);
                     setTitle('Over All Financial Year Invoices');
                   } else getStatsData(item.id);
                 }}
@@ -358,7 +369,7 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
             <MainCard
               onClick={() => {
                 if (item.title === title) {
-                  getInvoices(businessDetailsData.id);
+                  getInvoices(businessId);
                   setTitle('Over All Financial Year Invoices');
                 } else getStatsData(item.id);
               }}
@@ -413,7 +424,7 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
               startIcon={<IconReload size={16} />}
               sx={{ minWidth: 78, mr: 1 }}
               onClick={() => {
-                getInvoices(businessDetailsData.id);
+                getInvoices(businessId);
                 setTitle('Over All Financial Year Invoices');
               }}
             >
@@ -535,7 +546,7 @@ export default function OverviewCard({ businessDetailsData, open, onClose }) {
       </Grid>
       <FilterDialog
         financialYear={financialYear}
-        businessData={businessDetailsData}
+        businessData={businessId}
         filterDialog={filterDialog}
         setFilterDialog={setFilterDialog}
         invoices={invoices}

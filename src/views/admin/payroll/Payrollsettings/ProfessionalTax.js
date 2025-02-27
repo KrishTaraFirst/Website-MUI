@@ -16,7 +16,8 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper
+  Paper,
+  Pagination
 } from '@mui/material';
 import { IconPlus, IconTrash } from '@tabler/icons-react';
 import Modal from '@/components/Modal';
@@ -66,10 +67,18 @@ function ProfessionalTax({ handleBack, handleNext }) {
   const [postType, setPostType] = useState('');
   const [workLocations, setWorkLocations] = useState([]);
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 8;
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+  const paginatedData = ptData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
   const MAX_SALARY = 999999999;
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
   useEffect(() => {
     const id = searchParams.get('payrollid');
     if (id) {
@@ -218,6 +227,7 @@ function ProfessionalTax({ handleBack, handleNext }) {
       setValues(selectedRecord);
     }
   }, [postType, selectedRecord]);
+
   const calculatePtAmount = (minSalary, maxSalary) => {
     minSalary = parseFloat(minSalary); // Convert to number
     maxSalary = parseFloat(maxSalary); // Convert to number
@@ -266,16 +276,16 @@ function ProfessionalTax({ handleBack, handleNext }) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {ptData?.length === 0 ? (
+                  {paginatedData?.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={5} sx={{ height: 300 }}>
                         <EmptyTable msg="No Professional tax yet" />
                       </TableCell>
                     </TableRow>
                   ) : (
-                    ptData?.map((item, index) => (
+                    paginatedData?.map((item, index) => (
                       <TableRow key={item.id}>
-                        <TableCell>{index + 1}</TableCell>
+                        <TableCell>{(currentPage - 1) * rowsPerPage + index + 1}</TableCell>
                         <TableCell>{item.work_location_name}</TableCell>
                         <TableCell>{item.pt_number}</TableCell>
                         <TableCell>{item.state}</TableCell>
@@ -310,6 +320,11 @@ function ProfessionalTax({ handleBack, handleNext }) {
                 </TableBody>
               </Table>
             </TableContainer>
+            {ptData.length > 0 && (
+              <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'center', px: { xs: 0.5, sm: 2.5 }, py: 1.5 }}>
+                <Pagination count={Math.ceil(ptData.length / rowsPerPage)} page={currentPage} onChange={handlePageChange} />
+              </Stack>
+            )}
           </Grid2>
 
           <Modal

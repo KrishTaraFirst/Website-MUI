@@ -123,7 +123,7 @@ export default function SettingDetailsCard() {
         <ListItem sx={listStyle} divider>
           <ListItemText
             primary="Phone Number (optional)"
-            secondary={userData?.contact || ''}
+            secondary={userData?.mobile || ''}
             {...{ primaryTypographyProps, secondaryTypographyProps }}
           />
           <ModalPhoneNumber />

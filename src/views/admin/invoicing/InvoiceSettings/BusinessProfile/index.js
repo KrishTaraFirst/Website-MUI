@@ -12,11 +12,11 @@ import Factory from '@/utils/Factory';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import useCurrentUser from '@/hooks/useCurrentUser';
 
-export default function TabOne({ onNext }) {
-  const [businessDetails, setBusinessDetails] = useState(null);
+export default function TabOne({ postType, businessDetails, onNext }) {
+  // const [businessDetails, setBusinessDetails] = useState(null);
   const { userData } = useCurrentUser();
 
-  const [busineesprofileFields, setBusineesprofileFields] = useState({
+  const [busineesprofileFields] = useState({
     basic_details: [
       { name: 'nameOfBusiness', label: 'Business Name' },
       { name: 'registrationNumber', label: 'Business Registration Number' },
@@ -28,10 +28,10 @@ export default function TabOne({ onNext }) {
       { name: 'pincode', label: 'Pincode' },
       { name: 'mobile', label: 'Mobile' },
       { name: 'addresslane1', label: 'Address Lane 1' },
-      { name: 'addresslane2', label: 'Address lane 2' }
+      { name: 'addresslane2', label: 'Address lane 2' },
+      { name: 'pan_number', label: 'PAN' }
     ],
     bank_details: [
-      { name: 'pan_number', label: 'PAN' },
       { name: 'account_number', label: 'Bank A/C No' },
       { name: 'bank_name', label: 'Bank Name' },
       { name: 'ifsc_code', label: 'IFSC Code' },
@@ -47,11 +47,11 @@ export default function TabOne({ onNext }) {
     // entityType: Yup.string().required('Business Type is required'),
     // gst_registered: Yup.string().required('GST Registration status is required'),
 
-    // gstin: Yup.string().when('gst_registered', {
-    //   is: 'Yes',
-    //   then: () => Yup.string().required('GSTIN is required'),
-    //   otherwise: () => Yup.string().oneOf(['NA'], 'GSTIN must be "NA" when GST Registered is "No"') // Ensure "NA" for "No"
-    // }),
+    gstin: Yup.string().when('gst_registered', {
+      is: 'Yes',
+      then: () => Yup.string().required('GSTIN is required'),
+      otherwise: () => Yup.string().oneOf(['NA'], 'GSTIN must be "NA" when GST Registered is "No"') // Ensure "NA" for "No"
+    }),
     // state: Yup.string().required('State is required'),
     // email: Yup.string().email('Invalid email format').required('Email is required'),
     // pincode: Yup.string().required('Pincode is required'),
@@ -103,45 +103,31 @@ export default function TabOne({ onNext }) {
     },
     validationSchema,
     onSubmit: async (values) => {
-      const url = businessDetails.id
-        ? `/invoicing/invoicing-profiles/${businessDetails.id}/update/`
-        : '/invoicing/invoicing-profiles/create/';
-      const method = businessDetails.id ? 'put' : 'post';
-
+      const url =
+        postType === 'put' ? `/invoicing/invoicing-profiles/${businessDetails.id}/update/` : '/invoicing/invoicing-profiles/create/';
       const postData = {
-        pan_number: values.pan_number,
+        // pan_number: values.pan_number,
         bank_name: values.bank_name,
         account_number: Number(values.account_number),
         ifsc_code: values.ifsc_code,
-        swift_code: values.swift_code
+        swift_code: values.swift_code,
+        gst_registered: values.gst_registered,
+        gstin: values.gstin
       };
+      if (postType === 'post') {
+        postData.business = businessDetails.id;
+      }
 
-      const { res } = await Factory(method, url, postData);
+      const { res } = await Factory(postType, url, postData);
       if (res.status_cd === 1) {
         showSnackbar(JSON.stringify(res.data.data), 'error');
       } else {
-        showSnackbar('Data Updated Successfully', 'success');
+        showSnackbar('Data Saved Successfully', 'success');
         onNext();
       }
     }
   });
-
   const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue } = formik;
-
-  const fetch_business_Details = async () => {
-    let url = `/user_management/businesses-by-client/?user_id=${userData.id}`;
-    const { res, error } = await Factory('get', url, {});
-    console.log(res);
-    if (res?.status_cd === 0) {
-      setBusinessDetails(res?.data);
-    } else {
-      showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
-    }
-  };
-
-  useEffect(() => {
-    fetch_business_Details();
-  }, []);
   useEffect(() => {
     if (businessDetails && businessDetails.id) {
       setValues((prev) => ({
@@ -149,22 +135,23 @@ export default function TabOne({ onNext }) {
         nameOfBusiness: businessDetails.nameOfBusiness,
         registrationNumber: businessDetails.registrationNumber,
         entityType: businessDetails.entityType,
-        gst_registered: businessDetails.gst_registered === true ? 'Yes' : 'No',
+        gst_registered: businessDetails.gst_details.length !== 0 ? 'Yes' : 'No',
         gstin: businessDetails.gstin,
-        state: businessDetails.state,
+        state: businessDetails.headOffice.state,
         email: businessDetails.email,
-        pincode: businessDetails.pincode,
-        mobile: businessDetails.mobile,
-        addresslane1: businessDetails.addresslane1,
-        addresslane2: businessDetails.addresslane2,
-        pan_number: businessDetails.pan_number,
-        bank_name: businessDetails.bank_name,
-        account_number: businessDetails.account_number,
-        ifsc_code: businessDetails.ifsc_code,
-        swift_code: businessDetails.swift_code
+        pincode: businessDetails.headOffice.pincode,
+        mobile: businessDetails.mobile_number,
+        addresslane1: businessDetails.headOffice.address_line1,
+        addresslane2: businessDetails.headOffice.address_line2,
+        pan_number: businessDetails.pan || '',
+        bank_name: businessDetails.bank_name || '',
+        account_number: businessDetails.account_number || '',
+        ifsc_code: businessDetails.ifsc_code || '',
+        swift_code: businessDetails.swift_code || ''
       }));
     }
   }, [businessDetails]);
+
   return (
     <>
       <Typography variant="h5" textAlign="center" sx={{ fontWeight: 'bold', fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' } }}>
@@ -182,12 +169,28 @@ export default function TabOne({ onNext }) {
               {item.name === 'gst_registered' ? (
                 <>
                   <FormLabel>{item.label}</FormLabel>
-                  <RadioGroup name={item.name} value={values.gst_registered} row disabled>
+                  <RadioGroup
+                    name={item.name}
+                    value={values.gst_registered}
+                    row
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setFieldValue(item.name, value);
+
+                      if (value === 'No') {
+                        setFieldValue('gstin', 'NA'); // Set GSTIN to NA
+                        formik.setFieldTouched('gstin', false); // Clear any existing validation error
+                        formik.setFieldError('gstin', ''); // Clear error message
+                      } else if (value === 'Yes') {
+                        setFieldValue('gstin', ''); // Reset GSTIN field for "Yes"
+                      }
+                    }}
+                  >
                     <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
                     <FormControlLabel value="No" control={<Radio />} label="No" />
                   </RadioGroup>
                 </>
-              ) : item.name === 'state' ? (
+              ) : item.name === 'state' || item.name === 'gstin' ? (
                 <>
                   <div style={{ paddingBottom: '5px' }}>
                     <label>{item.label}</label>
@@ -195,11 +198,15 @@ export default function TabOne({ onNext }) {
                   <CustomAutocomplete
                     value={values[item.name]}
                     onChange={(e, newValue) => setFieldValue(item.name, newValue)}
-                    options={indian_States_And_UTs}
+                    options={
+                      item.name === 'gstin' && Array.isArray(businessDetails.gst_details)
+                        ? businessDetails.gst_details.map((item) => item.gstin)
+                        : indian_States_And_UTs
+                    }
                     error={touched[item.name] && Boolean(errors[item.name])}
                     helperText={touched[item.name] && errors[item.name]}
                     name={item.name}
-                    disabled
+                    disabled={item.name === 'gstin' && values.gst_registered === 'No'}
                   />
                 </>
               ) : (
@@ -236,7 +243,7 @@ export default function TabOne({ onNext }) {
                 name={item.name}
                 value={values[item.name]}
                 onChange={(e) => {
-                  if (item.name === 'pan_number' || item.name === 'ifsc_code') {
+                  if (item.name === 'pan_number' || item.name === 'ifsc_code' || item.name === 'bank_name') {
                     setFieldValue(item.name, e.target.value.toUpperCase());
                   } else {
                     setFieldValue(item.name, e.target.value);

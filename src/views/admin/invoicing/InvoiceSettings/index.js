@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import { useTheme } from '@mui/material/styles';
 import { IconBolt } from '@tabler/icons-react';
-import { Avatar, Box, Grid2, Tab, Tabs, Typography } from '@mui/material';
+import { Avatar, Box, Button, Grid2, Tab, Tabs, Typography } from '@mui/material';
 
 import Factory from '@/utils/Factory';
 import ComponentsWrapper from '@/components/ComponentsWrapper';
@@ -14,6 +14,8 @@ import TabThree from './Goods&Services';
 import TabFour from './Invoices';
 import MainCard from '@/components/MainCard';
 import useCurrentUser from '@/hooks/useCurrentUser';
+import Loader from '@/components/PageLoader';
+import { useSnackbar } from '@/components/CustomSnackbar';
 
 /***************************  NAVIGATION - TABS  ***************************/
 
@@ -32,10 +34,13 @@ TabPanel.propTypes = {
 
 const BasicTabs = ({ type }) => {
   const { userData } = useCurrentUser();
-  // console.log(userData);
   const [activeTab, setActiveTab] = useState(0);
   const [businessDetails, setBusinessDetails] = useState({});
   const [customers, setCustomers] = useState([]);
+  const [postType, setPostType] = useState('');
+  const [loading, setLoading] = useState(false); // State for loader
+  const { showSnackbar } = useSnackbar();
+
   const theme = useTheme();
 
   // useEffect(() => {
@@ -48,16 +53,17 @@ const BasicTabs = ({ type }) => {
   //   fetchBusinessDetails();
   // }, [activeTab]);
 
-  // const getCustomersData = async () => {
-  //   const { res } = await Factory('get', '/invoicing/customer_profiles/', {});
-  //   if (res.status_cd === 0) {
-  //     setCustomers(res.data.customer_profiles);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getCustomersData();
-  // }, []);
+  const getCustomersData = async (id) => {
+    setLoading(true);
+    const { res } = await Factory('get', `/invoicing/customer_profiles/?invoicing_profile_id=${id}`, {});
+    console.log(res);
+    if (res.status_cd === 0) {
+      setCustomers(res.data.customer_profiles);
+    } else {
+      showSnackbar(JSON.stringify(res?.data?.data), 'error');
+    }
+    setLoading(false);
+  };
 
   const handleTabChange = (_event, newTabIndex) => setActiveTab(newTabIndex);
 
@@ -74,29 +80,41 @@ const BasicTabs = ({ type }) => {
   });
 
   const tabLabels = ['Business Profile', 'Customers', 'Goods & Services', 'Invoice Number Format'];
-  const fetchBusinessDetails = async () => {
-    // let id = userData.user_type === 'Business' ? userData.business_affiliated[0].id : userData.businesssDetails.business[0].id;
-    let id =
-      userData.user_type === 'Business' && userData.business_affiliated && userData.business_affiliated.length > 0
-        ? userData.business_affiliated[0].id
-        : userData.businesssDetails.business && userData.businesssDetails.business.length > 0
-          ? userData.businesssDetails.business[0].id
-          : null; // Or handle the case when no valid ID is found
+
+  const fetch_business_Details_by_client = async () => {
+    setLoading(true);
+    let url = `/user_management/businesses-by-client/?user_id=${userData.id}`;
+    const { res, error } = await Factory('get', url, {});
+    if (res?.status_cd === 0) {
+      setBusinessDetails(res?.data);
+    } else {
+      showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
+    }
+    setLoading(false);
+  };
+
+  const fetch_Invoicing_profile = async () => {
+    let id = userData.user_type === 'Business' ? userData.business_affiliated[0].id : userData.businesssDetails.business[0].id;
 
     let url = `/invoicing/invoicing-profiles/?business_id=${id}`;
     const { res } = await Factory('get', url, {});
     console.log(res);
-    // if (res.status_cd === 0) {
-    //   const businessData = { ...res.data, state: 'Telangana' };
-    //   setBusinessDetails(businessData);
-    // } else if (res.status === 404) {
-    // } else {
-    //   return;
-    // }
+    if (res.status_cd === 0) {
+      const businessData = { ...res.data };
+      setBusinessDetails(businessData);
+      setPostType('put');
+      getCustomersData(res.data.id);
+    } else if (res.status === 404 && res.data.message === 'Invoicing profile not found.') {
+      fetch_business_Details_by_client();
+      setPostType('post');
+    } else {
+      showSnackbar(JSON.stringify(res?.statusText), 'error');
+    }
   };
   useEffect(() => {
-    fetchBusinessDetails();
-  }, []);
+    fetch_Invoicing_profile();
+  }, [activeTab]);
+
   return (
     <Grid2 container spacing={{ xs: 2, sm: 3 }}>
       {/* Tab navigation */}
@@ -131,9 +149,11 @@ const BasicTabs = ({ type }) => {
       {/* Tab content with PresentationCard and ComponentsWrapper */}
       <Grid2 size={{ xs: 12 }}>
         <MainCard>
-          {/* {tabLabels.map((_, index) => (
+          {tabLabels.map((_, index) => (
             <TabPanel key={index} value={activeTab} index={index}>
-              {index === 0 && <TabOne businessDetails={businessDetails} setBusinessDetails={setBusinessDetails} onNext={handleNext} />}
+              {index === 0 && (
+                <TabOne businessDetails={businessDetails} setBusinessDetails={setBusinessDetails} onNext={handleNext} postType={postType} />
+              )}
               {index === 1 && (
                 <TabTwo
                   getCustomersData={getCustomersData}
@@ -162,8 +182,22 @@ const BasicTabs = ({ type }) => {
                 />
               )}
             </TabPanel>
-          ))} */}
+          ))}
         </MainCard>
+        <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Button variant="outlined" onClick={handleBack} sx={{ mt: 3 }} disabled={activeTab === 0}>
+            Back
+          </Button>
+
+          <Button
+            variant="contained"
+            onClick={handleNext}
+            sx={{ mt: 3 }}
+            disabled={activeTab === tabLabels.length - 1} // Disable Next button on the last tab
+          >
+            Next
+          </Button>
+        </Box>
       </Grid2>
     </Grid2>
   );

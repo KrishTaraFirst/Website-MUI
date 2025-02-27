@@ -24,7 +24,8 @@ import {
   Paper,
   TableRow,
   InputAdornment,
-  Divider
+  Divider,
+  Pagination
 } from '@mui/material';
 import EmptyTable from '@/components/third-party/table/EmptyTable';
 import Modal from '@/components/Modal';
@@ -51,7 +52,13 @@ function EarningsComponent({ handleNext, handleBack }) {
   const searchParams = useSearchParams();
   const { showSnackbar } = useSnackbar();
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 8;
 
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+  const paginatedData = earningsData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
   useEffect(() => {
     const id = searchParams.get('payrollid');
     if (id) {
@@ -168,14 +175,14 @@ function EarningsComponent({ handleNext, handleBack }) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {earningsData.length === 0 ? (
+                  {paginatedData.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={6} sx={{ height: 300 }}>
                         <EmptyTable msg="No Data available" />
                       </TableCell>
                     </TableRow>
                   ) : (
-                    earningsData.map((item, index) => (
+                    paginatedData.map((item, index) => (
                       <TableRow key={item.id}>
                         <TableCell
                           style={{ cursor: 'pointer', textDecoration: 'underline', color: '#007bff' }}
@@ -212,6 +219,11 @@ function EarningsComponent({ handleNext, handleBack }) {
                 </TableBody>
               </Table>
             </TableContainer>
+            {earningsData.length > 0 && (
+              <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'center', px: { xs: 0.5, sm: 2.5 }, py: 1.5 }}>
+                <Pagination count={Math.ceil(earningsData.length / rowsPerPage)} page={currentPage} onChange={handlePageChange} />
+              </Stack>
+            )}
           </Grid2>
           <Grid2 size={12}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>

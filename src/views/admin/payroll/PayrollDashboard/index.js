@@ -56,6 +56,7 @@ export default function PayrollDashboard({ setPayrollSetup }) {
           <Typography variant="h4" sx={{ fontWeight: 400 }}>
             Payroll
           </Typography>
+
           <Typography variant="caption" sx={{ color: 'grey.700' }}>
             Some text tagline regarding Payroll.
           </Typography>

@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
+import Grid2 from '@mui/material/Grid2';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
-import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Typography } from '@mui/material';
+import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Typography, Stack } from '@mui/material';
 import CustomInput from '@/utils/CustomInput';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import { IconX } from '@tabler/icons-react';
@@ -16,6 +16,8 @@ import IconButton from '@mui/material/IconButton';
 import { indian_States_And_UTs } from '@/utils/indian_States_And_UT';
 import Factory from '@/utils/Factory';
 import { useSnackbar } from '@/components/CustomSnackbar';
+import Modal from '@/components/Modal';
+import { ModalSize } from '@/enum';
 
 let gstTypes = [
   'Registered Business - Regular',
@@ -117,14 +119,13 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
       try {
         const { res, error } = await Factory(method, url, postData);
         if (res.status_cd === 0) {
-          getCustomersData();
+          getCustomersData(businessDetailsData?.id);
           setType('');
           resetForm();
           handleClose();
           showSnackbar(type === 'edit' ? 'Data Updated Successfully' : 'Data Added Successfully', 'success');
         }
       } catch (error) {
-        console.error('Error:', error);
         showSnackbar(JSON.stringify(error), 'error');
       }
     }
@@ -153,110 +154,102 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
   const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue, resetForm } = formik;
 
   return (
-    <Dialog open={open} onClose={() => handleClose()} aria-labelledby="form-dialog-title" fullWidth maxWidth="sm">
-      <Box sx={{ m: 2 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <DialogTitle id="form-dialog-title" sx={{ fontWeight: 'bold' }}>
-            {type === 'edit' ? 'Edit Customer' : 'Add New Customer'}
-          </DialogTitle>
+    <Modal
+      open={open}
+      maxWidth={ModalSize.MD}
+      header={{ title: type === 'edit' ? 'Update Customer' : 'Add Customer', subheader: '' }}
+      modalContent={
+        <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
+          <Grid2 container spacing={2}>
+            {addCustomerData.map((item) => (
+              <Grid2 size={{ xs: 12, sm: 6 }} key={item.name}>
+                {item.name === 'gst_registered' ? (
+                  <FormControl fullWidth>
+                    <FormLabel>{item.label}</FormLabel>
+                    <RadioGroup
+                      name={item.name}
+                      value={values[item.name]}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setFieldValue(item.name, value);
 
-          <IconButton
-            variant="outlined"
-            color="secondary"
-            aria-label="close"
+                        if (value === 'No') {
+                          setFieldValue('gstin', 'NA'); // Set GSTIN to NA
+                          formik.setFieldTouched('gstin', false); // Clear any existing validation error
+                          formik.setFieldError('gstin', ''); // Clear error message
+                        } else if (value === 'Yes') {
+                          setFieldValue('gstin', ''); // Reset GSTIN field for "Yes"
+                        }
+                      }}
+                      row
+                    >
+                      <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
+                      <FormControlLabel value="No" control={<Radio />} label="No" />
+                    </RadioGroup>
+                  </FormControl>
+                ) : item.name === 'gst_type' || item.name === 'state' ? (
+                  <>
+                    <div style={{ paddingBottom: '5px' }}>
+                      <label>{item.label}</label>
+                    </div>
+                    <CustomAutocomplete
+                      value={values[item.name]}
+                      name={item.name}
+                      onChange={(e, newValue) => setFieldValue(item.name, newValue)}
+                      options={item.name === 'gst_type' ? gstTypes : item.name === 'state' && indian_States_And_UTs}
+                      error={touched[item.name] && Boolean(errors[item.name])}
+                      helperText={touched[item.name] && errors[item.name]}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <div style={{ paddingBottom: '5px' }}>
+                      <label>{item.label}</label>
+                    </div>
+
+                    <CustomInput
+                      name={item.name}
+                      placeholder={item.name === 'opening_balance' ? '₹' : ''}
+                      value={item.name === 'pan_number' ? values[item.name].toUpperCase() : values[item.name]}
+                      onChange={(e) => {
+                        if (item.name === 'pan_number' && e.target.value.length > 10) {
+                          return;
+                        }
+                        const value = item.name === 'pan_number' ? e.target.value.toUpperCase() : e.target.value;
+                        setFieldValue(item.name, value);
+                      }}
+                      onBlur={handleBlur}
+                      error={touched[item.name] && Boolean(errors[item.name])}
+                      helperText={touched[item.name] && errors[item.name]}
+                      disabled={(item.name === 'gstin' && values.gst_registered === 'No') || item.name === 'country'}
+                      // textColor={type === 'edit' && '#776080'}
+                    />
+                  </>
+                )}
+              </Grid2>
+            ))}
+          </Grid2>
+        </Box>
+      }
+      footer={
+        <Stack direction="row" sx={{ width: 1, justifyContent: 'space-between', gap: 2 }}>
+          <Button
             onClick={() => {
               setType('');
               resetForm();
               handleClose();
             }}
+            variant="outlined"
+            color="error"
           >
-            <IconX size={20} />
-          </IconButton>
-        </Box>
-
-        <Divider />
-        <DialogContent sx={{ padding: '16px' }}>
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-              Customer Details
-            </Typography>
-          </Box>
-          <form onSubmit={handleSubmit}>
-            <Grid container spacing={2}>
-              {addCustomerData.map((item) => (
-                <Grid item xs={12} sm={6} key={item.name}>
-                  {item.name === 'gst_registered' ? (
-                    <FormControl fullWidth>
-                      <FormLabel>{item.label}</FormLabel>
-                      <RadioGroup
-                        name={item.name}
-                        value={values[item.name]}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setFieldValue(item.name, value);
-
-                          if (value === 'No') {
-                            setFieldValue('gstin', 'NA'); // Set GSTIN to NA
-                            formik.setFieldTouched('gstin', false); // Clear any existing validation error
-                            formik.setFieldError('gstin', ''); // Clear error message
-                          } else if (value === 'Yes') {
-                            setFieldValue('gstin', ''); // Reset GSTIN field for "Yes"
-                          }
-                        }}
-                        row
-                      >
-                        <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
-                        <FormControlLabel value="No" control={<Radio />} label="No" />
-                      </RadioGroup>
-                    </FormControl>
-                  ) : item.name === 'gst_type' || item.name === 'state' ? (
-                    <>
-                      <div style={{ paddingBottom: '5px' }}>
-                        <label>{item.label}</label>
-                      </div>
-                      <CustomAutocomplete
-                        value={values[item.name]}
-                        name={item.name}
-                        onChange={(e, newValue) => setFieldValue(item.name, newValue)}
-                        options={item.name === 'gst_type' ? gstTypes : item.name === 'state' && indian_States_And_UTs}
-                        error={touched[item.name] && Boolean(errors[item.name])}
-                        helperText={touched[item.name] && errors[item.name]}
-                      />
-                    </>
-                  ) : (
-                    <>
-                      <div style={{ paddingBottom: '5px' }}>
-                        <label>{item.label}</label>
-                      </div>
-
-                      <CustomInput
-                        name={item.name}
-                        placeholder={item.name === 'opening_balance' ? '₹' : ''}
-                        value={item.name === 'pan_number' ? values[item.name].toUpperCase() : values[item.name]}
-                        onChange={(e) => {
-                          const value = item.name === 'pan_number' ? e.target.value.toUpperCase() : e.target.value;
-                          setFieldValue(item.name, value);
-                        }}
-                        onBlur={handleBlur}
-                        error={touched[item.name] && Boolean(errors[item.name])}
-                        helperText={touched[item.name] && errors[item.name]}
-                        disabled={(item.name === 'gstin' && values.gst_registered === 'No') || item.name === 'country'}
-                        textColor={type === 'edit' && '#776080'}
-                      />
-                    </>
-                  )}
-                </Grid>
-              ))}
-            </Grid>
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, mb: 3, gap: 5 }}>
-              <Button variant="contained" type="submit">
-                {type === 'edit' ? 'Update Customer' : 'Add Customer'}
-              </Button>
-            </Box>
-          </form>
-        </DialogContent>
-      </Box>
-    </Dialog>
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} type="submit" variant="contained" color="primary">
+            {type === 'edit' ? 'Update Customer' : 'Add Customer'}
+          </Button>
+        </Stack>
+      }
+    />
   );
 };
 

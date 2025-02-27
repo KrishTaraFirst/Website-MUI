@@ -71,8 +71,8 @@ function SalaryTemplateDialog({ open, handleClose, fetchDesignations, selectedRe
         {
           salary_component: '',
           calculation_type: '',
-          monthly: '',
-          annually: ''
+          monthly: 0,
+          annually: 0
         }
       ],
       gross_salary: {
@@ -93,54 +93,68 @@ function SalaryTemplateDialog({ open, handleClose, fetchDesignations, selectedRe
     newEarnings[index][field] = value;
 
     // Update the calculation type based on the selected component's calculation type
-    const selectedItem = earningsData.find((earn) => earn.component_name === value);
-    if (selectedItem) {
-      newEarnings[index]['calculation_type'] = selectedItem.calculation_type.value;
+    if (field === 'salary_component') {
+      const selectedItem = earningsData.find((earn) => earn.component_name === value);
+      if (selectedItem) {
+        newEarnings[index]['calculation_type'] = selectedItem.calculation_type.value;
+      }
     }
 
-    // console.log(newEarnings); // You can check the updated earnings in the console
-
     formik.setFieldValue('earnings', newEarnings);
+
+    // Call recalculate after the update to trigger immediate recalculation
     recalculate();
   };
+
   const recalculate = () => {
-    const newEarnings = values.earnings.map((earning) => {
+    const updatedEarnings = [...values.earnings];
+    const annualCtc = parseFloat(values.annual_ctc || 0);
+
+    updatedEarnings.forEach((earning) => {
       const updatedEarning = { ...earning };
-      const annualCtc = parseFloat(values.annual_ctc || 0);
 
       if (earning.salary_component === 'Basic') {
         const percentage = parseFloat(earning.calculation_type || 0);
-        updatedEarning.monthly = Math.round(((annualCtc * percentage) / 100 / 12) * 100) / 100;
-      } else if (earning.salary_component === 'HRA') {
-        const basic = parseFloat(values.earnings.find((e) => e.salary_component === 'Basic')?.annually || 0);
-        const percentage = parseFloat(earning.calculation_type || 0);
-        updatedEarning.monthly = Math.round(((basic * percentage) / 100 / 12) * 100) / 100;
-      } else if (earning.salary_component === 'Conveyance Allowance') {
-        const fixedAmount = earning.calculation_type; // Set the fixed annual amount for Conveyance Allowance
-        updatedEarning.annually = fixedAmount; // Set fixed amount annually
-        updatedEarning.monthly = Math.round((fixedAmount / 12) * 100) / 100; // Divide by 12 for monthly value
-      } else if (earning.salary_component === 'Special Allowance') {
-        const otherComponentsTotal = values.earnings
-          .filter((e) => e.salary_component !== 'Special Allowance')
-          .reduce((sum, e) => sum + parseFloat(e.annually || 0), 0);
-
-        const specialAllowancesAnnual = annualCtc - otherComponentsTotal;
-
-        updatedEarning.monthly = Math.round((specialAllowancesAnnual / 12) * 100) / 100;
+        const annualAmount = (annualCtc * percentage) / 100;
+        updatedEarning.monthly = Math.round((annualAmount / 12) * 100) / 100;
+        updatedEarning.annually = Math.round(annualAmount);
       }
 
-      updatedEarning.annually = Math.round(updatedEarning.monthly * 12);
+      // Update earnings array so HRA calculation gets the latest Basic salary
+      const basicSalary = parseFloat(updatedEarnings.find((e) => e.salary_component === 'Basic')?.annually || 0);
 
-      return updatedEarning;
+      if (earning.salary_component === 'HRA') {
+        const percentage = parseFloat(earning.calculation_type || 0);
+        const annualAmount = (basicSalary * percentage) / 100;
+        updatedEarning.monthly = Math.round((annualAmount / 12) * 100) / 100;
+        updatedEarning.annually = Math.round(annualAmount);
+      }
+
+      if (earning.salary_component === 'Conveyance Allowance') {
+        const fixedAmount = parseFloat(earning.calculation_type) || 0;
+        updatedEarning.monthly = Math.round((fixedAmount / 12) * 100) / 100;
+        updatedEarning.annually = fixedAmount;
+      }
+
+      if (earning.salary_component === 'Special Allowance') {
+        const totalOtherEarnings = updatedEarnings
+          .filter((e) => e.salary_component !== 'Special Allowance')
+          .reduce((sum, e) => sum + (parseFloat(e.annually) || 0), 0);
+
+        const remainingAmount = Math.max(0, annualCtc - totalOtherEarnings);
+        updatedEarning.monthly = Math.round((remainingAmount / 12) * 100) / 100;
+        updatedEarning.annually = Math.round(remainingAmount);
+      }
+
+      // Update the original array in place
+      Object.assign(earning, updatedEarning);
     });
 
-    console.log(newEarnings);
-
-    formik.setFieldValue('earnings', newEarnings);
+    formik.setFieldValue('earnings', updatedEarnings);
   };
 
   const handleAddEarnings = () => {
-    formik.setFieldValue('earnings', [...values.earnings, { salary_component: '', calculation_type: '', monthly: '', annually: '' }]);
+    formik.setFieldValue('earnings', [...values.earnings, { salary_component: '', calculation_type: '', monthly: 0, annually: 0 }]);
   };
 
   const handleDeleteEarnings = (index) => {
@@ -186,7 +200,7 @@ function SalaryTemplateDialog({ open, handleClose, fetchDesignations, selectedRe
   }, [payrollid]);
 
   const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, resetForm, setFieldValue } = formik;
-
+  console.log(values.earnings);
   return (
     <HomeCard title="New Salary Template" tagline="Set up your organization before starting payroll">
       <Box component="form" onSubmit={handleSubmit}>
@@ -290,20 +304,22 @@ function SalaryTemplateDialog({ open, handleClose, fetchDesignations, selectedRe
                       </Box>
                     </TableCell>
                     <TableCell>
-                      <CustomInput
+                      {/* <CustomInput
                         value={earning.monthly}
                         onChange={(e) => handleEarningsChange(earning, index, 'monthly', e.target.value)}
                         fullWidth
                         inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                      />
+                      /> */}
+                      {earning.monthly}
                     </TableCell>
                     <TableCell>
-                      <CustomInput
+                      {/* <CustomInput
                         value={earning.annually}
                         onChange={(e) => handleEarningsChange(earning, index, 'annually', e.target.value)}
                         fullWidth
                         inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                      />
+                      /> */}
+                      {earning.annually}
                     </TableCell>
                     <TableCell>
                       <ListItemButton sx={{ color: '#d32f2f' }} onClick={() => handleDeleteEarnings(index)}>
@@ -337,6 +353,123 @@ function SalaryTemplateDialog({ open, handleClose, fetchDesignations, selectedRe
                   </TableCell>
                   <TableCell sx={{ borderRadius: '0 16px 16px 0' }}></TableCell>
                 </TableRow>
+
+                {/* <TableRow>
+                  <TableCell colSpan={5} sx={{ fontWeight: 'bold' }}>
+                    Benefits
+                  </TableCell>
+                </TableRow>
+                {values.employer_contributions.map((earning, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{earning.type}</TableCell>
+                    <TableCell>{earning.calculation_type}</TableCell>
+                    <TableCell>
+                      <CustomInput
+                        value={earning.monthly}
+                        onChange={(e) => {
+                          handleEarningsChange(index, 'calculation_type', e.target.value);
+                          recalculate(); // Call recalculate on change
+                        }}
+                        fullWidth
+                        sx={{ maxWidth: 80, textAlign: 'center' }}
+                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      {' '}
+                      <CustomInput
+                        value={earning.annually}
+                        onChange={(e) => {
+                          handleEarningsChange(index, 'calculation_type', e.target.value);
+                          recalculate(); // Call recalculate on change
+                        }}
+                        fullWidth
+                        sx={{ maxWidth: 80, textAlign: 'center' }}
+                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <ListItemButton sx={{ color: '#d32f2f' }} onClick={() => handleDeleteEarnings(index)}>
+                        <ListItemIcon>
+                          <IconTrash size={16} style={{ color: '#d32f2f' }} />
+                        </ListItemIcon>
+                      </ListItemButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                <TableRow sx={{ backgroundColor: '#f6f2fc', margin: '20px' }}>
+                  <TableCell
+                    colSpan={2}
+                    sx={{ fontWeight: 'bold', borderRadius: '16px 0 0 16px' }} // Rounded on the left
+                  >
+                    Total CTC
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.monthly || 0), 0)}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.annually || 0), 0)}</Typography>
+                  </TableCell>
+                  <TableCell sx={{ borderRadius: '0 16px 16px 0' }}></TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell colSpan={6} sx={{ fontWeight: 'bold' }}>
+                    Deductions
+                  </TableCell>
+                </TableRow>
+                {values.deductions.map((earning, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{earning.type}</TableCell>
+                    <TableCell>{earning.calculation_type}</TableCell>
+                    <TableCell>
+                      <CustomInput
+                        value={earning.monthly}
+                        onChange={(e) => {
+                          handleEarningsChange(index, 'calculation_type', e.target.value);
+                          recalculate(); // Call recalculate on change
+                        }}
+                        fullWidth
+                        sx={{ maxWidth: 80, textAlign: 'center' }}
+                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      {' '}
+                      <CustomInput
+                        value={earning.annually}
+                        onChange={(e) => {
+                          handleEarningsChange(index, 'calculation_type', e.target.value);
+                          recalculate(); // Call recalculate on change
+                        }}
+                        fullWidth
+                        sx={{ maxWidth: 80, textAlign: 'center' }}
+                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <ListItemButton sx={{ color: '#d32f2f' }} onClick={() => handleDeleteEarnings(index)}>
+                        <ListItemIcon>
+                          <IconTrash size={16} style={{ color: '#d32f2f' }} />
+                        </ListItemIcon>
+                      </ListItemButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                <TableRow sx={{ backgroundColor: '#f6f2fc', margin: '20px' }}>
+                  <TableCell
+                    colSpan={2}
+                    sx={{ fontWeight: 'bold', borderRadius: '16px 0 0 16px' }} // Rounded on the left
+                  >
+                    Net Salary (Take Home)
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.monthly || 0), 0)}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.annually || 0), 0)}</Typography>
+                  </TableCell>
+                  <TableCell sx={{ borderRadius: '0 16px 16px 0' }}></TableCell>
+                </TableRow> */}
               </TableBody>
             </Table>
           </TableContainer>

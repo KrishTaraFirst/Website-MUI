@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Button, Box, Stack, Typography, Divider } from '@mui/material';
+import { Button, Box, Stack, Typography, FormControlLabel, Checkbox } from '@mui/material';
 import Grid2 from '@mui/material/Grid2'; // Import Grid2 from MUI system
 import CustomInput from '@/utils/CustomInput';
 import Factory from '@/utils/Factory';
@@ -9,6 +9,7 @@ import { useSnackbar } from '@/components/CustomSnackbar';
 import { useSearchParams } from 'next/navigation';
 import Modal from '@/components/Modal';
 import { ModalSize } from '@/enum';
+import CustomAutocomplete from '@/utils/CustomAutocomplete';
 
 export default function LeaveManagementDialog({ open, handleClose, fetchDepartments, selectedRecord, type, setType }) {
   const { showSnackbar } = useSnackbar();
@@ -23,9 +24,6 @@ export default function LeaveManagementDialog({ open, handleClose, fetchDepartme
     }
   }, [searchParams]);
 
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
-  };
   const departmentFields = [
     { name: 'leave_name', label: 'Name of the Leave' },
     { name: 'code', label: 'Code' },
@@ -44,12 +42,12 @@ export default function LeaveManagementDialog({ open, handleClose, fetchDepartme
   // Initialize Formik with initial values and validation schema
   const formik = useFormik({
     initialValues: {
-      // leave_name: '',
-      // code: '',
-      // type: '',
-      // no_of_leaves: '',
-      // pro_rate_leave: '',
-      // pro_rate_leave: ''
+      leave_name: '',
+      code: '',
+      type: '',
+      no_of_leaves: '',
+      pro_rate_leave: '',
+      reset_leave: ''
     },
     validationSchema,
     onSubmit: async (values) => {}
@@ -67,21 +65,33 @@ export default function LeaveManagementDialog({ open, handleClose, fetchDepartme
         <Typography variant="body2" sx={{ mb: 1 }}>
           {field.label}
         </Typography>
-        <CustomInput
-          fullWidth
-          name={field.name}
-          multiline={field.name === 'description'}
-          minRows={field.name === 'description' && 4}
-          value={values[field.name]}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          error={touched[field.name] && Boolean(errors[field.name])}
-          helperText={touched[field.name] && errors[field.name]}
-        />
+        {field.label === 'Select Type' ? (
+          <CustomAutocomplete
+            value={values[field.name]}
+            name={field.name}
+            onChange={(e, newValue) => setFieldValue(field.name, newValue)}
+            options={['Paid', 'Un Paid']}
+            error={touched[field.name] && Boolean(errors[field.name])}
+            helperText={touched[field.name] && errors[field.name]}
+            sx={{ width: '100%' }}
+          />
+        ) : (
+          <CustomInput
+            fullWidth
+            name={field.name}
+            multiline={field.name === 'description'}
+            minRows={field.name === 'description' && 4}
+            value={values[field.name]}
+            onChange={(e) => setFieldValue('field.name', e.target.value)}
+            onBlur={handleBlur}
+            error={touched[field.name] && Boolean(errors[field.name])}
+            helperText={touched[field.name] && errors[field.name]}
+          />
+        )}
       </Grid2>
     ));
   };
-  const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, resetForm } = formik;
+  const { values, setValues, setFieldValue, errors, touched, handleSubmit, handleBlur, resetForm } = formik;
   return (
     <Modal
       open={open}
@@ -91,6 +101,24 @@ export default function LeaveManagementDialog({ open, handleClose, fetchDepartme
         <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
           <Grid2 container spacing={3}>
             {renderFields(departmentFields)}
+          </Grid2>
+          <Grid2 size={{ xs: 12 }} sx={{ mt: 2 }}>
+            <FormControlLabel
+              label="Pro rate leavebalance for the new joineesbased on D.O.J"
+              control={
+                <Checkbox
+                  checked={values.pro_rate_leave}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    formik.setFieldValue('pro_rate_leave', checked);
+                  }}
+                />
+              }
+            />
+            <FormControlLabel
+              label="Reset the leave balance of employees every month "
+              control={<Checkbox checked={values.reset_leave} onChange={(e) => formik.setFieldValue('reset_leave', e.target.checked)} />}
+            />
           </Grid2>
         </Box>
       }

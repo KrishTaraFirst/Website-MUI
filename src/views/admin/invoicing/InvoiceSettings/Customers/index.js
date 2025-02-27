@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
+import Grid2 from '@mui/material/Grid2';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { IconPlus } from '@tabler/icons-react';
@@ -20,9 +20,9 @@ export default function TabTwo({ getCustomersData, customers, businessDetails, o
   };
   return (
     <>
-      <Grid container spacing={2}>
+      <Grid2 container spacing={2}>
         {' '}
-        <Grid item xs={12}>
+        <Grid2 size={{ xs: 12 }}>
           <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
             <Typography variant="h6">Customers</Typography>
             <Button
@@ -33,12 +33,12 @@ export default function TabTwo({ getCustomersData, customers, businessDetails, o
                 handleOpen();
               }}
             >
-              Add Customer
+              Add
             </Button>
             <AddCustomer businessDetailsData={businessDetails} open={open} handleClose={handleClose} getCustomersData={getCustomersData} />
           </Stack>
-        </Grid>
-        <Grid item xs={12}>
+        </Grid2>
+        <Grid2 size={{ xs: 12 }}>
           <CustomerList
             type={type}
             setType={setType}
@@ -49,16 +49,16 @@ export default function TabTwo({ getCustomersData, customers, businessDetails, o
             customersListData={customers}
             getCustomersData={getCustomersData}
           />
-        </Grid>
-      </Grid>
-      <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
+        </Grid2>
+      </Grid2>
+      {/* <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Button variant="outlined" onClick={handleBack} sx={{ mt: 3 }}>
           Back
         </Button>
         <Button variant="contained" onClick={onNext} sx={{ mt: 3 }}>
           Next
         </Button>
-      </Box>
+      </Box> */}
     </>
   );
 }

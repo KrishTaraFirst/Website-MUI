@@ -2,20 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
+import Grid2 from '@mui/material/Grid2';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
-import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Typography } from '@mui/material';
+import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Typography, Stack } from '@mui/material';
 import CustomInput from '@/utils/CustomInput';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import { IconX } from '@tabler/icons-react';
 import IconButton from '@mui/material/IconButton';
 import Factory from '@/utils/Factory';
 import { useSnackbar } from '@/components/CustomSnackbar';
-
+import Modal from '@/components/Modal';
+import { ModalSize } from '@/enum';
 const unitsDropdown = [
   'Kilograms (Kgs)',
   'Grams (g)',
@@ -149,111 +150,102 @@ const AddItem = ({ type, setType, open, handleOpen, handleClose, selectedItem, b
   const renderOptions = values.type === 'Goods' ? unitsDropdown : ['NA'];
 
   return (
-    <Dialog open={open} aria-labelledby="form-dialog-title" fullWidth maxWidth="sm">
-      <Box sx={{ m: 2 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <DialogTitle id="form-dialog-title" sx={{ fontWeight: 'bold' }}>
-            {type === 'edit' ? 'Edit Item' : ' Add New Item'}
-          </DialogTitle>
-          <IconButton
-            variant="outlined"
-            color="secondary"
-            aria-label="close"
+    <Modal
+      open={open}
+      maxWidth={ModalSize.MD}
+      header={{ title: type === 'edit' ? 'Edit Item' : ' Add New Item', subheader: '' }}
+      modalContent={
+        <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
+          <Grid2 container spacing={2}>
+            {addItemData.map((item) => (
+              <Grid2 size={{ xs: 12, sm: 6 }} key={item.name}>
+                {item.name === 'type' ? (
+                  <FormControl fullWidth>
+                    <FormLabel>{item.label}</FormLabel>
+                    <RadioGroup
+                      name={item.name}
+                      value={values.type}
+                      onChange={(e) => {
+                        setFieldValue('type', e.target.value);
+                        if (e.target.value === 'Service') {
+                          setFieldValue('units', 'NA');
+                        }
+                        if (e.target.value === 'Goods') {
+                          setFieldValue('units', '');
+                        }
+                      }}
+                      row
+                    >
+                      <FormControlLabel value="Service" control={<Radio />} label="Service" />
+                      <FormControlLabel value="Goods" control={<Radio />} label="Goods" />
+                    </RadioGroup>
+                  </FormControl>
+                ) : item.name === 'units' || item.name === 'gst_rate' || item.name === 'tax_preference' || item.name === 'hsn_sac' ? (
+                  <>
+                    <div style={{ paddingBottom: '5px' }}>
+                      <label>{item.label}</label>
+                    </div>
+                    <CustomAutocomplete
+                      value={values[item.name]}
+                      onChange={(_, newValue) => {
+                        setFieldValue(item.name, newValue);
+                      }}
+                      options={
+                        item.name === 'gst_rate'
+                          ? gstRatesDropdown
+                          : item.name === 'tax_preference'
+                            ? taxPreferencesDropdown
+                            : item.name === 'hsn_sac'
+                              ? hsnCodes
+                              : renderOptions
+                      }
+                      getOptionLabel={(option) => option} // Use option directly if it's a string
+                      error={touched[item.name] && Boolean(errors[item.name])}
+                      helperText={touched[item.name] && errors[item.name]}
+                      name={item.name}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <div style={{ paddingBottom: '5px' }}>
+                      <label>{item.label}</label>
+                    </div>
+                    <CustomInput
+                      name={item.name}
+                      placeholder={item.name === 'selling_price' ? '₹' : ''}
+                      value={values[item.name]}
+                      onChange={(e) => setFieldValue(item.name, e.target.value)}
+                      onBlur={handleBlur}
+                      error={touched[item.name] && Boolean(errors[item.name])}
+                      helperText={touched[item.name] && errors[item.name]}
+                      textColor={type === 'edit' && '#776080'}
+                    />
+                  </>
+                )}
+              </Grid2>
+            ))}
+          </Grid2>
+        </Box>
+      }
+      footer={
+        <Stack direction="row" sx={{ width: 1, justifyContent: 'space-between', gap: 2 }}>
+          <Button
             onClick={() => {
               setType('');
               resetForm();
               handleClose();
             }}
+            variant="outlined"
+            color="error"
           >
-            <IconX size={20} />
-          </IconButton>
-        </Box>
-        <Divider />
-        <DialogContent>
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-              Item Details
-            </Typography>
-          </Box>
-          <form onSubmit={handleSubmit}>
-            <Grid container spacing={2}>
-              {addItemData.map((item) => (
-                <Grid item xs={12} sm={6} key={item.name}>
-                  {item.name === 'type' ? (
-                    <FormControl fullWidth>
-                      <FormLabel>{item.label}</FormLabel>
-                      <RadioGroup
-                        name={item.name}
-                        value={values.type}
-                        onChange={(e) => {
-                          setFieldValue('type', e.target.value);
-                          if (e.target.value === 'Service') {
-                            setFieldValue('units', 'NA');
-                          }
-                          if (e.target.value === 'Goods') {
-                            setFieldValue('units', '');
-                          }
-                        }}
-                        row
-                      >
-                        <FormControlLabel value="Service" control={<Radio />} label="Service" />
-                        <FormControlLabel value="Goods" control={<Radio />} label="Goods" />
-                      </RadioGroup>
-                    </FormControl>
-                  ) : item.name === 'units' || item.name === 'gst_rate' || item.name === 'tax_preference' || item.name === 'hsn_sac' ? (
-                    <>
-                      <div style={{ paddingBottom: '5px' }}>
-                        <label>{item.label}</label>
-                      </div>
-                      <CustomAutocomplete
-                        value={values[item.name]}
-                        onChange={(_, newValue) => {
-                          setFieldValue(item.name, newValue);
-                        }}
-                        options={
-                          item.name === 'gst_rate'
-                            ? gstRatesDropdown
-                            : item.name === 'tax_preference'
-                              ? taxPreferencesDropdown
-                              : item.name === 'hsn_sac'
-                                ? hsnCodes
-                                : renderOptions
-                        }
-                        getOptionLabel={(option) => option} // Use option directly if it's a string
-                        error={touched[item.name] && Boolean(errors[item.name])}
-                        helperText={touched[item.name] && errors[item.name]}
-                        name={item.name}
-                      />
-                    </>
-                  ) : (
-                    <>
-                      <div style={{ paddingBottom: '5px' }}>
-                        <label>{item.label}</label>
-                      </div>
-                      <CustomInput
-                        name={item.name}
-                        placeholder={item.name === 'selling_price' ? '₹' : ''}
-                        value={values[item.name]}
-                        onChange={(e) => setFieldValue(item.name, e.target.value)}
-                        onBlur={handleBlur}
-                        error={touched[item.name] && Boolean(errors[item.name])}
-                        helperText={touched[item.name] && errors[item.name]}
-                        textColor={type === 'edit' && '#776080'}
-                      />
-                    </>
-                  )}
-                </Grid>
-              ))}
-            </Grid>
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, mb: 3, gap: 5 }}>
-              <Button variant="contained" type="submit">
-                {type === 'edit' ? 'Update Item' : 'Add Item'}
-              </Button>
-            </Box>
-          </form>
-        </DialogContent>
-      </Box>
-    </Dialog>
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} type="submit" variant="contained" color="primary">
+            {type === 'edit' ? 'Update Item' : 'Add Item'}
+          </Button>
+        </Stack>
+      }
+    />
   );
 };
 

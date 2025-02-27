@@ -378,7 +378,6 @@ function EpfComponent({ handleNext }) {
                       </Box>
                     </div>
                   </Grid2>
-
                   <br />
 
                   <FormGroup>

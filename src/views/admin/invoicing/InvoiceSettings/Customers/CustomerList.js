@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination, Stack } from '@mui/material';
 import Factory from '@/utils/Factory';
 import AddCustomer from './AddCustomer';
 import ActionCell from '@/utils/ActionCell';
 import { useSnackbar } from '@/components/CustomSnackbar';
+import EmptyTable from '@/components/third-party/table/EmptyTable';
 
 const CustomerList = ({ type, open, handleOpen, handleClose, setType, businessDetailsData, getCustomersData, customersListData }) => {
   const [customers, setCustomers] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   // const [openDialog, setOpenDialog] = useState(false);
   const { showSnackbar } = useSnackbar();
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 8;
 
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+  const paginatedData = customers.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
   useEffect(() => {
     setCustomers(customersListData);
   }, [customersListData]);
@@ -48,8 +55,14 @@ const CustomerList = ({ type, open, handleOpen, handleClose, setType, businessDe
             </TableRow>
           </TableHead>
           <TableBody>
-            {customers.length > 0 ? (
-              customers.map((customer, index) => (
+            {paginatedData.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} align="center">
+                  <EmptyTable msg="No Data" />
+                </TableCell>
+              </TableRow>
+            ) : (
+              paginatedData.map((customer, index) => (
                 <TableRow key={index}>
                   <TableCell>{customer.name}</TableCell>
                   <TableCell>{customer.pan_number}</TableCell>
@@ -75,17 +88,15 @@ const CustomerList = ({ type, open, handleOpen, handleClose, setType, businessDe
                   </TableCell>
                 </TableRow>
               ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={7} align="center">
-                  No customers available
-                </TableCell>
-              </TableRow>
             )}
           </TableBody>
         </Table>
       </TableContainer>
-
+      {customers.length > 0 && (
+        <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'center', px: { xs: 0.5, sm: 2.5 }, py: 1.5 }}>
+          <Pagination count={Math.ceil(customers.length / rowsPerPage)} page={currentPage} onChange={handlePageChange} />
+        </Stack>
+      )}
       <AddCustomer
         type={type}
         setType={setType}

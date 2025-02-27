@@ -11,7 +11,7 @@ import {
   Button,
   Stack,
   Grid2,
-  Typography,
+  Pagination,
   Box
 } from '@mui/material';
 import DepartmentDialog from './DepartmentDialog'; // Import the DepartmentDialog
@@ -30,6 +30,13 @@ function Departments() {
   const [postType, setPostType] = useState(''); // Payroll ID fetched from URL
   const [selectedRecord, setSelectedRecord] = useState(null);
   const { showSnackbar } = useSnackbar();
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 8;
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+  const paginatedData = departments.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
   const router = useRouter();
 
   const searchParams = useSearchParams();
@@ -142,16 +149,16 @@ function Departments() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {departments.length === 0 ? (
+                {paginatedData.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} sx={{ height: 300 }}>
                       <EmptyTable msg="No departments available" />
                     </TableCell>
                   </TableRow>
                 ) : (
-                  departments.map((department, index) => (
+                  paginatedData.map((department, index) => (
                     <TableRow key={department.id}>
-                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{(currentPage - 1) * rowsPerPage + index + 1}</TableCell>
                       <TableCell>{department.dept_name}</TableCell>
                       <TableCell>{department.dept_code}</TableCell>
                       <TableCell>
@@ -181,6 +188,11 @@ function Departments() {
               </TableBody>
             </Table>
           </TableContainer>
+          {departments.length > 0 && (
+            <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'center', px: { xs: 0.5, sm: 2.5 }, py: 1.5 }}>
+              <Pagination count={Math.ceil(departments.length / rowsPerPage)} page={currentPage} onChange={handlePageChange} />
+            </Stack>
+          )}
         </Grid2>
       </Grid2>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
