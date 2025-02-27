@@ -382,12 +382,12 @@ export default function BusinessKYC() {
         </TabPanel>
         <TabPanel value={value} index={2}>
           <Container sx={{ mb: 2 }}>
-            <ComplianceProfile BID={BID} setValue={setValue} complianceItems={complianceItems} />
+            <ComplianceProfile businessData={businessData} BID={BID} setValue={setValue} complianceItems={complianceItems} />
           </Container>
         </TabPanel>
         <TabPanel value={value} index={3}>
           <Container sx={{ mb: 2 }}>
-            <ComplianceProfile BID={BID} setValue={setValue} complianceItems={licenses} />
+            <ComplianceProfile businessData={businessData} BID={BID} setValue={setValue} complianceItems={licenses} />
           </Container>
         </TabPanel>
         <TabPanel value={value} index={4}>
@@ -456,7 +456,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   borderTop: '1px solid #e9e9e9'
 }));
 
-const ComplianceProfile = ({ complianceItems, setValue, BID }) => {
+const ComplianceProfile = ({ complianceItems, setValue, BID, businessData }) => {
   const [expanded, setExpanded] = useState(false);
   const [compliances, setCompliances] = useState({});
   const { showSnackbar } = useSnackbar();
@@ -513,19 +513,22 @@ const ComplianceProfile = ({ complianceItems, setValue, BID }) => {
 
   const formik = useFormik({
     initialValues: {
-      gstBranches: [
-        {
-          gstin: '',
-          gst_username: '',
-          gst_password: '',
-          address: '',
-          pinCode: '',
-          gst_document: null,
-          authorized_signatory_pan: '',
-          branch_name: '',
-          state: ''
-        }
-      ]
+      gstBranches:
+        businessData.gst_details.length === 0
+          ? [
+              {
+                gstin: '',
+                gst_username: '',
+                gst_password: '',
+                address: '',
+                pinCode: '',
+                gst_document: null,
+                authorized_signatory_pan: '',
+                branch_name: '',
+                state: ''
+              }
+            ]
+          : [...businessData.gst_details]
     },
     validationSchema: Yup.object({
       gstBranches: Yup.array().of(
