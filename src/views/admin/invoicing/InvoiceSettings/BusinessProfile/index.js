@@ -132,17 +132,17 @@ export default function TabOne({ postType, businessDetails, onNext }) {
     if (businessDetails && businessDetails.id) {
       setValues((prev) => ({
         ...prev,
-        nameOfBusiness: businessDetails.nameOfBusiness,
-        registrationNumber: businessDetails.registrationNumber,
-        entityType: businessDetails.entityType,
+        nameOfBusiness: businessDetails.nameOfBusiness || '',
+        registrationNumber: businessDetails.registrationNumber || '',
+        entityType: businessDetails.entityType || '',
         gst_registered: businessDetails.gst_details.length !== 0 ? 'Yes' : 'No',
-        gstin: businessDetails.gstin,
-        state: businessDetails.headOffice.state,
-        email: businessDetails.email,
-        pincode: businessDetails.headOffice.pincode,
-        mobile: businessDetails.mobile_number,
-        addresslane1: businessDetails.headOffice.address_line1,
-        addresslane2: businessDetails.headOffice.address_line2,
+        gstin: businessDetails.gstin || '',
+        state: businessDetails.headOffice.state || '',
+        email: businessDetails.email || '',
+        pincode: businessDetails.headOffice.pincode || '',
+        mobile: businessDetails.mobile_number || '',
+        addresslane1: businessDetails.headOffice.address_line1 || '',
+        addresslane2: businessDetails.headOffice.address_line2 || '',
         pan_number: businessDetails.pan || '',
         bank_name: businessDetails.bank_name || '',
         account_number: businessDetails.account_number || '',
@@ -151,7 +151,7 @@ export default function TabOne({ postType, businessDetails, onNext }) {
       }));
     }
   }, [businessDetails]);
-
+  console.log(values);
   return (
     <>
       <Typography variant="h5" textAlign="center" sx={{ fontWeight: 'bold', fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' } }}>

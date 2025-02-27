@@ -83,7 +83,6 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
 
       gst_type: Yup.string().required('GST Type is required'),
       address_line1: Yup.string().required('Address Line 1 is required'),
-      address_line2: Yup.string().required('Address Line 2 is required'),
       postal_code: Yup.number()
         .typeError('Pincode must be an integer')
         .required('Pincode is required')
