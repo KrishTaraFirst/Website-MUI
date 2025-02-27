@@ -97,7 +97,7 @@ const AddItem = ({ type, setType, open, handleOpen, handleClose, selectedItem, b
         .typeError('Selling Price must be an integer')
         .required('Selling Price is required')
         .integer('Selling Price must be an integer'),
-      description: Yup.string().required('Selling Price Required')
+      description: Yup.string().required('Description is Required')
     }),
     onSubmit: async (values) => {
       const postData = { ...values };

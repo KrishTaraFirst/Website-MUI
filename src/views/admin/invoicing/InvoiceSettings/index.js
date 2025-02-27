@@ -81,9 +81,22 @@ const BasicTabs = ({ type }) => {
 
   const tabLabels = ['Business Profile', 'Customers', 'Goods & Services', 'Invoice Number Format'];
 
-  const fetch_business_Details_by_client = async () => {
+  // const fetch_business_Details_by_client = async () => {
+  //   setLoading(true);
+  //   let url = `/user_management/businesses-by-client/?user_id=${userData.id}`;
+  //   const { res, error } = await Factory('get', url, {});
+  //   if (res?.status_cd === 0) {
+  //     setBusinessDetails(res?.data);
+  //   } else {
+  //     showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
+  //   }
+  //   setLoading(false);
+  // };
+  const fetch_business_Details_by_businessId = async () => {
     setLoading(true);
-    let url = `/user_management/businesses-by-client/?user_id=${userData.id}`;
+    let id = userData.user_type === 'Business' ? userData.business_affiliated[0].id : userData.businesssDetails.business[0].id;
+
+    let url = `/user_management/businesses/${id}/`;
     const { res, error } = await Factory('get', url, {});
     if (res?.status_cd === 0) {
       setBusinessDetails(res?.data);
@@ -105,7 +118,7 @@ const BasicTabs = ({ type }) => {
       setPostType('put');
       getCustomersData(res.data.id);
     } else if (res.status === 404 && res.data.message === 'Invoicing profile not found.') {
-      fetch_business_Details_by_client();
+      fetch_business_Details_by_businessId();
       setPostType('post');
     } else {
       showSnackbar(JSON.stringify(res?.statusText), 'error');
