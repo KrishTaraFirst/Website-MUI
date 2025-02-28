@@ -49,7 +49,17 @@ import BulkItems from './BulkItems';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import MainCard from '@/components/MainCard';
 
-const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, businessDetailsData, customers, open, onClose, itemsList }) => {
+const AddItem = ({
+  type,
+  invoice_number_format,
+  getInvoiceFormat,
+  selectedInvoice,
+  businessDetailsData,
+  customers,
+  open,
+  onClose,
+  itemsList
+}) => {
   const [addInvoiceData] = useState({
     invoice_data: [
       { name: 'customer', label: 'Customer Name' },
@@ -725,9 +735,9 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
   }, [selectedInvoice]);
 
   const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue, resetForm } = formik;
-  useEffect(() => {
-    setSelectedgstin(businessDetailsData.gstin);
-  }, [businessDetailsData]);
+  // useEffect(() => {
+  //   setSelectedgstin(businessDetailsData.gstin);
+  // }, [businessDetailsData]);
 
   return (
     <HomeCard title={selectedInvoice ? 'Edit Invoice' : 'Create Invoice'} tagline="Some text tagline regarding invoicing.">
@@ -748,7 +758,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
             <Grid2 size={{ xs: 6 }}>
               <Typography gutterBottom>Select GSTIN</Typography>
               <CustomAutocomplete
-                value={selectedgstin || 'NA'}
+                value={selectedgstin}
                 options={
                   businessDetailsData?.gst_details?.length > 0
                     ? businessDetailsData.gst_details.map((item) => item.gstin || 'NA') // Show 'NA' if gstin is not available
@@ -756,18 +766,16 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
                 }
                 onChange={async (event, newgstin) => {
                   setSelectedgstin(newgstin || 'NA');
-
-                  // Perform the async operation
                   const url = `/invoicing/invoicing-profiles/${businessDetailsData.id}/update/`;
                   const postData = {
                     gstin: newgstin
                   };
 
                   const { res } = await Factory('put', url, postData);
-                  if (res.status_cd === 1) {
-                    showSnackbar(JSON.stringify(res.data.data), 'error');
+                  if (res.status_cd === 0) {
+                    getInvoiceFormat();
                   } else {
-                    showSnackbar('Data Updated Successfully', 'success');
+                    showSnackbar(JSON.stringify(res.data.data), 'error');
                   }
                 }}
               />

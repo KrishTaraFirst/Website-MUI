@@ -28,8 +28,9 @@ export default function TabOne({ postType, businessDetails, onNext }) {
       { name: 'gstin', label: 'GSTIN' },
       { name: 'pan', label: 'PAN' },
       { name: 'business_type', label: 'Business Type' },
-      { name: 'address_line1', label: 'Address Lane 1' },
-      { name: 'address_line2', label: 'Address lane 2' },
+      { name: 'address_line1', label: 'Address Line 1' },
+      { name: 'address_line2', label: 'Address Line 2' },
+      { name: 'country', label: 'Country' },
       { name: 'state', label: 'State' },
       { name: 'pinCode', label: 'Pincode' },
       { name: 'email', label: 'Email' },
@@ -55,6 +56,7 @@ export default function TabOne({ postType, businessDetails, onNext }) {
       then: () => Yup.string().required('GSTIN is required'),
       otherwise: () => Yup.string().oneOf(['NA'], 'GSTIN must be "NA" when GST Registered is "No"') // Ensure "NA" for "No"
     }),
+    country: Yup.string().required('Country is required'),
     state: Yup.string().required('State is required'),
     email: Yup.string().email('Invalid email format').required('Email is required'),
     pinCode: Yup.number()
@@ -69,7 +71,7 @@ export default function TabOne({ postType, businessDetails, onNext }) {
       .integer('Mobile Number must be an integer')
       .min(1000000000, 'Mobile Number must be 10 digits')
       .max(9999999999, 'Mobile Number must be 10 digits'),
-    address_line1: Yup.string().required('Address Lane 1 is required'),
+    address_line1: Yup.string().required('Address Line 1 is required'),
     pan: Yup.string()
       .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN format')
       .required('PAN is required'),
@@ -101,6 +103,7 @@ export default function TabOne({ postType, businessDetails, onNext }) {
       business_type: '',
       gst_registered: '',
       gstin: '',
+      country: 'IN',
       state: '',
       email: '',
       pinCode: '',
@@ -140,7 +143,12 @@ export default function TabOne({ postType, businessDetails, onNext }) {
         business_registration_number: businessDetails.business_registration_number || businessDetails.registrationNumber || '',
         business_type: businessDetails.business_type || businessDetails.entityType || '',
         gst_registered: businessDetails?.gst_details?.length !== 0 ? 'Yes' : 'No',
-        gstin: businessDetails?.gst_details?.length !== 0 && businessDetails.gstin === 'NA' ? '' : businessDetails.gstin,
+        gstin:
+          businessDetails?.gst_details?.length !== 0 && businessDetails.gstin === 'NA'
+            ? ''
+            : businessDetails?.gst_details?.length === 0
+              ? 'NA'
+              : businessDetails.gstin,
         state: businessDetails?.headOffice?.state || businessDetails?.state || '',
         email: businessDetails.email || '',
         pinCode: businessDetails?.headOffice?.pinCode || businessDetails?.pinCode || '',
@@ -155,7 +163,7 @@ export default function TabOne({ postType, businessDetails, onNext }) {
       }));
     }
   }, [businessDetails]);
-  console.log(businessDetails);
+  // console.log(businessDetails);
   return (
     <>
       <Typography variant="h5" textAlign="center" sx={{ fontWeight: 'bold', fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' } }}>
@@ -192,50 +200,75 @@ export default function TabOne({ postType, businessDetails, onNext }) {
                   >
                     <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
                     <FormControlLabel value="No" control={<Radio />} label="No" />
-                    <Button
-                      variant="contained"
-                      size="small"
-                      startIcon={<IconPlus size={16} />}
-                      onClick={() => {
-                        let id =
-                          userData.user_type === 'Business' ? userData.business_affiliated[0].id : userData.businesssDetails.business[0].id;
-                        router.push(`/business-profile?BID=${id}`);
-                      }}
-                      sx={{ ml: 5 }}
-                    >
-                      Add GST
-                    </Button>
                   </RadioGroup>
                 </>
-              ) : item.name === 'state' || item.name === 'gstin' || item.name === 'business_type' ? (
+              ) : item.name === 'gstin' ? (
                 <>
-                  <div style={{ paddingBottom: '5px' }}>
-                    <label>{item.label}</label>
-                  </div>
+                  <Typography sx={{ mb: 1 }}>
+                    {item.label}
+                    <span style={{ color: 'red' }}>*</span>
+                  </Typography>
+
+                  <Grid2 container spacing={1} alignItems="center">
+                    <Grid2 size={{ xs: 8 }}>
+                      <CustomAutocomplete
+                        value={values[item.name] || ''}
+                        onChange={(e, newValue) => setFieldValue(item.name, newValue)}
+                        options={
+                          Array.isArray(businessDetails.gst_details)
+                            ? businessDetails.gst_details.map((gstItem) => gstItem.gstin) // Get gstin from gst_details
+                            : [] // Return empty array if gst_details is not an array
+                        }
+                        error={touched[item.name] && Boolean(errors[item.name])}
+                        helperText={touched[item.name] && errors[item.name]}
+                        name={item.name}
+                        disabled={values.gst_registered === 'No'} // Disable gstin field if gst_registered is 'No'
+                      />
+                    </Grid2>
+
+                    <Grid2 size={{ xs: 4 }}>
+                      <Button
+                        variant="contained"
+                        size="small"
+                        startIcon={<IconPlus size={16} />}
+                        onClick={() => {
+                          let id =
+                            userData.user_type === 'Business'
+                              ? userData.business_affiliated[0].id
+                              : userData.businesssDetails.business[0].id;
+                          router.push(`/business-profile?BID=${id}`);
+                        }}
+                        sx={{ ml: 2 }}
+                      >
+                        Add GST
+                      </Button>
+                    </Grid2>
+                  </Grid2>
+                </>
+              ) : item.name === 'state' || item.name === 'business_type' ? (
+                <>
+                  <Typography sx={{ mb: 1 }}>
+                    {item.label}
+                    <span style={{ color: 'red' }}>*</span>
+                  </Typography>
                   <CustomAutocomplete
                     value={values[item.name] || ''}
                     onChange={(e, newValue) => setFieldValue(item.name, newValue)}
                     options={
-                      // Determine options based on item name
-                      item.name === 'gstin'
-                        ? Array.isArray(businessDetails.gst_details)
-                          ? businessDetails.gst_details.map((gstItem) => gstItem.gstin) // Get gstin from gst_details
-                          : [] // Return empty array if gst_details is not an array
-                        : item.name === 'business_type'
-                          ? entity_choices // Use entity choices if the field is business_type
-                          : indian_States_And_UTs // Use indian_States_And_UTs for any other field
+                      item.name === 'business_type'
+                        ? entity_choices // Use entity choices if the field is business_type
+                        : indian_States_And_UTs // Use indian_States_And_UTs for state field
                     }
                     error={touched[item.name] && Boolean(errors[item.name])}
                     helperText={touched[item.name] && errors[item.name]}
                     name={item.name}
-                    disabled={item.name === 'gstin' && values.gst_registered === 'No'} // Disable gstin field if gst_registered is 'No'
                   />
                 </>
               ) : (
                 <>
-                  <div style={{ paddingBottom: '5px' }}>
-                    <label>{item.label}</label>
-                  </div>
+                  <Typography sx={{ mb: 1 }}>
+                    {item.label} {item.name !== 'address_line2' && <span style={{ color: 'red' }}>*</span>}
+                  </Typography>
                   <CustomInput
                     name={item.name}
                     value={values[item.name]}
@@ -243,7 +276,7 @@ export default function TabOne({ postType, businessDetails, onNext }) {
                     onBlur={handleBlur}
                     error={touched[item.name] && Boolean(errors[item.name])}
                     helperText={touched[item.name] && errors[item.name]}
-                    // disabled
+                    disabled={item.name === 'country'}
                   />
                 </>
               )}
@@ -260,7 +293,10 @@ export default function TabOne({ postType, businessDetails, onNext }) {
         {busineesprofileFields.bank_details.map((item) => (
           <Grid2 size={{ xs: 12, sm: 6 }} key={item.name}>
             <FormControl fullWidth>
-              <label>{item.label}</label>
+              <Typography sx={{ mb: 1 }}>
+                {item.label}
+                {item.name !== 'swift_code' && <span style={{ color: 'red' }}>*</span>}
+              </Typography>{' '}
               <TextField
                 name={item.name}
                 value={values[item.name]}

@@ -156,7 +156,7 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
     <Modal
       open={open}
       maxWidth={ModalSize.MD}
-      header={{ title: type === 'edit' ? 'Update Customer' : 'Add Customer', subheader: '' }}
+      header={{ title: type === 'edit' ? 'Update Customer' : 'Add New Customer', subheader: '' }}
       modalContent={
         <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
           <Grid2 container spacing={2}>
@@ -188,9 +188,9 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
                   </FormControl>
                 ) : item.name === 'gst_type' || item.name === 'state' ? (
                   <>
-                    <div style={{ paddingBottom: '5px' }}>
-                      <label>{item.label}</label>
-                    </div>
+                    <Typography sx={{ mb: 1 }}>
+                      {item.label} {<span style={{ color: 'red' }}>*</span>}
+                    </Typography>
                     <CustomAutocomplete
                       value={values[item.name]}
                       name={item.name}
@@ -202,9 +202,9 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
                   </>
                 ) : (
                   <>
-                    <div style={{ paddingBottom: '5px' }}>
-                      <label>{item.label}</label>
-                    </div>
+                    <Typography sx={{ mb: 1 }}>
+                      {item.label} {item.name !== 'address_line2' && <span style={{ color: 'red' }}>*</span>}
+                    </Typography>
 
                     <CustomInput
                       name={item.name}
@@ -244,7 +244,7 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
             Cancel
           </Button>
           <Button onClick={handleSubmit} type="submit" variant="contained" color="primary">
-            {type === 'edit' ? 'Update Customer' : 'Add Customer'}
+            {type === 'edit' ? 'Update' : 'Save'}
           </Button>
         </Stack>
       }

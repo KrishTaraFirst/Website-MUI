@@ -55,13 +55,18 @@ function Index() {
 
     if (res.status_cd === 0) {
       setItemsList(res.data.goods_and_services);
+    } else {
+      showSnackbar(JSON.stringify(res.data.error), 'error');
     }
   };
   // Fetch Invoice Number Format
   const getInvoiceFormat = async () => {
     const { res } = await Factory('get', `/invoicing/latest/${businessDetails?.id}/`, {});
+    console.log(res.data);
     if (res.status_cd === 0) {
       setInvoiceNumberFormat(res.data.latest_invoice_number);
+    } else {
+      showSnackbar(JSON.stringify(res.data.error), 'error');
     }
   };
   const get_Individual_Invoice_Data = async () => {
@@ -69,7 +74,7 @@ function Index() {
     if (res.status_cd === 0) {
       setSelectedInvoice({ ...res.data });
     } else {
-      console.log('Failed to fetch  details');
+      showSnackbar(JSON.stringify(res.data.error), 'error');
     }
   };
   useEffect(() => {
@@ -82,12 +87,12 @@ function Index() {
       getCustomersData(businessDetails?.id);
     }
   }, [businessDetails]);
-  useEffect(() => {
-    if (businessDetails?.id && !invoiceId) {
-      //   getInvoicesList();
-      getInvoiceFormat();
-    }
-  }, [businessDetails]);
+  // useEffect(() => {
+  //   if (businessDetails?.id && !invoiceId) {
+  //     //   getInvoicesList();
+  //     getInvoiceFormat();
+  //   }
+  // }, [businessDetails]);
 
   useEffect(() => {
     if (invoiceId) {
@@ -103,6 +108,7 @@ function Index() {
       invoice_number_format={invoiceNumberFormat}
       itemsList={itemsList}
       selectedInvoice={selectedInvoice}
+      getInvoiceFormat={getInvoiceFormat}
     />
   );
 }
