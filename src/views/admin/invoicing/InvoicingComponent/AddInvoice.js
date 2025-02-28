@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Button } from '@mui/material';
-import Grid from '@mui/material/Grid';
+import Grid2 from '@mui/material/Grid2';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -81,6 +81,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
   const router = useRouter();
 
   const [saveButton, setSaveButton] = useState(true);
+  const [selectedgstin, setSelectedgstin] = useState('');
   const [bulkItemsDialogue, setBulkItemsDialogue] = useState(false); // State for Apply Tax checkbox
   // const [invoice_number_format, set_Invoice_number_format] = useState('');
   let termsDropdown = ['NET 15', 'NET 30', 'NET 45', 'NET 60', 'Due end of the MONTH', 'Due end of next MONTH', 'Due on Receipt', 'Custom'];
@@ -724,6 +725,10 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
   }, [selectedInvoice]);
 
   const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue, resetForm } = formik;
+  useEffect(() => {
+    setSelectedgstin(businessDetailsData.gstin);
+  }, [businessDetailsData]);
+
   return (
     <HomeCard title={selectedInvoice ? 'Edit Invoice' : 'Create Invoice'} tagline="Some text tagline regarding invoicing.">
       <MainCard>
@@ -739,16 +744,44 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
             <Typography variant="h6">Invoice Details</Typography>
           </Box>
 
-          <Grid container spacing={2}>
+          <Grid2 container spacing={2}>
+            <Grid2 size={{ xs: 6 }}>
+              <Typography gutterBottom>Select GSTIN</Typography>
+              <CustomAutocomplete
+                value={selectedgstin || 'NA'}
+                options={
+                  businessDetailsData?.gst_details?.length > 0
+                    ? businessDetailsData.gst_details.map((item) => item.gstin || 'NA') // Show 'NA' if gstin is not available
+                    : ['NA'] // Show only 'NA' if no data
+                }
+                onChange={async (event, newgstin) => {
+                  setSelectedgstin(newgstin || 'NA');
+
+                  // Perform the async operation
+                  const url = `/invoicing/invoicing-profiles/${businessDetailsData.id}/update/`;
+                  const postData = {
+                    gstin: newgstin
+                  };
+
+                  const { res } = await Factory('put', url, postData);
+                  if (res.status_cd === 1) {
+                    showSnackbar(JSON.stringify(res.data.data), 'error');
+                  } else {
+                    showSnackbar('Data Updated Successfully', 'success');
+                  }
+                }}
+              />
+            </Grid2>
+            <br />
             {addInvoiceData.invoice_data.map((item) => (
-              <Grid item xs={12} sm={6} key={item.name}>
+              <Grid2 size={{ xs: 12, sm: 6 }} key={item.name}>
                 <div style={{ paddingBottom: '5px' }}>
-                  <Typography sx={{ color: 'grey.800' }}>{item.label}</Typography>
+                  <Typography>{item.label}</Typography>
                 </div>
                 {renderField(item)}
-              </Grid>
+              </Grid2>
             ))}
-          </Grid>
+          </Grid2>
           <Divider sx={{ mb: 4, mt: 4 }} />
 
           <Box sx={{ mb: 2 }}>
@@ -771,38 +804,35 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
             </Box>
           </Box>
 
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+          <Grid2 container spacing={2}>
+            <Grid2 size={{ xs: 12, sm: 6 }}>
               <Box sx={{ mb: 2 }}>
                 <Typography variant="h6">Billing Information</Typography>
               </Box>
               {addInvoiceData.billing.map((item) => (
-                <Grid item xs={12} key={item.name} style={{ paddingBottom: '10px' }}>
-                  <div style={{ paddingBottom: '5px' }}>
-                    <Typography sx={{ color: 'grey.800' }}>{item.label}</Typography>
-                  </div>
+                <Grid2 size={{ xs: 12 }} key={item.name} style={{ paddingBottom: '10px' }}>
+                  <Typography sx={{ mb: 1 }}>{item.label}</Typography>
                   {renderField2(item, 'billing_address')}
-                </Grid>
+                </Grid2>
               ))}
-            </Grid>
+            </Grid2>
 
-            <Grid item xs={12} sm={6}>
+            <Grid2 size={{ xs: 12, sm: 6 }}>
               <Box sx={{ mb: 2 }}>
                 <Typography variant="h6">Shipping Information</Typography>
               </Box>
+
               {addInvoiceData.shipping.map((item) => (
-                <Grid item xs={12} key={item.name} style={{ paddingBottom: '10px' }}>
-                  <div style={{ paddingBottom: '5px' }}>
-                    <Typography sx={{ color: 'grey.800' }}>{item.label}</Typography>
-                  </div>
+                <Grid2 size={{ xs: 12 }} key={item.name} style={{ paddingBottom: '10px' }}>
+                  <Typography sx={{ mb: 1 }}>{item.label}</Typography>
                   {renderField2(item, 'shipping_address')}
-                </Grid>
+                </Grid2>
               ))}
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
 
           <Divider sx={{ mt: 4, mb: 4 }} />
-          <Grid item xs={12} md={6}>
+          <Grid2 size={{ xs: 12, sm: 6 }}>
             <Box sx={{ mb: 4 }}>
               <Typography variant="h6">Item Details</Typography>
 
@@ -917,14 +947,12 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
                 </Button>
               </Box>
             </Box>
-          </Grid>
+          </Grid2>
 
           <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 3 }}>
               <Box>
-                <Typography variant="subtitle2" gutterBottom>
-                  Customer Notes
-                </Typography>
+                <Typography gutterBottom>Customer Notes</Typography>
                 <CustomInput
                   multiline
                   minRows={4}
@@ -939,9 +967,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
               </Box>
 
               <Box>
-                <Typography variant="subtitle2" gutterBottom>
-                  Terms & Conditions
-                </Typography>
+                <Typography gutterBottom>Terms & Conditions</Typography>
                 <CustomInput
                   multiline
                   minRows={4}
@@ -1071,7 +1097,7 @@ const AddItem = ({ type, invoice_number_format, setType, selectedInvoice, busine
                 formik.setFieldValue('invoice_status', 'Draft'); // 'Draft' should be a string
                 formik.handleSubmit();
               }}
-              disabled={formik.values.invoice_status === 'Draft'}
+              // disabled={formik.values.invoice_status === 'Draft'}
             >
               Save as Draft
             </Button>

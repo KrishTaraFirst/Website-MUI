@@ -51,6 +51,7 @@ export default function NavGroup({ item }) {
       ...userData,
       role: roles[userData.user_type]
     };
+    delete userDAta.businesssDetails;
     localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));
     localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));
     router.push(APP_DEFAULT_PATH);

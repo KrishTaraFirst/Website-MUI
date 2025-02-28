@@ -90,7 +90,10 @@ const AddItem = ({ type, setType, open, handleOpen, handleClose, selectedItem, b
         .required('SKU Value is required')
         .integer('SKU Value must be an integer'),
       units: Yup.string().required('Units is Required'),
-      hsn_sac: Yup.string().required('HSN/SAC Code is Required'),
+      hsn_sac: Yup.number()
+        .required('HSN/SAC Code is Required')
+        .typeError('HSN/SAC Code must be a number')
+        .test('len', 'HSN/SAC must be exactly 4 digits', (value) => value && /^[0-9]{4}$/.test(value)),
       gst_rate: Yup.string().required('GST Rate is Required'),
       tax_preference: Yup.string().required(' Tax Preference is Required'),
       selling_price: Yup.number()
@@ -180,7 +183,7 @@ const AddItem = ({ type, setType, open, handleOpen, handleClose, selectedItem, b
                       <FormControlLabel value="Goods" control={<Radio />} label="Goods" />
                     </RadioGroup>
                   </FormControl>
-                ) : item.name === 'units' || item.name === 'gst_rate' || item.name === 'tax_preference' || item.name === 'hsn_sac' ? (
+                ) : item.name === 'units' || item.name === 'gst_rate' || item.name === 'tax_preference' ? (
                   <>
                     <div style={{ paddingBottom: '5px' }}>
                       <label>{item.label}</label>
@@ -218,7 +221,6 @@ const AddItem = ({ type, setType, open, handleOpen, handleClose, selectedItem, b
                       onBlur={handleBlur}
                       error={touched[item.name] && Boolean(errors[item.name])}
                       helperText={touched[item.name] && errors[item.name]}
-                      textColor={type === 'edit' && '#776080'}
                     />
                   </>
                 )}

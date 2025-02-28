@@ -11,25 +11,29 @@ import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import Factory from '@/utils/Factory';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import useCurrentUser from '@/hooks/useCurrentUser';
+import { IconPlus } from '@tabler/icons-react';
+import { useRouter } from 'next/navigation';
+import { entity_choices } from '@/utils/Entity-types';
 
 export default function TabOne({ postType, businessDetails, onNext }) {
   // const [businessDetails, setBusinessDetails] = useState(null);
   const { userData } = useCurrentUser();
+  const router = useRouter();
 
   const [busineesprofileFields] = useState({
     basic_details: [
-      { name: 'nameOfBusiness', label: 'Business Name' },
-      { name: 'registrationNumber', label: 'Business Registration Number' },
-      { name: 'entityType', label: 'Business Type' },
+      { name: 'business_name', label: 'Business Name' },
+      { name: 'business_registration_number', label: 'Business Registration Number' },
       { name: 'gst_registered', label: 'GST Registered' },
       { name: 'gstin', label: 'GSTIN' },
+      { name: 'pan', label: 'PAN' },
+      { name: 'business_type', label: 'Business Type' },
+      { name: 'address_line1', label: 'Address Lane 1' },
+      { name: 'address_line2', label: 'Address lane 2' },
       { name: 'state', label: 'State' },
+      { name: 'pinCode', label: 'Pincode' },
       { name: 'email', label: 'Email' },
-      { name: 'pincode', label: 'Pincode' },
-      { name: 'mobile', label: 'Mobile' },
-      { name: 'addresslane1', label: 'Address Lane 1' },
-      { name: 'addresslane2', label: 'Address lane 2' },
-      { name: 'pan_number', label: 'PAN' }
+      { name: 'mobile_number', label: 'Mobile' }
     ],
     bank_details: [
       { name: 'account_number', label: 'Bank A/C No' },
@@ -42,23 +46,31 @@ export default function TabOne({ postType, businessDetails, onNext }) {
 
   // Formik validation schema
   const validationSchema = Yup.object({
-    // nameOfBusiness: Yup.string().required('Business Name is required'),
-    // registrationNumber: Yup.string().required('Registration Number is required'),
-    // entityType: Yup.string().required('Business Type is required'),
-    // gst_registered: Yup.string().required('GST Registration status is required'),
-
+    business_name: Yup.string().required('Business Name is required'),
+    business_registration_number: Yup.string().required('Registration Number is required'),
+    business_type: Yup.string().required('Business Type is required'),
+    gst_registered: Yup.string().required('GST Registration status is required'),
     gstin: Yup.string().when('gst_registered', {
       is: 'Yes',
       then: () => Yup.string().required('GSTIN is required'),
       otherwise: () => Yup.string().oneOf(['NA'], 'GSTIN must be "NA" when GST Registered is "No"') // Ensure "NA" for "No"
     }),
-    // state: Yup.string().required('State is required'),
-    // email: Yup.string().email('Invalid email format').required('Email is required'),
-    // pincode: Yup.string().required('Pincode is required'),
-    // mobile: Yup.string().required('Mobile is required'),
-    // addresslane1: Yup.string().required('Address Lane 1 is required'),
-    // addresslane2: Yup.string().required('Address Lane 2 is required'),
-    pan_number: Yup.string()
+    state: Yup.string().required('State is required'),
+    email: Yup.string().email('Invalid email format').required('Email is required'),
+    pinCode: Yup.number()
+      .typeError('Pincode must be an integer')
+      .required('Pincode is required')
+      .integer('Pincode must be an integer')
+      .min(100000, 'Pincode must be at least 6 digits')
+      .max(999999, 'Pincode must be at most 6 digits'),
+    mobile_number: Yup.number()
+      .typeError('Mobile Number must be an integer')
+      .required('Mobile Number is required')
+      .integer('Mobile Number must be an integer')
+      .min(1000000000, 'Mobile Number must be 10 digits')
+      .max(9999999999, 'Mobile Number must be 10 digits'),
+    address_line1: Yup.string().required('Address Lane 1 is required'),
+    pan: Yup.string()
       .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN format')
       .required('PAN is required'),
     bank_name: Yup.string().required('Bank Name is required'),
@@ -84,18 +96,18 @@ export default function TabOne({ postType, businessDetails, onNext }) {
 
   const formik = useFormik({
     initialValues: {
-      nameOfBusiness: '',
-      registrationNumber: '',
-      entityType: '',
+      business_name: '',
+      business_registration_number: '',
+      business_type: '',
       gst_registered: '',
       gstin: '',
       state: '',
       email: '',
-      pincode: '',
-      mobile: '',
-      addresslane1: '',
-      addresslane2: '',
-      pan_number: '',
+      pinCode: '',
+      mobile_number: '',
+      address_line1: '',
+      address_line2: '',
+      pan: '',
       bank_name: '',
       account_number: '',
       ifsc_code: '',
@@ -105,15 +117,7 @@ export default function TabOne({ postType, businessDetails, onNext }) {
     onSubmit: async (values) => {
       const url =
         postType === 'put' ? `/invoicing/invoicing-profiles/${businessDetails.id}/update/` : '/invoicing/invoicing-profiles/create/';
-      const postData = {
-        // pan_number: values.pan_number,
-        bank_name: values.bank_name,
-        account_number: Number(values.account_number),
-        ifsc_code: values.ifsc_code,
-        swift_code: values.swift_code,
-        gst_registered: values.gst_registered,
-        gstin: values.gstin
-      };
+      const postData = { ...values };
       if (postType === 'post') {
         postData.business = businessDetails.id;
       }
@@ -132,26 +136,26 @@ export default function TabOne({ postType, businessDetails, onNext }) {
     if (businessDetails && businessDetails.id) {
       setValues((prev) => ({
         ...prev,
-        nameOfBusiness: businessDetails.nameOfBusiness || '',
-        registrationNumber: businessDetails.registrationNumber || '',
-        entityType: businessDetails.entityType || '',
-        gst_registered: businessDetails.gst_details.length !== 0 ? 'Yes' : 'No',
-        gstin: businessDetails.gstin || '',
-        state: businessDetails.headOffice.state || '',
+        business_name: businessDetails.business_name || businessDetails.nameOfBusiness || '',
+        business_registration_number: businessDetails.business_registration_number || businessDetails.registrationNumber || '',
+        business_type: businessDetails.business_type || businessDetails.entityType || '',
+        gst_registered: businessDetails?.gst_details?.length !== 0 ? 'Yes' : 'No',
+        gstin: businessDetails?.gst_details?.length !== 0 && businessDetails.gstin === 'NA' ? '' : businessDetails.gstin,
+        state: businessDetails?.headOffice?.state || businessDetails?.state || '',
         email: businessDetails.email || '',
-        pincode: businessDetails.headOffice.pincode || '',
-        mobile: businessDetails.mobile_number || '',
-        addresslane1: businessDetails.headOffice.address_line1 || '',
-        addresslane2: businessDetails.headOffice.address_line2 || '',
-        pan_number: businessDetails.pan || '',
-        bank_name: businessDetails.bank_name || '',
+        pinCode: businessDetails?.headOffice?.pinCode || businessDetails?.pinCode || '',
+        mobile_number: businessDetails.mobile_number || '',
+        address_line1: businessDetails?.headOffice?.address_line1 || businessDetails?.address_line1 || '',
+        address_line2: businessDetails?.headOffice?.address_line2 || businessDetails?.address_line2 || '',
+        pan: businessDetails?.pan || '',
+        bank_name: businessDetails?.bank_name || '',
         account_number: businessDetails.account_number || '',
         ifsc_code: businessDetails.ifsc_code || '',
         swift_code: businessDetails.swift_code || ''
       }));
     }
   }, [businessDetails]);
-  console.log(values);
+  console.log(businessDetails);
   return (
     <>
       <Typography variant="h5" textAlign="center" sx={{ fontWeight: 'bold', fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' } }}>
@@ -188,25 +192,43 @@ export default function TabOne({ postType, businessDetails, onNext }) {
                   >
                     <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
                     <FormControlLabel value="No" control={<Radio />} label="No" />
+                    <Button
+                      variant="contained"
+                      size="small"
+                      startIcon={<IconPlus size={16} />}
+                      onClick={() => {
+                        let id =
+                          userData.user_type === 'Business' ? userData.business_affiliated[0].id : userData.businesssDetails.business[0].id;
+                        router.push(`/business-profile?BID=${id}`);
+                      }}
+                      sx={{ ml: 5 }}
+                    >
+                      Add GST
+                    </Button>
                   </RadioGroup>
                 </>
-              ) : item.name === 'state' || item.name === 'gstin' ? (
+              ) : item.name === 'state' || item.name === 'gstin' || item.name === 'business_type' ? (
                 <>
                   <div style={{ paddingBottom: '5px' }}>
                     <label>{item.label}</label>
                   </div>
                   <CustomAutocomplete
-                    value={values[item.name]}
+                    value={values[item.name] || ''}
                     onChange={(e, newValue) => setFieldValue(item.name, newValue)}
                     options={
-                      item.name === 'gstin' && Array.isArray(businessDetails.gst_details)
-                        ? businessDetails.gst_details.map((item) => item.gstin)
-                        : indian_States_And_UTs
+                      // Determine options based on item name
+                      item.name === 'gstin'
+                        ? Array.isArray(businessDetails.gst_details)
+                          ? businessDetails.gst_details.map((gstItem) => gstItem.gstin) // Get gstin from gst_details
+                          : [] // Return empty array if gst_details is not an array
+                        : item.name === 'business_type'
+                          ? entity_choices // Use entity choices if the field is business_type
+                          : indian_States_And_UTs // Use indian_States_And_UTs for any other field
                     }
                     error={touched[item.name] && Boolean(errors[item.name])}
                     helperText={touched[item.name] && errors[item.name]}
                     name={item.name}
-                    disabled={item.name === 'gstin' && values.gst_registered === 'No'}
+                    disabled={item.name === 'gstin' && values.gst_registered === 'No'} // Disable gstin field if gst_registered is 'No'
                   />
                 </>
               ) : (
@@ -221,7 +243,7 @@ export default function TabOne({ postType, businessDetails, onNext }) {
                     onBlur={handleBlur}
                     error={touched[item.name] && Boolean(errors[item.name])}
                     helperText={touched[item.name] && errors[item.name]}
-                    disabled
+                    // disabled
                   />
                 </>
               )}
@@ -243,7 +265,7 @@ export default function TabOne({ postType, businessDetails, onNext }) {
                 name={item.name}
                 value={values[item.name]}
                 onChange={(e) => {
-                  if (item.name === 'pan_number' || item.name === 'ifsc_code' || item.name === 'bank_name') {
+                  if (item.name === 'pan' || item.name === 'ifsc_code' || item.name === 'bank_name') {
                     setFieldValue(item.name, e.target.value.toUpperCase());
                   } else {
                     setFieldValue(item.name, e.target.value);
