@@ -43,16 +43,6 @@ const BasicTabs = ({ type }) => {
 
   const theme = useTheme();
 
-  // useEffect(() => {
-  //   const fetchBusinessDetails = async () => {
-  //     const { res } = await Factory('get', '/invoicing/invoicing-profiles/', {});
-  //     if (res) {
-  //       setBusinessDetails(res.data);
-  //     }
-  //   };
-  //   fetchBusinessDetails();
-  // }, [activeTab]);
-
   const getCustomersData = async (id) => {
     setLoading(true);
     const { res } = await Factory('get', `/invoicing/customer_profiles/?invoicing_profile_id=${id}`, {});
@@ -67,11 +57,19 @@ const BasicTabs = ({ type }) => {
   const handleTabChange = (_event, newTabIndex) => setActiveTab(newTabIndex);
 
   const handleNext = () => {
-    setActiveTab((prev) => (prev < 3 ? prev + 1 : prev));
+    // Disable next button when on last tab
+    if (activeTab < tabLabels.length - 1) {
+      setActiveTab((prev) => prev + 1);
+    }
   };
+
   const handleBack = () => {
-    setActiveTab((prev) => (prev < 3 ? prev - 1 : prev));
+    // Ensure back button works even on last tab
+    if (activeTab > 0) {
+      setActiveTab((prev) => prev - 1);
+    }
   };
+
   const a11yProps = (index) => ({
     value: index,
     id: `simple-tab-${index}`,
@@ -80,17 +78,6 @@ const BasicTabs = ({ type }) => {
 
   const tabLabels = ['Business Profile', 'Customers', 'Goods & Services', 'Invoice Number Format'];
 
-  // const fetch_business_Details_by_client = async () => {
-  //   setLoading(true);
-  //   let url = `/user_management/businesses-by-client/?user_id=${userData.id}`;
-  //   const { res, error } = await Factory('get', url, {});
-  //   if (res?.status_cd === 0) {
-  //     setBusinessDetails(res?.data);
-  //   } else {
-  //     showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
-  //   }
-  //   setLoading(false);
-  // };
   const fetch_business_Details_by_businessId = async () => {
     setLoading(true);
     let id = userData.user_type === 'Business' ? userData.business_affiliated[0].id : userData.businesssDetails.business[0].id;
