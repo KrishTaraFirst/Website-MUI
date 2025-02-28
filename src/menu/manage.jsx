@@ -35,7 +35,7 @@ const manage = {
       type: 'item',
       url: '/dashboard/user/business',
       icon: 'IconBuilding',
-      roles: [AuthRole.INDIVIDUAL, AuthRole.CHARTED_ACCOUNTANT_FIRM]
+      roles: [AuthRole.INDIVIDUAL, AuthRole.CHARTED_ACCOUNTANT_FIRM, AuthRole.CORPORATE_ADMIN]
     },
     {
       id: 'manageCAFirm',
@@ -76,7 +76,7 @@ const manage = {
       type: 'item',
       url: '/invoicing',
       icon: 'IconFileInvoice',
-      roles: [AuthRole.SUPER_ADMIN, AuthRole.INDIVIDUAL, AuthRole.CORPORATE_ADMIN]
+      roles: [AuthRole.SUPER_ADMIN, AuthRole.CORPORATE_ADMIN]
     },
     {
       id: 'VisaServices',
@@ -92,7 +92,7 @@ const manage = {
       type: 'item',
       url: '/payroll',
       icon: 'IconInvoice',
-      roles: [AuthRole.SUPER_ADMIN, AuthRole.CORPORATE_ADMIN, AuthRole.SERVICE_PROVIDER, AuthRole.INDIVIDUAL]
+      roles: [AuthRole.SUPER_ADMIN, AuthRole.CORPORATE_ADMIN, AuthRole.SERVICE_PROVIDER]
     },
 
     //

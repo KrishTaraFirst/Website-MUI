@@ -24,7 +24,7 @@ const restrictedRoutes = {
     '/dashboard/user/service-providers'
   ],
   'corporate-admin': [
-    '/dashboard/user/business'
+    // '/dashboard/user/business'
     // '/dashboard/user/indivial',
     // '/dashboard/user/ca-firms',
     // '/dashboard/user/service-providers'
