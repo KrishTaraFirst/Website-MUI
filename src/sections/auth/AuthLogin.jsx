@@ -89,7 +89,6 @@ export default function AuthLogin({ inputSx }) {
           lastname: '',
           user_groups: res.data.user_groups,
           associated_services: res.data.associated_services,
-          // password: 'Super@123',
           mobile: res.data.mobile_number,
           access_token: res.data.access,
           user_role: res.data.user_role,
@@ -100,6 +99,7 @@ export default function AuthLogin({ inputSx }) {
           business_exists: res.data.business_exists,
           business_affiliated: res.data.business_affiliated,
           individual_affiliated: res.data.individual_affiliated,
+          dashboardChange: false,
           ca_firm_affiliated: res.data.ca_firm_affiliated,
           service_provider_affiliated: res.data.service_provider_affiliated
         };

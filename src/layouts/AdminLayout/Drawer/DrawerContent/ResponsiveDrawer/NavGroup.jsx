@@ -49,7 +49,8 @@ export default function NavGroup({ item }) {
   const returnHome = () => {
     let userDAta = {
       ...userData,
-      role: roles[userData.user_type]
+      role: roles[userData.user_type],
+      dashboardChange: false
     };
     delete userDAta.businesssDetails;
     localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));
