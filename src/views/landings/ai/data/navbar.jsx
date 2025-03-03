@@ -9,9 +9,12 @@ export const navbar = {
   secondaryBtn: { children: 'Sign Up', href: '/register', rel: 'noopener noreferrer' },
   primaryBtn: { children: 'Login', href: '/login', rel: 'noopener noreferrer' },
   navItems: [
-    { id: 'home', title: 'Home', link: '/' },
+    { id: 'services', title: 'Services', link: '/' },
     // { id: 'about', title: 'About', link: '/about' },
-    { id: 'contact', title: 'Contact', link: '/contact' }
+    { id: 'products', title: 'Products', link: '/' },
+    { id: 'knowledge', title: 'Knowledge', link: '/contact' },
+    { id: 'company', title: 'Company', link: '/' },
+    { id: 'bookConsultation', title: 'Book Consultation', link: '/' }
     // landingMegamenu,
     // { id: 'components', title: 'Blocks', link: SECTION_PATH },
     // pagesMegamenu,
