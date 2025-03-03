@@ -46,7 +46,6 @@ export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
     else url = `/user_management/affiliated-details?user_id=${userData.id}&type=${type}`;
 
     const { res } = await Factory('get', url, {});
-    console.log(res.data);
     if (res.status_cd === 0) {
       setData(res.data.users);
     } else {
@@ -84,7 +83,8 @@ export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
     let userDAta = {
       ...userData,
       role: roles[rowData.user_type],
-      businesssDetails: row.original
+      businesssDetails: row.original,
+      dashboardChange: 'business'
     };
     localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));
     router.push(APP_DEFAULT_PATH);
@@ -92,6 +92,16 @@ export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
       window.location.reload();
     }, 500);
   };
+
+  function getName(row) {
+    let displayName;
+    if (type === 'Business' && row.original.business?.length !== 0) {
+      displayName = row.original.business[0]?.nameOfBusiness;
+    } else {
+      displayName = `${row.original.first_name} ${row.original.last_name}`;
+    }
+    return displayName;
+  }
 
   const columns = useMemo(
     () => [
@@ -101,7 +111,7 @@ export default function AnalyticsBehaviorTable({ type, tableData, refresh }) {
         header: 'Name',
         cell: ({ row }) => (
           <Typography onClick={() => handleCellClick(row, 'user')} variant="body2" color="text.secondary">
-            {`${row.original.first_name} ${row.original.last_name}`}
+            {getName(row)}
           </Typography>
         )
       },
