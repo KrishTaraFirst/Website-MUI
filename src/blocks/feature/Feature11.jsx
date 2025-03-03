@@ -40,7 +40,7 @@ export default function Feature11({ heading, caption, image, features, showBorde
           <Typeset {...{ heading, caption }} />
         </motion.div>
         <Stack sx={{ gap: 1.5 }}>
-          {/* {image && (
+          {image && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -71,7 +71,7 @@ export default function Feature11({ heading, caption, image, features, showBorde
                 </Box>
               </GraphicsCard>
             </motion.div>
-          )} */}
+          )}
           <Grid container spacing={1.5}>
             {features.map((item, index) => (
               <Grid key={index} size={{ xs: 12, sm: 6, md: 4 }}>

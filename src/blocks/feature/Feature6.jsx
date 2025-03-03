@@ -6,22 +6,24 @@ import { alpha, useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Grid2';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 
 // @third-party
 import { motion } from 'framer-motion';
 
 // @project
 import GraphicsCard from '@/components/cards/GraphicsCard';
-import IconCard from '@/components/cards/IconCard';
+import ServiceCard from '@/components/cards/ServiceCard';
 import ContainerWrapper from '@/components/ContainerWrapper';
 import GraphicsImage from '@/components/GraphicsImage';
-import Typeset from '@/components/Typeset';
+import Typeset from '@/components/Typeset3';
 import { ThemeDirection } from '@/config';
 import { SECTION_COMMON_PY } from '@/utils/constant';
+import NextLink from 'next/link';
 
 /***************************  FEATURE - 6  ***************************/
 
-export default function Feature6({ heading, caption, image, features }) {
+export default function Feature6({ heading, caption, image, features, getStarted }) {
   const theme = useTheme();
 
   const gc = theme.palette.grey[100];
@@ -36,7 +38,7 @@ export default function Feature6({ heading, caption, image, features }) {
   return (
     <ContainerWrapper sx={{ py: SECTION_COMMON_PY }}>
       <Stack sx={{ gap: { xs: 3, sm: 4 } }}>
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 5 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -46,7 +48,7 @@ export default function Feature6({ heading, caption, image, features }) {
           }}
         >
           <Typeset {...{ heading, caption }} />
-        </motion.div>
+        </motion.div> */}
         <Grid container spacing={1.5}>
           {image && (
             <Grid size={{ xs: 12, md: 4.5 }}>
@@ -58,12 +60,28 @@ export default function Feature6({ heading, caption, image, features }) {
                   duration: 0.4,
                   delay: 0.4
                 }}
-                style={{ height: '100%' }}
               >
-                <GraphicsCard sx={{ pl: imageBoxRadius, pt: imageBoxRadius, height: { xs: 332, md: '100%' } }}>
-                  <GraphicsImage image={image} sx={{ height: 1, backgroundPositionX: 'left', backgroundPositionY: 'top', ...imageRadius }}>
-                    <Box sx={{ width: 1, height: 1, ...imageRadius, background: gradient }} />
-                  </GraphicsImage>
+                <GraphicsCard sx={{ pl: imageBoxRadius, pt: imageBoxRadius }}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{
+                      duration: 0.4,
+                      delay: 0.4
+                    }}
+                  >
+                    <Typeset {...{ heading, caption }} />
+
+                    <Stack sx={{ alignItems: 'center', p: { xs: 3, sm: 4, md: 5 }, gap: { xs: 3, sm: 4, md: 5 } }}>
+                      <Button
+                        variant="contained"
+                        size="large"
+                        {...getStarted.link}
+                        {...(getStarted.link && getStarted.link.href && { component: NextLink })}
+                      />
+                    </Stack>
+                  </motion.div>
                 </GraphicsCard>
               </motion.div>
             </Grid>
@@ -71,7 +89,7 @@ export default function Feature6({ heading, caption, image, features }) {
           <Grid size={{ xs: 12, md: 7.5 }}>
             <Grid container spacing={1.5}>
               {features.map((item, index) => (
-                <Grid key={index} size={{ xs: 12, sm: 6 }}>
+                <Grid key={index} size={{ xs: 12, sm: 6, md: 4 }}>
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -81,7 +99,14 @@ export default function Feature6({ heading, caption, image, features }) {
                       delay: item.animationDelay
                     }}
                   >
-                    <IconCard icon={item.icon} title={item.title} content={item.content} iconAvatar cardPadding={{ xs: 2, sm: 3, md: 3 }} />
+                    <ServiceCard
+                      icon={item.icon}
+                      title={item.title}
+                      href={item.href}
+                      content={item.content}
+                      iconAvatar
+                      cardPadding={{ xs: 2, sm: 3, md: 3 }}
+                    />
                   </motion.div>
                 </Grid>
               ))}

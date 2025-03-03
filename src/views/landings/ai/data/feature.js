@@ -2,49 +2,97 @@
 import { IconType } from '@/enum';
 
 export const feature6 = {
-  heading: 'Made to fit your workflow',
-  caption: 'Seamlessly integrate, map assets, and auto-update your software catalog.',
+  heading: 'Embrace complete financial control with TARA FIRST',
+  caption:
+    "Tara is here to simplify the complexities of financial management with a fresh perspective & an eye on innovation. One powerful platform streamlining Invoicing, Payroll, Tax Filings, Compliance, finance & Business Management. A seamless ecosystem for businesses & personal finance enabling effortless collaboration with CA's & service peroviders.",
   image: { light: '/assets/images/graphics/ai/graphics20-light.svg', dark: '/assets/images/graphics/ai/graphics20-dark.svg' },
   features: [
     {
-      icon: { name: 'custom-data', type: IconType.CUSTOM },
-      title: 'Bring your Data Model',
-      content: 'Collect relevant customer information efficiently.'
+      title: 'Invoicing',
+      content: 'Smart Invoicing with automatic GST Compliance, TDS & Payment Tracking.',
+      href: 'services/invoicing'
     },
     {
-      icon: { name: 'custom-developer', type: IconType.CUSTOM },
-      title: 'Connect to tech stack',
-      content: 'Derive insights from data and implement strategic actions.'
+      title: 'Payroll',
+      content: 'Comprehensive platform to manage Payroll, Salaries, Compliance, Attandance & Employee Benifits.',
+      href: 'services/payroll'
     },
     {
-      icon: { name: 'custom-notes', type: IconType.CUSTOM },
-      title: 'Discover & populate ',
-      content: 'Enhance customer interactions for lasting relationships.'
+      title: 'Doc. Wallet',
+      content: 'Secure & Organised storage for all your business & personal documents at one place.',
+      href: 'services/doc-wallet'
     },
     {
-      icon: { name: 'custom-ai', type: IconType.CUSTOM },
-      title: 'Train your AI assistant ',
-      content: 'Empower your AI assistant to enhance customer interactions.'
+      title: 'Virtual CFO',
+      content: 'Get your Financial Management, Compliance Tracking, Financial Insights & Advisory support.',
+      href: 'services/virtual-cfo'
+    },
+    {
+      title: 'Financial Modelling',
+      content: 'Make smarter business desicions with expert guidence & ddata driven financial models.',
+      href: 'services/financial-modelling'
+    },
+    {
+      title: 'Due Diligence',
+      content: 'Protect your investments with in depth financial risk analysis.',
+      href: 'services/due-diligence'
+    },
+    {
+      title: 'Fix My Books',
+      content: 'Clean correct and optimize your accounting records & get clear financial insights.',
+      href: 'services/fix-books'
+    },
+    {
+      title: 'Internal Audit',
+      content: 'Identify risks/errors, strengthen controls, compliances & improve financial integrity.',
+      href: 'services/internal-audit'
+    },
+    {
+      title: 'Company Registration',
+      content: 'Start your business the right way, seamless business registration, fully with end to end support.',
+      href: 'services/company-registration'
+    },
+    {
+      title: 'Accounting & Bookkeeping',
+      content: 'Get organised & accurate accounting, real time financial records & stressfree compliance1.',
+      href: 'services/accounting-bookkeeping'
+    },
+    {
+      title: 'GST Registration',
+      content: 'Quick & easy GST registration with end-to-end compliance support and expert guidance.',
+      href: 'services/gst-registration'
+    },
+    {
+      title: 'FHI Score',
+      content: 'Track, analyze, and enhance your financial well-being with personalized insights and expert guidance.',
+      href: 'services/fhi-score'
     }
-  ]
+  ],
+  getStarted: {
+    title: 'Have a question outside these FAQs ?',
+    description: `If you have any further questions or need assistance, our team is ready to help.`,
+    link: { children: 'Get Started for free', href: '/contact', rel: 'noopener noreferrer' },
+    href: ''
+  },
+  bgImage: '/assets/images/graphics/ai/background1.svg'
 };
 
 export const feature11 = {
   heading: 'What makes Tara stand out from the rest?',
   caption:
-    'At Tara, we center everything around authenticity, simplicity, and progress. Our core belief is that finance shouldn’t be intimidating.',
+    'At Tara, we center everything around authenticity, simplicity, & progress. Our core belief is that finance shouldn’t be intimidating.',
   image: { light: '/assets/images/graphics/ai/graphics19-light.svg', dark: '/assets/images/graphics/ai/graphics19-dark.svg' },
   showBorder: true,
   features: [
     {
       icon: 'custom-notes',
       title: 'Financial Clarity',
-      content: 'Tara redefines finance with bite-sized insights and engaging sessions, making complex concepts fun to explore.'
+      content: 'Tara redefines finance with bite-sized insights & engaging sessions, making complex concepts fun to explore.'
     },
     {
       icon: 'custom-data',
       title: 'Real-Time Empowerment',
-      content: 'Track, plan, and act on your financial goals instantly with Tara’s intuitive, action-ready aid.'
+      content: 'Track, plan, & act on your financial goals instantly with Tara’s intuitive, action-ready aid.'
     },
     {
       icon: 'custom-statastic',
@@ -54,13 +102,13 @@ export const feature11 = {
     {
       icon: 'custom-remote',
       title: 'Transparency & Confidentiality at Core',
-      content: 'At Tara, we ensure complete transparency while safeguarding your data with utmost confidentiality and security.'
+      content: 'At Tara, we ensure complete transparency while safeguarding your data with utmost confidentiality & security.'
     },
     {
       icon: 'custom-scoreboard',
       title: 'Your Data, Our Priority',
       content:
-        'At Tara, your privacy isn’t just a promise - it’s our duty. Transparency is key, and we’re committed to keeping everything crystal clear so you can focus on what really matters.'
+        'At Tara, your privacy isn’t just a promise - it’s our duty. Transparency is key, & we’re committed to keeping everything crystal clear so you can focus on what really matters.'
     },
     {
       icon: 'custom-developer',

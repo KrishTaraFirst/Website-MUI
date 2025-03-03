@@ -1,5 +1,6 @@
 'use client';
 import PropTypes from 'prop-types';
+import NextLink from 'next/link';
 
 // @mui
 import { alpha, useTheme } from '@mui/material/styles';
@@ -19,7 +20,7 @@ import { SECTION_COMMON_PY } from '@/utils/constant';
 
 /***************************  CALL TO ACTION - 1  ***************************/
 
-export default function Cta1({ bgImage, heading, captionLine }) {
+export default function Cta1({ bgImage, heading, captionLine, getStarted }) {
   const theme = useTheme();
 
   return (
@@ -64,6 +65,14 @@ export default function Cta1({ bgImage, heading, captionLine }) {
               )}
             </Stack>
           </Box>
+          {/* <Stack sx={{ alignItems: 'center', pb: { xs: 3, sm: 4, md: 5 }, px: { xs: 3, sm: 4, md: 5 } }}>
+            <Button
+              variant="contained"
+              size="large"
+              {...getStarted.link}
+              {...(getStarted.link && getStarted.link.href && { component: NextLink })}
+            />
+          </Stack> */}
         </GraphicsCard>
       </motion.div>
     </ContainerWrapper>
