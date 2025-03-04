@@ -174,7 +174,7 @@ function Designations() {
                           deleteDialogData={{
                             title: 'Delete Record',
                             heading: 'Are you sure you want to delete this Record?',
-                            description: `This action will remove ${designation.name} from the list.`,
+                            description: `This action will remove ${designation.designation_name} from the list.`,
                             successMessage: 'Record has been deleted.'
                           }}
                         />

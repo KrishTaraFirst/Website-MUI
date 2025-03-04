@@ -411,6 +411,7 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
                   helperText={errors.email}
                 />
               </Stack>
+
               <Stack direction="column" sx={{ gap: 0.5 }}>
                 <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
                   Password
@@ -441,77 +442,63 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
           )}
           {/* anand */}
           {user_type == 'business' && (
-            <Stack direction="column" sx={{ gap: 0.5 }}>
-              <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
-                PAN
-              </Typography>
-              <TextField
-                id="outlined-disabled"
-                value={data.pan || ''}
-                onBlur={(e) => handleBlur('pan', e.target.value)}
-                onChange={(e) => {
-                  let val = e.target.value;
-                  if (val.length <= 10) {
-                    handleChange('pan', val.toUpperCase());
-                  }
-                  return;
-                }}
-                error={!!errors.pan}
-                helperText={errors.pan}
-              />
-              <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
-                Entity Type
-              </Typography>
-              {/* <TextField
-                id="outlined-disabled"
-                value={data.entityType || ''}
-                onBlur={(e) => handleBlur('entityType', e.target.value)}
-                onChange={(e) => {
-                  handleChange('entityType', e.target.value);
-                }}
-                error={!!errors.entityType}
-                helperText={errors.entityType}
-              /> */}
-              <CustomAutocomplete
-                value={data.entityType || ''} // Bind the value to your state or data
-                options={entity_choices}
-                onBlur={(e) => handleBlur('entityType', e.target.value)}
-                onChange={(e, newValue) => {
-                  handleChange('entityType', newValue);
-                }}
-                error={!!errors.entityType}
-                helperText={errors.entityType}
-                sx={{ width: '100%' }}
-              />
+            <>
+              <Stack direction="column" sx={{ gap: 0.5 }}>
+                <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
+                  PAN
+                </Typography>
+                <TextField
+                  id="outlined-disabled"
+                  value={data.pan || ''}
+                  onBlur={(e) => handleBlur('pan', e.target.value)}
+                  onChange={(e) => {
+                    let val = e.target.value;
+                    if (val.length <= 10) {
+                      handleChange('pan', val.toUpperCase());
+                    }
+                    return;
+                  }}
+                  error={!!errors.pan}
+                  helperText={errors.pan}
+                />
+              </Stack>
+              <Stack direction="column" sx={{ gap: 0.5 }}>
+                <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
+                  Entity Type
+                </Typography>
 
-              <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
-                DOB or Incorporation Date
-              </Typography>
-              {/* <TextField
-                id="outlined-disabled"
-                value={data.dob_or_incorp_date || ''}
-                onBlur={(e) => handleBlur('dob_or_incorp_date', e.target.value)}
-                onChange={(e) => {
-                  handleChange('dob_or_incorp_date', e.target.value);
-                }}
-                error={!!errors.dob_or_incorp_date}
-                helperText={errors.dob_or_incorp_date}
-              /> */}
-              <CustomDatePicker
-                views={['year', 'month', 'day']}
-                value={data.dob_or_incorp_date ? dayjs(data.dob_or_incorp_date) : null}
-                onChange={(newDate) => {
-                  handleChange('dob_or_incorp_date', dayjs(newDate).format('YYYY-MM-DD'));
-                }}
-                sx={{
-                  width: '100%',
-                  '& .MuiInputBase-root': {
-                    fontSize: '0.75rem',
-                    height: '40px'
-                  }
-                }}
-              />
-            </Stack>
+                <CustomAutocomplete
+                  value={data.entityType || ''}
+                  options={entity_choices}
+                  onBlur={(e) => handleBlur('entityType', e.target.value)}
+                  onChange={(e, newValue) => {
+                    handleChange('entityType', newValue);
+                  }}
+                  error={!!errors.entityType}
+                  helperText={errors.entityType}
+                  sx={{ width: '100%' }}
+                />
+              </Stack>
+              <Stack direction="column" sx={{ gap: 0.5 }}>
+                <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
+                  DOB or Incorporation Date
+                </Typography>
+                <CustomDatePicker
+                  views={['year', 'month', 'day']}
+                  value={data.dob_or_incorp_date ? dayjs(data.dob_or_incorp_date) : null}
+                  onChange={(newDate) => {
+                    handleChange('dob_or_incorp_date', dayjs(newDate).format('YYYY-MM-DD'));
+                  }}
+                  sx={{
+                    width: '100%',
+                    '& .MuiInputBase-root': {
+                      fontSize: '0.75rem',
+                      height: '40px'
+                    }
+                  }}
+                />
+              </Stack>
+            </>
           )}
         </Stack>
       }

@@ -174,6 +174,7 @@ const AddItem = ({
 
   const formik = useFormik({
     initialValues: {
+      gstin: '',
       customer: '',
       place_of_supply: '',
       invoice_number: '',
@@ -729,7 +730,8 @@ const AddItem = ({
           selectedInvoice.shipping_address.postal_code === 'NA'
             ? true
             : false,
-        invoice_status: selectedInvoice.invoice_status
+        invoice_status: selectedInvoice.invoice_status,
+        gstin: selectedInvoice.gstin
       });
     }
   }, [selectedInvoice]);
@@ -738,7 +740,7 @@ const AddItem = ({
   // useEffect(() => {
   //   setSelectedgstin(businessDetailsData.gstin);
   // }, [businessDetailsData]);
-
+  console.log(selectedInvoice);
   return (
     <HomeCard title={selectedInvoice ? 'Edit Invoice' : 'Create Invoice'} tagline="Some text tagline regarding invoicing.">
       <MainCard>
@@ -758,7 +760,8 @@ const AddItem = ({
             <Grid2 size={{ xs: 6 }}>
               <Typography gutterBottom>Select GSTIN</Typography>
               <CustomAutocomplete
-                value={selectedgstin}
+                // value={selectedgstin}
+                value={values['gstin'] || ''}
                 options={
                   businessDetailsData?.gst_details?.length > 0
                     ? businessDetailsData.gst_details.map((item) => item.gstin || 'NA') // Show 'NA' if gstin is not available
@@ -766,6 +769,7 @@ const AddItem = ({
                 }
                 onChange={async (event, newgstin) => {
                   setSelectedgstin(newgstin || 'NA');
+                  setFieldValue('gstin', newgstin || 'NA');
                   const url = `/invoicing/invoicing-profiles/${businessDetailsData.id}/update/`;
                   const postData = {
                     gstin: newgstin

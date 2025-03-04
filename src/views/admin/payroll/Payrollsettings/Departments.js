@@ -177,7 +177,7 @@ function Departments() {
                           deleteDialogData={{
                             title: 'Delete Record',
                             heading: 'Are you sure you want to delete this Record?',
-                            description: `This action will remove ${department.name} from the list.`,
+                            description: `This action will remove ${department.dept_name} from the list.`,
                             successMessage: 'Record has been deleted.'
                           }}
                         />
