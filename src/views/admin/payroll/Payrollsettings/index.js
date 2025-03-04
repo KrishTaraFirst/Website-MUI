@@ -8,18 +8,18 @@ import Loader from '@/components/PageLoader';
 import { useSearchParams } from 'next/navigation';
 import useCurrentUser from '@/hooks/useCurrentUser';
 import { useSnackbar } from '@/components/CustomSnackbar';
-
+import BusinessProfileSetup from './BusinessProfileSetup';
 const PayrollSetup = () => {
   const { userData } = useCurrentUser();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false); // State for loader
   const [payrollDetails, setPayrollDetails] = useState({});
-  const [businessId, setBusinessId] = useState(null);
   const { showSnackbar } = useSnackbar();
+  let businessId = userData.user_type === 'Business' ? userData.business_affiliated[0].id : userData.businesssDetails.business[0].id;
 
   const [steps, setSteps] = useState([
-    { nameKey: 'Organization Details', path: '/organization_details', completed: false },
+    { nameKey: 'Business profile', path: '/organization_details', completed: false },
     { nameKey: 'Set up Work Location', path: '/set_up_work_location', completed: false },
     { nameKey: 'Set up Departments', path: '/set_up_departments', completed: false },
     { nameKey: 'Set up Designations', path: '/set_up_designations', completed: false },
@@ -27,16 +27,9 @@ const PayrollSetup = () => {
     { nameKey: 'Set up Salary Components', path: '/set_up_salary_components', completed: false },
     { nameKey: 'Set up Salary Template', path: '/set_up_salary_template', completed: false },
     { nameKey: 'Set up Employee Master', path: '/set_up_employee_master', completed: false },
-    { nameKey: 'Pay Schedule', path: '/pay_schedule', completed: false },
+    { nameKey: 'Set up Pay & Schedule', path: '/pay_schedule', completed: false },
     { nameKey: 'Leave & Attendance', path: '/leave_and_attendance', completed: false }
   ]);
-
-  useEffect(() => {
-    const business_id = searchParams.get('business-id');
-    if (business_id) {
-      setBusinessId(business_id);
-    }
-  }, [searchParams]);
 
   useEffect(() => {
     const id = searchParams.get('payrollid');
@@ -51,6 +44,7 @@ const PayrollSetup = () => {
 
   const payroll_details = async () => {
     setLoading(true);
+
     const url = `/payroll/business-payroll/${businessId}/`;
     const { res, error } = await Factory('get', url, {});
     setLoading(false);
@@ -198,7 +192,7 @@ const PayrollSetup = () => {
                         }}
                         onClick={() => {
                           const routeBase = `/payrollsetup${step.path}`;
-                          if (step.nameKey === 'Organization Details' && !payrollDetails?.payroll_id) {
+                          if (step.nameKey === 'Business profile' && !payrollDetails?.payroll_id) {
                             router.push(`${routeBase}?business-id=${businessId}`); // Navigate to route without payroll ID
                           } else if (payrollDetails?.payroll_id) {
                             router.push(`${routeBase}?payrollid=${payrollDetails.payroll_id}`); // Navigate with payroll ID
@@ -217,6 +211,7 @@ const PayrollSetup = () => {
           </Grid2>
         </Box>
       )}
+      {/* <BusinessProfileSetup /> */}
     </>
   );
 };
