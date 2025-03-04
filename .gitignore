@@ -12,6 +12,9 @@
 /.next/
 /out/
 
+#constants
+constants.js
+
 # production
 /build
 

@@ -68,7 +68,7 @@ export default function AuthLogin({ inputSx }) {
     setLoginError('');
     try {
       const url = `/token_auth/`;
-      const postData = { ...formData, user_type: optionValues[selected] };
+      const postData = { ...formData, user_type: 'Individual' };
 
       const res = await axios.post(BASE_URL + url, postData);
       if (res.status === 200) {
@@ -129,10 +129,10 @@ export default function AuthLogin({ inputSx }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+      {/* <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
         Choose a User Type
-      </Typography>
-      <Box display="flex" justifyContent="center" mt={0.5} mb={3}>
+      </Typography> */}
+      {/* <Box display="flex" justifyContent="center" mt={0.5} mb={3}>
         <Box
           sx={{
             position: 'relative',
@@ -145,7 +145,6 @@ export default function AuthLogin({ inputSx }) {
             border: '1px solid #006397'
           }}
         >
-          {/* Animated Background Pill */}
           <motion.div
             layout
             transition={{ type: 'spring', stiffness: 500, damping: 50 }}
@@ -161,7 +160,6 @@ export default function AuthLogin({ inputSx }) {
             }}
           />
 
-          {/* Buttons */}
           <ButtonGroup
             sx={{
               position: 'relative',
@@ -192,7 +190,7 @@ export default function AuthLogin({ inputSx }) {
             ))}
           </ButtonGroup>
         </Box>
-      </Box>
+      </Box> */}
       <Stack sx={{ gap: 2.5 }}>
         <Stack sx={{ gap: 0.5 }}>
           <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>

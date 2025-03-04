@@ -65,7 +65,7 @@ export default function OverviewCard({ clientListData }) {
         value: '23,876',
         compare: 'Tagline content',
         buttonLable: 'View',
-        size: 3.5,
+        size: 4,
         chip: {
           label: '24.5%',
           avatar: <IconArrowUp />
@@ -75,7 +75,7 @@ export default function OverviewCard({ clientListData }) {
         title: 'Total Users',
         href: 'pending',
         value: clientListData.pending || 0,
-        size: 3.5,
+        size: 4,
         compare: 'Tagline content',
         data: clientListData.in_progress_data || [],
         buttonLable: 'View',
@@ -88,7 +88,7 @@ export default function OverviewCard({ clientListData }) {
         title: 'New Users',
         href: '#',
         value: clientListData.pending || 0,
-        size: 5,
+        size: 4,
         compare: 'Tagline content',
         data: clientListData.in_progress_data || [],
         buttonLable: 'View',
