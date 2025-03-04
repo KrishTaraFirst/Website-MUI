@@ -10,11 +10,11 @@ export default function Typeset({ heading, caption, stackProps, headingProps, ca
 
   return (
     <Stack {...rest} sx={{ gap: { xs: 1, sm: 1.5 }, ...sx }}>
-      <Typography variant="h3" {...headingProps} sx={{ ...(headingProps?.sx && { ...headingProps.sx }) }}>
+      <Typography variant="h2" {...headingProps} sx={{ fontSize: '40px', ...(headingProps?.sx && { ...headingProps.sx }) }}>
         {heading}
       </Typography>
       {caption && (
-        <Typography {...captionProps} sx={{ color: 'text.secondary', ...(captionProps?.sx && { ...captionProps.sx }) }}>
+        <Typography variant="h6" {...captionProps} sx={{ color: 'text.secondary', ...(captionProps?.sx && { ...captionProps.sx }) }}>
           {caption}
         </Typography>
       )}

@@ -9,24 +9,26 @@ import MainCard from '@/components/MainCard';
 
 /***************************   CARD - BEHAVIOR   ***************************/
 
-export default function BehaviorCard({ title, value, chip, compare, cardProps }) {
+export default function BehaviorCard({ title, value, chip, compare, cardProps, products }) {
   const chipDefaultProps = { color: 'success', variant: 'text', size: 'small' };
 
   return (
     <MainCard {...cardProps}>
       <Stack sx={{ gap: 2.5 }}>
-        <Typography variant="subtitle2" color="text.secondary">
+        <Typography variant={products ? 'h6' : 'subtitle2'} color="text.secondary">
           {title}
         </Typography>
-        <Stack sx={{ gap: 0.5 }}>
-          <Typography variant="h4">{value}</Typography>
-          <Stack direction="row" sx={{ gap: 0.6, alignItems: 'center' }}>
-            <Chip {...{ ...chipDefaultProps, ...chip }} />
-            <Typography variant="caption" color="text.secondary">
-              {compare}
-            </Typography>
+        {!products && (
+          <Stack sx={{ gap: 0.5 }}>
+            <Typography variant="h4">{value}</Typography>
+            <Stack direction="row" sx={{ gap: 0.6, alignItems: 'center' }}>
+              <Chip {...{ ...chipDefaultProps, ...chip }} />
+              <Typography variant="caption" color="text.secondary">
+                {compare}
+              </Typography>
+            </Stack>
           </Stack>
-        </Stack>
+        )}
       </Stack>
     </MainCard>
   );

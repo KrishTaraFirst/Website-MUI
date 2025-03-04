@@ -37,38 +37,38 @@ const manage = {
       icon: 'IconBuilding',
       roles: [AuthRole.INDIVIDUAL, AuthRole.CHARTED_ACCOUNTANT_FIRM, AuthRole.CORPORATE_ADMIN]
     },
-    {
-      id: 'manageCAFirm',
-      title: <FormattedMessage id="manageCAFirm" />,
-      type: 'item',
-      url: '/dashboard/user/ca-firms',
-      icon: 'IconBuildingCottage',
-      roles: [AuthRole.INDIVIDUAL, AuthRole.CHARTED_ACCOUNTANT_FIRM, AuthRole.CORPORATE_ADMIN]
-    },
-    {
-      id: 'manageIndividuals',
-      title: <FormattedMessage id="manageIndividuals" />,
-      type: 'item',
-      url: '/dashboard/user/individual',
-      icon: 'IconUsers',
-      roles: [AuthRole.CHARTED_ACCOUNTANT_FIRM]
-    },
-    {
-      id: 'manageServiceProvider',
-      title: <FormattedMessage id="manageServiceProvider" />,
-      type: 'item',
-      url: '/dashboard/user/service-providers',
-      icon: 'IconPlaneInflight',
-      roles: [AuthRole.INDIVIDUAL, AuthRole.CHARTED_ACCOUNTANT_FIRM, AuthRole.CORPORATE_ADMIN]
-    },
-    {
-      id: 'manageTeam',
-      title: <FormattedMessage id="manageTeam" />,
-      type: 'item',
-      url: '/dashboard/user/team',
-      icon: 'IconChartHistogram',
-      roles: [AuthRole.SUPER_ADMIN, AuthRole.CORPORATE_ADMIN, AuthRole.SERVICE_PROVIDER]
-    },
+    // {
+    //   id: 'manageCAFirm',
+    //   title: <FormattedMessage id="manageCAFirm" />,
+    //   type: 'item',
+    //   url: '/dashboard/user/ca-firms',
+    //   icon: 'IconBuildingCottage',
+    //   roles: [AuthRole.INDIVIDUAL, AuthRole.CHARTED_ACCOUNTANT_FIRM, AuthRole.CORPORATE_ADMIN]
+    // },
+    // {
+    //   id: 'manageIndividuals',
+    //   title: <FormattedMessage id="manageIndividuals" />,
+    //   type: 'item',
+    //   url: '/dashboard/user/individual',
+    //   icon: 'IconUsers',
+    //   roles: [AuthRole.CHARTED_ACCOUNTANT_FIRM]
+    // },
+    // {
+    //   id: 'manageServiceProvider',
+    //   title: <FormattedMessage id="manageServiceProvider" />,
+    //   type: 'item',
+    //   url: '/dashboard/user/service-providers',
+    //   icon: 'IconPlaneInflight',
+    //   roles: [AuthRole.INDIVIDUAL, AuthRole.CHARTED_ACCOUNTANT_FIRM, AuthRole.CORPORATE_ADMIN]
+    // },
+    // {
+    //   id: 'manageTeam',
+    //   title: <FormattedMessage id="manageTeam" />,
+    //   type: 'item',
+    //   url: '/dashboard/user/team',
+    //   icon: 'IconChartHistogram',
+    //   roles: [AuthRole.SUPER_ADMIN, AuthRole.CORPORATE_ADMIN, AuthRole.SERVICE_PROVIDER]
+    // },
     // anand
     {
       id: 'invoicing',
@@ -78,14 +78,14 @@ const manage = {
       icon: 'IconFileInvoice',
       roles: [AuthRole.SUPER_ADMIN, AuthRole.CORPORATE_ADMIN]
     },
-    {
-      id: 'VisaServices',
-      title: <FormattedMessage id="visaServices" />,
-      type: 'item',
-      url: '/visa-services',
-      icon: 'IconSubtask',
-      roles: [AuthRole.SERVICE_PROVIDER]
-    },
+    // {
+    //   id: 'VisaServices',
+    //   title: <FormattedMessage id="visaServices" />,
+    //   type: 'item',
+    //   url: '/visa-services',
+    //   icon: 'IconSubtask',
+    //   roles: [AuthRole.SERVICE_PROVIDER]
+    // },
     {
       id: 'payoll',
       title: <FormattedMessage id="payroll" />,
@@ -93,7 +93,7 @@ const manage = {
       url: '/payroll',
       icon: 'IconInvoice',
       roles: [AuthRole.SUPER_ADMIN, AuthRole.CORPORATE_ADMIN, AuthRole.SERVICE_PROVIDER]
-    },
+    }
 
     //
     // {
@@ -133,14 +133,14 @@ const manage = {
     //   url: '/blog',
     //   icon: 'IconBrandBlogger'
     // },
-    {
-      id: 'setting',
-      title: <FormattedMessage id="settings" />,
-      type: 'item',
-      url: '/setting',
-      icon: 'IconSettings',
-      roles: [AuthRole.SUPER_ADMIN, AuthRole.CORPORATE_ADMIN, AuthRole.SERVICE_PROVIDER, AuthRole.INDIVIDUAL]
-    }
+    // {
+    //   id: 'setting',
+    //   title: <FormattedMessage id="settings" />,
+    //   type: 'item',
+    //   url: '/setting',
+    //   icon: 'IconSettings',
+    //   roles: [AuthRole.SUPER_ADMIN, AuthRole.CORPORATE_ADMIN, AuthRole.SERVICE_PROVIDER, AuthRole.INDIVIDUAL]
+    // }
   ]
 };
 

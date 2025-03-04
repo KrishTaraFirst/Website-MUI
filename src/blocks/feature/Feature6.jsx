@@ -51,7 +51,7 @@ export default function Feature6({ heading, caption, image, features, getStarted
         </motion.div> */}
         <Grid container spacing={1.5}>
           {image && (
-            <Grid size={{ xs: 12, md: 4.5 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -61,7 +61,7 @@ export default function Feature6({ heading, caption, image, features, getStarted
                   delay: 0.4
                 }}
               >
-                <GraphicsCard sx={{ pl: imageBoxRadius, pt: imageBoxRadius }}>
+                <GraphicsCard sx={{ p: { xs: 2, sm: 5 } }}>
                   <motion.div
                     initial={{ opacity: 0, y: 5 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -73,7 +73,7 @@ export default function Feature6({ heading, caption, image, features, getStarted
                   >
                     <Typeset {...{ heading, caption }} />
 
-                    <Stack sx={{ alignItems: 'center', p: { xs: 3, sm: 4, md: 5 }, gap: { xs: 3, sm: 4, md: 5 } }}>
+                    <Stack sx={{ alignItems: 'center', p: { xs: 3, sm: 4, md: 5.5 } }}>
                       <Button
                         variant="contained"
                         size="large"
@@ -86,10 +86,10 @@ export default function Feature6({ heading, caption, image, features, getStarted
               </motion.div>
             </Grid>
           )}
-          <Grid size={{ xs: 12, md: 7.5 }}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Grid container spacing={1.5}>
               {features.map((item, index) => (
-                <Grid key={index} size={{ xs: 12, sm: 6, md: 4 }}>
+                <Grid key={index} size={{ xs: 12, sm: 6, md: 6 }}>
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}

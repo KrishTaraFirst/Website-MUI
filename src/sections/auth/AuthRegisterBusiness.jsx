@@ -44,7 +44,7 @@ import { IconEye, IconEyeOff } from '@tabler/icons-react';
 const options = ['Individual', 'CA Firm', 'Business', 'Service Provider'];
 const optionValues = { Individual: 'Individual', 'CA Firm': 'CA', Business: 'Business', 'Service Provider': 'ServiceProvider' };
 
-export default function AuthRegister({ inputSx }) {
+export default function AuthRegisterBusiness({ inputSx }) {
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
   const theme = useTheme();
@@ -299,4 +299,4 @@ export default function AuthRegister({ inputSx }) {
   );
 }
 
-AuthRegister.propTypes = { inputSx: PropTypes.any };
+AuthRegisterBusiness.propTypes = { inputSx: PropTypes.any };

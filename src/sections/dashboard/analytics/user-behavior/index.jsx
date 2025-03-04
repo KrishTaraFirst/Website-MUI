@@ -15,7 +15,7 @@ export default function AnalyticsUserBehavior() {
       <Grid size={12}>
         <AnalyticsBehaviorCard />
       </Grid>
-      <Grid size={12}>
+      {/* <Grid size={12}>
         <AnalyticsBehaviorChart />
       </Grid>
       <Grid size={{ xs: 12, md: 8 }}>
@@ -23,7 +23,7 @@ export default function AnalyticsUserBehavior() {
       </Grid>
       <Grid size={{ xs: 12, sm: 6, md: 4 }}>
         <AnalyticsBehaviorTrafficDevice />
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 }

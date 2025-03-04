@@ -2,7 +2,7 @@
 import { IconType } from '@/enum';
 
 export const feature6 = {
-  heading: 'Embrace complete financial control with TARA FIRST',
+  heading: 'Embrace Complete Financial Control with TARA',
   caption:
     "Tara is here to simplify the complexities of financial management with a fresh perspective & an eye on innovation. One powerful platform streamlining Invoicing, Payroll, Tax Filings, Compliance, finance & Business Management. A seamless ecosystem for businesses & personal finance enabling effortless collaboration with CA's & service peroviders.",
   image: { light: '/assets/images/graphics/ai/graphics20-light.svg', dark: '/assets/images/graphics/ai/graphics20-dark.svg' },
@@ -27,41 +27,41 @@ export const feature6 = {
       content: 'Get your Financial Management, Compliance Tracking, Financial Insights & Advisory support.',
       href: 'services/virtual-cfo'
     },
-    {
-      title: 'Financial Modelling',
-      content: 'Make smarter business desicions with expert guidence & ddata driven financial models.',
-      href: 'services/financial-modelling'
-    },
-    {
-      title: 'Due Diligence',
-      content: 'Protect your investments with in depth financial risk analysis.',
-      href: 'services/due-diligence'
-    },
+    // {
+    //   title: 'Financial Modelling',
+    //   content: 'Make smarter business desicions with expert guidence & ddata driven financial models.',
+    //   href: 'services/financial-modelling'
+    // },
+    // {
+    //   title: 'Due Diligence',
+    //   content: 'Protect your investments with in depth financial risk analysis.',
+    //   href: 'services/due-diligence'
+    // },
     {
       title: 'Fix My Books',
       content: 'Clean correct and optimize your accounting records & get clear financial insights.',
       href: 'services/fix-books'
     },
-    {
-      title: 'Internal Audit',
-      content: 'Identify risks/errors, strengthen controls, compliances & improve financial integrity.',
-      href: 'services/internal-audit'
-    },
-    {
-      title: 'Company Registration',
-      content: 'Start your business the right way, seamless business registration, fully with end to end support.',
-      href: 'services/company-registration'
-    },
-    {
-      title: 'Accounting & Bookkeeping',
-      content: 'Get organised & accurate accounting, real time financial records & stressfree compliance1.',
-      href: 'services/accounting-bookkeeping'
-    },
-    {
-      title: 'GST Registration',
-      content: 'Quick & easy GST registration with end-to-end compliance support and expert guidance.',
-      href: 'services/gst-registration'
-    },
+    // {
+    //   title: 'Internal Audit',
+    //   content: 'Identify risks/errors, strengthen controls, compliances & improve financial integrity.',
+    //   href: 'services/internal-audit'
+    // },
+    // {
+    //   title: 'Company Registration',
+    //   content: 'Start your business the right way, seamless business registration, fully with end to end support.',
+    //   href: 'services/company-registration'
+    // },
+    // {
+    //   title: 'Accounting & Bookkeeping',
+    //   content: 'Get organised & accurate accounting, real time financial records & stressfree compliance1.',
+    //   href: 'services/accounting-bookkeeping'
+    // },
+    // {
+    //   title: 'GST Registration',
+    //   content: 'Quick & easy GST registration with end-to-end compliance support and expert guidance.',
+    //   href: 'services/gst-registration'
+    // },
     {
       title: 'FHI Score',
       content: 'Track, analyze, and enhance your financial well-being with personalized insights and expert guidance.',

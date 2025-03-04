@@ -34,7 +34,7 @@ export default function ServiceCard({
     <GraphicsCard
       sx={{
         p: boxPadding,
-        minHeight: 240, // Ensures consistent height
+        minHeight: { xs: 60, sm: 120, md: 172 }, // Ensures consistent height
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between', // Ensures spacing consistency
@@ -42,7 +42,7 @@ export default function ServiceCard({
         ...(contentCard && { bgcolor: typeof contentCard === 'boolean' ? 'grey.200' : contentCard })
       }}
     >
-      <Stack sx={{ gap: { xs: 0.5, sm: 1 } }}>
+      <Stack sx={{}}>
         {title && (
           <Link component={NextLink} underline="hover" variant="h4" href={href} sx={{ '&:hover': { color: 'primary.dark' } }}>
             {title}

@@ -15,6 +15,7 @@ import Popper from '@mui/material/Popper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import { useRouter } from 'next/navigation';
 
 // @project
 import { DRAWER_WIDTH, ThemeDirection } from '@/config';
@@ -28,8 +29,8 @@ import { IconBolt } from '@tabler/icons-react';
 /***************************  NAVIGATION CARD - DATA  ***************************/
 
 const data = {
-  title: 'Upgrade your plan',
-  description: 'Unlock premium features and enhance your experience. Choose a plan that fits your needs.',
+  title: 'Powered by Tara First,',
+  description: 'Your smart partner for seamless financial management, smarter investments and growth!',
   icon: <IconBolt size={16} />
 };
 
@@ -69,7 +70,7 @@ const popperArrowStyles = (theme) => ({
 
 function CardContent({ title, description, icon }) {
   const theme = useTheme();
-
+  const router = useRouter();
   return (
     <Stack sx={{ gap: 3 }}>
       <Avatar variant="rounded" size={AvatarSize.XS} sx={{ bgcolor: 'grey.300' }}>
@@ -80,8 +81,15 @@ function CardContent({ title, description, icon }) {
         <Typography variant="caption" color="text.secondary">
           {description}
         </Typography>
-        <Button startIcon={icon} variant="contained" sx={{ mt: 0.5 }}>
-          Upgrade Now
+        <Button
+          startIcon={data.icon}
+          onClick={() => {
+            router.push('/dashboard');
+          }}
+          variant="contained"
+          sx={{ mt: 0.5 }}
+        >
+          Return to Home
         </Button>
       </Stack>
     </Stack>

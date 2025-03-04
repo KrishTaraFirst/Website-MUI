@@ -4,6 +4,7 @@
 import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
+import { useRouter } from 'next/navigation';
 
 // @project
 import BehaviorCard from '@/components/cards/BehaviorCard';
@@ -11,7 +12,6 @@ import MainCard from '@/components/MainCard';
 import { getRadiusStyles } from '@/utils/getRadiusStyles';
 
 // @assets
-import { IconArrowDown, IconArrowUpRight } from '@tabler/icons-react';
 
 /***************************  CARDS - BORDER WITH RADIUS  ***************************/
 
@@ -43,72 +43,69 @@ export function applyBorderWithRadius(radius, theme) {
 
 /***************************   BEHAVIOR CARD - DATA  ***************************/
 
-const userBehaviorAnalytics = [
-  {
-    title: 'Total Users',
-    value: '23,876',
-    compare: 'vs last month',
-    chip: {
-      label: '24.5%',
-      icon: <IconArrowUpRight />
-    }
-  },
-  {
-    title: 'New Users',
-    value: '30,450',
-    compare: 'vs last month',
-    chip: {
-      label: '20.5%',
-      icon: <IconArrowUpRight />
-    }
-  },
-  {
-    title: 'Current Users',
-    value: '34,789',
-    compare: 'vs last month',
-    chip: {
-      label: '20.5%',
-      color: 'error',
-      icon: <IconArrowDown />
-    }
-  }
-];
-
 /***************************   USER BEHAVIOR - CARDS  ***************************/
 
-export default function AnalyticsBehaviorCard() {
+export default function AnalyticsBehaviorCard({ products = false, data }) {
   const theme = useTheme();
+  const router = useRouter();
+
   const cardCommonProps = { border: 'none', borderRadius: 0, boxShadow: 'none' };
 
   return (
     <Grid container sx={{ borderRadius: 4, boxShadow: theme.customShadows.section, ...applyBorderWithRadius(16, theme) }}>
-      {userBehaviorAnalytics.map((item, index) => (
-        <Grid key={index} size={{ xs: 6, md: 2.75 }}>
-          <BehaviorCard {...{ ...item, cardProps: { sx: cardCommonProps } }} />
-        </Grid>
-      ))}
-      <Grid size={{ xs: 6, md: 3.75 }}>
-        <MainCard sx={{ ...cardCommonProps, height: 1, display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-          <Typography variant="body2" color="text.secondary">
-            You have increased your net income by{' '}
-            <Typography
-              component="span"
-              variant="inherit"
-              sx={{ color: 'success.main', ...theme.applyStyles('dark', { color: 'success.light' }) }}
-            >
-              6.2%
-            </Typography>{' '}
-            this month and decreased your expensed by{' '}
-            <Typography
-              component="span"
-              variant="inherit"
-              sx={{ color: 'error.main', ...theme.applyStyles('dark', { color: 'error.light' }) }}
-            >
-              3.2%
+      {data &&
+        data.map((item, index) => (
+          <Grid key={index} size={{ xs: 6, md: products ? 3 : 2.75 }}>
+            <BehaviorCard
+              products={products}
+              {...{
+                ...item,
+                cardProps: {
+                  onClick: () => {
+                    router.push(item.href);
+                  },
+                  sx: {
+                    ...cardCommonProps,
+                    border: 'none',
+                    borderRadius: 0,
+                    boxShadow: 'none',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease-in-out',
+                    '&:hover': {
+                      bgcolor: 'grey.300'
+                    },
+                    minHeight: '100%'
+                  }
+                }
+              }}
+            />
+          </Grid>
+        ))}
+      {!products && (
+        <Grid size={{ xs: 6, md: 3.75 }}>
+          <MainCard sx={{ ...cardCommonProps, height: 1, display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              You have increased your net income by{' '}
+              <Typography
+                component="span"
+                variant="inherit"
+                sx={{ color: 'success.main', ...theme.applyStyles('dark', { color: 'success.light' }) }}
+              >
+                6.2%
+              </Typography>{' '}
+              this month and decreased your expensed by{' '}
+              <Typography
+                component="span"
+                variant="inherit"
+                sx={{ color: 'error.main', ...theme.applyStyles('dark', { color: 'error.light' }) }}
+              >
+                3.2%
+              </Typography>
             </Typography>
-          </Typography>
-        </MainCard>
-      </Grid>
+          </MainCard>
+        </Grid>
+      )}
     </Grid>
   );
 }
