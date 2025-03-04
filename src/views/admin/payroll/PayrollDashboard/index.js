@@ -15,35 +15,55 @@ import useCurrentUser from '@/hooks/useCurrentUser';
 /***************************  ANALYTICS - OVERVIEW  ***************************/
 
 export default function PayrollDashboard({ setPayrollSetup }) {
+  const { userData } = useCurrentUser();
+
+  let businessId = userData.user_type === 'Business' ? userData?.business_affiliated[0]?.id : userData.businesssDetails.business[0].id;
+
   const router = useRouter();
   const pathname = usePathname();
   const [loading, setLoading] = useState(false);
   const [businessDetails, setBusinessDetails] = useState({});
   const { showSnackbar } = useSnackbar();
-  const { userData } = useCurrentUser();
-  const getData = async () => {
-    setLoading(true);
-    let id = userData.user_type === 'Business' ? userData.id : userData.businesssDetails.id;
 
-    const url = `/payroll/payroll-setup-status?user_id=${id}`;
+  const getData = async (id) => {
+    setLoading(true);
+
+    const url = `/payroll/payroll-setup-status?business_id=${id}`;
     const { res, error } = await Factory('get', url, {});
-    setLoading(false);
     if (res?.status_cd === 0) {
       if (res.data.payroll_setup === false) {
-        router.push(`/payrollsetup?business-id=${res.data.id}`);
+        router.push(`/payrollsetup`);
+        setLoading(false);
       } else {
         setBusinessDetails(res?.data);
+        setLoading(false);
       }
     } else {
       setBusinessDetails({});
       setLoading(false);
       showSnackbar(JSON.stringify(res?.data?.error), 'error');
-      // router.push('/user-type');
+
+      // router.push('/    'payroll_business_profileSetup'');
     }
   };
 
+  let get_business_details = async () => {
+    setLoading(true);
+    let userId = userData.dashboardChange === false ? userData.id : '';
+    const url = `/user_management/businesses-by-client/?user_id=${userId}`;
+    const { res, error } = await Factory('get', url, {});
+    if (res?.status_cd === 0) {
+      getData(res.data.id);
+    } else {
+      showSnackbar(JSON.stringify(res?.data?.error), 'error');
+    }
+  };
   useEffect(() => {
-    getData();
+    if (userData.business_exists === false) {
+      router.push('/payrollsetup/payroll_business_profileSetup');
+    } else {
+      get_business_details();
+    }
   }, [userData.id]);
 
   return loading ? (
@@ -61,11 +81,7 @@ export default function PayrollDashboard({ setPayrollSetup }) {
           </Typography>
         </Stack>
         <Stack direction="row" sx={{ gap: 1.5 }}>
-          <Button
-            variant="outlined"
-            onClick={() => router.push(`/payrollsetup?business-id=${businessDetails.id}`)}
-            startIcon={<IconSettings2 size={18} />}
-          >
+          <Button variant="outlined" onClick={() => router.push(`/payrollsetup`)} startIcon={<IconSettings2 size={18} />}>
             Payroll Settings
           </Button>
           <Button variant="contained" onClick={() => router.push(`${pathname}/add-employee`)} startIcon={<IconSparkles size={16} />}>
