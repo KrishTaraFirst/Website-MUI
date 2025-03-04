@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import useCurrentUser from '@/hooks/useCurrentUser';
 import Loader from '@/components/PageLoader';
+import MainCard from '@/components/MainCard';
 
 function Organizationdetails({ tab }) {
   const { userData } = useCurrentUser();
@@ -102,7 +103,7 @@ function Organizationdetails({ tab }) {
       filling_address_city: '',
       filling_address_pincode: ''
     },
-    validationSchema,
+    // validationSchema,
     onSubmit: async (values) => {
       setLoading(true);
       const postData = new FormData();
@@ -114,6 +115,7 @@ function Organizationdetails({ tab }) {
           postData.append(key, values[key]);
         }
       });
+      console.log(postType);
       const url = postType === 'post' ? `/payroll/orgs/` : `/payroll/orgs/${payrollid}/`;
       const { res, error } = await Factory(postType, url, postData);
       setLoading(false);
@@ -150,7 +152,7 @@ function Organizationdetails({ tab }) {
               error={touched[field.name] && Boolean(errors[field.name])}
               helperText={touched[field.name] && errors[field.name]}
               sx={{ width: '100%' }}
-              disabled={field.name === 'org_address_state'}
+              // disabled={field.name === 'org_address_state'}
             />
           </Grid2>
         );
@@ -169,47 +171,52 @@ function Organizationdetails({ tab }) {
             error={touched[field.name] && Boolean(errors[field.name])}
             helperText={touched[field.name] && errors[field.name]}
             sx={{ width: '100%' }}
-            disabled={
-              field.name === 'organisation_name' ||
-              field.name === 'org_address_line1' ||
-              field.name === 'org_address_line2' ||
-              field.name === 'org_address_city' ||
-              field.name === 'org_address_pincode'
-            }
+            // disabled={
+            //   field.name === 'organisation_name' ||
+            //   field.name === 'org_address_line1' ||
+            //   field.name === 'org_address_line2' ||
+            //   field.name === 'org_address_city' ||
+            //   field.name === 'org_address_pincode'
+            // }
           />
         </Grid2>
       );
     });
   };
   const getOrgDetails = async (id) => {
-    setLoading(true); // Start loading when an ID is available
-    // const id = businessId || payrollid; // Use whichever ID is available
+    setLoading(true);
     const url = `/payroll/orgs/${id}/`;
     const { res, error } = await Factory('get', url, {});
     setLoading(false); // Stop loading after the request completes
-
+    console.log(res);
     if (res.status_cd === 0) {
       setValues((prev) => ({
         ...prev,
         ...res.data,
-        org_address_line1: res.data.organisation_address.address_line1,
-        org_address_line2: res.data.organisation_address.address_line2,
-        org_address_state: res.data.organisation_address.state,
-        org_address_city: res.data.organisation_address.city,
-        org_address_pincode: res.data.organisation_address.pincode
+        org_address_line1: res.data?.organisation_address?.address_line1,
+        org_address_line2: res.data?.organisation_address?.address_line2,
+        org_address_state: res.data?.organisation_address?.state,
+        org_address_city: res.data?.organisation_address?.city,
+        org_address_pincode: res.data?.organisation_address?.pincode
       }));
       setPostType('put');
     } else {
-      setPostType('post');
+      showSnackbar(JSON.stringify(res.data.data), 'error');
     }
   };
 
-  // Effect to trigger API call when either businessId or payrollid is set
-  useEffect(() => {
-    if (payrollid) {
-      getOrgDetails(payrollid); // Trigger API call only when an ID is available
-    }
-  }, [payrollid]); // Dependencies ensure it runs again if the ID changes
+  // useEffect(() => {
+  //   if (payrollid) {
+  //     getOrgDetails(payrollid);
+  //   } else {
+  //     setValues((prev) => ({
+  //       ...prev,
+  //       organisation_name: userData?.businesssDetails?.business?.[0]?.nameOfBusiness || '',
+  //       contact_email: userData?.businesssDetails.email
+  //     }));
+  //     setPostType('post');
+  //   }
+  // }, [payrollid]);
 
   useEffect(() => {
     setFieldValue('logo', logoDetails);
@@ -222,39 +229,41 @@ function Organizationdetails({ tab }) {
         <Loader />
       ) : (
         <HomeCard title="Organization Details" tagline="Setup your organization before starting payroll">
-          <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
-            <Grid2 container spacing={3}>
-              {renderFields(fields)}
-            </Grid2>
+          <MainCard>
+            <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
+              <Grid2 container spacing={3}>
+                {renderFields(fields)}
+              </Grid2>
 
-            <Typography variant="h6" gutterBottom sx={{ mt: 4, mb: 2 }}>
-              Organization Address
-            </Typography>
-            <Grid2 container spacing={3}>
-              {renderFields(organizationAddress)}
-            </Grid2>
+              <Typography variant="h6" gutterBottom sx={{ mt: 4, mb: 2 }}>
+                Organization Address
+              </Typography>
+              <Grid2 container spacing={3}>
+                {renderFields(organizationAddress)}
+              </Grid2>
 
-            <Typography variant="h6" gutterBottom sx={{ mt: 4, mb: 2 }}>
-              Filing Address
-            </Typography>
-            <Grid2 container spacing={3}>
-              {renderFields(filingAddress)}
-            </Grid2>
+              <Typography variant="h6" gutterBottom sx={{ mt: 4, mb: 2 }}>
+                Filing Address
+              </Typography>
+              <Grid2 container spacing={3}>
+                {renderFields(filingAddress)}
+              </Grid2>
 
-            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  router.back();
-                }}
-              >
-                Back to Dashboard
-              </Button>
-              <Button type="submit" variant="contained" color="primary">
-                Submit
-              </Button>
+              <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    router.back();
+                  }}
+                >
+                  Back to Dashboard
+                </Button>
+                <Button type="submit" variant="contained" color="primary">
+                  Submit
+                </Button>
+              </Box>
             </Box>
-          </Box>
+          </MainCard>
         </HomeCard>
       )}
     </>

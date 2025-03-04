@@ -21,19 +21,18 @@ export default function PayrollDashboard({ setPayrollSetup }) {
   const [businessDetails, setBusinessDetails] = useState({});
   const { showSnackbar } = useSnackbar();
   const { userData } = useCurrentUser();
-
   const getData = async () => {
     setLoading(true);
-    const url = `/payroll/payroll-setup-status?user_id=${userData.id}`;
+    let id = userData.user_type === 'Business' ? userData.id : userData.businesssDetails.id;
+
+    const url = `/payroll/payroll-setup-status?user_id=${id}`;
     const { res, error } = await Factory('get', url, {});
-    console.log(res);
+    setLoading(false);
     if (res?.status_cd === 0) {
-      setBusinessDetails(res?.data);
-      setLoading(false);
       if (res.data.payroll_setup === false) {
         router.push(`/payrollsetup?business-id=${res.data.id}`);
       } else {
-        return;
+        setBusinessDetails(res?.data);
       }
     } else {
       setBusinessDetails({});
