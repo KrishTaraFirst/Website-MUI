@@ -27,14 +27,14 @@ export default function ServiceCard({
   contentProps,
   cardPadding
 }) {
-  const defaultBoxPadding = { xs: 3, sm: 4, md: 5 };
+  const defaultBoxPadding = { xs: 1.5, sm: 2, md: 2.5 };
   const boxPadding = cardPadding ? { ...cardPadding } : defaultBoxPadding;
 
   return (
     <GraphicsCard
       sx={{
         p: boxPadding,
-        minHeight: { xs: 60, sm: 120, md: 172 }, // Ensures consistent height
+        minHeight: { xs: 60, sm: 120, md: 190 }, // Ensures consistent height
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between', // Ensures spacing consistency
@@ -42,12 +42,24 @@ export default function ServiceCard({
         ...(contentCard && { bgcolor: typeof contentCard === 'boolean' ? 'grey.200' : contentCard })
       }}
     >
-      <Stack sx={{}}>
+      <Stack direction={'row'} sx={{ lineHeight: 0, alignItems: 'center', gap: 1 }}>
+        {iconAvatar ? (
+          <Avatar sx={{ width: 45, height: 45, bgcolor: typeof iconAvatar === 'boolean' ? 'grey.300' : iconAvatar }}>
+            <SvgIcon {...(typeof icon === 'string' ? { name: icon } : { ...icon })} />
+          </Avatar>
+        ) : (
+          <Box>
+            <SvgIcon {...(typeof icon === 'string' ? { name: icon } : { ...icon })} size={50} />
+          </Box>
+        )}
         {title && (
-          <Link component={NextLink} underline="hover" variant="h4" href={href} sx={{ '&:hover': { color: 'primary.dark' } }}>
+          <Link component={NextLink} underline="hover" variant="h4" href={href} sx={{ '&:hover': { color: 'primary.light' } }}>
             {title}
           </Link>
         )}
+      </Stack>
+
+      <Stack sx={{}}>
         {content && (
           <Typography {...(contentProps && { ...contentProps })} sx={{ color: 'text.secondary' }}>
             {content}

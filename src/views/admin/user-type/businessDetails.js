@@ -13,7 +13,7 @@ import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import DeleteIcon from '@mui/icons-material/Delete';
 import HomeCard from '@/components/cards/HomeCard';
 import Factory from '@/utils/Factory';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import * as Yup from 'yup';
 import {
   Avatar,
@@ -131,7 +131,7 @@ export default function BusinessKYC() {
   const { showSnackbar } = useSnackbar();
   const { userData } = useCurrentUser();
   const searchParams = useSearchParams();
-  const BID = searchParams.get('BID'); // Get BID from URL params
+  const BID = searchParams.get('BID');
 
   const handleChange = (_event, newValue) => {
     setValue(newValue);

@@ -11,7 +11,7 @@ import ButtonBase from '@mui/material/ButtonBase';
 // @project
 import LogoMain from './LogoMain';
 import LogoIcon from './LogoIcon';
-import { APP_DEFAULT_PATH } from '@/config';
+import { APP_DEFAULT_PATH, APP_HOME_PATH } from '@/config';
 import { generateFocusStyle } from '@/utils/generateFocusStyle';
 import { Typography } from '@mui/material';
 
@@ -21,11 +21,14 @@ export default function LogoSection({ isIcon, sx, to }) {
   const theme = useTheme();
 
   return (
-    <NextLink href={!to ? APP_DEFAULT_PATH : to} passHref legacyBehavior>
+    <NextLink href={!to ? APP_HOME_PATH : to} passHref legacyBehavior>
       <ButtonBase disableRipple sx={{ ...sx, '&:focus-visible': generateFocusStyle(theme.palette.primary.main) }} aria-label="logo">
         {true ? (
           <>
-            <LogoIcon /> <Typography variant='h1' color="primary">&nbsp;Tara</Typography>
+            <LogoIcon />
+            <Typography variant="h1" color="primary">
+              &nbsp;Tara
+            </Typography>
           </>
         ) : (
           <LogoMain />

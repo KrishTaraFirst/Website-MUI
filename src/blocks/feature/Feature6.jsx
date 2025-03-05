@@ -20,6 +20,7 @@ import Typeset from '@/components/Typeset3';
 import { ThemeDirection } from '@/config';
 import { SECTION_COMMON_PY } from '@/utils/constant';
 import NextLink from 'next/link';
+import { IconArrowRight } from '@tabler/icons-react';
 
 /***************************  FEATURE - 6  ***************************/
 
@@ -71,9 +72,11 @@ export default function Feature6({ heading, caption, image, features, getStarted
                       delay: 0.4
                     }}
                   >
-                    <Typeset {...{ heading, caption }} />
+                    <Stack direction={'row'}>
+                      <Typeset {...{ heading, caption }} image={image.src} />
+                    </Stack>
 
-                    <Stack sx={{ alignItems: 'center', p: { xs: 3, sm: 4, md: 5.5 } }}>
+                    <Stack sx={{ alignItems: 'center', pt: { xs: 3, sm: 4, md: 5.5 } }}>
                       <Button
                         variant="contained"
                         size="large"
@@ -111,6 +114,17 @@ export default function Feature6({ heading, caption, image, features, getStarted
                 </Grid>
               ))}
             </Grid>
+            <Stack sx={{ alignItems: 'center', pt: { xs: 1, sm: 2, md: 2.5 } }}>
+              <Button
+                variant="contained"
+                size="large"
+                href={'/services'}
+                {...(getStarted.link && getStarted.link.href && { component: NextLink })}
+                endIcon={<IconArrowRight />}
+              >
+                View More
+              </Button>
+            </Stack>
           </Grid>
         </Grid>
       </Stack>

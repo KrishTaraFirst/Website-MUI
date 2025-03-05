@@ -46,7 +46,14 @@ export default function Service({ tab }) {
                       >
                         Get Stared Now
                       </Button>
-                      <Button variant="contained">Talk to Expert</Button>
+                      <Button
+                        onClick={() => {
+                          router.push(`/book-consultation`);
+                        }}
+                        variant="contained"
+                      >
+                        Talk to Expert
+                      </Button>
                     </Stack>
                   </Stack>
                 </GraphicsCard>

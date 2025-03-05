@@ -83,9 +83,9 @@ export default function Individual() {
         <Grid size={12}>
           <AnalyticsBehaviorCard data={userBehaviorAnalytics} />
         </Grid>
-        <Grid size={12}>
+        {/* <Grid size={12}>
           <AnalyticsBehaviorCard data={productsData} products={true} />
-        </Grid>
+        </Grid> */}
       </Grid>
     </HomeCard>
   );

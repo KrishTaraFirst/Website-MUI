@@ -98,6 +98,10 @@ export const featureNameSchema = {
 };
 
 export const phoneSchema = {
-  // required: 'Phone number is required',
+  required: 'Phone number is required'
+  // pattern: { value: /^[0-9()-.\s]{7,15}$/, message: 'Invalid phone number' }
+};
+export const dateSchema = {
+  required: 'Date is required'
   // pattern: { value: /^[0-9()-.\s]{7,15}$/, message: 'Invalid phone number' }
 };

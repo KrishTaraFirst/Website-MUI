@@ -8,21 +8,25 @@ export const feature6 = {
   image: { light: '/assets/images/graphics/ai/graphics20-light.svg', dark: '/assets/images/graphics/ai/graphics20-dark.svg' },
   features: [
     {
+      icon: 'tabler-file-invoice',
       title: 'Invoicing',
       content: 'Smart Invoicing with automatic GST Compliance, TDS & Payment Tracking.',
       href: 'services/invoicing'
     },
     {
+      icon: 'tabler-credit-card-pay',
       title: 'Payroll',
       content: 'Comprehensive platform to manage Payroll, Salaries, Compliance, Attandance & Employee Benifits.',
       href: 'services/payroll'
     },
     {
+      icon: 'tabler-wallet',
       title: 'Doc. Wallet',
       content: 'Secure & Organised storage for all your business & personal documents at one place.',
       href: 'services/doc-wallet'
     },
     {
+      icon: 'tabler-user-check',
       title: 'Virtual CFO',
       content: 'Get your Financial Management, Compliance Tracking, Financial Insights & Advisory support.',
       href: 'services/virtual-cfo'
@@ -38,6 +42,7 @@ export const feature6 = {
     //   href: 'services/due-diligence'
     // },
     {
+      icon: 'tabler-books',
       title: 'Fix My Books',
       content: 'Clean correct and optimize your accounting records & get clear financial insights.',
       href: 'services/fix-books'
@@ -63,6 +68,7 @@ export const feature6 = {
     //   href: 'services/gst-registration'
     // },
     {
+      icon: 'tabler-code-plus',
       title: 'FHI Score',
       content: 'Track, analyze, and enhance your financial well-being with personalized insights and expert guidance.',
       href: 'services/fhi-score'

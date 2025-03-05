@@ -75,7 +75,7 @@ export default function AuthRegisterBusiness({ inputSx }) {
     // setRegisterError('');
     // try {
     //   const url = `/user_management/register/`;
-    const payload = { ...formData, user_type: 'Individual', user_name: formData.email };
+    const payload = { ...formData, user_type: 'Business', user_name: formData.email };
     console.log(payload);
     //   const res = await axios.post(BASE_URL + url, payload);
     //   if (res.status === 201) {
@@ -95,126 +95,28 @@ export default function AuthRegisterBusiness({ inputSx }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {/* <Box display="flex" justifyContent="center" mt={4} mb={3}>
-        <Box
-          sx={{
-            position: 'relative',
-            display: 'inline-flex',
-            borderRadius: '50px',
-            padding: '4px',
-            width: '1200px',
-            boxSizing: 'border-box',
-            border: '1px solid #006397'
-          }}
-        >
-          {selected !== null && (
-            <motion.div
-              layout
-              transition={{ type: 'spring', stiffness: 500, damping: 50 }}
-              style={{
-                position: 'absolute',
-                top: '4px',
-                bottom: '4px',
-                left: `calc(${options.indexOf(selected)} * (100% / ${options.length}) + 4px)`,
-                width: `calc((100% / ${options.length}) - 8px)`,
-                backgroundColor: '#006397',
-                borderRadius: '50px',
-                zIndex: 0
-              }}
-            />
-          )}
-
-          <ButtonGroup
-            sx={{
-              position: 'relative',
-              zIndex: 1,
-              width: '100%',
-              boxSizing: 'border-box',
-              '&:hover': { bgcolor: 'none' }
-            }}
-          >
-            {options.map((option) => (
-              <Button
-                variant="text"
-                key={option}
-                onClick={() => setSelected(option)}
-                sx={{
-                  flex: 1,
-                  px: 3,
-                  py: 1,
-                  fontSize: '14px',
-                  color: selected === option ? 'white' : 'grey.800',
-                  transition: 'color 0.3s',
-                  textTransform: 'none',
-                  '&:hover': { bgcolor: 'none' }
-                }}
-              >
-                {option}
-              </Button>
-            ))}
-          </ButtonGroup>
-        </Box>
-      </Box> */}
-      <Stack sx={{ gap: 2.5 }}>
-        {/* <Stack sx={{ gap: 0.5 }}>
+      <Stack sx={{ gap: 2 }}>
+        <Stack sx={{ gap: 0.5 }}>
           <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-            Username&nbsp;
+            Business Name&nbsp;
             <Typography component="span" color="error">
               *
             </Typography>
           </Typography>
           <OutlinedInput
-            {...register('user_name', userNameSchema)}
-            placeholder="Create your user Name"
-            slotProps={{ input: { 'aria-label': 'Username' } }}
-            error={errors.user_name && Boolean(errors.user_name)}
+            {...register('first_name', firstNameSchema)}
+            placeholder="Enter your first name"
+            slotProps={{ input: { 'aria-label': 'First Name' } }}
+            error={errors.first_name && Boolean(errors.first_name)}
             sx={{ ...inputSx }}
           />
-          {errors.user_name?.message && (
+          {errors.first_name?.message && (
             <Typography variant="caption" sx={{ color: 'error.main' }}>
-              {errors.user_name?.message}
+              {errors.first_name?.message}
             </Typography>
           )}
-        </Stack> */}
-        <Stack sx={{ gap: 1 }} direction={'row'}>
-          <Stack sx={{ gap: 0.5 }} style={{ minWidth: '50%', maxWidth: '50%' }}>
-            <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-              First Name&nbsp;
-              <Typography component="span" color="error">
-                *
-              </Typography>
-            </Typography>
-            <OutlinedInput
-              {...register('first_name', firstNameSchema)}
-              placeholder="Enter your first name"
-              slotProps={{ input: { 'aria-label': 'First Name' } }}
-              error={errors.first_name && Boolean(errors.first_name)}
-              sx={{ ...inputSx }}
-            />
-            {errors.first_name?.message && (
-              <Typography variant="caption" sx={{ color: 'error.main' }}>
-                {errors.first_name?.message}
-              </Typography>
-            )}
-          </Stack>
-          <Stack sx={{ gap: 0.5 }} style={{ minWidth: '50%', maxWidth: '50%' }}>
-            <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-              Last Name
-            </Typography>
-            <OutlinedInput
-              {...register('last_name', lastNameSchema)}
-              placeholder="Enter your last name"
-              slotProps={{ input: { 'aria-label': 'Last Name' } }}
-              error={errors.last_name && Boolean(errors.last_name)}
-              sx={{ ...inputSx }}
-            />
-            {errors.last_name?.message && (
-              <Typography variant="caption" sx={{ color: 'error.main' }}>
-                {errors.last_name?.message}
-              </Typography>
-            )}
-          </Stack>
         </Stack>
+
         <Stack sx={{ gap: 0.5 }}>
           <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
             Email&nbsp;
@@ -235,6 +137,38 @@ export default function AuthRegisterBusiness({ inputSx }) {
               {errors.email?.message}
             </Typography>
           )}
+        </Stack>
+        <Stack sx={{ gap: 0.5 }}>
+          <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+            Password&nbsp;
+            <Typography component="span" color="error">
+              *
+            </Typography>
+          </Typography>
+          <OutlinedInput
+            {...register('mobile', passwordSchema)}
+            type={isOpen ? 'text' : 'mobile'}
+            placeholder="Enter your Mobile Number"
+            autoComplete="new-mobile"
+            slotProps={{ input: { 'aria-label': 'mobile' } }}
+            error={errors.mobile && Boolean(errors.mobile)}
+            endAdornment={
+              <IconButton sx={{ height: 0 }} onClick={() => setIsOpen(!isOpen)} rel="noopener noreferrer" aria-label="eye">
+                {isOpen ? <OpenEye color={theme.palette.grey[700]} /> : <CloseEye color={theme.palette.grey[700]} />}
+              </IconButton>
+            }
+            sx={inputSx}
+          />
+          <Stack
+            direction="row"
+            sx={{ alignItems: 'center', justifyContent: errors.mobile?.message ? 'space-between' : 'flex-end', width: 1 }}
+          >
+            {errors.mobile?.message && (
+              <Typography variant="caption" sx={{ color: 'error.main' }}>
+                {errors.mobile?.message}
+              </Typography>
+            )}
+          </Stack>
         </Stack>
         <Stack sx={{ gap: 0.5 }}>
           <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
@@ -266,15 +200,6 @@ export default function AuthRegisterBusiness({ inputSx }) {
                 {errors.password?.message}
               </Typography>
             )}
-            {/* <Link
-              component={NextLink}
-              underline="hover"
-              variant="caption2"
-              href=""
-              sx={{ textAlign: 'right', '&:hover': { color: 'primary.dark' } }}
-            >
-              Forgot Password?
-            </Link> */}
           </Stack>
         </Stack>
         <Button

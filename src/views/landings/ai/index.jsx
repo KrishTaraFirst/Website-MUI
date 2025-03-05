@@ -7,9 +7,11 @@ import Box from '@mui/material/Box';
 import Clientele2 from '@/blocks/clientele/Clientele2';
 import Hero2 from '@/blocks/hero/Hero2';
 import { Integration1 } from '@/blocks/integration';
+import { Feature6 } from '@/blocks/feature';
 import { Cta1 } from '@/blocks/cta';
 import LazySection from '@/components/LazySection';
 import useDataThemeMode from '@/hooks/useDataThemeMode';
+import img from '../../../../public/assets/images/assets.png';
 
 // @data
 import { about, blog, clientele, cta, faq, feature6, feature11, hero, integration, testimonial } from './data';
@@ -21,9 +23,12 @@ export default function AI() {
 
   return (
     <>
+      <Box sx={{ mt: -3 }}>
+        <Feature6 {...feature6} image={img} />
+      </Box>
       <LazySection
         sections={[
-          { importFunc: () => import('@/blocks/feature').then((module) => ({ default: module.Feature6 })), props: feature6 },
+          // { importFunc: () => import('@/blocks/feature').then((module) => ({ default: module.Feature6 })), props: feature6 },
           { importFunc: () => import('@/blocks/cta').then((module) => ({ default: module.Cta1 })), props: cta }
         ]}
         offset="200px"

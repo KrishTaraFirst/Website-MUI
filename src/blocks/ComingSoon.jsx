@@ -44,18 +44,20 @@ export default function ComingSoon({ chip, primaryBtn, description }) {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    setSnackbar({ open: true, message: 'We will make sure to notify you!', severity: 'success' });
+    setEmail('');
+    // try {
 
-    try {
-      const response = await axios.post('/api/subscribe', { email });
-      if (response.status === 200) {
-        setSnackbar({ open: true, message: response.data.message, severity: 'success' });
-        setEmail('');
-      } else {
-        setSnackbar({ open: true, message: response.data.error, severity: 'error' });
-      }
-    } catch (error) {
-      setSnackbar({ open: true, message: 'Subscription error: ' + error, severity: 'error' });
-    }
+    //   const response = await axios.post('/api/subscribe', { email });
+    //   if (response.status === 200) {
+    //     setSnackbar({ open: true, message: response.data.message, severity: 'success' });
+    //     setEmail('');
+    //   } else {
+    //     setSnackbar({ open: true, message: response.data.error, severity: 'error' });
+    //   }
+    // } catch (error) {
+    //   setSnackbar({ open: true, message: 'Subscription error: ' + error, severity: 'error' });
+    // }
   };
 
   return (
@@ -64,7 +66,7 @@ export default function ComingSoon({ chip, primaryBtn, description }) {
         sx={{
           alignItems: 'center',
           justifyContent: 'center',
-          minHeight: '100vh',
+          minHeight: '80vh',
           py: SECTION_COMMON_PY,
           position: 'relative',
           overflow: 'hidden'

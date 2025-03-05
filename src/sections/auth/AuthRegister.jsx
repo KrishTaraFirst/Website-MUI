@@ -71,24 +71,23 @@ export default function AuthRegister({ inputSx }) {
 
   // Handle form submission
   const onSubmit = async (formData) => {
-    // setIsProcessing(true);
-    // setRegisterError('');
-    // try {
-    //   const url = `/user_management/register/`;
-    const payload = { ...formData, user_type: 'Individual', user_name: formData.email };
-    console.log(payload);
-    //   const res = await axios.post(BASE_URL + url, payload);
-    //   if (res.status === 201) {
-    //     setIsProcessing(false);
-    //     showSnackbar('Activation link has been sent to given email', 'success');
-    //     router.push('/login');
-    //   }
-    //   reset();
-    // } catch (error) {
-    //   // CustomSnackbar
-    //   showSnackbar(JSON.stringify(error), 'error');
-    //   setIsProcessing(false);
-    // }
+    setIsProcessing(true);
+    setRegisterError('');
+    try {
+      const url = `/user_management/register/`;
+      const payload = { ...formData, user_type: 'Individual', user_name: formData.email };
+      const res = await axios.post(BASE_URL + url, payload);
+      if (res.status === 201) {
+        setIsProcessing(false);
+        showSnackbar('Activation link has been sent to given email', 'success');
+        router.push('/login');
+      }
+      reset();
+    } catch (error) {
+      // CustomSnackbar
+      showSnackbar(JSON.stringify(error), 'error');
+      setIsProcessing(false);
+    }
   };
 
   const commonIconProps = { size: 16, color: theme.palette.grey[700] };

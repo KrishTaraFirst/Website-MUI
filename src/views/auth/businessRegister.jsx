@@ -1,7 +1,9 @@
+'use client';
 import { Fragment } from 'react';
 
 // @next
 import NextLink from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 // @mui
 import Divider from '@mui/material/Divider';
@@ -21,7 +23,7 @@ import ContainerWrapper from '@/components/ContainerWrapper';
 import GraphicsCard from '@/components/cards/GraphicsCard';
 import ProfileGroup2 from '@/components/cards/profile-card/ProfileGroup2';
 import LogoWatermark from '@/components/logo/LogoWatermark';
-
+import { services } from '@/views/landings/default/data';
 import { SocialTypes } from '@/enum';
 import { SECTION_COMMON_PY } from '@/utils/constant';
 
@@ -74,6 +76,9 @@ function CounterBox() {
 /***************************  LOGIN - 4  ***************************/
 
 export default function Login4() {
+  const searchParams = useSearchParams();
+  const serviceKey = searchParams.get('service');
+
   const reviewData = {
     avatarList: [
       '/assets/images/user/avatar1.png',
@@ -94,19 +99,24 @@ export default function Login4() {
       <Grid container spacing={1.5} sx={{ ml: 12, mr: 12 }}>
         <Grid size={{ xs: 12, sm: 8 }}>
           <GraphicsCard sx={{ height: 1, p: { xs: 2, sm: 4, md: 5 } }}>
-            <ProfileGroup2 {...reviewData} />
             <Typography
               variant="h1"
               sx={{
-                mt: { xs: 2.5, sm: 5, md: 6 },
+                mt: { xs: 2, sm: 3, md: 4 },
                 maxWidth: { xs: 300, sm: 400, md: 500 },
                 fontSize: '57px',
                 fontWeight: 400,
                 lineHeight: '1.123',
-                letterSpacing: '-0.25px'
+                letterSpacing: '-0.25px',
+                color: 'primary.dark'
               }}
             >
-              You are one step away Sign In
+              {services[serviceKey].title}
+              {/* You are one step away Sign In */}
+            </Typography>
+            <Typography variant="h6" sx={{ color: 'grey.800', mt: { xs: 2, sm: 3, md: 3 } }}>
+              {services[serviceKey].shortDesc}
+              {/* You are one step away Sign In */}
             </Typography>
           </GraphicsCard>
         </Grid>
