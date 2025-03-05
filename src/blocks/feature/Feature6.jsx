@@ -76,7 +76,7 @@ export default function Feature6({ heading, caption, image, features, getStarted
                       <Typeset {...{ heading, caption }} image={image.src} />
                     </Stack>
 
-                    <Stack sx={{ alignItems: 'center', pt: { xs: 3, sm: 4, md: 5.5 } }}>
+                    <Stack sx={{ alignItems: 'center', pt: { xs: 3, sm: 4, md: 6 } }}>
                       <Button
                         variant="contained"
                         size="large"
