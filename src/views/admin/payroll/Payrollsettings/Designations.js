@@ -22,6 +22,8 @@ import { useSearchParams } from 'next/navigation';
 import ActionCell from '@/utils/ActionCell';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import { useRouter } from 'next/navigation';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import MainCard from '@/components/MainCard';
 
 function Designations() {
   const [openDialog, setOpenDialog] = useState(false); // State to manage dialog visibility
@@ -99,7 +101,7 @@ function Designations() {
   return (
     <HomeCard
       title="Designation Details"
-      tagline="Setup your organization before starting payroll"
+      tagline="Setup Designations for your organization"
       CustomElement={() => (
         <Stack direction="row" sx={{ gap: 2 }}>
           <Button
@@ -113,95 +115,90 @@ function Designations() {
           >
             Add Designation
           </Button>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => {
-              // setPostType('post');
-              // handleOpenDialog();
-            }}
-            sx={{ marginBottom: 2 }}
-          >
+          <Button variant="outlined" color="primary" sx={{ marginBottom: 2 }} disabled>
             Import
           </Button>
         </Stack>
       )}
     >
-      <Grid2 container spacing={{ xs: 2, sm: 3 }}>
-        <Grid2 size={12}>
-          <DesignationDialog
-            open={openDialog}
-            handleClose={handleCloseDialog}
-            handleOpenDialog={handleOpenDialog}
-            selectedRecord={selectedRecord}
-            type={postType}
-            setType={setPostType}
-            fetchDesignations={fetchDesignations}
-          />
-        </Grid2>
+      <MainCard>
+        <Grid2 container spacing={{ xs: 2, sm: 3 }}>
+          <Grid2 size={12}>
+            <DesignationDialog
+              open={openDialog}
+              handleClose={handleCloseDialog}
+              handleOpenDialog={handleOpenDialog}
+              selectedRecord={selectedRecord}
+              type={postType}
+              setType={setPostType}
+              fetchDesignations={fetchDesignations}
+            />
+          </Grid2>
 
-        <Grid2 size={12}>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>S No</TableCell>
-                  <TableCell>Designation Name</TableCell>
-                  <TableCell>No of Employees</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {paginatedData.length === 0 ? (
+          <Grid2 size={12}>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
                   <TableRow>
-                    <TableCell colSpan={5} sx={{ height: 300 }}>
-                      <EmptyTable msg="No Designations available" />
-                    </TableCell>
+                    <TableCell>S No</TableCell>
+                    <TableCell>Designation Name</TableCell>
+                    <TableCell>No of Employees</TableCell>
+                    <TableCell>Actions</TableCell>
                   </TableRow>
-                ) : (
-                  paginatedData.map((designation, index) => (
-                    <TableRow key={designation.id}>
-                      <TableCell>{(currentPage - 1) * rowsPerPage + index + 1}</TableCell>
-                      <TableCell>{designation.designation_name}</TableCell>
-                      <TableCell>{designation.numOfEmployees || 0}</TableCell>
-                      <TableCell>
-                        <ActionCell
-                          row={designation} // Pass the customer row data
-                          onEdit={() => handleEdit(designation)} // Edit handler
-                          onDelete={() => handleDelete(designation)} // Delete handler
-                          open={openDialog}
-                          onClose={handleCloseDialog}
-                          deleteDialogData={{
-                            title: 'Delete Record',
-                            heading: 'Are you sure you want to delete this Record?',
-                            description: `This action will remove ${designation.designation_name} from the list.`,
-                            successMessage: 'Record has been deleted.'
-                          }}
-                        />
+                </TableHead>
+                <TableBody>
+                  {paginatedData.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} sx={{ height: 300 }}>
+                        <EmptyTable msg="No Designations available" />
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          {designations.length > 0 && (
-            <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'center', px: { xs: 0.5, sm: 2.5 }, py: 1.5 }}>
-              <Pagination count={Math.ceil(designations.length / rowsPerPage)} page={currentPage} onChange={handlePageChange} />
-            </Stack>
-          )}
+                  ) : (
+                    paginatedData.map((designation, index) => (
+                      <TableRow key={designation.id}>
+                        <TableCell>{(currentPage - 1) * rowsPerPage + index + 1}</TableCell>
+                        <TableCell>{designation.designation_name}</TableCell>
+                        <TableCell>{designation.numOfEmployees || 0}</TableCell>
+                        <TableCell>
+                          <ActionCell
+                            row={designation} // Pass the customer row data
+                            onEdit={() => handleEdit(designation)} // Edit handler
+                            onDelete={() => handleDelete(designation)} // Delete handler
+                            open={openDialog}
+                            onClose={handleCloseDialog}
+                            deleteDialogData={{
+                              title: 'Delete Record',
+                              heading: 'Are you sure you want to delete this Record?',
+                              description: `This action will remove ${designation.designation_name} from the list.`,
+                              successMessage: 'Record has been deleted.'
+                            }}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            {designations.length > 0 && (
+              <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'center', px: { xs: 0.5, sm: 2.5 }, py: 1.5 }}>
+                <Pagination count={Math.ceil(designations.length / rowsPerPage)} page={currentPage} onChange={handlePageChange} />
+              </Stack>
+            )}
+          </Grid2>
         </Grid2>
-      </Grid2>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
-        <Button
-          variant="outlined"
-          onClick={() => {
-            router.back();
-          }}
-        >
-          Back to Dashboard
-        </Button>
-      </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => {
+              router.back();
+            }}
+          >
+            Back to Dashboard
+          </Button>
+        </Box>
+      </MainCard>
     </HomeCard>
   );
 }

@@ -86,10 +86,11 @@ const PayrollSetup = () => {
             return { ...step, completed: res.data.salary_component };
           }
 
-          return step; // Leave other steps unchanged
+          return step;
         })
       );
     } else {
+      showSnackbar(JSON.stringify(res?.data?.data), 'error');
     }
   };
   useEffect(() => {

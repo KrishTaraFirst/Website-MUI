@@ -27,7 +27,6 @@ export default function PayrollDashboard({ setPayrollSetup }) {
 
   const getData = async (id) => {
     setLoading(true);
-
     const url = `/payroll/payroll-setup-status?business_id=${id}`;
     const { res, error } = await Factory('get', url, {});
     if (res?.status_cd === 0) {

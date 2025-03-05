@@ -22,6 +22,8 @@ import { useSearchParams } from 'next/navigation';
 import ActionCell from '@/utils/ActionCell';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import { useRouter } from 'next/navigation';
+import MainCard from '@/components/MainCard';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function Departments() {
   const [openDialog, setOpenDialog] = useState(false); // State to manage dialog visibility
@@ -94,7 +96,7 @@ function Departments() {
   return (
     <HomeCard
       title="Departments Details"
-      tagline="Setup your organization before starting payroll"
+      tagline="Create and manage different departments of Your organization."
       CustomElement={() => (
         <Stack direction="row" sx={{ gap: 2 }}>
           <Button
@@ -104,107 +106,101 @@ function Departments() {
               setPostType('post');
               handleOpenDialog();
             }}
-            sx={{ marginBottom: 2 }}
           >
             Add Department
           </Button>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => {
-              // setPostType('post');
-              // handleOpenDialog();
-            }}
-            sx={{ marginBottom: 2 }}
-          >
+          <Button variant="outlined" color="primary" disabled>
             Import
           </Button>
         </Stack>
       )}
     >
-      <Grid2 container spacing={{ xs: 2, sm: 3 }}>
-        <Grid2 size={12}>
-          <DepartmentDialog
-            open={openDialog}
-            handleClose={handleCloseDialog}
-            handleOpenDialog={handleOpenDialog}
-            selectedRecord={selectedRecord}
-            type={postType}
-            setType={setPostType}
-            fetchDepartments={fetchDepartments}
-          />
-        </Grid2>
+      <MainCard>
+        <Grid2 container spacing={{ xs: 2, sm: 3 }}>
+          <Grid2 size={12}>
+            <DepartmentDialog
+              open={openDialog}
+              handleClose={handleCloseDialog}
+              handleOpenDialog={handleOpenDialog}
+              selectedRecord={selectedRecord}
+              type={postType}
+              setType={setPostType}
+              fetchDepartments={fetchDepartments}
+            />
+          </Grid2>
 
-        <Grid2 size={12}>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>S No</TableCell>
-                  <TableCell>Department Name</TableCell>
-                  <TableCell>Department Code</TableCell>
-                  <TableCell>Description</TableCell>
-                  <TableCell>No of Employees</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {paginatedData.length === 0 ? (
+          <Grid2 size={12}>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
                   <TableRow>
-                    <TableCell colSpan={5} sx={{ height: 300 }}>
-                      <EmptyTable msg="No departments available" />
-                    </TableCell>
+                    <TableCell>S No</TableCell>
+                    <TableCell>Department Name</TableCell>
+                    <TableCell>Department Code</TableCell>
+                    <TableCell>Description</TableCell>
+                    <TableCell>No of Employees</TableCell>
+                    <TableCell>Actions</TableCell>
                   </TableRow>
-                ) : (
-                  paginatedData.map((department, index) => (
-                    <TableRow key={department.id}>
-                      <TableCell>{(currentPage - 1) * rowsPerPage + index + 1}</TableCell>
-                      <TableCell>{department.dept_name}</TableCell>
-                      <TableCell>{department.dept_code}</TableCell>
-                      <TableCell>
-                        {`${department.description}`?.length > 30
-                          ? `${department.description?.substring(0, 20)}...`
-                          : `${department.description}` || 'N/A'}
-                      </TableCell>
-                      <TableCell>{department.numOfEmployees || 0}</TableCell>
-                      <TableCell>
-                        <ActionCell
-                          row={department} // Pass the customer row data
-                          onEdit={() => handleEdit(department)} // Edit handler
-                          onDelete={() => handleDelete(department)} // Delete handler
-                          open={openDialog}
-                          onClose={handleCloseDialog}
-                          deleteDialogData={{
-                            title: 'Delete Record',
-                            heading: 'Are you sure you want to delete this Record?',
-                            description: `This action will remove ${department.dept_name} from the list.`,
-                            successMessage: 'Record has been deleted.'
-                          }}
-                        />
+                </TableHead>
+                <TableBody>
+                  {paginatedData.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} sx={{ height: 300 }}>
+                        <EmptyTable msg="No departments available" />
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          {departments.length > 0 && (
-            <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'center', px: { xs: 0.5, sm: 2.5 }, py: 1.5 }}>
-              <Pagination count={Math.ceil(departments.length / rowsPerPage)} page={currentPage} onChange={handlePageChange} />
-            </Stack>
-          )}
+                  ) : (
+                    paginatedData.map((department, index) => (
+                      <TableRow key={department.id}>
+                        <TableCell>{(currentPage - 1) * rowsPerPage + index + 1}</TableCell>
+                        <TableCell>{department.dept_name}</TableCell>
+                        <TableCell>{department.dept_code}</TableCell>
+                        <TableCell>
+                          {`${department.description}`?.length > 30
+                            ? `${department.description?.substring(0, 20)}...`
+                            : `${department.description}` || 'N/A'}
+                        </TableCell>
+                        <TableCell>{department.numOfEmployees || 0}</TableCell>
+                        <TableCell>
+                          <ActionCell
+                            row={department} // Pass the customer row data
+                            onEdit={() => handleEdit(department)} // Edit handler
+                            onDelete={() => handleDelete(department)} // Delete handler
+                            open={openDialog}
+                            onClose={handleCloseDialog}
+                            deleteDialogData={{
+                              title: 'Delete Record',
+                              heading: 'Are you sure you want to delete this Record?',
+                              description: `This action will remove ${department.dept_name} from the list.`,
+                              successMessage: 'Record has been deleted.'
+                            }}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            {departments.length > 0 && (
+              <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'center', px: { xs: 0.5, sm: 2.5 }, py: 1.5 }}>
+                <Pagination count={Math.ceil(departments.length / rowsPerPage)} page={currentPage} onChange={handlePageChange} />
+              </Stack>
+            )}
+          </Grid2>
         </Grid2>
-      </Grid2>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
-        <Button
-          variant="outlined"
-          onClick={() => {
-            router.back();
-          }}
-        >
-          Back to Dashboard
-        </Button>
-      </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => {
+              router.back();
+            }}
+          >
+            Back to Dashboard
+          </Button>
+        </Box>
+      </MainCard>
     </HomeCard>
   );
 }

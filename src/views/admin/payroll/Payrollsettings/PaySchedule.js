@@ -8,6 +8,7 @@ import Factory from '@/utils/Factory';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import dayjs from 'dayjs';
 import CustomDatePicker from '@/utils/CustomDateInput';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function PaySchedule() {
   const [payrollId, setPayrollId] = useState(null);
@@ -195,21 +196,21 @@ function PaySchedule() {
             </Grid2>
           </Grid2>
         </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 3 }}>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => {
+              router.back();
+            }}
+          >
+            Back to Dashboard
+          </Button>
+          <Button variant="contained" onClick={postFetch}>
+            Save
+          </Button>
+        </Box>
       </MainCard>
-
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 3 }}>
-        <Button
-          variant="outlined"
-          onClick={() => {
-            router.back();
-          }}
-        >
-          Back to Dashboard
-        </Button>
-        <Button variant="contained" onClick={postFetch}>
-          Save Pay Schedule
-        </Button>
-      </Box>
     </HomeCard>
   );
 }

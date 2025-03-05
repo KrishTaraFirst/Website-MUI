@@ -23,6 +23,8 @@ import ActionCell from '@/utils/ActionCell';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import { useRouter } from 'next/navigation';
 import Loader from '@/components/PageLoader';
+import MainCard from '@/components/MainCard';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function Worklocation() {
   const [openDialog, setOpenDialog] = useState(false); // Controls dialog visibility
@@ -95,7 +97,7 @@ function Worklocation() {
       ) : (
         <HomeCard
           title="Work Location Details"
-          tagline="Setup your organization before starting payroll"
+          tagline="Create and manage different locations of Your Organization."
           CustomElement={() => (
             <Stack direction="row" sx={{ gap: 2 }}>
               <Button
@@ -105,102 +107,105 @@ function Worklocation() {
                   setPostType('post');
                   handleOpenDialog();
                 }}
-                sx={{ marginBottom: 2 }}
               >
                 Add Work Location
               </Button>
-              {/* <Button variant="outlined" color="primary" onClick={() => {}} sx={{ marginBottom: 2 }}>
+              <Button variant="outlined" color="primary" disabled>
                 Import
-              </Button> */}
+              </Button>
             </Stack>
           )}
         >
-          <Grid2 container spacing={{ xs: 2, sm: 3 }}>
-            <Grid2 size={12}>
-              <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-                <WorkLocationDialog
-                  open={openDialog}
-                  handleClose={handleCloseDialog}
-                  fetchWorkLocations={fetchWorkLocations} // Pass the fetch function to the dialog
-                  selectedRecord={selectedRecord}
-                  type={postType}
-                  setType={setPostType}
-                />
-              </Stack>
-            </Grid2>
+          <MainCard>
+            <Grid2 container spacing={{ xs: 2, sm: 3 }}>
+              <Grid2 size={12}>
+                <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
+                  <WorkLocationDialog
+                    open={openDialog}
+                    handleClose={handleCloseDialog}
+                    fetchWorkLocations={fetchWorkLocations} // Pass the fetch function to the dialog
+                    selectedRecord={selectedRecord}
+                    type={postType}
+                    setType={setPostType}
+                  />
+                </Stack>
+              </Grid2>
 
-            <Grid2 size={12}>
-              <TableContainer component={Paper}>
-                <Table size="large">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>S No</TableCell>
-                      <TableCell>Name</TableCell>
-                      <TableCell>Address</TableCell>
-                      <TableCell>State</TableCell>
-                      <TableCell>No of Employees</TableCell>
-                      <TableCell>Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {/* Check if workLocations is valid and has data */}
-                    {paginatedData?.length === 0 ? (
+              <Grid2 size={12}>
+                <TableContainer component={Paper}>
+                  <Table size="large">
+                    <TableHead>
                       <TableRow>
-                        <TableCell colSpan={6} sx={{ height: 300 }}>
-                          <EmptyTable msg="No work locations available" />
-                        </TableCell>
+                        <TableCell>S No</TableCell>
+                        <TableCell>Name</TableCell>
+                        <TableCell>Address</TableCell>
+                        <TableCell>State</TableCell>
+                        <TableCell>No of Employees</TableCell>
+                        <TableCell>Actions</TableCell>
                       </TableRow>
-                    ) : (
-                      paginatedData?.map((location, index) => (
-                        <TableRow key={location.id}>
-                          <TableCell>{(currentPage - 1) * rowsPerPage + index + 1}</TableCell>
-                          <TableCell>{location.location_name || 'N/A'}</TableCell>
-                          <TableCell>
-                            {`${location.address_line1}, ${location.address_line2}`?.length > 30
-                              ? `${location.address_line1?.substring(0, 20)}...`
-                              : `${location.address_line1} , ${location.address_line2}` || 'N/A'}
-                          </TableCell>
-                          <TableCell>{location.address_state || 'N/A'}</TableCell>
-                          <TableCell>{location.employees || 0}</TableCell>
-                          <TableCell>
-                            {/* ActionCell to handle actions */}
-                            <ActionCell
-                              row={location} // Pass the customer row data
-                              onEdit={() => handleEdit(location)} // Edit handler
-                              onDelete={() => handleDelete(location)} // Delete handler
-                              open={openDialog}
-                              onClose={handleCloseDialog}
-                              deleteDialogData={{
-                                title: 'Delete Record',
-                                heading: 'Are you sure you want to delete this Record?',
-                                description: `This action will remove ${location.location_name} from the list.`,
-                                successMessage: 'Record has been deleted.'
-                              }}
-                            />
+                    </TableHead>
+                    <TableBody>
+                      {/* Check if workLocations is valid and has data */}
+                      {paginatedData?.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={6} sx={{ height: 300 }}>
+                            <EmptyTable msg="No work locations available" />
                           </TableCell>
                         </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              {workLocations.length > 0 && (
-                <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'center', px: { xs: 0.5, sm: 2.5 }, py: 1.5 }}>
-                  <Pagination count={Math.ceil(workLocations.length / rowsPerPage)} page={currentPage} onChange={handlePageChange} />
-                </Stack>
-              )}
+                      ) : (
+                        paginatedData?.map((location, index) => (
+                          <TableRow key={location.id}>
+                            <TableCell>{(currentPage - 1) * rowsPerPage + index + 1}</TableCell>
+                            <TableCell>{location.location_name || 'N/A'}</TableCell>
+                            <TableCell>
+                              {`${location.address_line1}, ${location.address_line2}`?.length > 30
+                                ? `${location.address_line1?.substring(0, 20)}...`
+                                : `${location.address_line1} , ${location.address_line2}` || 'N/A'}
+                            </TableCell>
+                            <TableCell>{location.address_state || 'N/A'}</TableCell>
+                            <TableCell>{location.employees || 0}</TableCell>
+                            <TableCell>
+                              {index !== 0 && (
+                                <ActionCell
+                                  row={location} // Pass the customer row data
+                                  onEdit={() => handleEdit(location)} // Edit handler
+                                  onDelete={() => handleDelete(location)} // Delete handler
+                                  open={openDialog}
+                                  onClose={handleCloseDialog}
+                                  deleteDialogData={{
+                                    title: 'Delete Record',
+                                    heading: 'Are you sure you want to delete this Record?',
+                                    description: `This action will remove ${location.location_name} from the list.`,
+                                    successMessage: 'Record has been deleted.'
+                                  }}
+                                />
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                {workLocations.length > 0 && (
+                  <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'center', px: { xs: 0.5, sm: 2.5 }, py: 1.5 }}>
+                    <Pagination count={Math.ceil(workLocations.length / rowsPerPage)} page={currentPage} onChange={handlePageChange} />
+                  </Stack>
+                )}
+              </Grid2>
             </Grid2>
-          </Grid2>
-          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Button
-              variant="outlined"
-              onClick={() => {
-                router.back();
-              }}
-            >
-              Back to Dashboard
-            </Button>
-          </Box>
+            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Button
+                variant="outlined"
+                startIcon={<ArrowBackIcon />}
+                onClick={() => {
+                  router.back();
+                }}
+              >
+                Back to Dashboard
+              </Button>
+            </Box>
+          </MainCard>
         </HomeCard>
       )}
     </>

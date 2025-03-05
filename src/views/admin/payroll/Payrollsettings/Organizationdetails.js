@@ -20,6 +20,11 @@ import MainCard from '@/components/MainCard';
 import { entity_choices } from '@/utils/Entity-types';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { IconChevronDown, IconHelp } from '@tabler/icons-react';
+import CustomDatePicker from '@/utils/CustomDateInput';
+import dayjs from 'dayjs';
+import { IconEdit } from '@tabler/icons-react';
+import FilingAddressDialog from './FilingAddressDialog';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function Organizationdetails({ tab }) {
   const { userData } = useCurrentUser();
@@ -30,10 +35,15 @@ function Organizationdetails({ tab }) {
   const [payrollid, setPayrollId] = useState(null);
   const [loading, setLoading] = useState(false);
   const { showSnackbar } = useSnackbar();
-  const [postType, setPostType] = useState('');
   const [logoDetails, setLogoDetails] = useState([]);
   const [filingAddress, setFilingAddress] = useState({});
-
+  const [filingAddressDialog, setFilingAddressDialog] = useState(false);
+  useEffect(() => {
+    const id = searchParams.get('payrollid');
+    if (id) {
+      setPayrollId(id);
+    }
+  }, [searchParams]);
   const initialData = {
     business_name: '',
     logo: null,
@@ -41,11 +51,13 @@ function Organizationdetails({ tab }) {
     pan: '',
     entityType: '',
     registration_number: '',
-
-    contact_email: '',
+    dob_or_incorp_date: dayjs().format('YYYY-MM-DD'),
+    primary_email: '',
+    city: '',
     sender_email: '',
     org_address_line1: '',
     org_address_line2: '',
+    country: 'IN',
     org_address_state: '',
     org_address_city: '',
     org_address_pincode: '',
@@ -55,12 +67,7 @@ function Organizationdetails({ tab }) {
     filling_address_city: '',
     filling_address_pincode: ''
   };
-  useEffect(() => {
-    const id = searchParams.get('payrollid');
-    if (id) {
-      setPayrollId(id);
-    }
-  }, [searchParams]);
+
   const fields = [
     { name: 'business_name', label: 'Business Name' },
     { name: 'logo', label: 'Logo' },
@@ -68,7 +75,7 @@ function Organizationdetails({ tab }) {
     { name: 'pan', label: 'Business PAN' },
     { name: 'entityType', label: 'Entity Type' },
     { name: 'registration_number', label: 'CIN/ LLPIN / Reg. No' },
-    { name: 'dob', label: 'DOB / DOI' },
+    { name: 'dob_or_incorp_date', label: 'DOB / DOI' },
     { name: 'primary_email', label: 'Primary Email' },
     { name: 'sender_email', label: 'Sender Email' }
   ];
@@ -82,14 +89,6 @@ function Organizationdetails({ tab }) {
     { name: 'org_address_pincode', label: 'Pincode' }
   ];
 
-  // const filingAddress = [
-  //   { name: 'filling_address_line1', label: 'Address Line 1' },
-  //   { name: 'filling_address_line2', label: 'Address Line 2' },
-  //   { name: 'filling_address_state', label: 'State' },
-  //   { name: 'filling_address_city', label: 'City' },
-  //   { name: 'filling_address_pincode', label: 'Pincode' }
-  // ];
-
   const validationSchema = Yup.object({
     business_name: Yup.string().required('Organization name is required'),
     industry: Yup.string().required('Industry is required'),
@@ -98,44 +97,58 @@ function Organizationdetails({ tab }) {
       .matches(/^[A-Z]{5}[0-9]{4}[A-Z]$/, 'Invalid PAN Number format'),
     entityType: Yup.string().required('Entity Type is required'),
     registration_number: Yup.string().required('This field is required'),
-    dob: Yup.string().required('This field is required'),
+    dob_or_incorp_date: Yup.string().required('This field is required'),
 
-    contact_email: Yup.string().email('Invalid email address').required('Email is required'),
+    primary_email: Yup.string().email('Invalid email address').required('Email is required'),
     sender_email: Yup.string().email('Invalid email address').required('Email is required'),
     org_address_line1: Yup.string().required('Address Line 1 is required'),
     org_address_state: Yup.string().required('State is required'),
     org_address_city: Yup.string().required('City is required'),
     org_address_pincode: Yup.string()
       .required('Pincode is required')
-      .matches(/^[0-9]{6}$/, 'Invalid Pincode format. It must be exactly 6 digits.'),
-    filling_address_line1: Yup.string().required('Address Line 1 is required'),
-    filling_address_state: Yup.string().required('State is required'),
-    filling_address_city: Yup.string().required('City is required'),
-    filling_address_pincode: Yup.string()
-      .required('Pincode is required')
       .matches(/^[0-9]{6}$/, 'Invalid Pincode format. It must be exactly 6 digits.')
   });
 
   const formik = useFormik({
-    initialValues: { initialData },
+    initialValues: { ...initialData },
     validationSchema,
     onSubmit: async (values) => {
-      setLoading(true);
-      const postData = new FormData();
+      let postData = new FormData();
       postData.append('business', businessId);
-      Object.keys(values).forEach((key) => {
-        if (key === 'logo' && values[key]) {
-          postData.append(key, values[key]);
-        } else if (values[key]) {
-          postData.append(key, values[key]);
+      setLoading(true);
+      const postBusinessDetails = {
+        business_details: {
+          nameOfBusiness: values.nameOfBusiness,
+          pan: values.pan,
+          dob_or_incorp_date: values.dob_or_incorp_date,
+          entityType: values.entityType,
+          business_nature: values.industry,
+          registrationNumber: values.registration_number,
+          headOffice: {
+            address_line1: values.org_address_line1,
+            address_line2: values.org_address_line2,
+            city: values.org_address_city,
+            state: values.org_address_state,
+            pincode: values.org_address_pincode
+          },
+          email: values.primary_email
         }
-      });
-      console.log(postType);
-      const url = postType === 'post' ? `/payroll/orgs/` : `/payroll/orgs/${payrollid}/`;
-      const { res, error } = await Factory(postType, url, postData);
+      };
+
+      postData.append('business_details', JSON.stringify(postBusinessDetails.business_details));
+      postData.append('logo', values.logo);
+      postData.append('sender_email', values.sender_email);
+      postData.append('filling_address_line1', values.filling_address_line1);
+      postData.append('filling_address_line2', values.filling_address_line2);
+      postData.append('filling_address_state', values.filling_address_state);
+      postData.append('filling_address_city', values.filling_address_city);
+      postData.append('filling_address_pincode', values.filling_address_pincode);
+
+      const url = `/payroll/orgs/`;
+      const { res, error } = await Factory('post', url, postData);
       setLoading(false);
       if (res.status_cd === 0) {
-        showSnackbar(postType === 'post' ? 'Data Saved Successfully' : 'Data Updated Successfully', 'success');
+        showSnackbar('Data Saved Successfully', 'success');
         router.back();
       } else {
         showSnackbar(JSON.stringify(res.data.data), 'error');
@@ -177,7 +190,29 @@ function Organizationdetails({ tab }) {
           </Grid2>
         );
       }
-
+      if (field.name === 'dob_or_incorp_date') {
+        return (
+          <Grid2 key={field.name} size={{ xs: 12, sm: 6, md: 4 }}>
+            <Typography sx={{ mb: 1 }}>
+              {field.label} {<span style={{ color: 'red' }}>*</span>}
+            </Typography>
+            <CustomDatePicker
+              views={['year', 'month', 'day']}
+              value={dayjs(values[field.name]) || null}
+              onChange={(newDate) => {
+                setFieldValue(field.name, newDate);
+              }}
+              sx={{
+                width: '100%',
+                '& .MuiInputBase-root': {
+                  fontSize: '0.75rem',
+                  height: '40px'
+                }
+              }}
+            />
+          </Grid2>
+        );
+      }
       return (
         <Grid2 key={field.name} size={{ xs: 12, sm: 6, md: 4 }}>
           <Typography sx={{ mb: 1 }}>
@@ -192,18 +227,23 @@ function Organizationdetails({ tab }) {
           <CustomInput
             name={field.name}
             value={values[field.name]}
-            onChange={handleChange}
+            onChange={(e) => {
+              const value = e.target.value;
+
+              if (field.name === 'pan' && value.length > 10) {
+                return;
+              }
+              if (field.name === 'pan') {
+                setFieldValue(field.name, value.toUpperCase());
+              } else {
+                setFieldValue(field.name, value);
+              }
+            }}
             onBlur={handleBlur}
             error={touched[field.name] && Boolean(errors[field.name])}
             helperText={touched[field.name] && errors[field.name]}
             sx={{ width: '100%' }}
-            // disabled={
-            //   field.name === 'business_name' ||
-            //   field.name === 'org_address_line1' ||
-            //   field.name === 'org_address_line2' ||
-            //   field.name === 'org_address_city' ||
-            //   field.name === 'org_address_pincode'
-            // }
+            disabled={field.name === 'country'}
           />
         </Grid2>
       );
@@ -214,71 +254,128 @@ function Organizationdetails({ tab }) {
     const url = `/payroll/orgs/${id}/`;
     const { res, error } = await Factory('get', url, {});
     setLoading(false); // Stop loading after the request completes
-    console.log(res);
     if (res.status_cd === 0) {
-      setValues((prev) => ({
-        ...prev,
-        ...res.data,
-        org_address_line1: res.data?.organisation_address?.address_line1,
-        org_address_line2: res.data?.organisation_address?.address_line2,
-        org_address_state: res.data?.organisation_address?.state,
-        org_address_city: res.data?.organisation_address?.city,
-        org_address_pincode: res.data?.organisation_address?.pincode
-      }));
-      setPostType('put');
+      if (res?.data) {
+        const data = res.data;
+        console.log(data);
+        setValues((prev) => ({
+          ...prev,
+          business_name: data.business_details.nameOfBusiness || '',
+          logo: data.logo,
+          industry: data.business_details.business_nature || '',
+          pan: data.business_details.pan || '',
+          entityType: data.business_details.entityType || '',
+          registration_number: data.business_details.registrationNumber || '',
+          dob_or_incorp_date: data.business_details.dob_or_incorp_date
+            ? dayjs(data.business_details.dob_or_incorp_date).format('YYYY-MM-DD')
+            : dayjs().format('YYYY-MM-DD'),
+          primary_email: data.business_details.email || '',
+          city: data.business_details.headOffice?.city || '',
+          sender_email: data.sender_email,
+          org_address_line1: data.business_details.headOffice?.address_line1 || '',
+          org_address_line2: data.business_details.headOffice?.address_line2 || '',
+          country: 'IN',
+          org_address_state: data.business_details.headOffice?.state || '',
+          org_address_city: data.business_details.headOffice?.city || '',
+          org_address_pincode: data.business_details.headOffice?.pincode || '',
+
+          filling_address_line1:
+            data.filling_address_line1 === '' ? data.business_details.headOffice?.address_line1 : data.filling_address_line1,
+          filling_address_line2:
+            data.filling_address_line1 === '' ? data.business_details.headOffice?.address_line2 : data.filling_address_line2,
+          filling_address_state: data.filling_address_line1 === '' ? data.business_details.headOffice?.state : data.filling_address_state,
+          filling_address_city: data.filling_address_line1 === '' ? data.business_details.headOffice?.city : data.filling_address_city,
+          filling_address_pincode:
+            data.filling_address_line1 === '' ? data.business_details.headOffice?.pincode : data.filling_address_pincode
+        }));
+      }
     } else {
       showSnackbar(JSON.stringify(res.data.data), 'error');
     }
   };
   const individual_Business_get = async () => {
     setLoading(true);
-    let businessId = userData.user_type === 'Business' ? userData.business_affiliated[0].id : userData.businesssDetails.business[0].id;
-
     const url = `/user_management/businesses/${businessId}/`;
     const { res, error } = await Factory('get', url, {});
+
     setLoading(false); // Stop loading after the request completes
-    console.log(res);
-    if (res.status_cd === 0) {
+    if (error) {
+      showSnackbar('Failed to fetch business details', 'error');
+      return;
+    }
+    if (res?.data) {
+      const data = res.data;
       setValues((prev) => ({
         ...prev,
-        business_name: res.data.nameOfBusiness,
-        pan: res.data.pan,
-        entityType: res.data.entityType,
-        registrationNumber: res.data.registrationNumber,
-        dob_or_incorp_date: res.data.dob_or_incorp_date,
-        email: res.data.email
+        business_name: data.nameOfBusiness || '',
+        logo: null,
+        industry: data.business_nature || '',
+        pan: data.pan || '',
+        entityType: data.entityType || '',
+        registration_number: data.registrationNumber || '',
+        dob_or_incorp_date: data.dob_or_incorp_date ? dayjs(data.dob_or_incorp_date).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'),
+        primary_email: data.email || '',
+        city: data.headOffice?.city || '',
+        sender_email: '',
+        org_address_line1: data.headOffice?.address_line1 || '',
+        org_address_line2: data.headOffice?.address_line2 || '',
+        country: 'IN',
+        org_address_state: data.headOffice?.state || '',
+        org_address_city: data.headOffice?.city || '',
+        org_address_pincode: data.headOffice?.pincode || '',
+        filling_address_line1: data.headOffice?.address_line1 || '',
+        filling_address_line2: data.headOffice?.address_line2 || '',
+        filling_address_state: data.headOffice?.state || '',
+        filling_address_city: data.headOffice?.city || '',
+        filling_address_pincode: data.headOffice?.pincode || ''
       }));
-      setPostType('put');
     } else {
-      showSnackbar(JSON.stringify(res.data.data), 'error');
+      showSnackbar('Invalid response data', 'error');
     }
   };
+
+  // useEffect(() => {
+  //   if (payrollid) {
+  //     getOrgDetails(payrollid);
+  //   } else if (businessId && !payrollid) {
+  //     // Prevent overwriting when payrollid is set later
+  //     individual_Business_get();
+  //   }
+  // }, [payrollid, businessId]);
   useEffect(() => {
+    let timeout;
     if (payrollid) {
       getOrgDetails(payrollid);
-    } else if (userData) {
-      individual_Business_get();
-      setPostType('post');
+    } else if (businessId) {
+      // Wait 500ms to check if payrollid arrives
+      timeout = setTimeout(() => {
+        if (!payrollid) {
+          individual_Business_get();
+        }
+      }, 500);
     }
-  }, [payrollid, userData]);
+
+    return () => clearTimeout(timeout); // Cleanup on re-run
+  }, [payrollid, businessId]);
+
   useEffect(() => {
     setFieldValue('logo', logoDetails);
   }, [logoDetails]);
   const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, setFieldValue } = formik;
-
+  // console.log(values);
   return (
     <>
       {loading ? (
         <Loader />
       ) : (
-        <HomeCard title="Business profile" tagline="Setup your organization before starting payroll">
+        <HomeCard title="Business profile" tagline="Setup company name, registration details, and basic business information.">
           <MainCard>
             <Box component="form" onSubmit={handleSubmit} sx={{ padding: 1 }}>
               <Grid2 container spacing={2}>
                 {renderFields(fields)}
               </Grid2>
 
-              <Typography variant="subtitle1" gutterBottom sx={{ mt: 3, mb: 2 }}>
+              <Typography variant="subtitle1" gutterBottom sx={{ flexShrink: 0, fontWeight: 'bold', color: 'primary.main', mt: 3, mb: 2 }}>
                 Organization Address
                 <span>
                   {' '}
@@ -292,40 +389,77 @@ function Organizationdetails({ tab }) {
                 {renderFields(organizationAddress)}
               </Grid2>
 
-              <Box sx={{ display: 'flex', gap: 2, mt: 3, mb: 2 }}>
-                <Typography variant="subtitle1" gutterBottom sx={{ flexShrink: 0 }}>
-                  Filing Address
-                </Typography>
-                <Card sx={{ flex: 1 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 2,
+                  mt: 3,
+                  mb: 2
+                }}
+              >
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  <Typography variant="subtitle1" gutterBottom sx={{ flexShrink: 0, fontWeight: 'bold', color: 'primary.main' }}>
+                    Filing Address
+                  </Typography>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    startIcon={<IconEdit size={16} />}
+                    onClick={() => {
+                      setFilingAddressDialog(true);
+                    }}
+                    sx={{ mt: -1 }}
+                  >
+                    Change
+                  </Button>
+                </Box>
+                <Typography>This address will be used across all Forms and Payslips.</Typography>
+
+                <Card
+                  sx={{
+                    flex: 1,
+                    p: 1,
+                    borderRadius: 2,
+                    boxShadow: 3,
+                    backgroundColor: 'background.paper',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    maxWidth: 350
+                  }}
+                >
                   <CardContent>
-                    <Typography variant="body2">
-                      <strong>Address Line 1:</strong> {filingAddress.filling_address_line1}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Address Line 2:</strong> {filingAddress.filling_address_line2}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Country:</strong> {filingAddress.country}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>State:</strong> {filingAddress.filling_address_state}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>City:</strong> {filingAddress.filling_address_city}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Pincode:</strong> {filingAddress.filling_address_pincode}
-                    </Typography>
+                    {[
+                      { label: 'Address Line 1', value: values.filling_address_line1 },
+                      { label: 'Address Line 2', value: values.filling_address_line2 },
+                      { label: 'Country', value: values.country },
+                      { label: 'State', value: values.filling_address_state },
+                      { label: 'City', value: values.filling_address_city },
+                      { label: 'Pincode', value: values.filling_address_pincode }
+                    ].map((item, index) => (
+                      <Typography
+                        key={index}
+                        variant="body2"
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          p: 0.5,
+                          fontWeight: 500,
+                          borderBottom: index !== 5 ? '1px solid' : 'none',
+                          borderColor: 'divider'
+                        }}
+                      >
+                        <strong>{item.label}:</strong> {item.value}
+                      </Typography>
+                    ))}
                   </CardContent>
                 </Card>
               </Box>
-              {/* <Grid2 container spacing={2}>
-                {renderFields(filingAddress)}
-              </Grid2> */}
 
               <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Button
                   variant="outlined"
+                  startIcon={<ArrowBackIcon />}
                   onClick={() => {
                     router.back();
                   }}
@@ -333,9 +467,16 @@ function Organizationdetails({ tab }) {
                   Back to Dashboard
                 </Button>
                 <Button type="submit" variant="contained" color="primary">
-                  Submit
+                  Save
                 </Button>
               </Box>
+              {filingAddressDialog === true && (
+                <FilingAddressDialog
+                  getOrgDetails={getOrgDetails}
+                  filingAddressDialog={filingAddressDialog}
+                  setFilingAddressDialog={setFilingAddressDialog}
+                />
+              )}
             </Box>
           </MainCard>
         </HomeCard>
