@@ -17,7 +17,7 @@ import { industries } from '@/utils/industries';
 // Form validation schema using Yup
 const validationSchema = Yup.object({
   nameOfBusiness: Yup.string().required('Business Name is required'),
-  business_nature: Yup.string().required('Industry is required'),
+  industry: Yup.string().required('Industry is required'),
   address_line1: Yup.string().required('Address Line 1 is required'),
   country: Yup.string().required('Country is required'),
   city: Yup.string().required('City is required'),
@@ -32,16 +32,17 @@ const validationSchema = Yup.object({
 
 const PayrollSetup = () => {
   const { userData } = useCurrentUser();
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  let businessId = userData.user_type === 'Business' ? userData.business_affiliated[0].id : userData.businesssDetails.business[0].id;
+  let userId = userData.dashboardChange === false ? userData.id : '';
+  let router = useRouter();
   const { showSnackbar } = useSnackbar();
+  const [postType, setPostType] = useState('');
 
   const [loading, setLoading] = useState(false);
   const [businessDetails, setBusinessDetails] = useState({});
-
   const fields = [
     { name: 'nameOfBusiness', label: 'Business Name' },
-    { name: 'business_nature', label: 'Industry' },
+    { name: 'industry', label: 'Industry' },
     { name: 'address_line1', label: 'Address Line 1' },
     { name: 'address_line2', label: 'Address Line 2' },
     { name: 'country', label: 'Country' },
@@ -53,7 +54,7 @@ const PayrollSetup = () => {
   const formik = useFormik({
     initialValues: {
       nameOfBusiness: '',
-      business_nature: '',
+      industry: '',
       address_line1: '',
       address_line2: '',
       country: 'IN',
@@ -64,9 +65,21 @@ const PayrollSetup = () => {
     validationSchema,
     onSubmit: async (values) => {
       setLoading(true);
-      let postData = { ...values, client: businessDetails.userId };
-      const url = `/user_management/businesses/`;
-      const { res, error } = await Factory('post', url, postData);
+      let postData = {
+        client: userId,
+        nameOfBusiness: values.nameOfBusiness,
+        business_nature: values.industry,
+        headOffice: {
+          address_line1: values.address_line1,
+          address_line2: values.address_line2,
+          city: values.city,
+          state: values.state,
+          pincode: values.pincode
+        }
+      };
+
+      const url = postType === 'post' ? `/user_management/businesses/` : `/user_management/businesses/${businessDetails.id}/`;
+      const { res, error } = await Factory(postType, url, postData);
 
       if (res.status_cd === 0) {
         showSnackbar('Data Saved Successfully', 'success');
@@ -77,6 +90,7 @@ const PayrollSetup = () => {
         userDetails.business_affiliated = [{ ...res.data }];
 
         localStorage.setItem('auth-user', JSON.stringify(userDetails));
+        router.push('/payroll');
       } else {
         showSnackbar(res.data?.data ? JSON.stringify(res.data.data) : 'An error occurred', 'error');
       }
@@ -87,7 +101,7 @@ const PayrollSetup = () => {
 
   const renderFields = (fields) => {
     return fields.map((field) => {
-      if (field.name === 'state' || field.name === 'business_nature') {
+      if (field.name === 'state' || field.name === 'industry') {
         // Render CustomAutocomplete for the 'state' field
         return (
           <Grid2 key={field.name} size={{ xs: 12, sm: 6 }}>
@@ -132,19 +146,45 @@ const PayrollSetup = () => {
   const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, setFieldValue } = formik;
   useEffect(() => {
     // Set business details first
-    setBusinessDetails((prev) => ({
-      ...prev,
-      userId: userData.dashboardChange === false ? userData.id : '',
-      businessName: userData.dashboardChange === false ? userData.user_name : '',
-      email: userData.dashboardChange === false ? userData.email : ''
-    }));
+  }, [userData]);
 
-    setValues((prev) => ({
-      ...prev,
-      nameOfBusiness: userData.dashboardChange === false ? userData.user_name : ''
-    }));
-  }, [userData]); // Dependency on userData
+  const individual_Business_get = async () => {
+    setLoading(true);
+    const url = `/user_management/businesses/${businessId}/`;
+    const { res, error } = await Factory('get', url, {});
+    setLoading(false); // Stop loading after the request completes
+    console.log(res);
+    if (res.status_cd === 0) {
+      setBusinessDetails(res.data);
+      setValues((prev) => ({
+        ...prev,
+        nameOfBusiness: res.data.nameOfBusiness,
+        industry: res.data.business_nature,
+        address_line1: res.data.headOffice.address_line1,
+        address_line2: res.data.headOffice.address_line2,
+        country: 'IN',
+        city: res.data.headOffice.city,
+        state: res.data.headOffice.state,
+        pincode: res.data.headOffice.pincode
+      }));
+      setPostType('put');
+    } else {
+      setBusinessDetails((prev) => ({
+        ...prev,
+        nameOfBusiness: userData.dashboardChange === false ? userData.user_name : '',
+        email: userData.dashboardChange === false ? userData.email : ''
+      }));
 
+      setValues((prev) => ({
+        ...prev,
+        nameOfBusiness: userData.dashboardChange === false ? userData.user_name : ''
+      }));
+      // showSnackbar(JSON.stringify(res.data.data), 'error');
+    }
+  };
+  useEffect(() => {
+    individual_Business_get();
+  }, []);
   return (
     <>
       {loading ? (
@@ -163,10 +203,10 @@ const PayrollSetup = () => {
               Business Profile Setup!
             </Typography>
             <Typography variant="h6" sx={{ color: '#4A4A4A', fontWeight: 600, textAlign: 'center', mt: 1, mb: 1 }}>
-              Glad to Have you onboard {businessDetails.email}
+              Glad to Have you onboard {businessDetails?.email}
             </Typography>
             <Typography variant="h6" sx={{ color: '#4A4A4A', textAlign: 'center', fontWeight: 600 }}>
-              Set up your business profile to start off payroll for {businessDetails.businessName}
+              Set up your business profile to start off payroll for {businessDetails?.nameOfBusiness}
             </Typography>
 
             <MainCard sx={{ maxWidth: 800, marginTop: 3 }}>

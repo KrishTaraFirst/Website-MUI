@@ -42,7 +42,6 @@ export default function WorkLocationDialog({ open, handleClose, fetchWorkLocatio
       .matches(/^[0-9]{6}$/, 'Invalid Pincode format. It must be exactly 6 digits.')
   });
 
-  // Formik setup
   const formik = useFormik({
     initialValues: {
       location_name: '',

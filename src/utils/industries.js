@@ -1,6 +1,6 @@
 export const industries = [
   'Agency or Sales House',
-  'agriculture',
+  'Agriculture',
   'Art and Design',
   'Automotive',
   'Construction',
