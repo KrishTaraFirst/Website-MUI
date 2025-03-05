@@ -11,7 +11,11 @@ export default function Typeset({ heading, caption, stackProps, headingProps, ca
 
   return (
     <Stack {...rest} sx={{ gap: { xs: 1, sm: 1.5 }, ...sx }}>
-      <Typography variant="h2" {...headingProps} sx={{ fontSize: '40px', ...(headingProps?.sx && { ...headingProps.sx }) }}>
+      <Typography
+        variant="h2"
+        {...headingProps}
+        sx={{ lineHeight: 1.3, fontSize: '40px', ...(headingProps?.sx && { ...headingProps.sx }) }}
+      >
         {heading}
       </Typography>
       {caption && (
@@ -19,7 +23,11 @@ export default function Typeset({ heading, caption, stackProps, headingProps, ca
           {/* <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <img src={image} alt="Example" width="200" height="200" />
           </Box> */}
-          <Typography variant="h6" {...captionProps} sx={{ color: 'text.secondary', ...(captionProps?.sx && { ...captionProps.sx }) }}>
+          <Typography
+            variant="h6"
+            {...captionProps}
+            sx={{ lineHeight: 1.6, color: 'text.secondary', ...(captionProps?.sx && { ...captionProps.sx }) }}
+          >
             {caption}
           </Typography>
         </Stack>
