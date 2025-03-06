@@ -171,7 +171,6 @@ const AddItem = ({
     //   })
     // })
   });
-
   const formik = useFormik({
     initialValues: {
       gstin: '',
@@ -248,7 +247,8 @@ const AddItem = ({
       const postData = { ...values };
       postData.invoicing_profile = businessDetailsData?.id;
       postData.financial_year = financialYear;
-      postData.format_version = Number(businessDetailsData.invoice_format.format_version);
+      let selcted_gstin_format_version = businessDetailsData.invoice_format.find((item) => item.gstin === postData.gstin);
+      postData.format_version = Number(selcted_gstin_format_version.invoice_format.format_version);
 
       let put_url = `/invoicing/invoice-update/${selectedInvoice?.id}/`;
       let post_url = '/invoicing/invoice-create';
@@ -740,7 +740,6 @@ const AddItem = ({
   // useEffect(() => {
   //   setSelectedgstin(businessDetailsData.gstin);
   // }, [businessDetailsData]);
-  console.log(selectedInvoice);
   return (
     <HomeCard title={selectedInvoice ? 'Edit Invoice' : 'Create Invoice'} tagline="Some text tagline regarding invoicing.">
       <MainCard>

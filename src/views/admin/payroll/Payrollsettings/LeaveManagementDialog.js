@@ -15,7 +15,7 @@ export default function LeaveManagementDialog({ open, handleClose, fetchDepartme
   const { showSnackbar } = useSnackbar();
   const searchParams = useSearchParams();
   const [payrollid, setPayrollId] = useState(null); // Payroll ID fetched from URL
-
+  const [postType, setPostType] = useState('post');
   // Update payroll ID from search params
   useEffect(() => {
     const id = searchParams.get('payrollid');
@@ -25,32 +25,43 @@ export default function LeaveManagementDialog({ open, handleClose, fetchDepartme
   }, [searchParams]);
 
   const departmentFields = [
-    { name: 'leave_name', label: 'Name of the Leave' },
+    { name: 'name_of_leave', label: 'Name of the Leave' },
     { name: 'code', label: 'Code' },
-    { name: 'type', label: 'Select Type' },
-    { name: 'no_of_leaves', label: 'How many leaves do employees get?' }
+    { name: 'leave_type', label: 'Select Type' },
+    { name: 'employee_leave_period', label: 'How many leaves do employees get?' }
   ];
 
   // Formik validation schema
   const validationSchema = Yup.object({
-    holiday_name: Yup.string().required('Holiday Name is required'),
-    date: Yup.string().required('Start Date is required'),
-    applicable_for: Yup.string().required('This field is required'),
-    description: Yup.string().required('Description is required')
+    name_of_leave: Yup.string().required('Name of Leave is required'),
+    code: Yup.string().required('Code is required'),
+    leave_type: Yup.string().required('Type is required'),
+    employee_leave_period: Yup.string().required('Number of leave days is required')
   });
 
-  // Initialize Formik with initial values and validation schema
   const formik = useFormik({
     initialValues: {
-      leave_name: '',
+      name_of_leave: '',
       code: '',
-      type: '',
-      no_of_leaves: '',
-      pro_rate_leave: '',
-      reset_leave: ''
+      leave_type: '',
+      employee_leave_period: '',
+      pro_rate_leave_balance_of_new_joinees_based_on_doj: false,
+      reset_leave_balance: false
     },
     validationSchema,
-    onSubmit: async (values) => {}
+    onSubmit: async (values) => {
+      const postData = { ...values, payroll: Number(payrollId) };
+      const url = postType === 'post' ? '/payroll/leave-management' : `/payroll/leave-management/${selectedRecord?.id}`;
+      const { res, error } = await Factory(postType, url, postData);
+
+      if (res?.status_cd === 0) {
+        showSnackbar(postType === 'post' ? 'Data Saved Successfully' : 'Data Updated Successfully', 'success');
+        handleClose();
+        fetchDepartments();
+      } else {
+        showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
+      }
+    }
   });
   useEffect(() => {
     if (type === 'edit' && selectedRecord) {
@@ -107,17 +118,22 @@ export default function LeaveManagementDialog({ open, handleClose, fetchDepartme
               label="Pro rate leavebalance for the new joineesbased on D.O.J"
               control={
                 <Checkbox
-                  checked={values.pro_rate_leave}
+                  checked={values.pro_rate_leave_balance_of_new_joinees_based_on_doj}
                   onChange={(e) => {
                     const checked = e.target.checked;
-                    formik.setFieldValue('pro_rate_leave', checked);
+                    formik.setFieldValue('pro_rate_leave_balance_of_new_joinees_based_on_doj', checked);
                   }}
                 />
               }
             />
             <FormControlLabel
               label="Reset the leave balance of employees every month "
-              control={<Checkbox checked={values.reset_leave} onChange={(e) => formik.setFieldValue('reset_leave', e.target.checked)} />}
+              control={
+                <Checkbox
+                  checked={values.reset_leave_balance}
+                  onChange={(e) => formik.setFieldValue('reset_leave_balance', e.target.checked)}
+                />
+              }
             />
           </Grid2>
         </Box>

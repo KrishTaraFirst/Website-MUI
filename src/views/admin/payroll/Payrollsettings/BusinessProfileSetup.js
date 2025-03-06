@@ -17,7 +17,7 @@ import { industries } from '@/utils/industries';
 // Form validation schema using Yup
 const validationSchema = Yup.object({
   nameOfBusiness: Yup.string().required('Business Name is required'),
-  business_nature: Yup.string().required('Industry is required'),
+  business_nature: Yup.string().required('Business Nature is required'),
   address_line1: Yup.string().required('Address Line 1 is required'),
   country: Yup.string().required('Country is required'),
   city: Yup.string().required('City is required'),
@@ -42,7 +42,7 @@ const PayrollSetup = () => {
   const [businessDetails, setBusinessDetails] = useState({});
   const fields = [
     { name: 'nameOfBusiness', label: 'Business Name' },
-    { name: 'business_nature', label: 'Industry' },
+    { name: 'business_nature', label: 'Business Nature' },
     { name: 'address_line1', label: 'Address Line 1' },
     { name: 'address_line2', label: 'Address Line 2' },
     { name: 'country', label: 'Country' },
