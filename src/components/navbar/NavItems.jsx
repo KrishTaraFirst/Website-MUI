@@ -20,7 +20,7 @@ import Box from '@mui/material/Box';
 // @project
 import MenuPopper from './MenuPopper';
 
-import { MegaMenu1, MegaMenu2, MegaMenu3, MegaMenu4, MegaMenu5 } from '@/blocks/mega-menu';
+import { MegaMenu1, MegaMenu2, MegaMenu3, MegaMenu4, MegaMenu5, MegaMenu6 } from '@/blocks/mega-menu';
 
 import SvgIcon from '@/components/SvgIcon';
 import { MegaMenuType } from '@/enum';
@@ -75,6 +75,9 @@ function ExpanedList({ item, menuTextColor }) {
           )}
           {item.megaMenu && item.megaMenu.type === MegaMenuType.MEGAMENU5 && (
             <MegaMenu5 {...{ ...{ ...item.megaMenu, bannerData: item.megaMenu.bannerData }, footerSX: { px: 5, ml: -2.5, mr: -5 } }} />
+          )}
+          {item.megaMenu && item.megaMenu.type === MegaMenuType.MEGAMENU6 && (
+            <MegaMenu6 {...{ ...{ ...item.megaMenu, bannerData: item.megaMenu.bannerData }, footerSX: { px: 5, ml: -2.5, mr: -5 } }} />
           )}
         </Box>
       </Collapse>
@@ -141,6 +144,7 @@ function NavList({ item, menuTextColor }) {
           {...(item.megaMenu.type === MegaMenuType.MEGAMENU3 && { popperWidth: item.megaMenu.popperWidth || 725 })}
           {...(item.megaMenu.type === MegaMenuType.MEGAMENU4 && { popperWidth: item.megaMenu.popperWidth || 936 })}
           {...(item.megaMenu.type === MegaMenuType.MEGAMENU5 && { popperWidth: item.megaMenu.popperWidth || 750 })}
+          {...(item.megaMenu.type === MegaMenuType.MEGAMENU6 && { popperWidth: item.megaMenu.popperWidth || 650 })}
         >
           <>
             {item.megaMenu.type === MegaMenuType.MEGAMENU1 && <MegaMenu1 {...{ ...item.megaMenu, footerData: item.megaMenu.footerData }} />}
@@ -153,6 +157,9 @@ function NavList({ item, menuTextColor }) {
             )}
             {item.megaMenu.type === MegaMenuType.MEGAMENU5 && (
               <MegaMenu5 {...{ ...item.megaMenu, bannerData: item.megaMenu.bannerData }} popperWidth={item.megaMenu.popperWidth || 750} />
+            )}
+            {item.megaMenu.type === MegaMenuType.MEGAMENU6 && (
+              <MegaMenu6 {...{ ...item.megaMenu, bannerData: item.megaMenu.bannerData }} popperWidth={item.megaMenu.popperWidth || 750} />
             )}
           </>
         </MenuPopper>

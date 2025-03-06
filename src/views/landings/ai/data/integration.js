@@ -131,9 +131,9 @@ const marquees = [
 ];
 
 export const integration = {
-  headLine: 'Embrace Complete Financial Control with Tara.',
+  headLine: 'Values that Guide Every Step.',
   captionLine:
-    'Tara is here to simplify the complexities of financial management with a fresh perspective and an eye on innovation. We’re on a mission to transform the financial landscape, empowering everyone to take control with confidence and ease.',
+    'Tara was born out of a bold idea: to make finance not just manageable, but genuinely enjoyable. We’re here to simplify the complexities, turning money matters into moments of clarity and even fun. With a fresh perspective and an eye on innovation, we’re on a mission to transform the financial landscape, empowering everyone to take control with confidence and ease.',
   // primaryBtn: { children: '', href: PAGE_PATH.integration, rel: 'noopener noreferrer' },
   marquees
 };

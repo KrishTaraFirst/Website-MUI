@@ -145,7 +145,7 @@ export default function SectionHero({ heading, search = true, offer = false, bre
                           color: 'primary.main'
                         }}
                       >
-                        Design Blocks
+                        Clients
                       </Typography>
                     }
                     sx={{ bgcolor: 'primary.lighter', mr: -1, ml: 0.75, '& .MuiChip-label': { px: 1 } }}

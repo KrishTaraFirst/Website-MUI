@@ -204,7 +204,7 @@ function ContactUsForm2() {
       const payload = { ...data, name: data.firstName, mobile_number: data.phone };
       const res = await axios.post(BASE_URL + url, payload);
       if (res.status === 201) {
-        showSnackbar('Consultation Booked our team meember will call you!', 'success');
+        showSnackbar('Your Consultation is booked. One of our team member will get in touch with you!', 'success');
         reset();
       }
       reset();
@@ -389,7 +389,7 @@ function ContactUsForm2() {
         <Box sx={{ textAlign: 'center' }}>
           <ButtonAnimationWrapper>
             <Button type="submit" color="primary" size="large" variant="contained">
-              Book Slot
+              Book your Consultation
             </Button>
           </ButtonAnimationWrapper>
         </Box>

@@ -43,15 +43,20 @@ export default function ServiceCard({
       }}
     >
       <Stack direction={'row'} sx={{ lineHeight: 0, alignItems: 'center', gap: 1 }}>
-        {iconAvatar ? (
-          <Avatar sx={{ width: 45, height: 45, bgcolor: typeof iconAvatar === 'boolean' ? 'grey.300' : iconAvatar }}>
-            <SvgIcon {...(typeof icon === 'string' ? { name: icon } : { ...icon })} />
-          </Avatar>
-        ) : (
-          <Box>
-            <SvgIcon {...(typeof icon === 'string' ? { name: icon } : { ...icon })} size={50} />
-          </Box>
+        {icon && (
+          <>
+            {iconAvatar ? (
+              <Avatar sx={{ width: 45, height: 45, bgcolor: typeof iconAvatar === 'boolean' ? 'grey.300' : iconAvatar }}>
+                <SvgIcon {...(typeof icon === 'string' ? { name: icon } : { ...icon })} />
+              </Avatar>
+            ) : (
+              <Box>
+                <SvgIcon {...(typeof icon === 'string' ? { name: icon } : { ...icon })} size={50} />
+              </Box>
+            )}
+          </>
         )}
+
         {title && (
           <Link component={NextLink} underline="hover" variant="h4" href={href} sx={{ '&:hover': { color: 'primary.light' } }}>
             {title}
