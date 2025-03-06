@@ -47,7 +47,7 @@ function Organizationdetails({ tab }) {
   const initialData = {
     business_name: '',
     logo: null,
-    industry: '',
+    business_nature: '',
     pan: '',
     entityType: '',
     registration_number: '',
@@ -71,7 +71,7 @@ function Organizationdetails({ tab }) {
   const fields = [
     { name: 'business_name', label: 'Business Name' },
     { name: 'logo', label: 'Logo' },
-    { name: 'industry', label: 'Industry' },
+    { name: 'business_nature', label: 'Business Nature' },
     { name: 'pan', label: 'Business PAN' },
     { name: 'entityType', label: 'Entity Type' },
     { name: 'registration_number', label: 'CIN/ LLPIN / Reg. No' },
@@ -91,7 +91,7 @@ function Organizationdetails({ tab }) {
 
   const validationSchema = Yup.object({
     business_name: Yup.string().required('Organization name is required'),
-    industry: Yup.string().required('Industry is required'),
+    business_nature: Yup.string().required('Business Nature is required'),
     pan: Yup.string()
       .required('PAN Number is required')
       .matches(/^[A-Z]{5}[0-9]{4}[A-Z]$/, 'Invalid PAN Number format'),
@@ -122,7 +122,7 @@ function Organizationdetails({ tab }) {
           pan: values.pan,
           dob_or_incorp_date: values.dob_or_incorp_date,
           entityType: values.entityType,
-          business_nature: values.industry,
+          business_nature: values.business_nature,
           registrationNumber: values.registration_number,
           headOffice: {
             address_line1: values.org_address_line1,
@@ -169,7 +169,7 @@ function Organizationdetails({ tab }) {
       if (
         field.name === 'org_address_state' ||
         field.name === 'filling_address_state' ||
-        field.name === 'industry' ||
+        field.name === 'business_nature' ||
         field.name === 'entityType'
       ) {
         return (
@@ -181,7 +181,7 @@ function Organizationdetails({ tab }) {
               value={values[field.name]}
               name={field.name}
               onChange={(e, newValue) => setFieldValue(field.name, newValue)}
-              options={field.name === 'industry' ? industries : field.name === 'entityType' ? entity_choices : indian_States_And_UTs}
+              options={field.name === 'business_nature' ? industries : field.name === 'entityType' ? entity_choices : indian_States_And_UTs}
               error={touched[field.name] && Boolean(errors[field.name])}
               helperText={touched[field.name] && errors[field.name]}
               sx={{ width: '100%' }}
@@ -262,7 +262,7 @@ function Organizationdetails({ tab }) {
           ...prev,
           business_name: data.business_details.nameOfBusiness || '',
           logo: data.logo,
-          industry: data.business_details.business_nature || '',
+          business_nature: data.business_details.business_nature || '',
           pan: data.business_details.pan || '',
           entityType: data.business_details.entityType || '',
           registration_number: data.business_details.registrationNumber || '',
@@ -309,7 +309,7 @@ function Organizationdetails({ tab }) {
         ...prev,
         business_name: data.nameOfBusiness || '',
         logo: null,
-        industry: data.business_nature || '',
+        business_nature: data.business_nature || '',
         pan: data.pan || '',
         entityType: data.entityType || '',
         registration_number: data.registrationNumber || '',

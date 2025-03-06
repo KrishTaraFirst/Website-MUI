@@ -17,7 +17,7 @@ import { industries } from '@/utils/industries';
 // Form validation schema using Yup
 const validationSchema = Yup.object({
   nameOfBusiness: Yup.string().required('Business Name is required'),
-  industry: Yup.string().required('Industry is required'),
+  business_nature: Yup.string().required('Industry is required'),
   address_line1: Yup.string().required('Address Line 1 is required'),
   country: Yup.string().required('Country is required'),
   city: Yup.string().required('City is required'),
@@ -42,7 +42,7 @@ const PayrollSetup = () => {
   const [businessDetails, setBusinessDetails] = useState({});
   const fields = [
     { name: 'nameOfBusiness', label: 'Business Name' },
-    { name: 'industry', label: 'Industry' },
+    { name: 'business_nature', label: 'Industry' },
     { name: 'address_line1', label: 'Address Line 1' },
     { name: 'address_line2', label: 'Address Line 2' },
     { name: 'country', label: 'Country' },
@@ -54,7 +54,7 @@ const PayrollSetup = () => {
   const formik = useFormik({
     initialValues: {
       nameOfBusiness: '',
-      industry: '',
+      business_nature: '',
       address_line1: '',
       address_line2: '',
       country: 'IN',
@@ -68,7 +68,7 @@ const PayrollSetup = () => {
       let postData = {
         client: userId,
         nameOfBusiness: values.nameOfBusiness,
-        business_nature: values.industry,
+        business_nature: values.business_nature,
         headOffice: {
           address_line1: values.address_line1,
           address_line2: values.address_line2,
@@ -101,7 +101,7 @@ const PayrollSetup = () => {
 
   const renderFields = (fields) => {
     return fields.map((field) => {
-      if (field.name === 'state' || field.name === 'industry') {
+      if (field.name === 'state' || field.name === 'business_nature') {
         // Render CustomAutocomplete for the 'state' field
         return (
           <Grid2 key={field.name} size={{ xs: 12, sm: 6 }}>
@@ -159,7 +159,7 @@ const PayrollSetup = () => {
       setValues((prev) => ({
         ...prev,
         nameOfBusiness: res.data.nameOfBusiness,
-        industry: res.data.business_nature,
+        business_nature: res.data.business_nature,
         address_line1: res.data.headOffice.address_line1,
         address_line2: res.data.headOffice.address_line2,
         country: 'IN',
