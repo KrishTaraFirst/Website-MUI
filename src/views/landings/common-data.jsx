@@ -152,11 +152,11 @@ function bannerData() {
 /***************************  NAVBAR - MEGAMENU PAGES  ***************************/
 
 export const pagesMegamenu = {
-  id: 'pages',
-  title: 'Pages',
+  id: 'services',
+  title: 'Services',
   megaMenu: {
-    type: MegaMenuType.MEGAMENU5,
-    toggleBtn: { children: 'Pages' },
+    type: MegaMenuType.MEGAMENU6,
+    toggleBtn: { children: 'Services' },
     popperWidth: 860,
     menuItems: [
       {
@@ -190,6 +190,41 @@ export const pagesMegamenu = {
             link: { href: branding.company.socialLink.discord, ...linkProps }
           },
           { title: 'Terms & Conditions', link: { href: 'https://mui.com/store/terms/', ...linkProps } }
+        ]
+      }
+    ],
+    bannerData: bannerData()
+  }
+};
+
+export const servicesMegamenu = {
+  id: 'services',
+  title: 'Services',
+  megaMenu: {
+    type: MegaMenuType.MEGAMENU6,
+    toggleBtn: { children: 'Services' },
+    popperWidth: 640,
+    menuItems: [
+      {
+        title: 'Caregory 1',
+        itemsList: [
+          { title: 'Financial Advisory', link: { href: '/service-category/financial-advisory', ...linkProps } },
+          { title: 'Virtual CFO', link: { href: '/service-category/virtual-cfo', ...linkProps } },
+          { title: 'Accounting and Compliance', link: { href: '/service-category/accounting-compliance', ...linkProps } },
+          { title: 'Business Incorporation', link: { href: '/service-category/business-incorporation', ...linkProps } },
+          { title: 'Licenses and Registrations', link: { href: '/service-category/licenses-registrations', ...linkProps } },
+          { title: 'GST Services', link: { href: '/service-category/gst-services', ...linkProps } }
+        ]
+      },
+      {
+        title: 'Caregory 2',
+        itemsList: [
+          { title: 'Income Tax Services', link: { href: '/service-category/income-tax-services', ...linkProps } },
+          { title: 'RoC Compliance', link: { href: '/service-category/roc-compliance', ...linkProps } },
+          { title: 'TDS', link: { href: '/service-category/tds', ...linkProps } },
+          { title: 'Payroll & Compliance', link: { href: '/service-category/payroll-compliance', ...linkProps } },
+          { title: 'Loans', link: { href: '/service-category/loans', ...linkProps } },
+          { title: 'Insurance', link: { href: '/service-category/insurance', ...linkProps } }
         ]
       }
     ],

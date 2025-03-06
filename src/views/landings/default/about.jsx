@@ -13,13 +13,12 @@ import { clientele2, feature23, feature7, feature18, team, contactUS } from './d
 export default function About() {
   return (
     <>
-      <SectionHero heading="More Than a Company → A Commitment ✦" search={false} offer />
+      <SectionHero heading="More than a Platform → A Financial Revolution ✦" search={false} offer />
       <Feature7 {...feature7} />
 
       <LazySection
         sections={[
           { importFunc: () => import('@/blocks/feature').then((module) => ({ default: module.Feature18 })), props: feature18 },
-          { importFunc: () => import('@/blocks/team').then((module) => ({ default: module.Team5 })), props: team },
           { importFunc: () => import('@/blocks/feature').then((module) => ({ default: module.Feature23 })), props: feature23 }
         ]}
         offset="200px"
@@ -32,7 +31,7 @@ export default function About() {
             props: clientele2
           },
           {
-            importFunc: () => import('@/blocks/contact-us').then((module) => ({ default: module.ContactUs4 })),
+            importFunc: () => import('@/blocks/contact-us').then((module) => ({ default: module.ContactUs1 })),
             props: { showForm: false, ...contactUS }
           }
         ]}

@@ -10,7 +10,7 @@ export const metadata = { ...SEO_CONTENT.comingSoonPage };
 
 const data = {
   chip: { chipCaption: '✦ Stay Tuned ✦ ' },
-  description: 'From automation of people processes to creating on engaged and driven culture.',
+  description: 'A seamless ecosystem for managing your businesses & personal finances.',
   primaryBtn: { children: 'Notify Me' }
 };
 

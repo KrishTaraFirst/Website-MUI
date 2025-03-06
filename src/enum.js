@@ -142,6 +142,7 @@ export let MegaMenuType;
   MegaMenuType['MEGAMENU3'] = 'megamenu-3';
   MegaMenuType['MEGAMENU4'] = 'megamenu-4';
   MegaMenuType['MEGAMENU5'] = 'megamenu-5';
+  MegaMenuType['MEGAMENU6'] = 'megamenu-6';
 })(MegaMenuType || (MegaMenuType = {}));
 
 //@faq.ts

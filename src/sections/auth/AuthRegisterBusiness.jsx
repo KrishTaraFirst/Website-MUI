@@ -35,7 +35,7 @@ import { AuthRole } from '@/enum';
 import { APP_DEFAULT_PATH, AUTH_USER_KEY } from '@/config';
 import { BASE_URL } from 'constants';
 import axios from '@/utils/axios';
-import { firstNameSchema, lastNameSchema, emailSchema, passwordSchema, userNameSchema } from '@/utils/validationSchema';
+import { firstNameSchema, lastNameSchema, emailSchema, passwordSchema, userNameSchema, phoneSchema } from '@/utils/validationSchema';
 
 // @icons
 import { IconEye, IconEyeOff } from '@tabler/icons-react';
@@ -98,7 +98,7 @@ export default function AuthRegisterBusiness({ inputSx }) {
       <Stack sx={{ gap: 2 }}>
         <Stack sx={{ gap: 0.5 }}>
           <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-            Business Name&nbsp;
+            Name&nbsp;
             <Typography component="span" color="error">
               *
             </Typography>
@@ -116,7 +116,26 @@ export default function AuthRegisterBusiness({ inputSx }) {
             </Typography>
           )}
         </Stack>
-
+        <Stack sx={{ gap: 0.5 }}>
+          <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+            Mobile No.&nbsp;
+            <Typography component="span" color="error">
+              *
+            </Typography>
+          </Typography>
+          <OutlinedInput
+            {...register('mobile_number', phoneSchema)}
+            placeholder="Enter your Mobile Number"
+            slotProps={{ input: { 'aria-label': 'First Name' } }}
+            error={errors.mobile_number && Boolean(errors.mobile_number)}
+            sx={{ ...inputSx }}
+          />
+          {errors.mobile_number?.message && (
+            <Typography variant="caption" sx={{ color: 'error.main' }}>
+              {errors.mobile_number?.message}
+            </Typography>
+          )}
+        </Stack>
         <Stack sx={{ gap: 0.5 }}>
           <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
             Email&nbsp;
@@ -170,38 +189,7 @@ export default function AuthRegisterBusiness({ inputSx }) {
             )}
           </Stack>
         </Stack>
-        <Stack sx={{ gap: 0.5 }}>
-          <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-            Password&nbsp;
-            <Typography component="span" color="error">
-              *
-            </Typography>
-          </Typography>
-          <OutlinedInput
-            {...register('password', passwordSchema)}
-            type={isOpen ? 'text' : 'password'}
-            placeholder="Enter your password"
-            autoComplete="new-password"
-            slotProps={{ input: { 'aria-label': 'Password' } }}
-            error={errors.password && Boolean(errors.password)}
-            endAdornment={
-              <IconButton sx={{ height: 0 }} onClick={() => setIsOpen(!isOpen)} rel="noopener noreferrer" aria-label="eye">
-                {isOpen ? <OpenEye color={theme.palette.grey[700]} /> : <CloseEye color={theme.palette.grey[700]} />}
-              </IconButton>
-            }
-            sx={inputSx}
-          />
-          <Stack
-            direction="row"
-            sx={{ alignItems: 'center', justifyContent: errors.password?.message ? 'space-between' : 'flex-end', width: 1 }}
-          >
-            {errors.password?.message && (
-              <Typography variant="caption" sx={{ color: 'error.main' }}>
-                {errors.password?.message}
-              </Typography>
-            )}
-          </Stack>
-        </Stack>
+
         <Button
           type="submit"
           color="primary"
