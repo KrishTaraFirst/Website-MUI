@@ -49,8 +49,24 @@ export default function HolidayManagementDialog({ open, handleClose, fetchDepart
       description: '',
       applicable_for: ''
     },
+
     validationSchema,
-    onSubmit: async (values) => {}
+    onSubmit: async (values) => {
+      // setLoading(true);
+      // const postData = { ...values };
+      // postData.payroll = Number(payrollid);
+      // const url = postType === 'post' ? `/payroll/leave-management` : `/payroll/leave-management/${5}`;
+      // const { res, error } = await Factory(postType, url, postData);
+      // setLoading(false);
+      // if (res.status_cd === 0) {
+      //   showSnackbar(postType === 'post' ? 'Data Saved Successfully' : 'Data Updated Successfully', 'success');
+      //   handleClose();
+      //   getESI_Details(payrollid);
+      //   // router.back();
+      // } else {
+      //   showSnackbar(JSON.stringify(res.data.data), 'error');
+      // }
+    }
   });
   useEffect(() => {
     if (type === 'edit' && selectedRecord) {

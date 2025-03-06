@@ -45,10 +45,9 @@ export default function PayrollDashboard({ setPayrollSetup }) {
       // router.push('/    'payroll_business_profileSetup'');
     }
   };
-
   let get_business_details = async () => {
     setLoading(true);
-    let userId = userData.dashboardChange === false ? userData.id : '';
+    let userId = userData.dashboardChange === false ? userData.id : userData.businesssDetails.id;
     const url = `/user_management/businesses-by-client/?user_id=${userId}`;
     const { res, error } = await Factory('get', url, {});
     if (res?.status_cd === 0) {
@@ -64,6 +63,7 @@ export default function PayrollDashboard({ setPayrollSetup }) {
       get_business_details();
     }
   }, [userData.id]);
+  console.log(userData);
 
   return loading ? (
     <Loader />

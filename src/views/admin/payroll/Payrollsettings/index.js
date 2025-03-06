@@ -9,6 +9,8 @@ import { useSearchParams } from 'next/navigation';
 import useCurrentUser from '@/hooks/useCurrentUser';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import BusinessProfileSetup from './BusinessProfileSetup';
+import { useRef } from 'react';
+
 const PayrollSetup = () => {
   const { userData } = useCurrentUser();
   const router = useRouter();
@@ -17,6 +19,8 @@ const PayrollSetup = () => {
   const [payrollDetails, setPayrollDetails] = useState({});
   const { showSnackbar } = useSnackbar();
   let businessId = userData.user_type === 'Business' ? userData.business_affiliated[0].id : userData.businesssDetails.business[0].id;
+
+  const hasFetched = useRef(false);
 
   const [steps, setSteps] = useState([
     { nameKey: 'Business profile', path: '/organization_details', completed: false },
@@ -93,8 +97,10 @@ const PayrollSetup = () => {
       showSnackbar(JSON.stringify(res?.data?.data), 'error');
     }
   };
+
   useEffect(() => {
-    if (businessId) {
+    if (businessId && !hasFetched.current) {
+      hasFetched.current = true;
       payroll_details();
     }
   }, [businessId]);

@@ -2,11 +2,12 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
-import { Avatar, Box, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Tab, Tabs, Typography, Stack, Avatar, Card } from '@mui/material';
 import EpfComponent from './EPFComponent';
 import ESIComponent from './ESIComponent';
 import ProfessionalTax from './ProfessionalTax';
 import HomeCard from '@/components/cards/HomeCard';
+import { IconBolt } from '@tabler/icons-react';
 
 /***************************  NAVIGATION - TABS  ***************************/
 
@@ -47,25 +48,48 @@ const StatutoryComponents = ({ type }) => {
   };
   return (
     <HomeCard title="Statutory Components" tagline="Setup your organization before starting payroll">
-      {/* Centering the Tabs section */}
-      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', mb: 2 }}>
-        <Tabs value={activeTab} onChange={handleTabChange} aria-label="Statutory Components Tabs">
+      <Card sx={{ borderRadius: 2.5, minHeight: 600 }}>
+        <Tabs
+          variant="fullWidth"
+          scrollButtons={true}
+          value={activeTab}
+          sx={{ borderBottom: '1px solid #e9e9e9' }}
+          onChange={handleTabChange}
+          aria-label="Statutory Components Tabs"
+        >
           {tabLabels.map((label, index) => (
-            <Tab key={index} label={label} {...a11yProps(index)} />
+            <Tab
+              label={
+                <Stack direction="row" sx={{ alignItems: 'center' }}>
+                  <Avatar variant="rounded" sx={{ mr: 1, bgcolor: 'grey.300', width: 32, height: 30 }}>
+                    <IconBolt color={theme.palette.text.primary} />
+                  </Avatar>
+                  <Typography variant="subtitle1">{label}</Typography>
+                </Stack>
+              }
+              // label={label}
+              key={'Tab' + index}
+              {...a11yProps(index)}
+              sx={{
+                fontSize: '1rem',
+                textTransform: 'none',
+                p: 1,
+                py: 2
+              }}
+            />
           ))}
         </Tabs>
-      </Box>
 
-      {/* Tab Panels - Display content based on activeTab */}
-      <TabPanel value={activeTab} index={0}>
-        <EpfComponent handleNext={handleNext} />
-      </TabPanel>
-      <TabPanel value={activeTab} index={1}>
-        <ESIComponent handleNext={handleNext} handleBack={handleBack} />
-      </TabPanel>
-      <TabPanel value={activeTab} index={2}>
-        <ProfessionalTax handleNext={handleNext} handleBack={handleBack} />
-      </TabPanel>
+        <TabPanel value={activeTab} index={0}>
+          <EpfComponent handleNext={handleNext} />
+        </TabPanel>
+        <TabPanel value={activeTab} index={1}>
+          <ESIComponent handleNext={handleNext} handleBack={handleBack} />
+        </TabPanel>
+        <TabPanel value={activeTab} index={2}>
+          <ProfessionalTax handleNext={handleNext} handleBack={handleBack} />
+        </TabPanel>
+      </Card>
     </HomeCard>
   );
 };

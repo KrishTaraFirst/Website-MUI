@@ -20,7 +20,7 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Grid,
+  Grid2,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -72,7 +72,6 @@ export default function RecordPayment() {
       get_Individual_Invoice_Data();
     }
   }, [invoiceId]);
-  console.log(selectedInvoice);
   return (
     <Stack sx={{ gap: 3 }}>
       <Stack direction="row" sx={{ alignItems: 'end', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
@@ -86,56 +85,56 @@ export default function RecordPayment() {
         </Stack>
       </Stack>
       <MainCard sx={{ p: 2 }}>
-        <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-          <Grid item xs={12} sm={4} md={2}>
+        <Grid2 container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+          <Grid2 size={{ xs: 12, sm: 6, md: 2 }}>
             <Stack direction="column">
               <Typography variant="subtitle1">Customer Name </Typography>
               <Typography color={'grey.700'} variant="subtitle1">
                 {selectedInvoice?.customer}
               </Typography>
             </Stack>
-          </Grid>
-          <Grid item xs={12} sm={4} md={2}>
+          </Grid2>
+          <Grid2 size={{ xs: 12, sm: 6, md: 2 }}>
             <Stack direction="column">
               <Typography variant="subtitle1">Invoice Number </Typography>
               <Typography color={'grey.700'} variant="subtitle1">
                 {selectedInvoice?.invoice_number}
               </Typography>
             </Stack>
-          </Grid>
-          <Grid item xs={12} sm={4} md={2}>
+          </Grid2>
+          <Grid2 size={{ xs: 12, sm: 6, md: 2 }}>
             <Stack direction="column">
               <Typography variant="subtitle1">Invoice Date </Typography>
               <Typography color={'grey.700'} variant="subtitle1">
                 {selectedInvoice?.invoice_date}
               </Typography>
             </Stack>
-          </Grid>
-          <Grid item xs={12} sm={4} md={2}>
+          </Grid2>
+          <Grid2 size={{ xs: 12, sm: 6, md: 2 }}>
             <Stack direction="column">
               <Typography variant="subtitle1">Invoice Amount</Typography>
               <Typography color={'grey.700'} variant="subtitle1">
                 {indianCurrency}&nbsp;{selectedInvoice?.amount_invoiced}
               </Typography>
             </Stack>
-          </Grid>
-          <Grid item xs={12} sm={4} md={2}>
+          </Grid2>
+          <Grid2 size={{ xs: 12, sm: 6, md: 2 }}>
             <Stack direction="column">
               <Typography variant="subtitle1">Total Amount paid </Typography>
               <Typography color={'grey.700'} variant="subtitle1">
                 {indianCurrency}&nbsp;{selectedInvoice?.amount_invoiced - selectedInvoice?.balance_due}
               </Typography>
             </Stack>
-          </Grid>
-          <Grid item xs={12} sm={4} md={2}>
+          </Grid2>
+          <Grid2 size={{ xs: 12, sm: 6, md: 2 }}>
             <Stack direction="column">
               <Typography variant="subtitle1">Due Amount </Typography>
               <Typography color={'grey.700'} variant="subtitle1">
                 {indianCurrency}&nbsp;{selectedInvoice?.balance_due}{' '}
               </Typography>
             </Stack>
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </MainCard>
       <Box>
         <TableContainer component={Paper}>
