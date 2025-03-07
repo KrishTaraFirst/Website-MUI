@@ -44,7 +44,7 @@ import { IconEye, IconEyeOff } from '@tabler/icons-react';
 const options = ['Individual', 'CA Firm', 'Business', 'Service Provider'];
 const optionValues = { Individual: 'Individual', 'CA Firm': 'CA', Business: 'Business', 'Service Provider': 'ServiceProvider' };
 
-export default function AuthRegisterBusiness({ inputSx }) {
+export default function AuthRegisterBusiness({ inputSx, serviceKey }) {
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
   const theme = useTheme();
@@ -71,24 +71,24 @@ export default function AuthRegisterBusiness({ inputSx }) {
 
   // Handle form submission
   const onSubmit = async (formData) => {
-    // setIsProcessing(true);
-    // setRegisterError('');
-    // try {
-    //   const url = `/user_management/register/`;
-    const payload = { ...formData, user_type: 'Business', user_name: formData.email };
-    console.log(payload);
-    //   const res = await axios.post(BASE_URL + url, payload);
-    //   if (res.status === 201) {
-    //     setIsProcessing(false);
-    //     showSnackbar('Activation link has been sent to given email', 'success');
-    //     router.push('/login');
-    //   }
-    //   reset();
-    // } catch (error) {
-    //   // CustomSnackbar
-    //   showSnackbar(JSON.stringify(error), 'error');
-    //   setIsProcessing(false);
-    // }
+    setIsProcessing(true);
+    setRegisterError('');
+    try {
+      const url = `/user_management/register/`;
+      const payload = { ...formData, user_type: 'Individual', user_name: formData.email, service_request: serviceKey };
+      console.log(payload);
+      const res = await axios.post(BASE_URL + url, payload);
+      if (res.status === 201) {
+        setIsProcessing(false);
+        showSnackbar('Activation link has been sent to given email', 'success');
+        router.push('/login');
+      }
+      reset();
+    } catch (error) {
+      // CustomSnackbar
+      showSnackbar(JSON.stringify(error), 'error');
+      setIsProcessing(false);
+    }
   };
 
   const commonIconProps = { size: 16, color: theme.palette.grey[700] };
@@ -165,12 +165,12 @@ export default function AuthRegisterBusiness({ inputSx }) {
             </Typography>
           </Typography>
           <OutlinedInput
-            {...register('mobile', passwordSchema)}
-            type={isOpen ? 'text' : 'mobile'}
-            placeholder="Enter your Mobile Number"
-            autoComplete="new-mobile"
-            slotProps={{ input: { 'aria-label': 'mobile' } }}
-            error={errors.mobile && Boolean(errors.mobile)}
+            {...register('password', passwordSchema)}
+            type={isOpen ? 'text' : 'password'}
+            placeholder="Enter your password"
+            autoComplete="new-password"
+            slotProps={{ input: { 'aria-label': 'Password' } }}
+            error={errors.password && Boolean(errors.password)}
             endAdornment={
               <IconButton sx={{ height: 0 }} onClick={() => setIsOpen(!isOpen)} rel="noopener noreferrer" aria-label="eye">
                 {isOpen ? <OpenEye color={theme.palette.grey[700]} /> : <CloseEye color={theme.palette.grey[700]} />}
@@ -180,13 +180,22 @@ export default function AuthRegisterBusiness({ inputSx }) {
           />
           <Stack
             direction="row"
-            sx={{ alignItems: 'center', justifyContent: errors.mobile?.message ? 'space-between' : 'flex-end', width: 1 }}
+            sx={{ alignItems: 'center', justifyContent: errors.password?.message ? 'space-between' : 'flex-end', width: 1 }}
           >
-            {errors.mobile?.message && (
+            {errors.password?.message && (
               <Typography variant="caption" sx={{ color: 'error.main' }}>
-                {errors.mobile?.message}
+                {errors.password?.message}
               </Typography>
             )}
+            {/* <Link
+              component={NextLink}
+              underline="hover"
+              variant="caption2"
+              href=""
+              sx={{ textAlign: 'right', '&:hover': { color: 'primary.dark' } }}
+            >
+              Forgot Password?
+            </Link> */}
           </Stack>
         </Stack>
 

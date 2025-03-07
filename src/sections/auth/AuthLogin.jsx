@@ -102,7 +102,8 @@ export default function AuthLogin({ inputSx }) {
           dashboardChange: false,
           ca_firm_affiliated: res.data.ca_firm_affiliated,
           service_provider_affiliated: res.data.service_provider_affiliated,
-          user_name: res?.data?.user_name
+          user_name: res?.data?.user_name,
+          service_request: res?.data?.service_request
         };
         setIsProcessing(false);
         localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userDAta));

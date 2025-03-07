@@ -12,7 +12,7 @@ import CustomInput from '@/utils/CustomInput';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import useCurrentUser from '@/hooks/useCurrentUser';
 import Factory from '@/utils/Factory';
-import { APP_DEFAULT_PATH } from '@/config';
+import { APP_DEFAULT_PATH, AUTH_USER_KEY } from '@/config';
 import { entity_choices } from '@/utils/Entity-types';
 import { industries } from '@/utils/industries';
 
@@ -20,6 +20,8 @@ import { industries } from '@/utils/industries';
 const BusinessFields = [
   { name: 'nameOfBusiness', label: 'Business Name' },
   { name: 'pan', label: 'Business PAN' },
+  { name: 'user_name', label: 'Username' },
+  { name: 'password', label: 'Password' },
   { name: 'dob_or_incorp_date', label: 'Date of Incorporation' },
   { name: 'entityType', label: 'Entity Type' },
   { name: 'business_nature', label: 'Business Nature' },
@@ -40,6 +42,8 @@ const HeadOfficeFields = [
 // Validation schema for formik
 const validationSchema = Yup.object({
   nameOfBusiness: Yup.string().required('Business name is required'),
+  user_name: Yup.string().required('Username is required'),
+  password: Yup.string().required('Password is required'),
   pan: Yup.string()
     .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN format')
     .required('PAN is required'),
@@ -72,15 +76,15 @@ export default function BusinessKYC() {
 
   const formik = useFormik({
     initialValues: {
-      nameOfBusiness: '',
+      nameOfBusiness: userData.firstname,
       pan: '',
       dob_or_incorp_date: dayjs().format('YYYY-MM-DD'),
       entityType: '',
       business_nature: '',
       registrationNumber: '',
       trade_name: '',
-      mobile_number: '',
-      email: '',
+      mobile_number: userData.mobile,
+      email: userData.email,
       address_line1: '',
       address_line2: '',
       city: '',
@@ -100,19 +104,50 @@ export default function BusinessKYC() {
         },
         client: userData.id
       };
-      const url = `/user_management/businesses/`;
       const method = 'post';
 
-      const { res } = await Factory(method, url, postData);
-      if (res?.status_cd === 0) {
-        showSnackbar('Business KYC done Successfully', 'success');
-        setDialogOpen(false);
-        const userDetails = JSON.parse(localStorage.getItem('auth-user'));
-        userDetails.business_exists = true;
-        localStorage.setItem('auth-user', JSON.stringify(userDetails));
-        router.push(APP_DEFAULT_PATH);
-      } else {
+      let userBusinessCreation = {
+        user_creation: {
+          password: postData.password,
+          email: postData.email,
+          user_name: postData.user_name,
+          user_type: 'Business',
+          first_name: postData.nameOfBusiness,
+          last_name: '',
+          created_by: userData.id,
+          is_active: true
+        },
+        group: 11,
+        custom_permission: [],
+        business: { ...postData }
+      };
+
+      console.log(userBusinessCreation);
+
+      // const { res } = await Factory(method, url, userBusinessCreation);
+      // if (res?.status_cd === 0) {
+      //   showSnackbar('Business KYC done Successfully', 'success');
+      //   setDialogOpen(false);
+      //   const userDetails = JSON.parse(localStorage.getItem('auth-user'));
+      //   userDetails.business_exists = true;
+      //   localStorage.setItem('auth-user', JSON.stringify(userDetails));
+      //   router.push(APP_DEFAULT_PATH);
+      // } else {
+      //   showSnackbar(JSON.stringify(res.data.data.error_message), 'error');
+      // }
+
+      let url = `/user_management/business-registration`;
+
+      const { res } = await Factory('post', url, { ...userBusinessCreation });
+      if (res.status_cd === 1) {
         showSnackbar(JSON.stringify(res.data.data.error_message), 'error');
+      } else {
+        showSnackbar('Saved Successfully', 'success');
+        let localStorageData = typeof window !== 'undefined' ? localStorage.getItem(AUTH_USER_KEY) : null;
+        let __userData = JSON.parse(localStorageData);
+        __userData.business_affiliated = [...__userData.business_affiliated, res.data[1]];
+        localStorage.setItem(AUTH_USER_KEY, JSON.stringify(__userData));
+        router.push(APP_DEFAULT_PATH);
       }
     }
   });
@@ -123,7 +158,7 @@ export default function BusinessKYC() {
         <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
           <div style={{ marginBottom: '2px' }}>{field.label}</div>
           <CustomAutocomplete
-            value={values[field.name]}
+            value={values[field.name] || ''}
             name={field.name}
             onChange={(e, newValue) => setFieldValue(field.name, newValue)}
             options={indian_States_And_UTs}
@@ -142,7 +177,7 @@ export default function BusinessKYC() {
           <div style={{ marginBottom: '2px' }}>{field.label}</div>
           <CustomDatePicker
             views={['year', 'month', 'day']}
-            value={values.dob_or_incorp_date ? dayjs(values.dob_or_incorp_date) : null}
+            value={values.dob_or_incorp_date ? dayjs(values.dob_or_incorp_date) : null || ''}
             onChange={(newDate) => setFieldValue('dob_or_incorp_date', dayjs(newDate).format('YYYY-MM-DD'))}
             error={touched.dob_or_incorp_date && Boolean(errors.dob_or_incorp_date)}
             helperText={touched.dob_or_incorp_date && errors.dob_or_incorp_date}
@@ -160,11 +195,9 @@ export default function BusinessKYC() {
         <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
           <div style={{ marginBottom: '2px' }}>{field.label}</div>
           <CustomAutocomplete
-            value={entity_choices.find((option) => option.key === values[field.name]) || null}
-            name={field.name}
-            onChange={(e, newValue) => setFieldValue(field.name, newValue ? newValue.key : '')}
+            value={values[field.name] || null}
+            onChange={(e, newValue) => setFieldValue(field.name, newValue)}
             options={entity_choices}
-            getOptionLabel={(option) => option.title}
             error={touched[field.name] && Boolean(errors[field.name])}
             helperText={touched[field.name] && errors[field.name]}
             sx={{ width: '100%' }}
@@ -179,10 +212,32 @@ export default function BusinessKYC() {
         <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
           <div style={{ marginBottom: '2px' }}>{field.label}</div>
           <CustomAutocomplete
-            value={values[field.name] || null}
-            name={field.name}
+            value={values[field.name] || ''}
             onChange={(e, newValue) => setFieldValue(field.name, newValue)}
             options={industries}
+            error={touched[field.name] && Boolean(errors[field.name])}
+            helperText={touched[field.name] && errors[field.name]}
+            sx={{ width: '100%' }}
+          />
+        </Grid2>
+      );
+    }
+
+    if (field.name === 'password') {
+      return (
+        <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
+          <div style={{ marginBottom: '2px' }}>{field.label}</div>
+
+          <CustomInput
+            name={field.name}
+            value={values[field.name] || ''}
+            onChange={(e) => {
+              setFieldValue(field.name, e.target.value);
+            }}
+            id="outlined-password-input"
+            type="password"
+            autoComplete="new-password"
+            onBlur={handleBlur}
             error={touched[field.name] && Boolean(errors[field.name])}
             helperText={touched[field.name] && errors[field.name]}
             sx={{ width: '100%' }}
@@ -198,7 +253,7 @@ export default function BusinessKYC() {
 
         <CustomInput
           name={field.name}
-          value={values[field.name]}
+          value={values[field.name] || ''}
           onChange={(e) => {
             if (field.name === 'pan') {
               setFieldValue(field.name, e.target.value.toUpperCase());
@@ -207,6 +262,7 @@ export default function BusinessKYC() {
             }
           }}
           onBlur={handleBlur}
+          autoComplete={field.name === 'user_name' ? 'new-username' : ''}
           error={touched[field.name] && Boolean(errors[field.name])}
           helperText={touched[field.name] && errors[field.name]}
           sx={{ width: '100%' }}
@@ -215,7 +271,6 @@ export default function BusinessKYC() {
     );
   };
   const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue, resetForm } = formik;
-  console.log(APP_DEFAULT_PATH);
   return (
     <Dialog open={dialogOpen}>
       {/* Business KYC Dialog */}
@@ -228,19 +283,12 @@ export default function BusinessKYC() {
         </Typography>
       </DialogTitle>
       <Divider />
-      <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
+      <Box component="form" onSubmit={handleSubmit} sx={{ pt: 0, px: 1 }}>
         <DialogContent>
-          <Typography variant="subtitle1" sx={{ mb: 2 }}>
-            Business Details
-          </Typography>
           <Grid2 container spacing={3}>
             {BusinessFields.map(renderField)}
           </Grid2>
-
-          <Typography variant="subtitle1" sx={{ mb: 2, mt: 2 }}>
-            Head Office Details
-          </Typography>
-          <Grid2 container spacing={3}>
+          <Grid2 container spacing={3} sx={{ pt: 2 }}>
             {HeadOfficeFields.map(renderField)}
           </Grid2>
         </DialogContent>

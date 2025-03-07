@@ -245,7 +245,6 @@ export default function EditUser({ type, open, setOpen, user_id, setRefresh, use
       postData.user_creation['user_type'] = userData.role;
     }
     const { res } = await Factory('post', url, { ...postData });
-    console.log(res);
     if (res.status_cd === 1) {
       showSnackbar(JSON.stringify(res.data.data.error_message), 'error');
     } else {

@@ -42,8 +42,8 @@ export default function ServiceCategories({ tab }) {
 
   return (
     <>
-      <Cta1 {...cta} />
-      <ContainerWrapper sx={{ py: SECTION_COMMON_PY, pt: -1333 }}>
+      <Cta1 {...cta} search={true} />
+      <ContainerWrapper sx={{ py: { xs: 0, sm: 0, md: 0 } }}>
         <Grid container spacing={1.5}>
           {servicesArr.map((item, index) => (
             <React.Fragment key={index}>

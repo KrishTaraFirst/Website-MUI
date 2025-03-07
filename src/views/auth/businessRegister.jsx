@@ -56,8 +56,12 @@ function CounterCard({ counter, caption, defaultUnit }) {
 
 function CounterBox() {
   const blockDetail = [
-    { counter: '90', defaultUnit: '%', caption: 'Power of AI for navigation and communication' },
-    { counter: '150', defaultUnit: '+', caption: 'Showcasing the global impact and adoption' }
+    {
+      counter: '60',
+      defaultUnit: '%',
+      caption: 'We provide cutting-edge strategies to scale your business efficiently'
+    },
+    { counter: '40', defaultUnit: '%', caption: 'Ensuring seamless operations with our finance, tax, and legal expertise' }
   ];
   return (
     <GraphicsCard sx={{ height: 1, p: { xs: 2, sm: 4, md: 5 } }}>
@@ -103,7 +107,7 @@ export default function Login4() {
               variant="h1"
               sx={{
                 mt: { xs: 2, sm: 3, md: 4 },
-                maxWidth: { xs: 300, sm: 400, md: 500 },
+                maxWidth: { xs: 300, sm: 400, md: 600 },
                 fontSize: '57px',
                 fontWeight: 400,
                 lineHeight: '1.123',
@@ -111,8 +115,7 @@ export default function Login4() {
                 color: 'primary.dark'
               }}
             >
-              {services[serviceKey].title}
-              {/* You are one step away Sign In */}
+              One step away! Register for {services[serviceKey].title}
             </Typography>
             <Typography variant="h6" sx={{ color: 'grey.800', mt: { xs: 2, sm: 3, md: 3 } }}>
               {services[serviceKey].shortDesc}
@@ -127,7 +130,7 @@ export default function Login4() {
           <GraphicsCard sx={{ p: { xs: 3, sm: 4, md: 5 } }}>
             <Box sx={{ position: 'relative' }}>
               <Stack sx={{ width: 1, maxWidth: 458, m: 'auto', position: 'relative', zIndex: 1 }}>
-                <AuthRegisterBusiness inputSx={{ bgcolor: 'grey.100', pt: 1, pb: 1, borderRadius: '16px' }} />
+                <AuthRegisterBusiness serviceKey={serviceKey} inputSx={{ bgcolor: 'grey.100', pt: 1, pb: 1, borderRadius: '16px' }} />
                 <Typography sx={{ textAlign: 'center', mt: 2.5, color: 'text.secondary' }}>
                   Already have an account ?{' '}
                   <Link
