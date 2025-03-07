@@ -21,7 +21,6 @@ const UserType = () => {
   const { showSnackbar } = useSnackbar();
   const [selectedIndex, setSelectedIndex] = useState(0); // Track selected tab index
   const [selectedType, setSelectedType] = useState(null); // Selected type for navigation
-  const [serviceRequest, setServiceRequest] = useState(null); // Selected type for navigation
   const [dialogOpen, setDialogOpen] = useState(true); // Dialog open state
   const { userData } = useCurrentUser();
   const router = useRouter();
@@ -41,10 +40,8 @@ const UserType = () => {
     // } else {
     //   router.push(APP_DEFAULT_PATH);
     // }
-    let bool = userData.service_request !== '';
-    bool = userData.service_request !== null;
-    bool = userData.business_affiliated.length === 0;
-    setServiceRequest(bool);
+    let bool;
+    if (userData.service_request === '' || userData.service_request === null || userData.business_affiliated.length === 0) bool = true;
 
     if (userData.user_kyc || userData.role === 'super-admin' || userData.role === 'service-provider') {
       router.push(APP_DEFAULT_PATH);
