@@ -180,6 +180,8 @@ export default function BusinessKYC() {
       const method = BID === null ? 'post' : 'put';
 
       const { res } = await Factory(method, url, postData);
+      console.log('res');
+
       if (res?.status_cd === 0) {
         showSnackbar('Business KYC Updated', 'success');
         setDialogOpen(false);
@@ -188,7 +190,7 @@ export default function BusinessKYC() {
         localStorage.setItem('auth-user', JSON.stringify(userDetails));
         setValue(value + 1);
       } else {
-        showSnackbar(JSON.stringify(res.data.data.error_message), 'error');
+        showSnackbar(JSON.stringify(res.data.data), 'error');
       }
     }
   });
@@ -199,7 +201,7 @@ export default function BusinessKYC() {
         <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
           <div style={{ marginBottom: '2px' }}>{field.label}</div>
           <CustomAutocomplete
-            value={values[field.name]}
+            value={values[field.name] || ''}
             name={field.name}
             onChange={(e, newValue) => setFieldValue(field.name, newValue)}
             options={indian_States_And_UTs}
@@ -231,35 +233,15 @@ export default function BusinessKYC() {
     }
 
     // Handling for 'entityType' field (CustomAutocomplete)
-    if (field.name === 'entityType') {
-      return (
-        <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
-          <div style={{ marginBottom: '2px' }}>{field.label}</div>
-          <CustomAutocomplete
-            value={values[field.name]}
-            // value={entity_choices.find((option) => option.key === values[field.name]) || null}
-            name={field.name}
-            onChange={(e, newValue) => setFieldValue(field.name, newValue)}
-            options={entity_choices}
-            // getOptionLabel={(option) => option.title}
-            error={touched[field.name] && Boolean(errors[field.name])}
-            helperText={touched[field.name] && errors[field.name]}
-            sx={{ width: '100%' }}
-          />
-        </Grid2>
-      );
-    }
-
-    // Handling for 'businessNature' field (CustomAutocomplete)
-    if (field.name === 'business_nature') {
+    if (field.name === 'entityType' || field.name === 'business_nature') {
       return (
         <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
           <div style={{ marginBottom: '2px' }}>{field.label}</div>
           <CustomAutocomplete
             value={values[field.name] || ''}
             name={field.name}
-            onChange={(e, newValue) => setFieldValue(field.name, newValue ? newValue.key : '')}
-            options={industries}
+            onChange={(e, newValue) => setFieldValue(field.name, newValue)}
+            options={field.name === 'business_nature' ? industries : entity_choices}
             error={touched[field.name] && Boolean(errors[field.name])}
             helperText={touched[field.name] && errors[field.name]}
             sx={{ width: '100%' }}
@@ -275,7 +257,7 @@ export default function BusinessKYC() {
 
         <CustomInput
           name={field.name}
-          value={values[field.name]}
+          value={values[field.name] || ''}
           onChange={(e) => {
             if (field.name === 'pan') {
               setFieldValue(field.name, e.target.value.toUpperCase());
@@ -292,11 +274,6 @@ export default function BusinessKYC() {
     );
   };
 
-  useEffect(() => {
-    console.log(BID);
-    console.log(value);
-  }, [value]);
-
   const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue, resetForm } = formik;
 
   useEffect(() => {
@@ -312,7 +289,6 @@ export default function BusinessKYC() {
           ...res.data.headOffice
         });
       } else {
-        console.log(res.data);
       }
     };
     getBusinessDetails();
@@ -470,10 +446,8 @@ const ComplianceProfile = ({ complianceItems, setValue, BID, businessData }) => 
       const url = `/user_management/gst-details/${BID}/`;
       const { res } = await Factory('get', url, '');
       if (res?.status_cd === 0) {
-        console.log(res);
         setCompliances(res.data);
       } else {
-        console.log(res.data);
       }
     };
     getComplianceDetails();
@@ -505,7 +479,6 @@ const ComplianceProfile = ({ complianceItems, setValue, BID, businessData }) => 
     if (res.status_cd === 0) {
       if (__branches.length === 1) showSnackbar('Saved Successfully', 'success');
     } else {
-      console.log(error);
     }
     __postData(__branches.slice(1));
   };

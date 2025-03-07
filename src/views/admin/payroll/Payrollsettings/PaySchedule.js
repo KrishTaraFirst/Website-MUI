@@ -109,9 +109,8 @@ function PaySchedule() {
   const get_paySchedule_Details = async (id) => {
     const url = `/payroll/pay-schedules?payroll_id=${id}`;
     const { res, error } = await Factory('get', url, {});
-
     if (res?.status_cd === 0) {
-      const scheduleData = res?.data?.data[0];
+      const scheduleData = res?.data;
       if (scheduleData) {
         setDateValue(scheduleData?.payroll_start_month ? dayjs(scheduleData.payroll_start_month, 'MMMM, YYYY') : null);
 

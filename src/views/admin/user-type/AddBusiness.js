@@ -155,34 +155,15 @@ export default function BusinessKYC() {
     }
 
     // Handling for 'entityType' field (CustomAutocomplete)
-    if (field.name === 'entityType') {
+    if (field.name === 'entityType' || field.name === 'business_nature') {
       return (
         <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
           <div style={{ marginBottom: '2px' }}>{field.label}</div>
           <CustomAutocomplete
-            value={entity_choices.find((option) => option.key === values[field.name]) || null}
-            name={field.name}
-            onChange={(e, newValue) => setFieldValue(field.name, newValue ? newValue.key : '')}
-            options={entity_choices}
-            getOptionLabel={(option) => option.title}
-            error={touched[field.name] && Boolean(errors[field.name])}
-            helperText={touched[field.name] && errors[field.name]}
-            sx={{ width: '100%' }}
-          />
-        </Grid2>
-      );
-    }
-
-    // Handling for 'businessNature' field (CustomAutocomplete)
-    if (field.name === 'business_nature') {
-      return (
-        <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
-          <div style={{ marginBottom: '2px' }}>{field.label}</div>
-          <CustomAutocomplete
-            value={values[field.name] || ''}
+            value={values[field.name] || null}
             name={field.name}
             onChange={(e, newValue) => setFieldValue(field.name, newValue)}
-            options={industries}
+            options={field.name === 'business_nature' ? industries : entity_choices}
             error={touched[field.name] && Boolean(errors[field.name])}
             helperText={touched[field.name] && errors[field.name]}
             sx={{ width: '100%' }}
