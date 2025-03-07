@@ -1,7 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Button, Box, Stack, Typography, FormControlLabel, Checkbox } from '@mui/material';
+import {
+  Button,
+  Box,
+  Stack,
+  Typography,
+  FormControlLabel,
+  Checkbox,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel
+} from '@mui/material';
 import Grid2 from '@mui/material/Grid2'; // Import Grid2 from MUI system
 import CustomInput from '@/utils/CustomInput';
 import Factory from '@/utils/Factory';
@@ -11,11 +23,11 @@ import Modal from '@/components/Modal';
 import { ModalSize } from '@/enum';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
 
-export default function LeaveManagementDialog({ open, handleClose, fetchDepartments, selectedRecord, type, setType }) {
+export default function LeaveManagementDialog({ open, handleClose, selectedRecord, type, setType, fetchLeaveManagementData }) {
   const { showSnackbar } = useSnackbar();
   const searchParams = useSearchParams();
   const [payrollid, setPayrollId] = useState(null); // Payroll ID fetched from URL
-  const [postType, setPostType] = useState('post');
+
   // Update payroll ID from search params
   useEffect(() => {
     const id = searchParams.get('payrollid');
@@ -27,8 +39,8 @@ export default function LeaveManagementDialog({ open, handleClose, fetchDepartme
   const departmentFields = [
     { name: 'name_of_leave', label: 'Name of the Leave' },
     { name: 'code', label: 'Code' },
-    { name: 'leave_type', label: 'Select Type' },
-    { name: 'employee_leave_period', label: 'How many leaves do employees get?' }
+    { name: 'leave_type', label: 'Select Type' }
+    // { name: 'number_of_leaves', label: 'How many leaves do employees get?' }
   ];
 
   // Formik validation schema
@@ -36,39 +48,46 @@ export default function LeaveManagementDialog({ open, handleClose, fetchDepartme
     name_of_leave: Yup.string().required('Name of Leave is required'),
     code: Yup.string().required('Code is required'),
     leave_type: Yup.string().required('Type is required'),
-    employee_leave_period: Yup.string().required('Number of leave days is required')
+    number_of_leaves: Yup.string().required('Number of leave days is required')
   });
 
   const formik = useFormik({
     initialValues: {
-      name_of_leave: '',
+      name_of_leave: ' ',
       code: '',
       leave_type: '',
-      employee_leave_period: '',
+      employee_leave_period: 'Monthly',
+      number_of_leaves: '',
       pro_rate_leave_balance_of_new_joinees_based_on_doj: false,
-      reset_leave_balance: false
+      carry_forward_unused_leaves: false,
+      reset_leave_balance: false,
+      reset_leave_balance_type: '',
+      max_carry_forward_days: '',
+      encash_remaining_leaves: false,
+      encashment_days: ''
     },
     validationSchema,
     onSubmit: async (values) => {
-      const postData = { ...values, payroll: Number(payrollId) };
-      const url = postType === 'post' ? '/payroll/leave-management' : `/payroll/leave-management/${selectedRecord?.id}`;
-      const { res, error } = await Factory(postType, url, postData);
+      const postData = { ...values, payroll: Number(payrollid) };
+      const url = type === 'edit' ? `/payroll/leave-management/${selectedRecord?.id}` : '/payroll/leave-management';
+      let postType = type === 'edit' ? 'put' : 'post';
 
+      const { res, error } = await Factory(postType, url, postData);
       if (res?.status_cd === 0) {
         showSnackbar(postType === 'post' ? 'Data Saved Successfully' : 'Data Updated Successfully', 'success');
         handleClose();
-        fetchDepartments();
+        fetchLeaveManagementData();
       } else {
         showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
       }
     }
   });
+
   useEffect(() => {
     if (type === 'edit' && selectedRecord) {
-      setValues(selectedRecord);
+      setValues(selectedRecord); // Ensure values are set for editing
     }
   }, [type, selectedRecord]);
-
   // Render each field dynamically
   const renderFields = (fields) => {
     return fields.map((field) => (
@@ -90,10 +109,8 @@ export default function LeaveManagementDialog({ open, handleClose, fetchDepartme
           <CustomInput
             fullWidth
             name={field.name}
-            multiline={field.name === 'description'}
-            minRows={field.name === 'description' && 4}
             value={values[field.name]}
-            onChange={(e) => setFieldValue('field.name', e.target.value)}
+            onChange={(e) => setFieldValue(field.name, e.target.value)}
             onBlur={handleBlur}
             error={touched[field.name] && Boolean(errors[field.name])}
             helperText={touched[field.name] && errors[field.name]}
@@ -102,40 +119,130 @@ export default function LeaveManagementDialog({ open, handleClose, fetchDepartme
       </Grid2>
     ));
   };
-  const { values, setValues, setFieldValue, errors, touched, handleSubmit, handleBlur, resetForm } = formik;
+  const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue, resetForm } = formik;
   return (
     <Modal
       open={open}
-      maxWidth={ModalSize.MD}
+      maxWidth={ModalSize.LG}
       header={{ title: 'Add Leave', subheader: '' }}
       modalContent={
         <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
           <Grid2 container spacing={3}>
             {renderFields(departmentFields)}
           </Grid2>
-          <Grid2 size={{ xs: 12 }} sx={{ mt: 2 }}>
+          <Box sx={{ mt: 2 }}>
+            <Typography sx={{ mb: 2 }}>How many leaves do employees get ?</Typography>
+
+            <FormControl sx={{ minWidth: 120 }} size="small">
+              <InputLabel id="demo-select-small-label">Select</InputLabel>
+              <Select
+                value={values.employee_leave_period || ''}
+                label="Selct"
+                onChange={(e) => setFieldValue('employee_leave_period', e.target.value)}
+              >
+                <MenuItem value={'Monthly'}>Monthly</MenuItem>
+                <MenuItem value={'Yearly'}>Yearly</MenuItem>
+              </Select>
+            </FormControl>
+            <TextField
+              sx={{ ml: 2 }}
+              value={values.number_of_leaves}
+              onChange={(e) => setFieldValue('number_of_leaves', e.target.value)}
+              error={touched.number_of_leaves && Boolean(errors.number_of_leaves)}
+              helperText={touched.number_of_leaves && errors.number_of_leaves}
+            />
+          </Box>
+          <Box sx={{ mt: 2 }}>
             <FormControlLabel
-              label="Pro rate leavebalance for the new joineesbased on D.O.J"
+              label="Pro rate leave balance for new joinees based on their D.O.J"
               control={
                 <Checkbox
                   checked={values.pro_rate_leave_balance_of_new_joinees_based_on_doj}
                   onChange={(e) => {
                     const checked = e.target.checked;
-                    formik.setFieldValue('pro_rate_leave_balance_of_new_joinees_based_on_doj', checked);
+
+                    setFieldValue('pro_rate_leave_balance_of_new_joinees_based_on_doj', checked);
                   }}
                 />
               }
             />
-            <FormControlLabel
-              label="Reset the leave balance of employees every month "
-              control={
-                <Checkbox
-                  checked={values.reset_leave_balance}
-                  onChange={(e) => formik.setFieldValue('reset_leave_balance', e.target.checked)}
+          </Box>
+
+          <Box size={{ xs: 12 }} sx={{ mt: 2 }}>
+            <Box>
+              <FormControlLabel
+                label="Reset the leave balance of employees every"
+                control={
+                  <Checkbox
+                    checked={values.reset_leave_balance}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      if (!checked) {
+                        setFieldValue('reset_leave_balance_type', '');
+                        setFieldValue('max_carry_forward_days', '');
+                        setFieldValue('encashment_days', '');
+                      }
+                      // Update the value for the checkbox
+                      setFieldValue('reset_leave_balance', checked);
+                    }}
+                  />
+                }
+              />
+              <FormControl sx={{ m: 1, minWidth: 120, mt: 0 }} size="small">
+                <InputLabel id="demo-select-small-label">Select</InputLabel>
+                <Select
+                  value={values.reset_leave_balance_type || ''}
+                  label="Selct"
+                  onChange={(e) => setFieldValue('reset_leave_balance_type', e.target.value)}
+                >
+                  <MenuItem value={'Monthly'}>Monthly</MenuItem>
+                  <MenuItem value={'Yearly'}>Yearly</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+            {values.reset_leave_balance && (
+              <Box sx={{ ml: 2 }}>
+                <FormControlLabel
+                  label="Carry forward unused leave days upon reset? max carry forward days"
+                  control={
+                    <Checkbox
+                      checked={values.carry_forward_unused_leaves}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setFieldValue('carry_forward_unused_leaves', checked);
+                      }}
+                    />
+                  }
                 />
-              }
-            />
-          </Grid2>
+                <TextField
+                  value={values.max_carry_forward_days}
+                  onChange={(e) => setFieldValue('max_carry_forward_days', e.target.value)}
+                  error={touched.max_carry_forward_days && Boolean(errors.max_carry_forward_days)}
+                  helperText={touched.max_carry_forward_days && errors.max_carry_forward_days}
+                />
+                <Box sx={{ mt: 2 }}>
+                  <FormControlLabel
+                    label="Encash remaing leave days ? max encashment days"
+                    control={
+                      <Checkbox
+                        checked={values.encash_remaining_leaves}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          setFieldValue('encash_remaining_leaves', checked);
+                        }}
+                      />
+                    }
+                  />
+                  <TextField
+                    value={values.encashment_days}
+                    onChange={(e) => setFieldValue('encashment_days', e.target.value)}
+                    error={touched.encashment_days && Boolean(errors.encashment_days)}
+                    helperText={touched.encashment_days && errors.encashment_days}
+                  />
+                </Box>
+              </Box>
+            )}
+          </Box>
         </Box>
       }
       footer={

@@ -195,8 +195,8 @@ function EarningsComponent({ handleNext, handleBack }) {
                         </TableCell>
                         <TableCell>{item.component_type}</TableCell>
                         <TableCell>{item.calculation_type.value + ' ' + item.calculation_type.type}</TableCell>
-                        <TableCell>{item.considerForEPF ? 'Yes' : 'No'}</TableCell>
-                        <TableCell>{item.considerForESI ? 'Yes' : 'No'}</TableCell>
+                        <TableCell>{item.includes_epf_contribution ? 'Yes' : 'No'}</TableCell>
+                        <TableCell>{item.includes_esi_contribution ? 'Yes' : 'No'}</TableCell>
                         <TableCell>{item.is_active === true ? 'Active' : 'In active'}</TableCell>
                         <TableCell>
                           <ActionCell
