@@ -1,19 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Button, Box, Stack, Typography, Divider } from '@mui/material';
-import Grid2 from '@mui/material/Grid2'; // Import Grid2 from MUI system
+import { Button, Box, Stack, Typography } from '@mui/material';
+import Grid2 from '@mui/material/Grid2';
 import CustomInput from '@/utils/CustomInput';
 import Factory from '@/utils/Factory';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import { useSearchParams } from 'next/navigation';
 import Modal from '@/components/Modal';
 import { ModalSize } from '@/enum';
+import dayjs from 'dayjs';
+import CustomDatePicker from '@/utils/CustomDateInput';
+import CustomAutocomplete from '@/utils/CustomAutocomplete';
+import { IconTemperature } from '@tabler/icons-react';
+import { ConstructionOutlined } from '@mui/icons-material';
 
-export default function HolidayManagementDialog({ open, handleClose, fetchDepartments, selectedRecord, type, setType }) {
+export default function HolidayManagementDialog({ open, handleClose, selectedRecord, type, fetchHolidayManagementData, workLocations }) {
   const { showSnackbar } = useSnackbar();
   const searchParams = useSearchParams();
   const [payrollid, setPayrollId] = useState(null); // Payroll ID fetched from URL
+  const [loading, setLoading] = useState(false); // State for loader
 
   // Update payroll ID from search params
   useEffect(() => {
@@ -23,12 +29,10 @@ export default function HolidayManagementDialog({ open, handleClose, fetchDepart
     }
   }, [searchParams]);
 
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
-  };
   const departmentFields = [
     { name: 'holiday_name', label: 'Holiday Name' },
-    { name: 'date', label: 'Start Date' },
+    { name: 'start_date', label: 'Start Date' },
+    { name: 'end_date', label: 'End Date' },
     { name: 'applicable_for', label: 'This holiday applicable for?' },
     { name: 'description', label: 'Description' }
   ];
@@ -36,66 +40,120 @@ export default function HolidayManagementDialog({ open, handleClose, fetchDepart
   // Formik validation schema
   const validationSchema = Yup.object({
     holiday_name: Yup.string().required('Holiday Name is required'),
-    date: Yup.string().required('Start Date is required'),
+    start_date: Yup.string().required('Start Date is required'),
+    end_date: Yup.string().required('End Date is required'),
     applicable_for: Yup.string().required('This field is required'),
     description: Yup.string().required('Description is required')
   });
 
-  // Initialize Formik with initial values and validation schema
   const formik = useFormik({
     initialValues: {
       holiday_name: '',
-      date: '',
+      start_date: dayjs().format('DD-MM-YYYY'),
+      end_date: dayjs().format('DD-MM-YYYY'),
       description: '',
       applicable_for: ''
     },
-
     validationSchema,
     onSubmit: async (values) => {
-      // setLoading(true);
-      // const postData = { ...values };
-      // postData.payroll = Number(payrollid);
-      // const url = postType === 'post' ? `/payroll/leave-management` : `/payroll/leave-management/${5}`;
-      // const { res, error } = await Factory(postType, url, postData);
-      // setLoading(false);
-      // if (res.status_cd === 0) {
-      //   showSnackbar(postType === 'post' ? 'Data Saved Successfully' : 'Data Updated Successfully', 'success');
-      //   handleClose();
-      //   getESI_Details(payrollid);
-      //   // router.back();
-      // } else {
-      //   showSnackbar(JSON.stringify(res.data.data), 'error');
-      // }
+      setLoading(true);
+      const postData = { ...values };
+      postData.payroll = Number(payrollid);
+      postData.financial_year = dayjs().format('DD-MM-YYYY');
+
+      const url = type === 'edit' ? `/payroll/holiday-management/${selectedRecord.id}` : `/payroll/holiday-management`;
+      const postType = type === 'edit' ? 'put' : 'post';
+
+      const { res, error } = await Factory(postType, url, postData);
+      setLoading(false);
+      if (res.status_cd === 0) {
+        showSnackbar(postType === 'post' ? 'Data Saved Successfully' : 'Data Updated Successfully', 'success');
+        handleClose();
+        fetchHolidayManagementData(); // Assuming getESI_Details is a function to fetch department details
+      } else {
+        showSnackbar(JSON.stringify(res.data.data), 'error');
+      }
     }
   });
+
+  const renderFields = (fields) => {
+    return fields.map((field) => {
+      if (field.name === 'start_date' || field.name === 'end_date') {
+        return (
+          <Grid2 key={field.name} size={{ xs: 12, sm: 6 }}>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              {field.label}
+            </Typography>
+            <CustomDatePicker
+              views={['year', 'month', 'day']}
+              value={values[field.name] ? dayjs(values[field.name], 'YYYY-MM-DD') : null} // Parse correctly for displaying
+              onChange={(newDate) => {
+                if (newDate) {
+                  // Save the date in 'YYYY-MM-DD' format to Formik
+                  setFieldValue(field.name, newDate.format('YYYY-MM-DD'));
+                } else {
+                  setFieldValue(field.name, ''); // Clear the date if none is selected
+                }
+              }}
+              sx={{ width: '100%' }}
+              onBlur={handleBlur}
+              error={touched[field.name] && Boolean(errors[field.name])}
+              helperText={touched[field.name] && errors[field.name]}
+              size="small"
+              inputFormat="YYYY-MM-DD" // Display in YYYY-MM-DD format
+            />
+          </Grid2>
+        );
+      } else if (field.name === 'applicable_for') {
+        return (
+          <Grid2 key={field.name} size={{ xs: 12, sm: 6 }}>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              {field.label}
+            </Typography>
+            <CustomAutocomplete
+              value={workLocations.find((loc) => loc.location_name === values[field.name]) || null} // Find the full object based on location_name
+              onChange={(e, newValue) => {
+                // Set the full object, not just the location_name
+                setFieldValue(field.name, newValue ? newValue.location_name : '');
+              }}
+              options={workLocations || []}
+              getOptionLabel={(option) => option?.location_name || ''} // Safely access location_name
+              sx={{ width: '100%' }}
+              onBlur={handleBlur} // Handle Formik's blur event
+              error={touched[field.name] && Boolean(errors[field.name])} // Display error based on validation
+              helperText={touched[field.name] && errors[field.name]} // Show error message
+              size="small"
+            />
+          </Grid2>
+        );
+      } else {
+        return (
+          <Grid2 key={field.name} size={{ xs: 12, sm: 6 }}>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              {field.label}
+            </Typography>
+            <CustomInput
+              fullWidth
+              name={field.name}
+              multiline={field.name === 'description'}
+              minRows={field.name === 'description' && 4}
+              value={values[field.name]}
+              onChange={(e) => setFieldValue(field.name, e.target.value)}
+              onBlur={handleBlur}
+              error={touched[field.name] && Boolean(errors[field.name])}
+              helperText={touched[field.name] && errors[field.name]}
+            />
+          </Grid2>
+        );
+      }
+    });
+  };
+  const { values, setValues, errors, touched, handleSubmit, handleBlur, setFieldValue, resetForm } = formik;
   useEffect(() => {
     if (type === 'edit' && selectedRecord) {
-      setValues(selectedRecord);
+      setValues(selectedRecord); // Ensure values are set for editing
     }
   }, [type, selectedRecord]);
-
-  // Render each field dynamically
-  const renderFields = (fields) => {
-    return fields.map((field) => (
-      <Grid2 key={field.name} size={{ xs: 12, sm: 6 }}>
-        <Typography variant="body2" sx={{ mb: 1 }}>
-          {field.label}
-        </Typography>
-        <CustomInput
-          fullWidth
-          name={field.name}
-          multiline={field.name === 'description'}
-          minRows={field.name === 'description' && 4}
-          value={values[field.name]}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          error={touched[field.name] && Boolean(errors[field.name])}
-          helperText={touched[field.name] && errors[field.name]}
-        />
-      </Grid2>
-    ));
-  };
-  const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, resetForm } = formik;
   return (
     <Modal
       open={open}
@@ -112,7 +170,6 @@ export default function HolidayManagementDialog({ open, handleClose, fetchDepart
         <Stack direction="row" sx={{ width: 1, justifyContent: 'space-between', gap: 2 }}>
           <Button
             onClick={() => {
-              setType('');
               resetForm();
               handleClose(); // Reset form and close dialog
             }}

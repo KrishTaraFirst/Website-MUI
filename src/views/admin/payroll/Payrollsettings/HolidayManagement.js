@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -20,72 +20,30 @@ import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import HolidayManagementDialog from './HolidayManagementDialog';
 import ActionCell from '@/utils/ActionCell';
 import MainCard from '@/components/MainCard';
+import { useSnackbar } from '@/components/CustomSnackbar';
+import { useSearchParams } from 'next/navigation';
+import Factory from '@/utils/Factory';
+import EmptyTable from '@/components/third-party/table/EmptyTable';
+import HomeCard from '@/components/cards/HomeCard';
 
 function HolidayManagement() {
   const [financialYear, setFinancialYear] = useState('2024-25');
-  const [holidayManagementData, setHolidayManagementData] = useState([
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    },
-    {
-      holiday_name: 'New Year',
-      date: '2025-01-01',
-      description: 'Celebration of the New Year.',
-      applicable_for: 'All Employees',
-      location: 's'
-    }
-    // Add more holiday data here
-  ]);
+  const [selectedWorkLoacation, setSelectedWorkLoacation] = useState('');
+  const [holidayManagementData, setHolidayManagementData] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [payrollId, setPayrollId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [workLocations, setWorkLocations] = useState([]); // Stores the list of work locations
+
   const [postType, setPostType] = useState('');
+  const { showSnackbar } = useSnackbar();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const id = searchParams.get('payrollid');
+    if (id) setPayrollId(id);
+  }, [searchParams]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 5;
@@ -95,107 +53,167 @@ function HolidayManagement() {
   };
   const paginatedData = holidayManagementData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
+  const fetchHolidayManagementData = async () => {
+    setLoading(true); // Set loading state to true when starting data fetch
+    const url = `/payroll/holiday-management?payroll_id=${payrollId}`;
+
+    const { res, error } = await Factory('get', url, {});
+    setLoading(false); // Set loading state to false once data fetching is complete
+
+    if (res.status_cd === 0) {
+      setHolidayManagementData(Array.isArray(res.data) ? res.data : []);
+    } else {
+      showSnackbar(JSON.stringify(res.data.data), 'error');
+    }
+  };
+  const handleEdit = (item) => {
+    setPostType('edit');
+    setSelectedRecord(item);
+    handleOpenDialog();
+  };
+  const handleDelete = async (item) => {
+    let url = `/payroll/holiday-management/${item.id}`;
+    const { res } = await Factory('delete', url, {});
+    if (res.status_cd === 1) {
+      showSnackbar(JSON.stringify(res.data), 'error');
+    } else {
+      showSnackbar('Record Deleted Successfully', 'success');
+      fetchHolidayManagementData();
+    }
+  };
+  useEffect(() => {
+    if (payrollId) fetchHolidayManagementData();
+  }, [payrollId]);
+  const fetchWorkLocations = async () => {
+    setLoading(true);
+    const url = `/payroll/work-locations/?payroll_id=${payrollId}`;
+    const { res, error } = await Factory('get', url, {});
+    setLoading(false);
+    if (res?.status_cd === 0 && Array.isArray(res?.data)) {
+      setWorkLocations(res?.data); // Successfully set work locations
+    } else {
+      setWorkLocations([]);
+      showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
+    }
+  };
+  useEffect(() => {
+    if (payrollId !== null) fetchWorkLocations();
+  }, [payrollId]);
   const handleOpenDialog = () => setOpenDialog(true);
   const handleCloseDialog = () => setOpenDialog(false);
   return (
-    <MainCard>
-      <Grid2 container spacing={3}>
-        <Grid2 size={12}>
-          <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-            <Stack direction="row" sx={{ gap: 2, flexWrap: 'wrap' }}>
-              <Box>
-                <Typography sx={{ mb: 1 }}>Select Financial Year</Typography>
-                <CustomAutocomplete
-                  options={['2021-22', '2022-23', '2023-24', '2024-25']}
-                  value={financialYear}
-                  onChange={(e, val) => setFinancialYear(val)}
-                  sx={{ minWidth: 200, maxWidth: 200 }}
-                />
-              </Box>
-              <Box>
-                <Typography sx={{ mb: 1 }}>Select Location</Typography>
-                <CustomAutocomplete options={['Hyderabad']} sx={{ minWidth: 200, maxWidth: 200 }} />
-              </Box>
-            </Stack>
-
-            <Stack>
-              <Button variant="contained" startIcon={<IconPlus size={16} />} onClick={handleOpenDialog}>
-                Add New
-              </Button>
-            </Stack>
+    <HomeCard
+      title={
+        <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
+          <Stack direction="row" sx={{ gap: 2, flexWrap: 'wrap' }}>
+            <Box>
+              <Typography sx={{ mb: 1 }}>Select Financial Year</Typography>
+              <CustomAutocomplete
+                options={['2021-22', '2022-23', '2023-24', '2024-25']}
+                value={financialYear}
+                onChange={(e, val) => setFinancialYear(val)}
+                sx={{ minWidth: 200, maxWidth: 200 }}
+              />
+            </Box>
+            <Box>
+              <Typography sx={{ mb: 1 }}>Select Location</Typography>
+              <CustomAutocomplete
+                value={selectedWorkLoacation} // Find the full object based on location_name
+                onChange={(e, val) => setSelectedWorkLoacation(val)}
+                options={workLocations || []}
+                getOptionLabel={(option) => option?.location_name || ''} // Safely access location_name
+                sx={{ minWidth: 200, maxWidth: 200 }}
+                size="small"
+              />
+            </Box>
           </Stack>
-        </Grid2>
+        </Stack>
+      }
+      CustomElement={() => (
+        <Stack direction="row" sx={{ gap: 2 }}>
+          <Button variant="contained" startIcon={<IconPlus size={16} />} onClick={handleOpenDialog}>
+            Add Leave Management
+          </Button>
+        </Stack>
+      )}
+    >
+      <MainCard>
+        <Grid2 container spacing={3}>
+          <Grid2 size={12}></Grid2>
 
-        <Grid2 size={{ xs: 12 }}>
-          <TableContainer component={Paper}>
-            <Table size="large">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Holiday Name</TableCell>
-                  <TableCell>Date</TableCell>
-                  <TableCell>Description</TableCell>
-                  <TableCell>Locations</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {paginatedData.length === 0 ? (
+          <Grid2 size={{ xs: 12 }}>
+            <TableContainer component={Paper}>
+              <Table size="large">
+                <TableHead>
                   <TableRow>
-                    <TableCell colSpan={5} sx={{ height: 300 }}>
-                      No Data available
-                    </TableCell>
+                    <TableCell>Holiday Name</TableCell>
+                    <TableCell>Date</TableCell>
+                    <TableCell>Description</TableCell>
+                    <TableCell>Locations</TableCell>
+                    <TableCell>Actions</TableCell>
                   </TableRow>
-                ) : (
-                  paginatedData.map((item, index) => (
-                    <TableRow key={item.id}>
-                      <TableCell>{item.holiday_name}</TableCell>
-                      <TableCell>{item.date}</TableCell>
-                      <TableCell>
-                        {item.description.length > 30 ? `${item.description.substring(0, 30)}...` : item.description || 'N/A'}
-                      </TableCell>
-                      <TableCell>{item.applicable_for}</TableCell>
-                      <TableCell>
-                        <ActionCell
-                          row={location} // Pass the customer row data
-                          onEdit={() => handleEdit(location)} // Edit handler
-                          onDelete={() => handleDelete(location)} // Delete handler
-                          open={openDialog}
-                          onClose={handleCloseDialog}
-                          deleteDialogData={{
-                            title: 'Delete Record',
-                            heading: 'Are you sure you want to delete this Record?',
-                            description: `This action will remove ${location.name} from the list.`,
-                            successMessage: 'Record has been deleted.'
-                          }}
-                        />
+                </TableHead>
+                <TableBody>
+                  {paginatedData.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} sx={{ height: 300 }}>
+                        <EmptyTable msg="No Data available" />
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                  ) : (
+                    paginatedData.map((item, index) => (
+                      <TableRow key={item.id}>
+                        <TableCell>{item.holiday_name}</TableCell>
+                        <TableCell>{item.start_date + ' --- ' + item.end_date}</TableCell>
+                        <TableCell>
+                          {item.description.length > 30 ? `${item.description.substring(0, 30)}...` : item.description || 'N/A'}
+                        </TableCell>
+                        <TableCell>{item.applicable_for}</TableCell>
+                        <TableCell>
+                          <ActionCell
+                            row={item} // Pass the customer row data
+                            onEdit={() => handleEdit(item)} // Edit handler
+                            onDelete={() => handleDelete(item)} // Delete handler
+                            open={openDialog}
+                            onClose={handleCloseDialog}
+                            deleteDialogData={{
+                              title: 'Delete Record',
+                              heading: 'Are you sure you want to delete this Record?',
+                              description: `This action will remove ${item.holiday_name} from the list.`,
+                              successMessage: 'Record has been deleted.'
+                            }}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
 
-          {holidayManagementData.length > 0 && (
-            <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'center', px: { xs: 0.5, sm: 2.5 }, py: 1.5 }}>
-              <Pagination count={Math.ceil(holidayManagementData.length / rowsPerPage)} page={currentPage} onChange={handlePageChange} />
-            </Stack>
-          )}
-        </Grid2>
+            {holidayManagementData.length > 0 && (
+              <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'center', px: { xs: 0.5, sm: 2.5 }, py: 1.5 }}>
+                <Pagination count={Math.ceil(holidayManagementData.length / rowsPerPage)} page={currentPage} onChange={handlePageChange} />
+              </Stack>
+            )}
+          </Grid2>
 
-        {/* Holiday Management Dialog */}
-        <Grid2 size={{ xs: 12 }}>
-          <HolidayManagementDialog
-            open={openDialog}
-            handleClose={handleCloseDialog}
-            handleOpenDialog={handleOpenDialog}
-            selectedRecord={selectedRecord}
-            type={postType}
-            setType={setPostType}
-          />
+          {/* Holiday Management Dialog */}
+          <Grid2 size={{ xs: 12 }}>
+            <HolidayManagementDialog
+              open={openDialog}
+              handleClose={handleCloseDialog}
+              handleOpenDialog={handleOpenDialog}
+              selectedRecord={selectedRecord}
+              type={postType}
+              setType={setPostType}
+              fetchHolidayManagementData={fetchHolidayManagementData}
+              workLocations={workLocations}
+            />
+          </Grid2>
         </Grid2>
-      </Grid2>
-    </MainCard>
+      </MainCard>
+    </HomeCard>
   );
 }
 
