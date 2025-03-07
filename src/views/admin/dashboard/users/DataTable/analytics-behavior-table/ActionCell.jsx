@@ -71,7 +71,7 @@ export default function ActionCell({ row, onDelete, setAccessDialog, onEdit, set
             <MainCard sx={{ borderRadius: 3, boxShadow: theme.customShadows.tooltip, minWidth: 150, p: 0.5 }}>
               <ClickAwayListener onClickAway={() => setAnchorEl(null)}>
                 <List disablePadding>
-                  <ListItemButton
+                  {/* <ListItemButton
                     sx={buttonStyle}
                     onClick={() => {
                       setAccessDialog(true);
@@ -82,7 +82,7 @@ export default function ActionCell({ row, onDelete, setAccessDialog, onEdit, set
                       <IconSettingsCode size={iconSize} />
                     </ListItemIcon>
                     <ListItemText>Manage Access</ListItemText>
-                  </ListItemButton>
+                  </ListItemButton> */}
 
                   <ListItemButton
                     sx={{ ...buttonStyle }}

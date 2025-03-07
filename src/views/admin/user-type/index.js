@@ -5,6 +5,7 @@ import { useSnackbar } from '@/components/CustomSnackbar';
 import Factory from '@/utils/Factory';
 import IndividualForm from './individual';
 import BusinessForm from './businessDetails';
+import BusinessForm2 from './business';
 import FirmForm from './firm';
 import useCurrentUser from '@/hooks/useCurrentUser';
 import { useRouter, usePathname } from 'next/navigation';
@@ -20,6 +21,7 @@ const UserType = () => {
   const { showSnackbar } = useSnackbar();
   const [selectedIndex, setSelectedIndex] = useState(0); // Track selected tab index
   const [selectedType, setSelectedType] = useState(null); // Selected type for navigation
+  const [serviceRequest, setServiceRequest] = useState(null); // Selected type for navigation
   const [dialogOpen, setDialogOpen] = useState(true); // Dialog open state
   const { userData } = useCurrentUser();
   const router = useRouter();
@@ -39,11 +41,20 @@ const UserType = () => {
     // } else {
     //   router.push(APP_DEFAULT_PATH);
     // }
+    let bool = userData.service_request !== '';
+    bool = userData.service_request !== null;
+    bool = userData.business_affiliated.length === 0;
+    setServiceRequest(bool);
 
     if (userData.user_kyc || userData.role === 'super-admin' || userData.role === 'service-provider') {
       router.push(APP_DEFAULT_PATH);
     } else {
-      setSelectedType(userData.role);
+      if (bool) {
+        setSelectedType('individual-business');
+      } else {
+        // setSelectedType(userData.role);
+        router.push(APP_DEFAULT_PATH);
+      }
     }
   }, [userData]);
 
@@ -222,6 +233,7 @@ const UserType = () => {
       </Dialog> */}
       {/* {!dialogOpen && selectedType !== null && (
         <> */}
+      {selectedType === 'individual-business' && <BusinessForm2 />}
       {selectedType === 'individual' && <IndividualForm />}
       {selectedType === 'corporate-admin' && <BusinessForm />}
       {selectedType === 'charted-accountant-firm' && <FirmForm />}

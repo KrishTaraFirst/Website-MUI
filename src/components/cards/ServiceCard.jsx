@@ -25,7 +25,8 @@ export default function ServiceCard({
   titleProps,
   stackProps,
   contentProps,
-  cardPadding
+  cardPadding,
+  home = false
 }) {
   const defaultBoxPadding = { xs: 1.5, sm: 2, md: 2.5 };
   const boxPadding = cardPadding ? { ...cardPadding } : defaultBoxPadding;
@@ -34,7 +35,7 @@ export default function ServiceCard({
     <GraphicsCard
       sx={{
         p: boxPadding,
-        minHeight: { xs: 60, sm: 120, md: 190 }, // Ensures consistent height
+        minHeight: home && { xs: 60, sm: 120, md: 190 }, // Ensures consistent height
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between', // Ensures spacing consistency

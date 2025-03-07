@@ -101,54 +101,64 @@ export default function SmallHero6({ tagline = data.tagline, list = data.list, p
   return (
     <>
       {!isProcessing ? (
-        <ContainerWrapper sx={{ py: { xs: 4, sm: 5, md: 6 }, m: { xs: 5, sm: 6, md: 7 } }}>
-          <GraphicsCard>
-            <Stack sx={{ p: { xs: 3, sm: 4 }, alignItems: 'center' }}>
-              <Typography variant="subtitle1" sx={{ color: 'text.secondary', mb: 1 }}>
-                {tagline}
-              </Typography>
-              <Wave />
-              <Box sx={{ mt: { xs: 2, md: 3 } }}>
-                <HeadlineText activated={activated} />
-              </Box>
-              {activated && (
-                <Stack direction="row" sx={{ justifyContent: 'center', mt: 5, position: 'relative' }}>
-                  <Box
-                    component="span"
-                    sx={{
-                      position: 'absolute',
-                      top: '-10px',
-                      left: '-25px',
-                      display: 'flex',
-                      ...(theme.direction === ThemeDirection.RTL && { transform: 'scaleX(-1)' })
-                    }}
-                  >
-                    <DrawnArrow />
-                  </Box>
-                  <Link component={NextLink} underline="none" variant="caption2" href="/login">
-                    <Button size="small" variant="contained" sx={{ px: 4, borderRadius: 25 }} {...primaryBtn} />
-                  </Link>
-                </Stack>
-              )}
-            </Stack>
-          </GraphicsCard>
-          <Box sx={{ mt: 3 }}>
-            <Grid container spacing={{ xs: 1, sm: 3 }} sx={{ justifyContent: 'center' }}>
-              {list.map((item, index) => (
-                <Grid key={index} size={{ xs: 12, sm: 4, md: 3 }}>
-                  <Stack direction="row" sx={{ gap: 1.5, alignItems: 'center', '& .gradient-fab': { display: 'contents' } }}>
-                    <GradientFab
-                      type="round"
-                      icon={<SvgIcon {...(typeof item.icon === 'string' ? { name: item.icon } : { ...item.icon })} />}
-                    />
-                    <Stack sx={{ justifyContent: 'center' }}>
-                      <Typography sx={{ color: 'text.secondary' }}>{item.title}</Typography>
-                    </Stack>
+        <ContainerWrapper
+          sx={{
+            height: '100vh',
+            mt: 15,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'top'
+          }}
+        >
+          <Stack direction={'column'}>
+            <GraphicsCard>
+              <Stack sx={{ p: { xs: 3, sm: 4 }, alignItems: 'center' }}>
+                <Typography variant="subtitle1" sx={{ color: 'text.secondary', mb: 1 }}>
+                  {tagline}
+                </Typography>
+                <Wave />
+                <Box sx={{ mt: { xs: 2, md: 3 } }}>
+                  <HeadlineText activated={activated} />
+                </Box>
+                {activated && (
+                  <Stack direction="row" sx={{ justifyContent: 'center', mt: 5, position: 'relative' }}>
+                    <Box
+                      component="span"
+                      sx={{
+                        position: 'absolute',
+                        top: '-10px',
+                        left: '-25px',
+                        display: 'flex',
+                        ...(theme.direction === ThemeDirection.RTL && { transform: 'scaleX(-1)' })
+                      }}
+                    >
+                      <DrawnArrow />
+                    </Box>
+                    <Link component={NextLink} underline="none" variant="caption2" href="/login">
+                      <Button size="small" variant="contained" sx={{ px: 4, borderRadius: 25 }} {...primaryBtn} />
+                    </Link>
                   </Stack>
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
+                )}
+              </Stack>
+            </GraphicsCard>
+            <Box sx={{ mt: 3 }}>
+              <Grid container spacing={{ xs: 1, sm: 3 }} sx={{ justifyContent: 'center' }}>
+                {list.map((item, index) => (
+                  <Grid key={index} size={{ xs: 12, sm: 4, md: 3 }}>
+                    <Stack direction="row" sx={{ gap: 1.5, alignItems: 'center', '& .gradient-fab': { display: 'contents' } }}>
+                      <GradientFab
+                        type="round"
+                        icon={<SvgIcon {...(typeof item.icon === 'string' ? { name: item.icon } : { ...item.icon })} />}
+                      />
+                      <Stack sx={{ justifyContent: 'center' }}>
+                        <Typography sx={{ color: 'text.secondary' }}>{item.title}</Typography>
+                      </Stack>
+                    </Stack>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          </Stack>
         </ContainerWrapper>
       ) : (
         <PageLoader />

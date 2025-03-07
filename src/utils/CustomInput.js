@@ -1,4 +1,6 @@
-import { TextField } from '@mui/material';
+import { useState } from 'react';
+import { TextField, IconButton, InputAdornment } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const CustomInput = ({
   id,
@@ -7,7 +9,7 @@ const CustomInput = ({
   touched,
   errors,
   InputProps,
-  maxWidth, // Default maxWidth
+  maxWidth,
   width,
   autoComplete,
   textColor,
@@ -17,30 +19,46 @@ const CustomInput = ({
   onBlur,
   ...props
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleTogglePassword = () => {
+    setShowPassword((prev) => !prev);
+  };
+
   return (
     <TextField
       sx={{
-        maxWidth, // Apply maxWidth from props
+        maxWidth,
         '& .MuiInputLabel-root': {
           fontSize: '14px'
         },
         '& .MuiInputBase-input': {
           fontSize: '15px',
-          color: textColor || 'inherit' // Apply text color
+          color: textColor || 'inherit'
         }
       }}
       id={id}
       autoComplete={autoComplete}
       placeholder={placeholder}
-      type={type}
+      type={type === 'password' ? (showPassword ? 'text' : 'password') : type}
       fullWidth
       variant="outlined"
       size="small"
-      error={Boolean(touched && errors)} // Shows error when `touched` and `errors` are true
-      helperText={touched && errors ? <span style={{ color: 'red' }}>{errors}</span> : null} // Custom red error text
-      InputProps={InputProps}
-      multiline={multiline} // Pass multiline prop here
-      rows={rows} // Optionally set rows for default visible rows
+      error={Boolean(touched && errors)}
+      helperText={touched && errors ? <span style={{ color: 'red' }}>{errors}</span> : null}
+      InputProps={{
+        ...InputProps,
+        endAdornment:
+          type === 'password' ? (
+            <InputAdornment position="end">
+              <IconButton onClick={handleTogglePassword} edge="end">
+                {showPassword ? <Visibility /> : <VisibilityOff />}
+              </IconButton>
+            </InputAdornment>
+          ) : null
+      }}
+      multiline={multiline}
+      rows={rows}
       maxRows={maxRows}
       onBlur={onBlur}
       {...props}

@@ -51,7 +51,7 @@ import { useSnackbar } from '@/components/CustomSnackbar';
 import useCurrentUser from '@/hooks/useCurrentUser';
 import { APP_DEFAULT_PATH } from '@/config';
 import { entity_choices } from '@/utils/Entity-types';
-import { business_nature_choices } from '@/utils/Nature-of-bsiness';
+import { industries } from '@/utils/industries';
 import { IconBolt } from '@tabler/icons-react';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 
@@ -256,11 +256,10 @@ export default function BusinessKYC() {
         <Grid2 size={{ xs: 12, sm: 6 }} key={field.name}>
           <div style={{ marginBottom: '2px' }}>{field.label}</div>
           <CustomAutocomplete
-            value={business_nature_choices.find((option) => option.key === values[field.name]) || null}
+            value={values[field.name] || ''}
             name={field.name}
             onChange={(e, newValue) => setFieldValue(field.name, newValue ? newValue.key : '')}
-            options={business_nature_choices}
-            getOptionLabel={(option) => option.title}
+            options={industries}
             error={touched[field.name] && Boolean(errors[field.name])}
             helperText={touched[field.name] && errors[field.name]}
             sx={{ width: '100%' }}

@@ -296,7 +296,7 @@ const RenderHead = ({ children, title, subTitle, setOpen, setAffiliationDialog }
         </Stack>
 
         <Stack direction="row">
-          <Button
+          {/* <Button
             variant="contained"
             onClick={() => {
               setAffiliationDialog(true);
@@ -305,7 +305,7 @@ const RenderHead = ({ children, title, subTitle, setOpen, setAffiliationDialog }
             sx={{ mr: 1 }}
           >
             Request Affiliation
-          </Button>
+          </Button> */}
           <Button
             variant="contained"
             onClick={() => {

@@ -13,7 +13,7 @@ import { clientele2, feature23, feature7, feature18, team, contactUS } from './d
 export default function About() {
   return (
     <>
-      <SectionHero heading="More than a Platform → A Financial Revolution ✦" search={false} offer />
+      <SectionHero heading="More than a Platform → A Financial Revolution ✦" search={true} offer />
       <Feature7 {...feature7} />
 
       <LazySection

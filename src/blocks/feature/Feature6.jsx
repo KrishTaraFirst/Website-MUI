@@ -109,6 +109,7 @@ export default function Feature6({ heading, caption, image, features, getStarted
                       content={item.content}
                       iconAvatar
                       cardPadding={{ xs: 2, sm: 3, md: 3 }}
+                      home={true}
                     />
                   </motion.div>
                 </Grid>
