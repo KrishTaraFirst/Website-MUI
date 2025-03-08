@@ -10,9 +10,9 @@ function BasicDetails() {
   const router = useRouter();
 
   const employeeFields = [
-    { name: 'employee_name', label: 'Employee Name' },
-    { name: 'employee_id', label: 'Employee Id' },
-    { name: 'date_of_joining', label: 'Date of Joining' },
+    { name: 'first_name', label: 'Employee Name' },
+    { name: 'associate_id', label: 'Employee Id' },
+    { name: 'doj', label: 'Date of Joining' },
     { name: 'work_email', label: 'Work Email' },
     { name: 'mobile_number', label: 'Mobile Number' },
     { name: 'gender', label: 'Gender' },
@@ -22,16 +22,16 @@ function BasicDetails() {
   ];
 
   const statutoryFields = [
-    { name: 'employees_provident_fund', label: 'Employees Provident Fund' },
+    { name: 'esi', label: 'Employees Provident Fund' },
     { name: 'employees_state_insurence', label: 'Employees State Insurance' },
     { name: 'professional_tax', label: 'Professional Tax' }
   ];
 
   // Form validation schema
   const validationSchema = Yup.object({
-    employee_name: Yup.string().required('Employee name is required'),
-    employee_id: Yup.string().required('Employee ID is required'),
-    date_of_joining: Yup.date().required('Date of joining is required'),
+    first_name: Yup.string().required('Employee name is required'),
+    associate_id: Yup.string().required('Employee ID is required'),
+    doj: Yup.date().required('Date of joining is required'),
     work_email: Yup.string().email('Invalid email format').required('Work email is required'),
     mobile_number: Yup.string().required('Mobile number is required'),
     gender: Yup.string().required('Gender is required'),
@@ -39,21 +39,34 @@ function BasicDetails() {
     designation: Yup.string().required('Designation is required'),
     department: Yup.string().required('Department is required')
   });
+  //   {
+  //     "payroll": 1,
+  //     "middle_name": "A",
+  //     "last_name": "Doe",
+  //     "doj": "2023-01-15",
+  //     "work_location": 2,
 
+  //     "employee_status": true
+  // }
   // Formik setup
   const formik = useFormik({
     initialValues: {
-      employee_name: '',
-      employee_id: '',
-      date_of_joining: '',
+      first_name: '',
+      associate_id: '',
+      doj: '',
       work_email: '',
       mobile_number: '',
       gender: '',
       work_location: '',
       designation: '',
       department: '',
-      enable_portal_access: false,
-      employees_provident_fund: false,
+      //   "statutory_components": {
+      //     "pf": "enabled",
+      //     "esi": "enabled",
+      //     "gratuity": "included"
+      // },
+      pf: false,
+      esi: false,
       employees_state_insurence: false,
       professional_tax: false
     },
@@ -94,10 +107,7 @@ function BasicDetails() {
 
       <Box sx={{ marginTop: 2 }}>
         {/* Enable portal access checkbox */}
-        <FormControlLabel
-          control={<Checkbox checked={values.enable_portal_access} onChange={handleChange} name="enable_portal_access" />}
-          label="Enable Portal Access"
-        />
+        <FormControlLabel control={<Checkbox checked={values.pf} onChange={handleChange} name="pf" />} label="Enable Portal Access" />
       </Box>
 
       <Divider sx={{ my: 2 }} />

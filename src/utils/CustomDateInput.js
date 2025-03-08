@@ -21,6 +21,7 @@ const CustomDatePicker = ({
         label={label}
         value={value}
         onChange={onChange}
+        format="DD-MM-YYYY"
         onBlur={onBlur} // Triggering onBlur from Formik here
         renderInput={(props) => (
           <TextField

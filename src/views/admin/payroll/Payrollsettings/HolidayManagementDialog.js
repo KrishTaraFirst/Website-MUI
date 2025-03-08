@@ -57,10 +57,18 @@ export default function HolidayManagementDialog({ open, handleClose, selectedRec
     validationSchema,
     onSubmit: async (values) => {
       setLoading(true);
-      const postData = { ...values };
-      postData.payroll = Number(payrollid);
-      postData.financial_year = dayjs().format('DD-MM-YYYY');
+      const currentYear = dayjs().year();
+      const currentMonth = dayjs().month(); // month is 0-based, so January is 0
 
+      // If the current month is before April (0-2), the financial year starts from last year
+      const financialYearStart = currentMonth < 3 ? currentYear - 1 : currentYear;
+      const financialYear = `${financialYearStart}-${String(financialYearStart + 1).slice(-2)}`;
+
+      const postData = {
+        ...values,
+        payroll: Number(payrollid),
+        financial_year: financialYear // Set the financial year in the correct format
+      };
       const url = type === 'edit' ? `/payroll/holiday-management/${selectedRecord.id}` : `/payroll/holiday-management`;
       const postType = type === 'edit' ? 'put' : 'post';
 

@@ -14,6 +14,8 @@ import AddInvoice from './InvoicingComponent/AddInvoice';
 import useCurrentUser from '@/hooks/useCurrentUser';
 import { CoPresentOutlined } from '@mui/icons-material';
 import Loader from '@/components/PageLoader';
+import HomeCard from '@/components/cards/HomeCard';
+import MainCard from '@/components/MainCard';
 
 /***************************  ANALYTICS - OVERVIEW  ***************************/
 
@@ -58,17 +60,11 @@ export default function AnalyticsOverview() {
     invoice_settings_status_check();
   }, [userData.user_type]);
   return (
-    <Stack sx={{ gap: 3 }}>
-      <Stack direction="row" sx={{ alignItems: 'end', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-        <Stack direction="column" sx={{ gap: 0.5 }}>
-          <Typography variant="h4" sx={{ fontWeight: 400 }}>
-            Invoicing
-          </Typography>
-          <Typography variant="caption" sx={{ color: 'grey.700' }}>
-            Dashboard to help manage your customer invoices.
-          </Typography>
-        </Stack>
-        <Stack direction="row" sx={{ gap: 1.5 }}>
+    <HomeCard
+      title=" Invoicing"
+      tagline=" Dashboard to help manage your customer invoices."
+      CustomElement={() => (
+        <Stack direction="row" sx={{ gap: 2 }}>
           <Button
             variant="outlined"
             onClick={() => {
@@ -90,24 +86,27 @@ export default function AnalyticsOverview() {
             New Invoice
           </Button>
         </Stack>
-      </Stack>
-      {loading ? (
-        <Loader />
-      ) : (
-        <Grid container spacing={{ xs: 2, md: 3 }}>
-          <Grid size={12}>
-            <OverviewCard
-              businessId={businessId}
-              open={open}
-              onClose={handleClose}
-              clientListData={clientListData}
-              type={type}
-              setType={setType}
-              handleOpen={handleOpen}
-            />
-          </Grid>
-        </Grid>
       )}
-    </Stack>
+    >
+      <MainCard>
+        {loading ? (
+          <Loader />
+        ) : (
+          <Grid container spacing={{ xs: 2, md: 3 }}>
+            <Grid size={12}>
+              <OverviewCard
+                businessId={businessId}
+                open={open}
+                onClose={handleClose}
+                clientListData={clientListData}
+                type={type}
+                setType={setType}
+                handleOpen={handleOpen}
+              />
+            </Grid>
+          </Grid>
+        )}
+      </MainCard>
+    </HomeCard>
   );
 }

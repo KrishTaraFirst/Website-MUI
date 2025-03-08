@@ -8,6 +8,7 @@ import ESIComponent from './ESIComponent';
 import ProfessionalTax from './ProfessionalTax';
 import HomeCard from '@/components/cards/HomeCard';
 import { IconBolt } from '@tabler/icons-react';
+import MainCard from '@/components/MainCard';
 
 /***************************  NAVIGATION - TABS  ***************************/
 
@@ -48,14 +49,13 @@ const StatutoryComponents = ({ type }) => {
   };
   return (
     <HomeCard title="Statutory Components" tagline="Setup your organization before starting payroll">
-      <Card sx={{ borderRadius: 2.5, minHeight: 600 }}>
+      <MainCard>
         <Tabs
           variant="fullWidth"
           scrollButtons={true}
           value={activeTab}
           sx={{ borderBottom: '1px solid #e9e9e9' }}
           onChange={handleTabChange}
-          aria-label="Statutory Components Tabs"
         >
           {tabLabels.map((label, index) => (
             <Tab
@@ -89,7 +89,7 @@ const StatutoryComponents = ({ type }) => {
         <TabPanel value={activeTab} index={2}>
           <ProfessionalTax handleNext={handleNext} handleBack={handleBack} />
         </TabPanel>
-      </Card>
+      </MainCard>
     </HomeCard>
   );
 };

@@ -36,6 +36,7 @@ import { useSearchParams } from 'next/navigation';
 import Loader from '@/components/PageLoader';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import ActionCell from '@/utils/ActionCell';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const validationSchema = Yup.object({
   component_name: Yup.string().required('Name is required'),
@@ -51,7 +52,6 @@ function EarningsComponent({ handleNext, handleBack }) {
   const [payrollid, setPayrollId] = useState(null);
   const searchParams = useSearchParams();
   const { showSnackbar } = useSnackbar();
-  const [selectedRecord, setSelectedRecord] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 8;
 
@@ -71,11 +71,16 @@ function EarningsComponent({ handleNext, handleBack }) {
 
   const handleClose = () => setOpen(false);
 
-  const handleEdit = (item) => {
-    setPostType('put');
-    setSelectedRecord(item);
-    setValues(item);
-    handleOpen();
+  const handleEdit = async (item) => {
+    let url = `/payroll/earnings/${item.id}`;
+    const { res } = await Factory('get', url, {});
+    if (res.status_cd === 1) {
+      showSnackbar(JSON.stringify(res.data), 'error');
+    } else {
+      setPostType('put');
+      setValues(res.data);
+      handleOpen();
+    }
   };
   const handleDelete = async (item) => {
     let url = `/payroll/earnings/${item.id}`;
@@ -104,14 +109,15 @@ function EarningsComponent({ handleNext, handleBack }) {
       includes_esi_contribution: false,
       is_included_in_payslip: false,
       tax_deduction_preference: null,
-      is_scheduled_earning: false
+      is_scheduled_earning: false,
+      pf_wage_less_than_15k: false
     },
     validationSchema,
     onSubmit: async (values) => {
       setLoading(true);
       const postData = { ...values };
       postData.payroll = Number(payrollid);
-      const url = postType === 'post' ? `/payroll/earnings` : `/payroll/earnings/${selectedRecord.id}`;
+      const url = postType === 'post' ? `/payroll/earnings` : `/payroll/earnings/${values.id}`;
       const { res, error } = await Factory(postType, url, postData);
       setLoading(false);
       if (res.status_cd === 0) {
@@ -124,6 +130,7 @@ function EarningsComponent({ handleNext, handleBack }) {
       }
     }
   });
+
   const getEarnings_Details = async (id) => {
     setLoading(true);
     const url = `/payroll/earnings?payroll_id=${id}`;
@@ -140,6 +147,7 @@ function EarningsComponent({ handleNext, handleBack }) {
     }
   }, [payrollid]);
   const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, resetForm, setFieldValue } = formik;
+  console.log(values);
 
   return (
     <>
@@ -166,7 +174,6 @@ function EarningsComponent({ handleNext, handleBack }) {
                 <TableHead>
                   <TableRow>
                     <TableCell>Component Name</TableCell>
-                    <TableCell>Type</TableCell>
                     <TableCell>Calculation</TableCell>
                     <TableCell>Consider for EPF</TableCell>
                     <TableCell>Consider for ESI</TableCell>
@@ -193,10 +200,9 @@ function EarningsComponent({ handleNext, handleBack }) {
                         >
                           {item.component_name}
                         </TableCell>
-                        <TableCell>{item.component_type}</TableCell>
-                        <TableCell>{item.calculation_type.value + ' ' + item.calculation_type.type}</TableCell>
-                        <TableCell>{item.includes_epf_contribution ? 'Yes' : 'No'}</TableCell>
-                        <TableCell>{item.includes_esi_contribution ? 'Yes' : 'No'}</TableCell>
+                        <TableCell>{item.calculation}</TableCell>
+                        <TableCell>{item.consider_for_epf ? 'Yes' : 'No'}</TableCell>
+                        <TableCell>{item.consider_for_esi ? 'Yes' : 'No'}</TableCell>
                         <TableCell>{item.is_active === true ? 'Active' : 'In active'}</TableCell>
                         <TableCell>
                           <ActionCell
@@ -229,6 +235,7 @@ function EarningsComponent({ handleNext, handleBack }) {
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
               <Button
                 variant="outlined"
+                startIcon={<ArrowBackIcon />}
                 onClick={() => {
                   router.back();
                 }}
@@ -243,56 +250,34 @@ function EarningsComponent({ handleNext, handleBack }) {
 
           <Modal
             open={open}
-            maxWidth={ModalSize.MD}
+            maxWidth={ModalSize.LG}
             header={{ title: 'New Component', subheader: '' }}
             modalContent={
               <Box component="form" onSubmit={handleSubmit}>
                 <Grid2 container spacing={3}>
-                  <Grid2 size={{ xs: 12, sm: 6 }}>
-                    <Typography variant="body1" sx={{ mb: 0.5 }}>
-                      Name
-                    </Typography>
-                    <TextField
-                      fullWidth
-                      value={values.component_name}
-                      onChange={(e) => setFieldValue('component_name', e.target.value)}
-                      onBlur={handleBlur}
-                      error={touched.component_name && Boolean(errors.component_name)}
-                      helperText={touched.component_name && errors.component_name}
-                      disabled={
-                        values.component_name === 'Special Allowance' ||
-                        values.component_name === 'Conveyance Allowance' ||
-                        values.component_name === 'HRA' ||
-                        values.component_name === 'Basic'
-                      }
-                    />
-                  </Grid2>
-
-                  <Grid2 size={{ xs: 12, sm: 6 }}>
-                    <Typography variant="body1" sx={{ mb: 0.5 }}>
-                      Type
-                    </Typography>
-
-                    <CustomAutocomplete
-                      value={values.component_type}
-                      component_name="component_type"
-                      onChange={(e, newValue) => setFieldValue('component_type', newValue)}
-                      options={['Fixed', 'Variable']}
-                      error={touched.component_type && Boolean(errors.component_type)}
-                      helperText={touched.component_type && errors.component_type}
-                      sx={{ width: '100%' }}
-                      disabled={
-                        values.component_name === 'Basic' ||
-                        values.component_name === 'HRA' ||
-                        values.component_name === 'Special Allowance'
-                      }
-                    />
-                  </Grid2>
-
-                  {/* Calculation Type */}
-                  <Grid2 container spacing={2} sx={{ mt: 2 }}>
-                    <Grid2>
-                      <Grid2 size={{ xs: 12 }}>
+                  {/* Left Column */}
+                  <Grid2 size={{ xs: 6 }}>
+                    <Grid2 container direction="column" spacing={2}>
+                      <Grid2 item>
+                        <Typography variant="body1" sx={{ mb: 0.5 }}>
+                          Name
+                        </Typography>
+                        <TextField
+                          fullWidth
+                          value={values.component_name}
+                          onChange={(e) => setFieldValue('component_name', e.target.value)}
+                          onBlur={handleBlur}
+                          error={touched.component_name && Boolean(errors.component_name)}
+                          helperText={touched.component_name && errors.component_name}
+                          disabled={
+                            values.component_name === 'Special Allowance' ||
+                            values.component_name === 'Conveyance Allowance' ||
+                            values.component_name === 'HRA' ||
+                            values.component_name === 'Basic'
+                          }
+                        />
+                      </Grid2>
+                      <Grid2>
                         <Typography variant="subtitle1">Calculation Type:</Typography>
                         <FormGroup row sx={{ mt: 1 }}>
                           <FormControlLabel
@@ -323,39 +308,35 @@ function EarningsComponent({ handleNext, handleBack }) {
                             label={values.component_name === 'Basic' ? 'Percentage of CTC' : 'Percentage of Basic'}
                           />
                         </FormGroup>
+                        <Grid2>
+                          <Typography sx={{ mb: 0.5 }}>
+                            {values.calculation_type.type === 'Flat Amount' ? 'Enter Amount ' : 'Enter Percentage'}
+                          </Typography>
+                          <TextField
+                            fullWidth
+                            value={values.calculation_type.value}
+                            onChange={(e) => {
+                              // Allow only numbers and one decimal point
+                              const numericValue = e.target.value
+                                .replace(/[^0-9.]/g, '') // Remove non-numeric and non-decimal characters
+                                .replace(/(\..*)\./g, '$1'); // Ensure only one decimal point is allowed
+                              setFieldValue('calculation_type.value', numericValue);
+                            }}
+                            onBlur={handleBlur}
+                            // error={touched.calculation_type.value && Boolean(errors.calculation_type.value)}
+                            // helperText={touched.calculation_type.value && errors.calculation_type.value}
+                            InputProps={{
+                              startAdornment: (
+                                <InputAdornment position="start" sx={{ display: 'flex', alignItems: 'center' }}>
+                                  <span>{values.calculation_type.type === 'Flat Amount' ? '₹' : '%'}</span>
+                                  <Divider orientation="vertical" flexItem sx={{ mx: 1, height: '24px' }} />
+                                </InputAdornment>
+                              )
+                            }}
+                          />
+                        </Grid2>
                       </Grid2>
-
-                      {/* Amount Field */}
-                      <Grid2 size={{ xs: 12, sm: 6 }} sx={{ mt: 2 }}>
-                        <Typography sx={{ mb: 0.5 }}>
-                          {values.calculation_type.type === 'Flat Amount' ? 'Enter Amount ' : 'Enter Percentage'}
-                        </Typography>
-                        <TextField
-                          fullWidth
-                          value={values.calculation_type.value}
-                          onChange={(e) => {
-                            // Allow only numbers and one decimal point
-                            const numericValue = e.target.value
-                              .replace(/[^0-9.]/g, '') // Remove non-numeric and non-decimal characters
-                              .replace(/(\..*)\./g, '$1'); // Ensure only one decimal point is allowed
-                            setFieldValue('calculation_type.value', numericValue);
-                          }}
-                          onBlur={handleBlur}
-                          // error={touched.calculation_type.value && Boolean(errors.calculation_type.value)}
-                          // helperText={touched.calculation_type.value && errors.calculation_type.value}
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment position="start" sx={{ display: 'flex', alignItems: 'center' }}>
-                                <span>{values.calculation_type.type === 'Flat Amount' ? '₹' : '%'}</span>
-                                <Divider orientation="vertical" flexItem sx={{ mx: 1, height: '24px' }} />
-                              </InputAdornment>
-                            )
-                          }}
-                        />
-                      </Grid2>
-
-                      {/* Active Checkbox */}
-                      <Grid2 size={{ xs: 12 }} sx={{ mt: 2 }}>
+                      <Grid2>
                         <FormControlLabel
                           control={
                             <Checkbox
@@ -372,86 +353,178 @@ function EarningsComponent({ handleNext, handleBack }) {
                         />
                       </Grid2>
                     </Grid2>
-                    <Grid2>
-                      <Grid2 size={{ xs: 12 }}>
-                        <Typography variant="subtitle1">Configuration</Typography>
+                  </Grid2>
+
+                  {/* Right Column */}
+                  <Grid2 size={{ xs: 6 }}>
+                    <Grid2 container direction="column" spacing={2}>
+                      <Grid2 item>
+                        <Typography variant="body1" sx={{ mb: 0.5 }}>
+                          Type
+                        </Typography>
+
+                        <CustomAutocomplete
+                          value={values.component_type}
+                          component_name="component_type"
+                          onChange={(e, newValue) => setFieldValue('component_type', newValue)}
+                          options={['Fixed', 'Variable']}
+                          error={touched.component_type && Boolean(errors.component_type)}
+                          helperText={touched.component_type && errors.component_type}
+                          sx={{ width: '100%' }}
+                          disabled={
+                            values.component_name === 'Basic' ||
+                            values.component_name === 'HRA' ||
+                            values.component_name === 'Special Allowance'
+                          }
+                        />
+                      </Grid2>
+                      <Grid2 item>
+                        <Typography variant="subtitle1"> Other Configuration</Typography>
                         <FormGroup>
                           <FormControlLabel
                             control={
                               <Checkbox
                                 checked={values.is_part_of_employee_salary_structure}
                                 onChange={(e) => {
-                                  if (values.component_name !== 'Basic' && values.component_name !== 'HRA') {
-                                    let val = e.target.checked;
-                                    setFieldValue('is_part_of_employee_salary_structure', val);
-                                  }
+                                  setFieldValue('is_part_of_employee_salary_structure', e.target.checked);
                                 }}
+                                disabled={values.component_name === 'Basic'}
                               />
                             }
-                            label="1. This is part of salary structure"
+                            label="This is part of salary structure"
+                            sx={{
+                              '& .MuiFormControlLabel-label': {
+                                color: 'black !important'
+                              }
+                            }}
                           />
+
                           <FormControlLabel
                             control={
                               <Checkbox
                                 checked={values.is_taxable}
                                 onChange={(e) => {
-                                  if (values.component_name !== 'Basic' && values.component_name !== 'HRA') {
-                                    let val = e.target.checked;
-                                    setFieldValue('is_taxable', val);
-                                  }
+                                  let val = e.target.checked;
+                                  setFieldValue('is_taxable', val);
                                 }}
+                                disabled={values.component_name === 'Basic'}
                               />
                             }
-                            label="2. This is is_taxable"
+                            label="This is taxable"
+                            sx={{
+                              '& .MuiFormControlLabel-label': {
+                                color: 'black !important'
+                              }
+                            }}
                           />
                           <FormControlLabel
                             control={
                               <Checkbox
                                 checked={values.is_pro_rate_basis}
                                 onChange={(e) => {
-                                  if (values.component_name !== 'Basic' && values.component_name !== 'HRA') {
-                                    let val = e.target.checked;
-                                    setFieldValue('is_pro_rate_basis', val);
-                                  }
+                                  let val = e.target.checked;
+                                  setFieldValue('is_pro_rate_basis', val);
                                 }}
+                                disabled={values.component_name === 'Basic'}
                               />
                             }
-                            label="3. Calculate Pro rata basis"
+                            label="Calculate on Pro rata basis"
+                            sx={{
+                              '& .MuiFormControlLabel-label': {
+                                color: 'black !important'
+                              }
+                            }}
                           />
                           <FormControlLabel
                             control={
                               <Checkbox
                                 checked={values.includes_epf_contribution}
                                 onChange={(e) => {
-                                  if (values.component_name !== 'Basic' && values.component_name !== 'Conveyance Allowance') {
-                                    let val = e.target.checked;
-                                    setFieldValue('includes_epf_contribution', val);
-                                  }
+                                  let val = e.target.checked;
+                                  setFieldValue('includes_epf_contribution', val);
                                 }}
+                                disabled={values.component_name === 'Basic'}
                               />
                             }
-                            label="4. Consider for EPF"
+                            label="Consider for EPF Contribution"
+                            sx={{
+                              '& .MuiFormControlLabel-label': {
+                                color: 'black !important'
+                              }
+                            }}
                           />
+                          <Box sx={{ ml: 3 }}>
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  checked={values.some_other_option}
+                                  onChange={(e) => setFieldValue('some_other_option', e.target.checked)}
+                                  disabled={values.component_name === 'Basic'}
+                                />
+                              }
+                              label="Always"
+                              sx={{
+                                '& .MuiFormControlLabel-label': {
+                                  color: 'black !important'
+                                }
+                              }}
+                            />
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  checked={values.pf_wage_less_than_15k}
+                                  onChange={(e) => setFieldValue('pf_wage_less_than_15k', e.target.checked)}
+                                  disabled={values.component_name === 'Basic'}
+                                />
+                              }
+                              label="Only when PF Wage is less than ₹ 15,000"
+                              sx={{
+                                '& .MuiFormControlLabel-label': {
+                                  color: 'black !important'
+                                }
+                              }}
+                            />
+                          </Box>
                           <FormControlLabel
                             control={
                               <Checkbox
                                 checked={values.includes_esi_contribution}
                                 onChange={(e) => {
-                                  if (values.component_name !== 'Basic' && values.component_name !== 'HRA') {
-                                    let val = e.target.checked;
-                                    setFieldValue('includes_esi_contribution', val);
-                                  }
+                                  let val = e.target.checked;
+                                  setFieldValue('includes_esi_contribution', val);
                                 }}
+                                disabled={values.component_name === 'Basic'}
                               />
                             }
-                            label="5. Consider for ESI"
+                            label="Consider for ESI Contribution"
+                            sx={{
+                              '& .MuiFormControlLabel-label': {
+                                color: 'black !important'
+                              }
+                            }}
+                          />
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={values.is_included_in_payslip}
+                                onChange={(e) => {
+                                  let val = e.target.checked;
+                                  setFieldValue('is_included_in_payslip', val);
+                                }}
+                                disabled={values.component_name === 'Basic'}
+                              />
+                            }
+                            label="Show this component in payslip"
+                            sx={{
+                              '& .MuiFormControlLabel-label': {
+                                color: 'black !important'
+                              }
+                            }}
                           />
                         </FormGroup>
                       </Grid2>
                     </Grid2>
                   </Grid2>
-
-                  {/* Configurations */}
                 </Grid2>
               </Box>
             }

@@ -69,8 +69,6 @@ const InvoiceNumberFormat = ({ businessDetailsData }) => {
       });
     }
   }, [businessDetailsData]);
-  // console.log(businessDetailsData);
-  console.log(formik.values);
   return (
     <Box>
       <DialogContent>

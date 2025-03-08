@@ -43,7 +43,6 @@ export default function RecordPayment() {
     if (res.status_cd === 0) {
       setSelectedInvoice(res.data);
     } else {
-      console.log('Failed to fetch details');
     }
   };
   const handleDelete = async (id) => {

@@ -519,7 +519,8 @@ const AddItem = ({
         total_amount: 0,
         cgst_amount: 0,
         sgst_amount: 0,
-        igst_amount: 0
+        igst_amount: 0,
+        units: ''
       }
     ];
 
@@ -640,7 +641,7 @@ const AddItem = ({
     const rate = selectedItem.selling_price || 0; // Get rate from selected item
     const discount = newItemDetails[index].discount || 0; // Get discount (default to 0)
     const quantity = newItemDetails[index].quantity || 0; // Get quantity (default to 0)
-
+    console.log(selectedItem);
     // Calculate taxable amount (rate * quantity)
     const taxableAmount = rate * quantity;
 
@@ -658,7 +659,8 @@ const AddItem = ({
       ...newItemDetails[index],
       item: newValue,
       unitPrice: rate,
-      hsn_sac: selectedItem.hsn_sac, // Set HSN code
+      hsn_sac: selectedItem.hsn_sac,
+      units: selectedItem.units,
       rate: rate,
       tax: gstRate,
       amount: amount,
