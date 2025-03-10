@@ -25,10 +25,11 @@ const InvoiceNumberFormat = ({ businessDetailsData }) => {
     },
     validationSchema: Yup.object({
       gstin: Yup.string().required('GSTIN is required'),
-      startingNumber: Yup.string().required('Starting Number is required'),
+      startingNumber: Yup.number().typeError('Starting Number must be a number').required('Starting Number is required'),
       prefix: Yup.string().required('Prefix is required'),
       suffix: Yup.string().required('Suffix is required')
     }),
+
     onSubmit: async (values) => {
       const url = postType === 'post' ? '/invoicing/invoice-formats/' : `/invoicing/invoice-formats/${selectedRecord.id}/`;
 

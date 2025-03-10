@@ -110,7 +110,8 @@ function EarningsComponent({ handleNext, handleBack }) {
       is_included_in_payslip: false,
       tax_deduction_preference: null,
       is_scheduled_earning: false,
-      pf_wage_less_than_15k: false
+      pf_wage_less_than_15k: false,
+      always_consider_epf_inclusion: false
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -147,7 +148,6 @@ function EarningsComponent({ handleNext, handleBack }) {
     }
   }, [payrollid]);
   const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, resetForm, setFieldValue } = formik;
-  console.log(values);
 
   return (
     <>
@@ -251,14 +251,14 @@ function EarningsComponent({ handleNext, handleBack }) {
           <Modal
             open={open}
             maxWidth={ModalSize.LG}
-            header={{ title: 'New Component', subheader: '' }}
+            header={{ title: values.component_name ? values.component_name : 'New Component', subheader: '' }}
             modalContent={
               <Box component="form" onSubmit={handleSubmit}>
                 <Grid2 container spacing={3}>
                   {/* Left Column */}
                   <Grid2 size={{ xs: 6 }}>
                     <Grid2 container direction="column" spacing={2}>
-                      <Grid2 item>
+                      <Grid2>
                         <Typography variant="body1" sx={{ mb: 0.5 }}>
                           Name
                         </Typography>
@@ -284,8 +284,10 @@ function EarningsComponent({ handleNext, handleBack }) {
                             control={
                               <Checkbox
                                 checked={values.calculation_type.type === 'Flat Amount'}
-                                onChange={() => setFieldValue('calculation_type.type', 'Flat Amount')}
-                                disabled={values.component_name === 'Basic' || values.component_name === 'HRA'}
+                                onChange={(e) => {
+                                  setFieldValue('calculation_type.type', 'Flat Amount');
+                                }}
+                                disabled={values.component_name === 'Basic'}
                               />
                             }
                             label="Flat Amount"
@@ -298,10 +300,7 @@ function EarningsComponent({ handleNext, handleBack }) {
                                   values.calculation_type.type === 'Percentage of Basic'
                                 }
                                 onChange={(e) => {
-                                  if (values.component_name !== 'Basic' && values.component_name !== 'HRA') {
-                                    let val = e.target.checked;
-                                    setFieldValue('calculation_type.type', 'Percentage of Basic');
-                                  }
+                                  setFieldValue('calculation_type.type', 'Percentage of Basic');
                                 }}
                               />
                             }
@@ -342,11 +341,10 @@ function EarningsComponent({ handleNext, handleBack }) {
                             <Checkbox
                               checked={values.is_active}
                               onChange={(e) => {
-                                // if (values.component_name === 'Basic' || values.component_name === 'HRA') {
                                 let val = e.target.checked;
                                 setFieldValue('is_active', val);
-                                // }
                               }}
+                              disabled={values.component_name === 'Fixed Allowance'}
                             />
                           }
                           label="Mark this as Active"
@@ -358,7 +356,7 @@ function EarningsComponent({ handleNext, handleBack }) {
                   {/* Right Column */}
                   <Grid2 size={{ xs: 6 }}>
                     <Grid2 container direction="column" spacing={2}>
-                      <Grid2 item>
+                      <Grid2>
                         <Typography variant="body1" sx={{ mb: 0.5 }}>
                           Type
                         </Typography>
@@ -374,11 +372,12 @@ function EarningsComponent({ handleNext, handleBack }) {
                           disabled={
                             values.component_name === 'Basic' ||
                             values.component_name === 'HRA' ||
-                            values.component_name === 'Special Allowance'
+                            values.component_name === 'Special Allowance' ||
+                            values.component_name === 'Conveyance Allowance'
                           }
                         />
                       </Grid2>
-                      <Grid2 item>
+                      <Grid2>
                         <Typography variant="subtitle1"> Other Configuration</Typography>
                         <FormGroup>
                           <FormControlLabel
@@ -388,10 +387,15 @@ function EarningsComponent({ handleNext, handleBack }) {
                                 onChange={(e) => {
                                   setFieldValue('is_part_of_employee_salary_structure', e.target.checked);
                                 }}
-                                disabled={values.component_name === 'Basic'}
+                                disabled={
+                                  values.component_name === 'Basic' ||
+                                  values.component_name === 'HRA' ||
+                                  values.component_name === 'Fixed Allowance' ||
+                                  values.component_name === 'Conveyance Allowance'
+                                }
                               />
                             }
-                            label="This is part of salary structure"
+                            label="This is part of employee salary structure"
                             sx={{
                               '& .MuiFormControlLabel-label': {
                                 color: 'black !important'
@@ -407,7 +411,13 @@ function EarningsComponent({ handleNext, handleBack }) {
                                   let val = e.target.checked;
                                   setFieldValue('is_taxable', val);
                                 }}
-                                disabled={values.component_name === 'Basic'}
+                                disabled={
+                                  values.component_name === 'Basic' ||
+                                  values.component_name === 'Fixed Allowance' ||
+                                  values.component_name === 'HRA' ||
+                                  values.component_name === 'Conveyance Allowance' ||
+                                  values.component_name === 'Bonus'
+                                }
                               />
                             }
                             label="This is taxable"
@@ -417,24 +427,26 @@ function EarningsComponent({ handleNext, handleBack }) {
                               }
                             }}
                           />
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={values.is_pro_rate_basis}
-                                onChange={(e) => {
-                                  let val = e.target.checked;
-                                  setFieldValue('is_pro_rate_basis', val);
-                                }}
-                                disabled={values.component_name === 'Basic'}
-                              />
-                            }
-                            label="Calculate on Pro rata basis"
-                            sx={{
-                              '& .MuiFormControlLabel-label': {
-                                color: 'black !important'
+                          {values.component_name !== 'Bonus' && (
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  checked={values.is_pro_rate_basis}
+                                  onChange={(e) => {
+                                    let val = e.target.checked;
+                                    setFieldValue('is_pro_rate_basis', val);
+                                  }}
+                                  disabled={values.component_name === 'Basic' || values.component_name === 'Fixed Allowance'}
+                                />
                               }
-                            }}
-                          />
+                              label="Calculate on Pro rata basis"
+                              sx={{
+                                '& .MuiFormControlLabel-label': {
+                                  color: 'black !important'
+                                }
+                              }}
+                            />
+                          )}
                           <FormControlLabel
                             control={
                               <Checkbox
@@ -443,7 +455,7 @@ function EarningsComponent({ handleNext, handleBack }) {
                                   let val = e.target.checked;
                                   setFieldValue('includes_epf_contribution', val);
                                 }}
-                                disabled={values.component_name === 'Basic'}
+                                disabled={values.component_name === 'Basic' || values.component_name === 'HRA'}
                               />
                             }
                             label="Consider for EPF Contribution"
@@ -453,38 +465,44 @@ function EarningsComponent({ handleNext, handleBack }) {
                               }
                             }}
                           />
-                          <Box sx={{ ml: 3 }}>
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  checked={values.some_other_option}
-                                  onChange={(e) => setFieldValue('some_other_option', e.target.checked)}
-                                  disabled={values.component_name === 'Basic'}
+                          {(values.component_name === 'Basic' ||
+                            values.component_name === 'Fixed Allowance' ||
+                            values.component_name === 'Conveyance Allowance') &&
+                            values.includes_epf_contribution === true && (
+                              <Box sx={{ ml: 3 }}>
+                                <FormControlLabel
+                                  control={
+                                    <Checkbox
+                                      checked={values.always_consider_epf_inclusion}
+                                      onChange={(e) => setFieldValue('always_consider_epf_inclusion', e.target.checked)}
+                                      disabled={values.component_name === 'Basic' || values.component_name === 'Fixed Allowance'}
+                                    />
+                                  }
+                                  label="Always"
+                                  sx={{
+                                    '& .MuiFormControlLabel-label': {
+                                      color: 'black !important'
+                                    }
+                                  }}
                                 />
-                              }
-                              label="Always"
-                              sx={{
-                                '& .MuiFormControlLabel-label': {
-                                  color: 'black !important'
-                                }
-                              }}
-                            />
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  checked={values.pf_wage_less_than_15k}
-                                  onChange={(e) => setFieldValue('pf_wage_less_than_15k', e.target.checked)}
-                                  disabled={values.component_name === 'Basic'}
+                                <FormControlLabel
+                                  control={
+                                    <Checkbox
+                                      checked={values.pf_wage_less_than_15k}
+                                      onChange={(e) => setFieldValue('pf_wage_less_than_15k', e.target.checked)}
+                                      disabled={values.component_name === 'Basic' || values.component_name === 'Fixed Allowance'}
+                                    />
+                                  }
+                                  label="Only when PF Wage is less than ₹ 15,000"
+                                  sx={{
+                                    '& .MuiFormControlLabel-label': {
+                                      color: 'black !important'
+                                    }
+                                  }}
                                 />
-                              }
-                              label="Only when PF Wage is less than ₹ 15,000"
-                              sx={{
-                                '& .MuiFormControlLabel-label': {
-                                  color: 'black !important'
-                                }
-                              }}
-                            />
-                          </Box>
+                              </Box>
+                            )}
+
                           <FormControlLabel
                             control={
                               <Checkbox
@@ -493,7 +511,7 @@ function EarningsComponent({ handleNext, handleBack }) {
                                   let val = e.target.checked;
                                   setFieldValue('includes_esi_contribution', val);
                                 }}
-                                disabled={values.component_name === 'Basic'}
+                                disabled={values.component_name === 'Basic' || values.component_name === 'Fixed Allowance'}
                               />
                             }
                             label="Consider for ESI Contribution"
@@ -511,7 +529,13 @@ function EarningsComponent({ handleNext, handleBack }) {
                                   let val = e.target.checked;
                                   setFieldValue('is_included_in_payslip', val);
                                 }}
-                                disabled={values.component_name === 'Basic'}
+                                disabled={
+                                  values.component_name === 'Basic' ||
+                                  values.component_name === 'HRA' ||
+                                  values.component_name === 'Fixed Allowance' ||
+                                  values.component_name === 'Conveyance Allowance' ||
+                                  values.component_name !== 'Bonus'
+                                }
                               />
                             }
                             label="Show this component in payslip"
