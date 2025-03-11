@@ -1,21 +1,16 @@
+import dynamic from 'next/dynamic';
+
 // @project
-import ComingSoon from '@/blocks/ComingSoon';
 import { SEO_CONTENT } from '@/metadata';
 
-/***************************  METADATA - COMING SOON  ***************************/
+const Faq = dynamic(() => import('@/views/landings/default/faq'));
 
-export const metadata = { ...SEO_CONTENT.comingSoonPage };
+/***************************  METADATA - FAQ  ***************************/
 
-/***************************  COMING SOON - DATA  ***************************/
+export const metadata = { ...SEO_CONTENT.faqPage };
 
-const data = {
-  chip: { chipCaption: '✦ Stay Tuned ✦ ' },
-  description: 'A seamless ecosystem for managing your businesses & personal finances.',
-  primaryBtn: { children: 'Notify Me' }
-};
+/***************************  PAGE - FAQ  ***************************/
 
-/***************************  BLOCK - COMING SOON  ***************************/
-
-export default function BlockComingSoon() {
-  return <ComingSoon {...data} />;
+export default function FaqPage() {
+  return <Faq />;
 }

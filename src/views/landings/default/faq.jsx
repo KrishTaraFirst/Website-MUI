@@ -11,7 +11,7 @@ export default function Faq() {
   return (
     <>
       <Faq6 {...faq} />
-      <Cta5 {...cta5} />
+      {/* <Cta5 {...cta5} /> */}
     </>
   );
 }

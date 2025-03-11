@@ -1,7 +1,7 @@
 'use client';
 
 // @project
-import Feature7 from '@/blocks/feature/Feature7';
+import { Feature7 } from '@/blocks/feature';
 import LazySection from '@/components/LazySection';
 import SectionHero from '@/components/SectionHero';
 
@@ -13,30 +13,28 @@ import { clientele2, feature23, feature7, feature18, team, contactUS } from './d
 export default function About() {
   return (
     <>
-      <SectionHero heading="More than a Platform → A Financial Revolution ✦" search={true} offer />
-      <Feature7 {...feature7} />
+      <SectionHero heading="More than a Platform, a Financial Revolution ✦" search={false} offer />
+      {/* <Feature7 {...feature7} /> */}
 
       <LazySection
         sections={[
-          { importFunc: () => import('@/blocks/feature').then((module) => ({ default: module.Feature18 })), props: feature18 },
+          // { importFunc: () => import('@/blocks/feature').then((module) => ({ default: module.Feature18 })), props: feature18 },
+          { importFunc: () => import('@/blocks/team').then((module) => ({ default: module.Team5 })), props: team },
           { importFunc: () => import('@/blocks/feature').then((module) => ({ default: module.Feature23 })), props: feature23 }
         ]}
         offset="200px"
       />
 
-      <LazySection
+      {/* <LazySection
         sections={[
+          { importFunc: () => import('@/blocks/clientele').then((module) => ({ default: module.Clientele2 })), props: clientele2 },
           {
-            importFunc: () => import('@/blocks/clientele/Clientele2').then((module) => ({ default: module.Clientele2 })),
-            props: clientele2
-          },
-          {
-            importFunc: () => import('@/blocks/contact-us').then((module) => ({ default: module.ContactUs1 })),
+            importFunc: () => import('@/blocks/contact-us').then((module) => ({ default: module.ContactUs4 })),
             props: { showForm: false, ...contactUS }
           }
         ]}
         offset="200px"
-      />
+      /> */}
     </>
   );
 }

@@ -55,7 +55,7 @@ export default function ServiceCategories({ tab }) {
                         // icon={'tabler-credit-card-pay'}
                         // icon={services[item].icon}
                         title={services[item]['sub-services'][subItem].title}
-                        href={'#'}
+                        href={`/services/${subItem}`}
                         content={services[item]['sub-services'][subItem].description}
                         iconAvatar
                         cardPadding={{ xs: 2, sm: 3, md: 3 }}
@@ -70,7 +70,7 @@ export default function ServiceCategories({ tab }) {
                     // icon={'tabler-credit-card-pay'}
                     // icon={services[item].icon}
                     title={services[item].title}
-                    href={'#'}
+                    href={`/services/${item}`}
                     content={services[item].description}
                     iconAvatar
                     cardPadding={{ xs: 2, sm: 3, md: 3 }}

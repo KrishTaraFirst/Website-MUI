@@ -329,23 +329,22 @@ export const feature7 = {
 
 export const feature23 = {
   heading: 'Culture of Innovation',
-  caption:
-    'Join a team that embraces forward-thinking ideas, fosters innovation, and cultivates an environment where your creativity can flourish.',
+  caption: 'Team Tara is constantly exploring ways to streamline your financial touch points with various compliance and audit systems.',
   heading2: 'Growth',
   caption2: 'Our culture prioritizes continuous learning, encouraging personal and professional development. ',
   image: { light: '/assets/images/graphics/default/feature23-light.png', dark: '/assets/images/graphics/default/feature23-dark.png' },
-  primaryBtn: { children: 'Join  Our Team', href: '#' },
+  // primaryBtn: { children: 'Join  Our Team', href: '#' },
 
   features: [
     {
       icon: 'tabler-users',
-      title: 'Teamwork',
-      content: 'We embrace varied perspectives and backgrounds, creating an inclusive environment.'
+      title: 'Research',
+      content: 'Our technology team works round the clock to device ways to simplify your financial needs.'
     },
     {
       icon: 'tabler-star',
-      title: 'Inclusivity',
-      content: 'We embrace varied perspectives and backgrounds, creating an inclusive environment.'
+      title: 'Functionality',
+      content: 'We aim to ensure Tara First is compatible with most of your finance related tools, making cross-functionality a breeze.'
     }
   ]
 };

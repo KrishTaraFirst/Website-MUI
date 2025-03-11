@@ -11,7 +11,7 @@ import GraphicsCard from '@/components/cards/GraphicsCard';
 import IconCard from '@/components/cards/IconCard';
 import ContainerWrapper from '@/components/ContainerWrapper';
 import GraphicsImage from '@/components/GraphicsImage';
-import Typeset from '@/components/Typeset';
+import Typeset from '@/components/Typeset2';
 
 import { IconType } from '@/enum';
 import { SECTION_COMMON_PY } from '@/utils/constant';
@@ -51,7 +51,13 @@ export default function Feature23({ heading, caption, image, features, heading2,
                           <Typography variant="h4">{heading2}</Typography>
                           <Typography sx={{ color: 'text.secondary' }}>{caption2}</Typography>
                         </Stack>
-                        <Button color="primary" size="small" variant="contained" sx={{ px: 2 }} {...primaryBtn} />
+                        <Button
+                          color="primary"
+                          size="small"
+                          variant="contained"
+                          sx={{ px: 2, visibility: primaryBtn ? 'visible' : 'hidden' }}
+                          {...primaryBtn}
+                        />
                       </Stack>
                     </Box>
                   </Grid>

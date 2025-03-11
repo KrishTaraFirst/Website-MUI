@@ -17,7 +17,7 @@ import { motion } from 'framer-motion';
 import Slider from 'react-slick';
 
 // @project
-import GraphicsCard  from '@/components/cards/GraphicsCard';
+import GraphicsCard from '@/components/cards/GraphicsCard';
 import ContainerWrapper from '@/components/ContainerWrapper';
 import GraphicsImage from '@/components/GraphicsImage';
 import SvgIcon from '@/components/SvgIcon';

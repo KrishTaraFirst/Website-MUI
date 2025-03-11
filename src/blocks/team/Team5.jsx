@@ -16,7 +16,7 @@ import Slider from 'react-slick';
 
 // @project
 import ContainerWrapper from '@/components/ContainerWrapper';
-import Typeset from '@/components/Typeset';
+import Typeset from '@/components/Typeset2';
 import GraphicsImage from '@/components/GraphicsImage';
 import SlickArrows from '@/components/SlickArrows';
 import { SECTION_COMMON_PY } from '@/utils/constant';
@@ -70,7 +70,7 @@ export default function Team5({ heading, caption, members, image, actionBtn, des
             </Grid>
           )}
         </Grid>
-        <Stack sx={{ gap: { xs: 3, md: 4 } }}>
+        {/* <Stack sx={{ gap: { xs: 3, md: 4 } }}>
           <Slider ref={sliderRef} {...settings}>
             {chunkedMembers.map((membersData, chunkIndex) => (
               <Box key={chunkIndex}>
@@ -101,7 +101,7 @@ export default function Team5({ heading, caption, members, image, actionBtn, des
             ))}
           </Slider>
           <SlickArrows sliderRef={sliderRef} />
-        </Stack>
+        </Stack> */}
       </Stack>
     </ContainerWrapper>
   );
