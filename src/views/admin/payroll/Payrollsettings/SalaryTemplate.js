@@ -47,19 +47,10 @@ function SalaryTemplate() {
     setOpenDialog(true);
   };
 
-  // Close dialog
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
-
-  // Example to simulate adding a designation
-  const addDepartment = (newDepartment) => {
-    setDesignations((prevDepartments) => [...prevDepartments, newDepartment]);
-  };
-  const fetchDesignations = async () => {
+  const fetch_salary_templates = async () => {
     if (!payrollid) return; // If there's no payroll id, exit early
 
-    const url = `/payroll/designations/?payroll_id=${payrollid}`;
+    const url = `/payroll/salary-templates/${payrollid}`;
     const { res, error } = await Factory('get', url, {});
 
     if (res?.status_cd === 0 && Array.isArray(res?.data)) {
@@ -80,13 +71,13 @@ function SalaryTemplate() {
       showSnackbar(JSON.stringify(res.data), 'error');
     } else {
       showSnackbar('Record Deleted Successfully', 'success');
-      fetchDesignations();
+      fetch_salary_templates();
     }
   };
   // Fetch data when payrollid changes
 
   useEffect(() => {
-    if (payrollid !== null) fetchDesignations();
+    if (payrollid !== null) fetch_salary_templates();
   }, [payrollid]);
   return (
     <HomeCard
@@ -130,7 +121,7 @@ function SalaryTemplate() {
             //   selectedRecord={selectedRecord}
             //   type={postType}
             //   setType={setPostType}
-            //   fetchDesignations={fetchDesignations}
+            //   fetch_salary_templates={fetch_salary_templates}
             // />
             <></>
           )}

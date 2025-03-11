@@ -205,19 +205,21 @@ function EarningsComponent({ handleNext, handleBack }) {
                         <TableCell>{item.consider_for_esi ? 'Yes' : 'No'}</TableCell>
                         <TableCell>{item.is_active === true ? 'Active' : 'In active'}</TableCell>
                         <TableCell>
-                          <ActionCell
-                            row={item} // Pass the customer row data
-                            onEdit={() => handleEdit(item)} // Edit handler
-                            onDelete={() => handleDelete(item)} // Delete handler
-                            open={open}
-                            onClose={handleClose}
-                            deleteDialogData={{
-                              title: 'Delete Record',
-                              heading: 'Are you sure you want to delete this Record?',
-                              description: `This action will remove ${item.name} from the list.`,
-                              successMessage: 'Record has been deleted.'
-                            }}
-                          />
+                          {item.component_name !== 'Basic' && (
+                            <ActionCell
+                              row={item} // Pass the customer row data
+                              onEdit={() => handleEdit(item)} // Edit handler
+                              onDelete={() => handleDelete(item)} // Delete handler
+                              open={open}
+                              onClose={handleClose}
+                              deleteDialogData={{
+                                title: 'Delete Record',
+                                heading: 'Are you sure you want to delete this Record?',
+                                description: `This action will remove ${item.name} from the list.`,
+                                successMessage: 'Record has been deleted.'
+                              }}
+                            />
+                          )}
                         </TableCell>
                       </TableRow>
                     ))
@@ -277,64 +279,83 @@ function EarningsComponent({ handleNext, handleBack }) {
                           }
                         />
                       </Grid2>
-                      <Grid2>
-                        <Typography variant="subtitle1">Calculation Type:</Typography>
-                        <FormGroup row sx={{ mt: 1 }}>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={values.calculation_type.type === 'Flat Amount'}
-                                onChange={(e) => {
-                                  setFieldValue('calculation_type.type', 'Flat Amount');
-                                }}
-                                disabled={values.component_name === 'Basic'}
-                              />
-                            }
-                            label="Flat Amount"
-                          />
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={
-                                  values.calculation_type.type === 'Percentage of CTC' ||
-                                  values.calculation_type.type === 'Percentage of Basic'
-                                }
-                                onChange={(e) => {
-                                  setFieldValue('calculation_type.type', 'Percentage of Basic');
-                                }}
-                              />
-                            }
-                            label={values.component_name === 'Basic' ? 'Percentage of CTC' : 'Percentage of Basic'}
-                          />
-                        </FormGroup>
+                      {values.component_name !== 'Commission' && (
                         <Grid2>
-                          <Typography sx={{ mb: 0.5 }}>
-                            {values.calculation_type.type === 'Flat Amount' ? 'Enter Amount ' : 'Enter Percentage'}
-                          </Typography>
-                          <TextField
-                            fullWidth
-                            value={values.calculation_type.value}
-                            onChange={(e) => {
-                              // Allow only numbers and one decimal point
-                              const numericValue = e.target.value
-                                .replace(/[^0-9.]/g, '') // Remove non-numeric and non-decimal characters
-                                .replace(/(\..*)\./g, '$1'); // Ensure only one decimal point is allowed
-                              setFieldValue('calculation_type.value', numericValue);
-                            }}
-                            onBlur={handleBlur}
-                            // error={touched.calculation_type.value && Boolean(errors.calculation_type.value)}
-                            // helperText={touched.calculation_type.value && errors.calculation_type.value}
-                            InputProps={{
-                              startAdornment: (
-                                <InputAdornment position="start" sx={{ display: 'flex', alignItems: 'center' }}>
-                                  <span>{values.calculation_type.type === 'Flat Amount' ? '₹' : '%'}</span>
-                                  <Divider orientation="vertical" flexItem sx={{ mx: 1, height: '24px' }} />
-                                </InputAdornment>
-                              )
-                            }}
-                          />
+                          <Typography variant="subtitle1">Calculation Type:</Typography>
+                          <FormGroup row sx={{ mt: 1 }}>
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  checked={values.calculation_type.type === 'Flat Amount'}
+                                  onChange={(e) => {
+                                    setFieldValue('calculation_type.type', 'Flat Amount');
+                                  }}
+                                  disabled={values.component_name === 'Basic'}
+                                />
+                              }
+                              label="Flat Amount"
+                            />
+                            {values.component_name === 'Overtime Allowance' ? (
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={
+                                      values.calculation_type.type === 'Percentage of CTC' ||
+                                      values.calculation_type.type === 'Percentage of Basic'
+                                    }
+                                    onChange={(e) => {
+                                      setFieldValue('calculation_type.type', 'Percentage of Basic');
+                                    }}
+                                  />
+                                }
+                                label={'Custom Formula'}
+                              />
+                            ) : (
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={
+                                      values.calculation_type.type === 'Percentage of CTC' ||
+                                      values.calculation_type.type === 'Percentage of Basic'
+                                    }
+                                    onChange={(e) => {
+                                      setFieldValue('calculation_type.type', 'Percentage of Basic');
+                                    }}
+                                  />
+                                }
+                                label={values.component_name === 'Basic' ? 'Percentage of CTC' : 'Percentage of Basic'}
+                              />
+                            )}
+                          </FormGroup>
+                          <Grid2>
+                            <Typography sx={{ mb: 0.5 }}>
+                              {values.calculation_type.type === 'Flat Amount' ? 'Enter Amount ' : 'Enter Percentage'}
+                            </Typography>
+                            <TextField
+                              fullWidth
+                              value={values.calculation_type.value}
+                              onChange={(e) => {
+                                // Allow only numbers and one decimal point
+                                const numericValue = e.target.value
+                                  .replace(/[^0-9.]/g, '') // Remove non-numeric and non-decimal characters
+                                  .replace(/(\..*)\./g, '$1'); // Ensure only one decimal point is allowed
+                                setFieldValue('calculation_type.value', numericValue);
+                              }}
+                              onBlur={handleBlur}
+                              // error={touched.calculation_type.value && Boolean(errors.calculation_type.value)}
+                              // helperText={touched.calculation_type.value && errors.calculation_type.value}
+                              InputProps={{
+                                startAdornment: (
+                                  <InputAdornment position="start" sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <span>{values.calculation_type.type === 'Flat Amount' ? '₹' : '%'}</span>
+                                    <Divider orientation="vertical" flexItem sx={{ mx: 1, height: '24px' }} />
+                                  </InputAdornment>
+                                )
+                              }}
+                            />
+                          </Grid2>
                         </Grid2>
-                      </Grid2>
+                      )}
                       <Grid2>
                         <FormControlLabel
                           control={
@@ -391,7 +412,12 @@ function EarningsComponent({ handleNext, handleBack }) {
                                   values.component_name === 'Basic' ||
                                   values.component_name === 'HRA' ||
                                   values.component_name === 'Fixed Allowance' ||
-                                  values.component_name === 'Conveyance Allowance'
+                                  values.component_name === 'Conveyance Allowance' ||
+                                  values.component_name === 'Children Education Allowance' ||
+                                  values.component_name === 'Transport Allowance' ||
+                                  values.component_name === 'Commission' ||
+                                  values.component_name === 'Travelling Allowance' ||
+                                  values.component_name === 'Overtime Allowance'
                                 }
                               />
                             }
@@ -416,7 +442,12 @@ function EarningsComponent({ handleNext, handleBack }) {
                                   values.component_name === 'Fixed Allowance' ||
                                   values.component_name === 'HRA' ||
                                   values.component_name === 'Conveyance Allowance' ||
-                                  values.component_name === 'Bonus'
+                                  values.component_name === 'Bonus' ||
+                                  values.component_name === 'Commission' ||
+                                  values.component_name === 'Children Education Allowance' ||
+                                  values.component_name === 'Transport Allowance' ||
+                                  values.component_name === 'Travelling Allowance' ||
+                                  values.component_name === 'Overtime Allowance'
                                 }
                               />
                             }
@@ -427,26 +458,32 @@ function EarningsComponent({ handleNext, handleBack }) {
                               }
                             }}
                           />
-                          {values.component_name !== 'Bonus' && (
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  checked={values.is_pro_rate_basis}
-                                  onChange={(e) => {
-                                    let val = e.target.checked;
-                                    setFieldValue('is_pro_rate_basis', val);
-                                  }}
-                                  disabled={values.component_name === 'Basic' || values.component_name === 'Fixed Allowance'}
-                                />
-                              }
-                              label="Calculate on Pro rata basis"
-                              sx={{
-                                '& .MuiFormControlLabel-label': {
-                                  color: 'black !important'
+                          {values.component_name !== 'Bonus' &&
+                            values.component_name !== 'Commission' &&
+                            values.component_name !== 'Overtime Allowance' && (
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={values.is_pro_rate_basis}
+                                    onChange={(e) => {
+                                      let val = e.target.checked;
+                                      setFieldValue('is_pro_rate_basis', val);
+                                    }}
+                                    disabled={
+                                      values.component_name === 'Basic' ||
+                                      values.component_name === 'Fixed Allowance' ||
+                                      values.component_name === 'Children Education Allowance'
+                                    }
+                                  />
                                 }
-                              }}
-                            />
-                          )}
+                                label="Calculate on Pro rata basis"
+                                sx={{
+                                  '& .MuiFormControlLabel-label': {
+                                    color: 'black !important'
+                                  }
+                                }}
+                              />
+                            )}
                           <FormControlLabel
                             control={
                               <Checkbox
@@ -455,7 +492,11 @@ function EarningsComponent({ handleNext, handleBack }) {
                                   let val = e.target.checked;
                                   setFieldValue('includes_epf_contribution', val);
                                 }}
-                                disabled={values.component_name === 'Basic' || values.component_name === 'HRA'}
+                                disabled={
+                                  values.component_name === 'Basic' ||
+                                  values.component_name === 'HRA' ||
+                                  values.component_name === 'Overtime Allowance'
+                                }
                               />
                             }
                             label="Consider for EPF Contribution"
@@ -467,7 +508,11 @@ function EarningsComponent({ handleNext, handleBack }) {
                           />
                           {(values.component_name === 'Basic' ||
                             values.component_name === 'Fixed Allowance' ||
-                            values.component_name === 'Conveyance Allowance') &&
+                            values.component_name === 'Conveyance Allowance' ||
+                            values.component_name == 'Commission' ||
+                            values.component_name === 'Children Education Allowance' ||
+                            values.component_name === 'Transport Allowance' ||
+                            values.component_name === 'Travelling Allowance') &&
                             values.includes_epf_contribution === true && (
                               <Box sx={{ ml: 3 }}>
                                 <FormControlLabel
@@ -475,7 +520,12 @@ function EarningsComponent({ handleNext, handleBack }) {
                                     <Checkbox
                                       checked={values.always_consider_epf_inclusion}
                                       onChange={(e) => setFieldValue('always_consider_epf_inclusion', e.target.checked)}
-                                      disabled={values.component_name === 'Basic' || values.component_name === 'Fixed Allowance'}
+                                      disabled={
+                                        values.component_name === 'Basic' ||
+                                        values.component_name === 'Fixed Allowance' ||
+                                        values.component_name === 'Commission' ||
+                                        values.component_name === 'Travelling Allowance'
+                                      }
                                     />
                                   }
                                   label="Always"
@@ -534,7 +584,10 @@ function EarningsComponent({ handleNext, handleBack }) {
                                   values.component_name === 'HRA' ||
                                   values.component_name === 'Fixed Allowance' ||
                                   values.component_name === 'Conveyance Allowance' ||
-                                  values.component_name !== 'Bonus'
+                                  values.component_name === 'Bonus' ||
+                                  values.component_name === 'Commission' ||
+                                  values.component_name === 'Travelling Allowance' ||
+                                  values.component_name === 'Overtime Allowance'
                                 }
                               />
                             }

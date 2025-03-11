@@ -210,7 +210,7 @@ const AddItem = ({ type, setType, open, handleOpen, handleClose, selectedItem, b
                 ) : (
                   <>
                     <Typography sx={{ mb: 1 }}>
-                      {item.label} {<span style={{ color: 'red' }}>*</span>}
+                      {item.label} {item.name !== 'sku_value' && <span style={{ color: 'red' }}>*</span>}
                     </Typography>
                     <CustomInput
                       name={item.name}
