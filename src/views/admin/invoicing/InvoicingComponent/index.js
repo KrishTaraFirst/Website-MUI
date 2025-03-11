@@ -62,7 +62,6 @@ function Index() {
   // Fetch Invoice Number Format
   const getInvoiceFormat = async () => {
     const { res } = await Factory('get', `/invoicing/latest/${businessDetails?.id}/`, {});
-    console.log(res.data);
     if (res.status_cd === 0) {
       setInvoiceNumberFormat(res.data.latest_invoice_number);
     } else {

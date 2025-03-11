@@ -65,7 +65,7 @@ const AddItem = ({ type, setType, open, handleOpen, handleClose, selectedItem, b
     { name: 'hsn_sac', label: 'HSN/SAC Code' },
     { name: 'gst_rate', label: 'GST Rate' },
     { name: 'tax_preference', label: 'Tax Preference' },
-    { name: 'selling_price', label: 'Selling Price' },
+    { name: 'selling_price', label: 'Selling Rate' },
     { name: 'description', label: 'Description' }
   ]);
   const { showSnackbar } = useSnackbar();
@@ -85,21 +85,22 @@ const AddItem = ({ type, setType, open, handleOpen, handleClose, selectedItem, b
     validationSchema: Yup.object({
       type: Yup.string().required('Required'),
       name: Yup.string().required('Required'),
-      sku_value: Yup.number()
-        .typeError('SKU Value must be an integer')
-        .required('SKU Value is required')
-        .integer('SKU Value must be an integer'),
+      // sku_value: Yup.number()
+      //   .typeError('SKU Value must be an integer')
+      //   .required('SKU Value is required')
+      //   .integer('SKU Value must be an integer'),
       units: Yup.string().required('Units is Required'),
       hsn_sac: Yup.number()
-        .required('HSN/SAC Code is Required')
         .typeError('HSN/SAC Code must be a number')
-        .test('len', 'HSN/SAC must be exactly 4 digits', (value) => value && /^[0-9]{4}$/.test(value)),
+        .required('HSN/SAC Code is Required')
+        .test('valid-length', 'HSN/SAC must be 4, 6, or 8 digits', (value) => value && [4, 6, 8].includes(value.toString().length)),
+
       gst_rate: Yup.string().required('GST Rate is Required'),
       tax_preference: Yup.string().required(' Tax Preference is Required'),
       selling_price: Yup.number()
-        .typeError('Selling Price must be an integer')
-        .required('Selling Price is required')
-        .integer('Selling Price must be an integer'),
+        .typeError('Selling Rate must be an integer')
+        .required('Selling Rate is required')
+        .integer('Selling Rate must be an integer'),
       description: Yup.string().required('Description is Required')
     }),
     onSubmit: async (values) => {
@@ -108,7 +109,6 @@ const AddItem = ({ type, setType, open, handleOpen, handleClose, selectedItem, b
       postData.sku_value = Number(postData.sku_value);
       postData.gst_rate = Number(postData.gst_rate);
       postData.selling_price = Number(postData.selling_price);
-      console.log(postData);
       let post_url = '/invoicing/api/v1/goods-services/create/';
       const put_url = `/invoicing/goods-services/${selectedItem?.id}/update/`;
 
@@ -126,7 +126,6 @@ const AddItem = ({ type, setType, open, handleOpen, handleClose, selectedItem, b
           showSnackbar(type === 'edit' ? 'Data Updated Successfully' : 'Data Added Successfully', 'success');
         }
       } catch (error) {
-        console.error('Error:', error);
         showSnackbar(JSON.stringify(error), 'error');
       }
     }
@@ -211,7 +210,7 @@ const AddItem = ({ type, setType, open, handleOpen, handleClose, selectedItem, b
                 ) : (
                   <>
                     <Typography sx={{ mb: 1 }}>
-                      {item.label} {<span style={{ color: 'red' }}>*</span>}
+                      {item.label} {item.name !== 'sku_value' && <span style={{ color: 'red' }}>*</span>}
                     </Typography>
                     <CustomInput
                       name={item.name}

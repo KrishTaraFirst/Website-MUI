@@ -78,7 +78,7 @@ const PayrollSetup = () => {
             return { ...step, completed: res.data.salary_component };
           }
           if (step.path === '/set_up_salary_template') {
-            return { ...step, completed: res.data.salary_component };
+            return { ...step, completed: res.data.salary_template };
           }
           if (step.path === '/set_up_employee_master') {
             return { ...step, completed: res.data.employee_master };
@@ -87,7 +87,7 @@ const PayrollSetup = () => {
             return { ...step, completed: res.data.pay_schedule };
           }
           if (step.path === '/leave_and_attendance') {
-            return { ...step, completed: res.data.salary_component };
+            return { ...step, completed: res.data.leave_and_attendance };
           }
 
           return step;

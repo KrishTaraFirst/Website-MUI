@@ -31,6 +31,8 @@ import { useSnackbar } from '@/components/CustomSnackbar';
 import Factory from '@/utils/Factory';
 import ActionCell from '@/utils/ActionCell';
 import ViewSlabsModel from './ViewSlabs';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+
 const details = [
   { name: 'work_location_name', label: 'Work Location' },
   { name: 'state', label: 'State' },
@@ -74,7 +76,6 @@ function ProfessionalTax({ handleBack, handleNext }) {
     setCurrentPage(value);
   };
   const paginatedData = ptData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
-  const MAX_SALARY = 999999999;
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -150,63 +151,6 @@ function ProfessionalTax({ handleBack, handleNext }) {
 
   const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, setFieldValue, resetForm } = formik;
 
-  const renderFields = (fields) => {
-    return fields.map((field) => {
-      if (field.name === 'state' || field.name === 'work_location_name') {
-        return (
-          <Grid2 key={field.name} size={{ xs: 12, sm: 6, md: 4 }} sx={{ mt: 1 }}>
-            <div style={{ paddingBottom: '5px' }}>
-              <label>{field.label}</label>
-            </div>
-            <CustomAutocomplete
-              value={values[field.name]}
-              name={field.name}
-              onChange={(e, newValue) => {
-                setFieldValue(field.name, newValue);
-                if (field.name === 'work_location_name' && newValue) {
-                  const selectedLocation = workLocations.find((item) => item.location_name === newValue);
-                  if (selectedLocation) {
-                    setFieldValue('state', selectedLocation.address_state);
-                  }
-                }
-              }}
-              options={field.name === 'work_location_name' ? workLocations.map((item) => item.location_name) : indian_States_And_UTs}
-              error={touched[field.name] && Boolean(errors[field.name])}
-              helperText={touched[field.name] && errors[field.name]}
-              sx={{ width: '100%' }}
-            />
-          </Grid2>
-        );
-      }
-
-      return (
-        <Grid2 key={field.name} size={{ xs: 12, sm: 4 }} sx={{ mt: 1 }}>
-          <div style={{ paddingBottom: '5px' }}>
-            <label>{field.label}</label>
-          </div>
-          <TextField
-            fullWidth
-            name={field.name}
-            value={values[field.name]}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={touched[field.name] && Boolean(errors[field.name])}
-            helperText={touched[field.name] && errors[field.name]}
-          />
-        </Grid2>
-      );
-    });
-  };
-
-  const handleAddItemRow = () => {
-    const newSlab = { min_salary: '', max_salary: '', pt_amount: '' };
-    setFieldValue('slab', [...values.slab, newSlab]);
-  };
-
-  const handleDeleteItem = (index) => {
-    const newSlabs = values.slab.filter((_, i) => i !== index);
-    setFieldValue('slab', newSlabs);
-  };
   const handleEdit = (item) => {
     setPostType('put');
     setSelectedRecord(item);
@@ -228,19 +172,6 @@ function ProfessionalTax({ handleBack, handleNext }) {
     }
   }, [postType, selectedRecord]);
 
-  const calculatePtAmount = (minSalary, maxSalary) => {
-    minSalary = parseFloat(minSalary); // Convert to number
-    maxSalary = parseFloat(maxSalary); // Convert to number
-
-    if (minSalary >= 0 && maxSalary <= 14999) {
-      return 0;
-    } else if (minSalary >= 0 && maxSalary <= 19999) {
-      return 150;
-    } else if (minSalary >= 20000) {
-      return 200;
-    }
-    return 0; // default
-  };
   return (
     <>
       {loading ? (
@@ -248,31 +179,15 @@ function ProfessionalTax({ handleBack, handleNext }) {
       ) : (
         <Grid2 container spacing={{ xs: 2, sm: 3 }}>
           <Grid2 size={12}>
-            <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-              <Typography variant="h6"></Typography>
-              <Button
-                variant="contained"
-                startIcon={<IconPlus size={16} />}
-                onClick={() => {
-                  setPostType('post');
-                  handleOpen();
-                }}
-              >
-                Add
-              </Button>
-            </Stack>
-          </Grid2>
-          <Grid2 size={12}>
             <TableContainer component={Paper}>
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>S No</TableCell>
-                    <TableCell>Work Location</TableCell>
-                    <TableCell>PT Number</TableCell>
-                    <TableCell>State</TableCell>
-                    <TableCell>PT Slabs</TableCell>
-                    <TableCell>Actions</TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap', fontWeight: 'bold' }}>S No</TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap', fontWeight: 'bold' }}>Work Location</TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap', fontWeight: 'bold' }}>PT Number</TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap', fontWeight: 'bold' }}>State</TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap', fontWeight: 'bold' }}>PT Slabs</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -296,23 +211,7 @@ function ProfessionalTax({ handleBack, handleNext }) {
                             setViewSlabsDialog(true);
                           }}
                         >
-                          View Slabs
-                        </TableCell>
-                        <TableCell>
-                          {/* ActionCell to handle actions */}
-                          <ActionCell
-                            row={location} // Pass the customer row data
-                            onEdit={() => handleEdit(item)} // Edit handler
-                            onDelete={() => handleDelete(item)} // Delete handler
-                            open={open}
-                            onClose={handleClose}
-                            deleteDialogData={{
-                              title: 'Delete Record',
-                              heading: 'Are you sure you want to delete this Record?',
-                              description: `This action will remove ${item.name} from the list.`,
-                              successMessage: 'Record has been deleted.'
-                            }}
-                          />
+                          View / Edit
                         </TableCell>
                       </TableRow>
                     ))
@@ -327,148 +226,21 @@ function ProfessionalTax({ handleBack, handleNext }) {
             )}
           </Grid2>
 
-          <Modal
-            open={open}
-            maxWidth={ModalSize.LG}
-            header={{ title: 'Professional Tax', subheader: '' }}
-            modalContent={
-              <Box component="form" onSubmit={handleSubmit} sx={{ padding: 2 }}>
-                <Grid2 container spacing={3}>
-                  {renderFields(details)}
-                </Grid2>
-                <Box sx={{ mt: 3 }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2 }}>
-                    Tax Slabs
-                  </Typography>
-                  <TableContainer component={Paper}>
-                    <Table>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell sx={{ whiteSpace: 'nowrap' }}>Start Range</TableCell>
-                          <TableCell sx={{ whiteSpace: 'nowrap' }}>End Range</TableCell>
-                          <TableCell sx={{ whiteSpace: 'nowrap' }}>Monthly Tax Amount</TableCell>
-                          <TableCell>Action</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {values.slab.map((item, index) => (
-                          <TableRow key={index}>
-                            <TableCell>
-                              <TextField
-                                fullWidth
-                                value={item.min_salary}
-                                onChange={(e) => {
-                                  const newSlabs = [...formik.values.slab];
-                                  let minSalary = e.target.value;
-
-                                  // Ensure min_salary is a number and within the range
-                                  if (parseFloat(minSalary) > MAX_SALARY) {
-                                    minSalary = MAX_SALARY;
-                                  }
-
-                                  newSlabs[index].min_salary = minSalary;
-                                  // Ensure min_salary is a number
-                                  const minSalaryNumber = parseFloat(minSalary);
-                                  const maxSalaryNumber = parseFloat(newSlabs[index].max_salary);
-
-                                  // Update pt_amount based on the new min_salary and max_salary
-                                  const ptAmount = calculatePtAmount(minSalaryNumber, maxSalaryNumber);
-                                  newSlabs[index].pt_amount = ptAmount;
-
-                                  formik.setFieldValue('slab', newSlabs);
-                                }}
-                                error={formik.touched.slab?.[index]?.min_salary && Boolean(formik.errors.slab?.[index]?.min_salary)}
-                                helperText={formik.touched.slab?.[index]?.min_salary && formik.errors.slab?.[index]?.min_salary}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <TextField
-                                fullWidth
-                                value={item.max_salary}
-                                onChange={(e) => {
-                                  const newSlabs = [...formik.values.slab];
-                                  let maxSalary = e.target.value;
-
-                                  // Ensure max_salary is a number and within the range
-                                  if (parseFloat(maxSalary) > MAX_SALARY) {
-                                    maxSalary = MAX_SALARY;
-                                  }
-
-                                  newSlabs[index].max_salary = maxSalary;
-                                  // Ensure max_salary is a number
-                                  const minSalaryNumber = parseFloat(newSlabs[index].min_salary);
-                                  const maxSalaryNumber = parseFloat(maxSalary);
-
-                                  // Update pt_amount based on the new min_salary and max_salary
-                                  const ptAmount = calculatePtAmount(minSalaryNumber, maxSalaryNumber);
-                                  newSlabs[index].pt_amount = ptAmount;
-
-                                  formik.setFieldValue('slab', newSlabs);
-                                }}
-                                error={formik.touched.slab?.[index]?.max_salary && Boolean(formik.errors.slab?.[index]?.max_salary)}
-                                helperText={formik.touched.slab?.[index]?.max_salary && formik.errors.slab?.[index]?.max_salary}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <TextField
-                                fullWidth
-                                value={item.pt_amount}
-                                onChange={(e) => {
-                                  const newSlabs = [...values.slab];
-                                  newSlabs[index].pt_amount = e.target.value;
-                                  setFieldValue('slab', newSlabs);
-                                }}
-                                // disabled
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Button color="error" onClick={() => handleDeleteItem(index)} startIcon={<IconTrash size={16} />} />
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-
-                  <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
-                    <Button variant="contained" startIcon={<IconPlus size={16} />} onClick={handleAddItemRow}>
-                      Add Slab
-                    </Button>
-                  </Box>
-                </Box>
-              </Box>
-            }
-            footer={
-              <Stack direction="row" sx={{ width: 1, justifyContent: 'space-between', gap: 2 }}>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  onClick={() => {
-                    resetForm();
-                    handleClose();
-                    setPostType('');
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" variant="contained" onClick={handleSubmit}>
-                  Save
-                </Button>
-              </Stack>
-            }
-          />
           {viewSlabsDialog === true && (
             <ViewSlabsModel
               viewSlabsDialog={viewSlabsDialog}
               setViewSlabsDialog={setViewSlabsDialog}
               selectedRecord={selectedRecord}
               setSelectedRecord={setSelectedRecord}
+              get_pt_Details={get_pt_Details}
+              payrollid={payrollid}
             />
           )}
           <Grid2 size={12} textAlign="center" sx={{ mt: 2 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
               <Button
                 variant="outlined"
+                startIcon={<ArrowBackIcon />}
                 onClick={() => {
                   router.back();
                 }}

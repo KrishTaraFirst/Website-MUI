@@ -28,6 +28,7 @@ import { useSearchParams } from 'next/navigation';
 import Loader from '@/components/PageLoader';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import Factory from '@/utils/Factory';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const esiDetails = [
   { name: 'esi_number', label: 'ESI Number' },
@@ -226,6 +227,7 @@ function ESIComponent({ handleNext, handleBack }) {
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
                           <Button
                             variant="outlined"
+                            startIcon={<ArrowBackIcon />}
                             onClick={() => {
                               router.back();
                             }}

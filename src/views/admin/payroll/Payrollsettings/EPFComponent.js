@@ -15,6 +15,7 @@ import { useSearchParams } from 'next/navigation';
 import Loader from '@/components/PageLoader';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const pfFields = [
   { name: 'epf_number', label: 'EPF Number' },
@@ -258,13 +259,14 @@ function EpfComponent({ handleNext }) {
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
                           <Button
                             variant="outlined"
+                            startIcon={<ArrowBackIcon />}
                             onClick={() => {
                               router.back();
                             }}
                           >
                             Back to Dashboard
                           </Button>
-                          <Button
+                          {/* <Button
                             size="small"
                             variant="contained"
                             onClick={() => {
@@ -274,7 +276,7 @@ function EpfComponent({ handleNext }) {
                             }}
                           >
                             Disable EPF
-                          </Button>
+                          </Button> */}
                           <Button size="small" variant="contained" onClick={handleNext}>
                             Next
                           </Button>

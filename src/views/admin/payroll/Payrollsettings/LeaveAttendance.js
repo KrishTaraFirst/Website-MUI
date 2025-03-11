@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { Button, Box, Typography, Stack } from '@mui/material';
 import HomeCard from '@/components/cards/HomeCard';
 import { useRouter } from 'next/navigation';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 import HolidayManagement from './HolidayManagement';
 import LeaveManagement from './LeaveManagement';
@@ -42,11 +43,15 @@ const LeaveAttendance = ({ type }) => {
   // Tab labels
   const tabLabels = ['Holiday Management', 'leave Management'];
   const handleNext = () => {
-    setActiveTab((prev) => (prev < 1 ? prev + 1 : prev));
+    if (activeTab < tabLabels.length - 1) {
+      setActiveTab((prev) => prev + 1);
+    }
   };
 
   const handleBack = () => {
-    setActiveTab((prev) => (prev > 0 ? prev - 1 : prev));
+    if (activeTab > 0) {
+      setActiveTab((prev) => prev - 1);
+    }
   };
 
   return (
@@ -68,6 +73,7 @@ const LeaveAttendance = ({ type }) => {
       <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Button
           variant="outlined"
+          startIcon={<ArrowBackIcon />}
           onClick={() => {
             router.back();
           }}
@@ -79,6 +85,7 @@ const LeaveAttendance = ({ type }) => {
           onClick={() => {
             handleBack();
           }}
+          disabled={activeTab === 0}
         >
           Back
         </Button>
@@ -87,6 +94,7 @@ const LeaveAttendance = ({ type }) => {
           onClick={() => {
             handleNext();
           }}
+          disabled={activeTab === tabLabels.length - 1}
         >
           Next
         </Button>
