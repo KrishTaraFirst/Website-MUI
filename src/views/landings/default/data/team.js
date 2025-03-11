@@ -1,7 +1,7 @@
 export const team = {
-  heading: 'Empowered Team, Empowered Results',
+  heading: 'Empowered Teams, Empowering your Financial Journeys',
   caption:
-    'Learn about the empowered individuals who make up our team. Discover how their unique strengths contribute to our collective success',
+    'At Tara, we believe that empowered teams makes your financial journeys smooth and flourishing. We aim for collective success of our organization, while strengthening our client successes.',
   image: '/assets/images/team/team-member-1.png',
   description: 'Linear co-founders Jori Lallo, Karri Saarinen, and Tuomas Artman.',
   actionBtn: { children: 'We’re Hiring', href: '#' },

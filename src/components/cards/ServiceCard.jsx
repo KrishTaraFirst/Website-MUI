@@ -30,7 +30,6 @@ export default function ServiceCard({
 }) {
   const defaultBoxPadding = { xs: 1.5, sm: 2, md: 2.5 };
   const boxPadding = cardPadding ? { ...cardPadding } : defaultBoxPadding;
-
   return (
     <GraphicsCard
       sx={{

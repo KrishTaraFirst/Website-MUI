@@ -8,7 +8,7 @@ import ContainerWrapper from '@/components/ContainerWrapper';
 import IconCard from '@/components/cards/IconCard';
 import GraphicsCard from '@/components/cards/GraphicsCard';
 import GraphicsImage from '@/components/GraphicsImage';
-import Typeset from '@/components/Typeset';
+import Typeset from '@/components/Typeset2';
 
 import { IconType } from '@/enum';
 import { SECTION_COMMON_PY } from '@/utils/constant';

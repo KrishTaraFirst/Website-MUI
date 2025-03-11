@@ -11,6 +11,7 @@ import { useTheme } from '@mui/material/styles';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
+import Grid from '@mui/material/Grid2';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -24,7 +25,7 @@ import ButtonAnimationWrapper from '@/components/ButtonAnimationWrapper';
 import ContainerWrapper from '@/components/ContainerWrapper';
 import FaqDetails from '@/components/faq/FaqDetails';
 import SvgIcon from '@/components/SvgIcon';
-import Typeset from '@/components/Typeset';
+import Typeset from '@/components/Typeset2';
 
 import useFocusWithin from '@/hooks/useFocusWithin';
 import { generateFocusVisibleStyles } from '@/utils/CommonFocusStyle';
@@ -94,44 +95,58 @@ export default function Faq6({ heading, caption, defaultExpanded, faqList, getIn
               delay: 0.4
             }}
           >
-            <Stack sx={slickStyle}>
-              <Slider {...settings}>
-                <Button
-                  sx={{
-                    minHeight: { xs: 40, sm: 48 },
-                    color: 'text.primary',
-                    borderColor: 'divider',
-                    bgcolor: activeTopic === '' ? 'grey.100' : 'inherit',
-                    '&.MuiButton-root:hover': { bgcolor: 'grey.100', borderColor: 'divider' }
-                  }}
-                  variant="outlined"
-                  onClick={() => {
-                    setActiveTopic('');
-                    setFilterFaqList(faqList);
-                  }}
-                >
-                  All
-                </Button>
-                {categories.map((item, index) => (
+            <Stack direction={'row'} sx={{ gap: 1 }}>
+              {/* <Slider {...settings}> */}
+              <Grid container spacing={{ xs: 0.5 }}>
+                <Grid size={{ xs: 'auto' }}>
                   <Button
-                    key={index}
                     sx={{
                       minHeight: { xs: 40, sm: 48 },
-                      color: 'text.primary',
+                      color: activeTopic === '' ? '#fff' : 'text.primary',
                       borderColor: 'divider',
-                      bgcolor: activeTopic === item ? 'grey.100' : 'inherit',
-                      '&.MuiButton-root:hover': { bgcolor: 'grey.100', borderColor: 'divider' }
+                      bgcolor: activeTopic === '' ? 'primary.main' : 'inherit',
+                      '&.MuiButton-root:hover': {
+                        bgcolor: 'primary.main',
+                        borderColor: 'divider',
+                        color: '#fff'
+                      }
                     }}
                     variant="outlined"
                     onClick={() => {
-                      setActiveTopic(item);
-                      setFilterFaqList(faqList.filter((list) => list.category === item));
+                      setActiveTopic('');
+                      setFilterFaqList(faqList);
                     }}
                   >
-                    {item}
+                    All
                   </Button>
+                </Grid>
+                {categories.map((item, index) => (
+                  <Grid key={index} size={{ xs: 'auto' }}>
+                    <Button
+                      sx={{
+                        minHeight: { xs: 40, sm: 48 },
+                        color: activeTopic === item ? '#fff' : 'text.primary',
+                        borderColor: 'divider',
+                        bgcolor: activeTopic === item ? 'primary.main' : 'inherit',
+                        '&.MuiButton-root:hover': {
+                          bgcolor: 'primary.main',
+                          borderColor: 'divider',
+                          color: '#fff'
+                        }
+                      }}
+                      variant="outlined"
+                      onClick={() => {
+                        setActiveTopic(item);
+                        setFilterFaqList(faqList.filter((list) => list.category === item));
+                      }}
+                    >
+                      {item}
+                    </Button>
+                  </Grid>
                 ))}
-              </Slider>
+              </Grid>
+
+              {/* </Slider> */}
             </Stack>
           </motion.div>
           <Stack

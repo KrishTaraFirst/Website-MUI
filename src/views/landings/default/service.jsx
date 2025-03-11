@@ -15,7 +15,7 @@ import GraphicsCard from '@/components/cards/GraphicsCard';
 import ContainerWrapper from '@/components/ContainerWrapper';
 import { SECTION_COMMON_PY } from '@/utils/constant';
 // @data
-import { services } from './data';
+import { servicesData } from './data/services';
 
 /***************************  PAGE - CONTACT  ***************************/
 
@@ -35,7 +35,7 @@ export default function Service({ tab }) {
                 <GraphicsCard sx={{ bgcolor: 'grey.200', borderRadius: cardRadius, p: 2, px: 4 }}>
                   <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
                     <Stack sx={{ justifyContent: 'center' }}>
-                      <Typography variant="h3">{services[tab].title}</Typography>
+                      <Typography variant="h3">{servicesData[tab].title}</Typography>
                     </Stack>
                     <Stack direction="row" sx={{ gap: 1.5 }}>
                       <Button
@@ -58,12 +58,12 @@ export default function Service({ tab }) {
                   </Stack>
                 </GraphicsCard>
                 <Box sx={{ p: sectionPadding, px: { md: 4 } }}>
-                  <Typography variant="h6">{services[tab].description}</Typography>
+                  <Typography variant="h6">{servicesData[tab].description}</Typography>
                 </Box>
               </GraphicsCard>
             </Grid>
 
-            {services[tab].offerings?.map((item, index) => (
+            {servicesData[tab].offerings?.map((item, index) => (
               <Grid key={index} size={{ xs: 12, sm: 4 }}>
                 <GraphicsCard sx={{ height: 1 }}>
                   <Stack
