@@ -23,7 +23,7 @@ import ContainerWrapper from '@/components/ContainerWrapper';
 import GraphicsCard from '@/components/cards/GraphicsCard';
 import ProfileGroup2 from '@/components/cards/profile-card/ProfileGroup2';
 import LogoWatermark from '@/components/logo/LogoWatermark';
-import { services } from '@/views/landings/default/data';
+import { servicesData } from '@/views/landings/default/data/services';
 import { SocialTypes } from '@/enum';
 import { SECTION_COMMON_PY } from '@/utils/constant';
 
@@ -115,10 +115,10 @@ export default function Login4() {
                 color: 'primary.dark'
               }}
             >
-              One step away! Register for {services[serviceKey].title}
+              One step away! Register for {servicesData[serviceKey].title}
             </Typography>
             <Typography variant="h6" sx={{ color: 'grey.800', mt: { xs: 2, sm: 3, md: 3 } }}>
-              {services[serviceKey].shortDesc}
+              {servicesData[serviceKey].shortDesc}
               {/* You are one step away Sign In */}
             </Typography>
           </GraphicsCard>

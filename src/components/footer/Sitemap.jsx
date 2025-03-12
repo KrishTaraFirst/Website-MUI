@@ -72,7 +72,7 @@ const menuItems = [
     title: 'Company',
     menu: [
       {
-        label: 'Why Phoenixcoded?',
+        label: 'Why Tara?',
         link: {
           href: 'https://blog.saasable.io/a-decade-of-expertise-the-phoenixcoded-story-and-why-you-should-trust-us',
           ...linkProps
