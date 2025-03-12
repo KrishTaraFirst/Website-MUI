@@ -28,6 +28,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import Factory from '@/utils/Factory';
 import MainCard from '@/components/MainCard';
+import { useSnackbar } from '@/components/CustomSnackbar';
 
 const validationSchema = Yup.object({
   template_name: Yup.string().required('Template Name is required'),
@@ -35,12 +36,13 @@ const validationSchema = Yup.object({
   annual_ctc: Yup.number().required('Annual CTC is required').positive('Annual CTC must be a positive number')
 });
 
-function SalaryTemplateDialog({ open, handleClose, fetchDesignations, selectedRecord, type, setType }) {
+function SalaryTemplateDialog({}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [earningsData, setEarningsData] = useState([]);
   const [payrollid, setPayrollId] = useState(null); // Payroll ID fetched from URL
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     const id = searchParams.get('payrollid');
@@ -70,12 +72,20 @@ function SalaryTemplateDialog({ open, handleClose, fetchDesignations, selectedRe
       description: '',
       annual_ctc: '',
       earnings: [
-        {
-          component_name: '',
-          calculation_type: '',
-          monthly: '',
-          annually: ''
-        }
+        // {
+        //   component_name: 'Basic',
+        //   calculation_type: 'Fixed',
+        //   monthly: 0,
+        //   annually: 0,
+        //   calculation: 50
+        // },
+        // {
+        //   component_name: 'Fixed Allowance',
+        //   calculation_type: 'Fixed',
+        //   monthly: 0,
+        //   annually: 0,
+        //   calculation: 0
+        // }
       ],
       gross_salary: {
         monthly: '',
@@ -109,6 +119,10 @@ function SalaryTemplateDialog({ open, handleClose, fetchDesignations, selectedRe
     validationSchema,
     onSubmit: async (values) => {
       console.log(values);
+      if (values.errorMessage) {
+        showSnackbar(values.errorMessage, 'error');
+        return; // Prevent form submission
+      }
       // let url = `/payroll/salary-templates`;
       // const { res } = await Factory('delete', url, {});
       // if (res.status_cd === 1) {
@@ -133,24 +147,61 @@ function SalaryTemplateDialog({ open, handleClose, fetchDesignations, selectedRe
       console.error('Error fetching earnings data:', res);
       return;
     }
-
     const selectedItem = res.data;
     updatedEarnings[index] = {
       ...updatedEarnings[index],
       calculation: selectedItem.calculation_type.value,
       component_name: selectedItem.component_name,
-      calculation_type: selectedItem.component_type
+      calculation_type: selectedItem.calculation_type.type
     };
+    console.log(selectedItem);
 
-    // Calculate earnings based on the updated values
+    // Get the updated CTC value
     const annualCtc = parseFloat(values.annual_ctc);
-    const basicSalary = parseFloat(updatedEarnings.find((earning) => earning.component_name === 'Basic')?.monthly || 0);
 
+    // We calculate the basic salary based on the earnings array, where Basic Salary is always a part of it
+    const basicSalary = parseFloat(updatedEarnings.find((earning) => earning.component_name === 'Basic')?.annually || 0);
+
+    // Recalculate earnings
     const calculatedValues = calculateEarnings(updatedEarnings[index], annualCtc, basicSalary);
+    // console.log(calculatedValues);
+
     updatedEarnings[index].monthly = calculatedValues.monthly;
     updatedEarnings[index].annually = calculatedValues.annually;
 
-    // Update the earnings field in Formik
+    // Recalculate Fixed Allowance
+    recalculateFixedAllowance(updatedEarnings, annualCtc);
+
+    // Update Formik state
+    setFieldValue('earnings', updatedEarnings);
+  };
+
+  const recalculateFixedAllowance = (updatedEarnings, annualCtc) => {
+    // Calculate earnings total (excluding Fixed Allowance)
+    const earningsTotal = updatedEarnings.reduce((sum, earning) => {
+      return earning.component_name !== 'Fixed Allowance' ? sum + parseFloat(earning.annually || 0) : sum;
+    }, 0);
+
+    // Calculate Fixed Allowance as the residual of CTC
+    const fixedAllowance = updatedEarnings.find((earning) => earning.component_name === 'Fixed Allowance');
+
+    if (fixedAllowance) {
+      const remainingCtc = annualCtc - earningsTotal;
+
+      // Check if the remaining CTC is less than or equal to zero (i.e., Fixed Allowance becomes negative)
+      if (remainingCtc <= 0) {
+        setFieldValue('errorMessage', " TotalAmount must be greater than zero. Adjust the CTC or any of the component's amount.");
+        fixedAllowance.annually = 0;
+        fixedAllowance.monthly = 0;
+      } else {
+        // If the remaining CTC is positive, calculate the Fixed Allowance normally
+        fixedAllowance.annually = Math.round(remainingCtc * 100) / 100; // Round to 2 decimal places
+        fixedAllowance.monthly = Math.round((remainingCtc / 12) * 100) / 100; // Round to 2 decimal places
+        setFieldValue('errorMessage', ''); // Clear the error message if calculations are valid
+      }
+    }
+
+    // Now that we've updated the fixed allowance, we'll update the earnings array in Formik.
     setFieldValue('earnings', updatedEarnings);
   };
 
@@ -158,39 +209,54 @@ function SalaryTemplateDialog({ open, handleClose, fetchDesignations, selectedRe
     let monthlyAmount = 0;
     let annualAmount = 0;
 
+    // Check if annual CTC is a valid number and not empty
+    if (isNaN(annualCtc) || annualCtc === '') {
+      // If CTC is invalid, return 0 for both monthly and annually
+      return {
+        monthly: 0,
+        annually: 0
+      };
+    }
+    console.log(earning);
     switch (earning.component_name) {
       case 'Basic':
-        // Basic Salary is a percentage of CTC
         const basicPercentage = earning.calculation; // Assume it's the percentage of CTC for Basic
         annualAmount = (annualCtc * basicPercentage) / 100;
         monthlyAmount = annualAmount / 12;
         break;
 
       case 'HRA':
-        // HRA is a percentage of Basic Salary
-        const hraPercentage = earning.calculation; // Assume it's the percentage of Basic Salary for HRA
-        annualAmount = (basicSalary * hraPercentage) / 100;
-        monthlyAmount = annualAmount / 12;
+        if (earning.calculation_type === 'Percentage of Basic') {
+          const hraPercentage = earning.calculation; // Assume it's the percentage of Basic Salary for HRA
+          annualAmount = (basicSalary * hraPercentage) / 100;
+          monthlyAmount = annualAmount / 12;
+        } else if (earning.calculation_type === 'Flat Amount') {
+          annualAmount = earning.calculation * 12;
+          monthlyAmount = earning.calculation;
+        }
         break;
 
-      case 'Special Allowance':
-        // Special Allowance could be the remaining balance (to reach CTC)
-        annualAmount = annualCtc - earnings.reduce((sum, earning) => sum + parseFloat(earning.annually || 0), 0);
+      case 'Fixed Allowance':
+        // Ensure Fixed Allowance is recalculated as a residual component
+        const earningsTotal = values.earnings.reduce((sum, earning) => sum + parseFloat(earning.annually || 0), 0);
+        annualAmount = annualCtc - earningsTotal; // Subtract total of all earnings from CTC
         monthlyAmount = annualAmount / 12;
         break;
-
+      case 'Conveyance Allowance':
+        const conveyance_AllowancePercentage = ''; // Assume it's the percentage of Basic Salary for HRA
+        annualAmount = earning.calculation * 12;
+        monthlyAmount = earning.calculation;
+        break;
       case 'EPF':
       case 'EDIL':
       case 'EPF admin charges':
       case 'EWSI':
-        // For fixed employer contributions, we use their respective formulas
         const percentage = parseFloat(earning.calculation.split('%')[0]);
         annualAmount = (annualCtc * percentage) / 100;
         monthlyAmount = annualAmount / 12;
         break;
 
       default:
-        // Handle other types or custom calculations if needed
         break;
     }
 
@@ -199,6 +265,28 @@ function SalaryTemplateDialog({ open, handleClose, fetchDesignations, selectedRe
       annually: Math.round(annualAmount)
     };
   };
+
+  // This method is used to handle the recalculation for all the earnings when CTC is updated.
+  const recalculate = () => {
+    const annualCtc = parseFloat(values.annual_ctc);
+    const basicSalary = parseFloat(values.earnings.find((earning) => earning.component_name === 'Basic')?.monthly || 0);
+
+    const updatedEarnings = values.earnings.map((earning) => {
+      const calculatedValues = calculateEarnings(earning, annualCtc, basicSalary);
+      return {
+        ...earning,
+        monthly: calculatedValues.monthly,
+        annually: calculatedValues.annually
+      };
+    });
+
+    // Recalculate Fixed Allowance
+    recalculateFixedAllowance(updatedEarnings, annualCtc);
+
+    setFieldValue('earnings', updatedEarnings);
+  };
+
+  // Update the `CustomInput` for `annual_ctc` to trigger the recalculation correctly
 
   const handleAddEarnings = () => {
     setFieldValue('earnings', [
@@ -209,6 +297,7 @@ function SalaryTemplateDialog({ open, handleClose, fetchDesignations, selectedRe
 
   const handleDeleteEarnings = (index) => {
     const newEarnings = values.earnings.filter((_, i) => i !== index);
+    recalculate();
     setFieldValue('earnings', newEarnings);
   };
 
@@ -242,21 +331,6 @@ function SalaryTemplateDialog({ open, handleClose, fetchDesignations, selectedRe
       setEarningsData(res.data);
     }
   };
-  const recalculate = () => {
-    const annualCtc = parseFloat(values.annual_ctc);
-    const basicSalary = parseFloat(values.earnings.find((earning) => earning.component_name === 'Basic')?.monthly || 0);
-
-    const updatedEarnings = values.earnings.map((earning) => {
-      const calculatedValues = calculateEarnings(earning, annualCtc, basicSalary);
-      return {
-        ...earning,
-        monthly: calculatedValues.monthly,
-        annually: calculatedValues.annually
-      };
-    });
-
-    setFieldValue('earnings', updatedEarnings);
-  };
 
   useEffect(() => {
     if (payrollid) {
@@ -264,6 +338,8 @@ function SalaryTemplateDialog({ open, handleClose, fetchDesignations, selectedRe
     }
   }, [payrollid]);
   const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, resetForm, setFieldValue } = formik;
+  // console.log(values.earnings);
+
   return (
     <HomeCard title="New Salary Template" tagline="Set up your organization before starting payroll">
       <MainCard>
@@ -288,10 +364,14 @@ function SalaryTemplateDialog({ open, handleClose, fetchDesignations, selectedRe
                     onChange={(e) => {
                       const annualCtc = e.target.value;
                       setFieldValue('annual_ctc', annualCtc);
-
-                      recalculate();
+                      // recalculate(); // Trigger recalculation when CTC changes
                     }}
-                    onBlur={handleBlur}
+                    onBlur={() => recalculate()} // Recalculate when focus is lost
+                    // onKeyDown={(e) => {
+                    //   if (e.key === 'Enter') {
+                    //     recalculate(); // Trigger recalculation when Enter key is pressed
+                    //   }
+                    // }}
                     error={touched.annual_ctc && Boolean(errors.annual_ctc)}
                     helperText={touched.annual_ctc && errors.annual_ctc}
                     InputProps={{
@@ -348,26 +428,38 @@ function SalaryTemplateDialog({ open, handleClose, fetchDesignations, selectedRe
                       </TableCell>
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          {earning.component_name !== 'Special Allowance' && (
+                          {(earning.component_name === 'HRA' || earning.component_name === 'Basic') && (
                             <CustomInput
                               value={earning.calculation}
                               fullWidth
                               sx={{ maxWidth: 80, textAlign: 'center' }}
                               inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                               onChange={(e) => {
-                                handleEarningsChange(earning, index, 'calculation', Number(e.target.value));
-                                recalculate();
+                                // Get the new value and update the field value via Formik
+                                const newValue = Number(e.target.value);
+                                handleEarningsChange(earning, index, 'calculation', newValue);
+                                setFieldValue(`earnings[${index}].calculation`, newValue); // Update the Formik value directly
                               }}
+                              onBlur={() => {
+                                recalculate(); // Recalculate when focus is lost
+                              }} // Trigger calculation when focus is lost
+                              // onKeyDown={(e) => {
+                              //   if (e.key === 'Enter') {
+                              //     recalculate(); // Trigger calculation when Enter key is pressed
+                              //   }
+                              // }}
                             />
                           )}
                           <Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>
                             {earning.component_name === 'Basic'
                               ? '% of CTC'
                               : earning.component_name === 'HRA'
-                                ? '% of Basic'
-                                : earning.component_name === 'Special Allowance'
+                                ? earning.calculation_type
+                                : earning.component_name === 'Fixed Allowance'
                                   ? 'Remaining Balance'
-                                  : ''}
+                                  : earning.component_name === 'Conveyance Allowance'
+                                    ? earning.calculation
+                                    : ''}
                           </Typography>
                         </Box>
                       </TableCell>
@@ -382,18 +474,26 @@ function SalaryTemplateDialog({ open, handleClose, fetchDesignations, selectedRe
                       </TableCell>
                     </TableRow>
                   ))}
-                  <TableCell>
-                    <Box>
+
+                  <TableRow>
+                    <TableCell>
                       <Button variant="outlined" onClick={handleAddEarnings}>
                         Add Component
                       </Button>
-                    </Box>
-                  </TableCell>
+                    </TableCell>
+                    <TableCell colSpan={4}>
+                      {values.errorMessage && (
+                        <Typography color="error" variant="body2" sx={{ marginTop: 2 }}>
+                          {values.errorMessage}
+                        </Typography>
+                      )}
+                    </TableCell>
+                  </TableRow>
 
-                  <TableRow sx={{ backgroundColor: '#f6f2fc', margin: '20px' }}>
+                  <TableRow sx={{}}>
                     <TableCell
                       colSpan={2}
-                      sx={{ fontWeight: 'bold', borderRadius: '16px 0 0 16px' }} // Rounded on the left
+                      sx={{ fontWeight: 'bold' }} // Rounded on the left
                     >
                       Gross Salary
                     </TableCell>
