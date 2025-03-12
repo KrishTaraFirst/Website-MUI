@@ -4,7 +4,7 @@ export const team = {
     'At Tara, we believe that empowered teams makes your financial journeys smooth and flourishing. We aim for collective success of our organization, while strengthening our client successes.',
   image: '/assets/images/team/team-member-1.png',
   description: 'Linear co-founders Jori Lallo, Karri Saarinen, and Tuomas Artman.',
-  actionBtn: { children: 'We’re Hiring', href: '#' },
+  actionBtn: { children: 'We’re Hiring', href: '/contact' },
   members: [
     {
       name: 'Tricia Yundt',

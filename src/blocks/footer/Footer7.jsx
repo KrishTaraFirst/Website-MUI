@@ -38,13 +38,13 @@ const data = [
       {
         label: 'Why tara?',
         link: {
-          href: '#',
+          href: '/about',
           ...linkProps
         }
       },
       {
         label: 'About',
-        link: { href: '/#', ...linkProps }
+        link: { href: '/about', ...linkProps }
       },
       {
         label: 'Contact Us',
@@ -64,7 +64,7 @@ const data = [
       },
       {
         label: 'FAQ',
-        link: { href: '#', ...linkProps }
+        link: { href: '/knowledge', ...linkProps }
       },
       {
         label: 'Support',
