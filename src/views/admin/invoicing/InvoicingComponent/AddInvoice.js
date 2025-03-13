@@ -242,6 +242,7 @@ const AddItem = ({
         financialYearStart -= 1;
         financialYearEnd -= 1;
       }
+
       const financialYear = `${financialYearStart}-${financialYearEnd.toString().slice(2)}`;
 
       const postData = { ...values };
@@ -249,7 +250,9 @@ const AddItem = ({
       postData.financial_year = financialYear;
       let selcted_gstin_format_version = businessDetailsData.invoice_format.find((item) => item.gstin === postData.gstin);
       postData.format_version = Number(selcted_gstin_format_version.invoice_format.format_version);
-
+      if (postData.not_applicablefor_shipping === true) {
+        postData.shipping_address = {};
+      }
       let put_url = `/invoicing/invoice-update/${selectedInvoice?.id}/`;
       let post_url = '/invoicing/invoice-create';
       let method = selectedInvoice ? 'put' : 'post';
@@ -519,7 +522,8 @@ const AddItem = ({
         total_amount: 0,
         cgst_amount: 0,
         sgst_amount: 0,
-        igst_amount: 0
+        igst_amount: 0,
+        units: ''
       }
     ];
 
@@ -640,7 +644,6 @@ const AddItem = ({
     const rate = selectedItem.selling_price || 0; // Get rate from selected item
     const discount = newItemDetails[index].discount || 0; // Get discount (default to 0)
     const quantity = newItemDetails[index].quantity || 0; // Get quantity (default to 0)
-
     // Calculate taxable amount (rate * quantity)
     const taxableAmount = rate * quantity;
 
@@ -658,7 +661,9 @@ const AddItem = ({
       ...newItemDetails[index],
       item: newValue,
       unitPrice: rate,
-      hsn_sac: selectedItem.hsn_sac, // Set HSN code
+      hsn_sac: selectedItem.hsn_sac,
+      units: selectedItem.units,
+      type: selectedItem.type,
       rate: rate,
       tax: gstRate,
       amount: amount,
@@ -708,7 +713,10 @@ const AddItem = ({
         invoice_date: selectedInvoice.invoice_date,
         due_date: selectedInvoice.due_date,
         billing_address: selectedInvoice.billing_address ? { ...selectedInvoice.billing_address } : {},
-        shipping_address: selectedInvoice.shipping_address ? { ...selectedInvoice.shipping_address } : {},
+        shipping_address:
+          Object.keys(selectedInvoice.shipping_address).length === 0
+            ? { address_line1: 'NA', address_line2: 'NA', country: 'NA', state: 'NA', postal_code: 'NA' }
+            : { ...selectedInvoice.shipping_address },
         item_details: Array.isArray(selectedInvoice.item_details) ? [...selectedInvoice.item_details] : [],
         same_address:
           selectedInvoice.shipping_address &&
@@ -721,15 +729,16 @@ const AddItem = ({
             ? true
             : false,
 
-        not_applicablefor_shipping:
-          selectedInvoice.billing_address &&
-          selectedInvoice.shipping_address.address_line1 === 'NA' &&
-          selectedInvoice.shipping_address.address_line2 === 'NA' &&
-          selectedInvoice.shipping_address.country === 'NA' &&
-          selectedInvoice.shipping_address.state === 'NA' &&
-          selectedInvoice.shipping_address.postal_code === 'NA'
-            ? true
-            : false,
+        // not_applicablefor_shipping:
+        //   selectedInvoice.billing_address &&
+        //   selectedInvoice.shipping_address.address_line1 === 'NA' &&
+        //   selectedInvoice.shipping_address.address_line2 === 'NA' &&
+        //   selectedInvoice.shipping_address.country === 'NA' &&
+        //   selectedInvoice.shipping_address.state === 'NA' &&
+        //   selectedInvoice.shipping_address.postal_code === 'NA'
+        //     ? true
+        //     : false,
+        not_applicablefor_shipping: Object.keys(selectedInvoice.shipping_address).length === 0 ? true : false,
         invoice_status: selectedInvoice.invoice_status,
         gstin: selectedInvoice.gstin
       });
@@ -740,6 +749,7 @@ const AddItem = ({
   // useEffect(() => {
   //   setSelectedgstin(businessDetailsData.gstin);
   // }, [businessDetailsData]);
+  console.log(values);
   return (
     <HomeCard title={selectedInvoice ? 'Edit Invoice' : 'Create Invoice'} tagline="Some text tagline regarding invoicing.">
       <MainCard>
@@ -1090,7 +1100,7 @@ const AddItem = ({
           </Box>
           <Divider sx={{ mt: 3, mb: 3 }} />
 
-          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 6, gap: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 6, gap: 2 }}>
             <Button
               variant="outlined"
               color="error"
@@ -1101,7 +1111,7 @@ const AddItem = ({
             >
               Cancel
             </Button>
-            <Button
+            {/* <Button
               variant="contained"
               type="button"
               onClick={() => {
@@ -1111,9 +1121,9 @@ const AddItem = ({
               // disabled={formik.values.invoice_status === 'Draft'}
             >
               Save as Draft
-            </Button>
+            </Button> */}
 
-            <Button variant="contained" disabled={saveButton} type="submit">
+            <Button variant="contained" type="submit">
               Save
             </Button>
           </Box>

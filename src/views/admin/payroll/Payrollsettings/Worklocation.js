@@ -136,12 +136,12 @@ function Worklocation() {
                   <Table size="large">
                     <TableHead>
                       <TableRow>
-                        <TableCell>S No</TableCell>
-                        <TableCell>Name</TableCell>
-                        <TableCell>Address</TableCell>
-                        <TableCell>State</TableCell>
-                        <TableCell>No of Employees</TableCell>
-                        <TableCell>Actions</TableCell>
+                        <TableCell sx={{ whiteSpace: 'nowrap', fontWeight: 'bold' }}>S No</TableCell>
+                        <TableCell sx={{ whiteSpace: 'nowrap', fontWeight: 'bold' }}>Name</TableCell>
+                        <TableCell sx={{ whiteSpace: 'nowrap', fontWeight: 'bold' }}>Address</TableCell>
+                        <TableCell sx={{ whiteSpace: 'nowrap', fontWeight: 'bold' }}>State</TableCell>
+                        <TableCell sx={{ whiteSpace: 'nowrap', fontWeight: 'bold' }}>No of Employees</TableCell>
+                        <TableCell sx={{ whiteSpace: 'nowrap', fontWeight: 'bold' }}>Actions</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>

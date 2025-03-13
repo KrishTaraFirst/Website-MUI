@@ -1,11 +1,12 @@
 'use client';
 import React, { useState } from 'react';
-import { Stepper, Step, StepLabel, Button, Typography, Box } from '@mui/material';
+import { Stepper, Step, StepLabel, Button, Typography, Box, Stack } from '@mui/material';
 import BasicDetails from './BasicDetails';
 import SalaryDetails from './SalaryDetails';
 import PersonalDetails from './PersonalDetails';
 import PaymentInformation from './PaymentInformation';
 import MainCard from '@/components/MainCard';
+import HomeCard from '@/components/cards/HomeCard';
 
 const StepperComponent = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -46,36 +47,39 @@ const StepperComponent = () => {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Stepper activeStep={activeStep} alternativeLabel>
-        {steps.map((label, index) => (
-          <Step key={index}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
-      <MainCard sx={{ mt: 2 }}>
-        <Box>
-          {activeStep === steps.length ? (
-            <Box>
-              <Typography variant="h6">All steps completed</Typography>
-              <Button onClick={handleReset}>Reset</Button>
-            </Box>
-          ) : (
-            <Box>
-              {/* <Typography variant="h6">{`You are on ${steps[activeStep]}`}</Typography> */}
-              {renderStepContent(activeStep)}
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
-                <Button variant="contained" color="primary" onClick={handleBack} disabled={activeStep === 0}>
-                  Back
-                </Button>
-                <Button variant="contained" color="primary" onClick={handleNext} disabled={activeStep === steps.length - 1}>
-                  Next
-                </Button>
+      <HomeCard title="Employee Master Data" tagline="Create and manage Deatils.">
+        <MainCard>
+          <Stepper activeStep={activeStep} alternativeLabel>
+            {steps.map((label, index) => (
+              <Step key={index}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+
+          <Box>
+            {activeStep === steps.length ? (
+              <Box>
+                <Typography variant="h6">All steps completed</Typography>
+                <Button onClick={handleReset}>Reset</Button>
               </Box>
-            </Box>
-          )}
-        </Box>
-      </MainCard>
+            ) : (
+              <Box>
+                {/* <Typography variant="h6">{`You are on ${steps[activeStep]}`}</Typography> */}
+                {renderStepContent(activeStep)}
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
+                  <Button variant="contained" color="primary" onClick={handleBack} disabled={activeStep === 0}>
+                    Back
+                  </Button>
+                  <Button variant="contained" color="primary" onClick={handleNext} disabled={activeStep === steps.length - 1}>
+                    Next
+                  </Button>
+                </Box>
+              </Box>
+            )}
+          </Box>
+        </MainCard>
+      </HomeCard>
     </Box>
   );
 };

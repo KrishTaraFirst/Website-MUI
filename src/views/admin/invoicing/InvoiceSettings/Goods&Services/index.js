@@ -7,10 +7,14 @@ import { IconPlus } from '@tabler/icons-react';
 import AddItem from './AddItem'; // Import the AddCustomer component
 import ItemList from './ItemList';
 import Factory from '@/utils/Factory';
-export default function TabThree({ businessDetails, onNext, handleBack }) {
+import { useRouter } from 'next/navigation';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+
+export default function TabThree({ businessDetails, handleNext, handleBack }) {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState([]);
   const [type, setType] = useState('');
+  const router = useRouter();
 
   const handleOpen = () => {
     setOpen(true);
@@ -66,14 +70,26 @@ export default function TabThree({ businessDetails, onNext, handleBack }) {
           />
         </Grid2>
       </Grid2>
-      {/* <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Button variant="outlined" onClick={handleBack} sx={{ mt: 3 }}>
-          Back
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBackIcon />}
+          onClick={() => {
+            router.back();
+          }}
+        >
+          Back to Dashboard
         </Button>
-        <Button variant="contained" onClick={onNext} sx={{ mt: 3 }}>
-          Next
-        </Button>
-      </Box> */}
+
+        <Box>
+          <Button variant="contained" onClick={handleBack} sx={{ mr: 2 }}>
+            Back
+          </Button>
+          <Button variant="contained" onClick={handleNext}>
+            Next
+          </Button>
+        </Box>
+      </Box>
     </>
   );
 }

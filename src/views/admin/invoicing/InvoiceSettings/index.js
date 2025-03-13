@@ -150,7 +150,12 @@ const BasicTabs = ({ type }) => {
           {tabLabels.map((_, index) => (
             <TabPanel key={index} value={activeTab} index={index}>
               {index === 0 && (
-                <TabOne businessDetails={businessDetails} setBusinessDetails={setBusinessDetails} onNext={handleNext} postType={postType} />
+                <TabOne
+                  businessDetails={businessDetails}
+                  setBusinessDetails={setBusinessDetails}
+                  handleNext={handleNext}
+                  postType={postType}
+                />
               )}
               {index === 1 && (
                 <TabTwo
@@ -158,7 +163,7 @@ const BasicTabs = ({ type }) => {
                   customers={customers}
                   businessDetails={businessDetails}
                   setBusinessDetails={setBusinessDetails}
-                  onNext={handleNext}
+                  handleNext={handleNext}
                   handleBack={handleBack}
                 />
               )}
@@ -166,7 +171,7 @@ const BasicTabs = ({ type }) => {
                 <TabThree
                   businessDetails={businessDetails}
                   setBusinessDetails={setBusinessDetails}
-                  onNext={handleNext}
+                  handleNext={handleNext}
                   handleBack={handleBack}
                 />
               )}
@@ -182,20 +187,7 @@ const BasicTabs = ({ type }) => {
             </TabPanel>
           ))}
         </MainCard>
-        <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Button variant="outlined" onClick={handleBack} sx={{ mt: 3 }} disabled={activeTab === 0}>
-            Back
-          </Button>
-
-          <Button
-            variant="contained"
-            onClick={handleNext}
-            sx={{ mt: 3 }}
-            disabled={activeTab === tabLabels.length - 1} // Disable Next button on the last tab
-          >
-            Next
-          </Button>
-        </Box>
+        <Box style={{ display: 'flex', justifyContent: 'space-between' }}></Box>
       </Grid2>
     </Grid2>
   );

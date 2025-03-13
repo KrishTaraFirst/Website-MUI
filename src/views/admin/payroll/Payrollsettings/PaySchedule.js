@@ -26,7 +26,7 @@ function PaySchedule() {
     '4th SAT': false
   });
 
-  const [dateValue, setDateValue] = useState(null);
+  const [dateValue, setDateValue] = useState(dayjs().format('DD-MM-YYYY'));
 
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
@@ -182,7 +182,7 @@ function PaySchedule() {
                 views={['year', 'month', 'day']}
                 value={dateValue ? dayjs(dateValue) : null}
                 onChange={(newDate) => {
-                  setDateValue(newDate);
+                  setDateValue(newDate.format('YYYY-MM-DD'));
                 }}
                 sx={{
                   width: '100%',

@@ -14,8 +14,9 @@ import useCurrentUser from '@/hooks/useCurrentUser';
 import { IconPlus } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { entity_choices } from '@/utils/Entity-types';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-export default function TabOne({ postType, businessDetails, onNext }) {
+export default function TabOne({ postType, businessDetails, handleNext }) {
   // const [businessDetails, setBusinessDetails] = useState(null);
   const { userData } = useCurrentUser();
   const router = useRouter();
@@ -130,7 +131,7 @@ export default function TabOne({ postType, businessDetails, onNext }) {
         showSnackbar(JSON.stringify(res.data.data), 'error');
       } else {
         showSnackbar('Data Saved Successfully', 'success');
-        onNext();
+        handleNext();
       }
     }
   });
@@ -163,7 +164,6 @@ export default function TabOne({ postType, businessDetails, onNext }) {
       }));
     }
   }, [businessDetails]);
-  // console.log(businessDetails);
   return (
     <>
       <Typography variant="h5" textAlign="center" sx={{ fontWeight: 'bold', fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' } }}>
@@ -317,10 +317,25 @@ export default function TabOne({ postType, businessDetails, onNext }) {
         ))}
       </Grid2>
 
-      <Box textAlign="center">
-        <Button variant="contained" onClick={handleSubmit} sx={{ mt: 3 }}>
-          Save & Continue
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBackIcon />}
+          onClick={() => {
+            router.back();
+          }}
+        >
+          Back to Dashboard
         </Button>
+
+        <Box>
+          <Button variant="contained" onClick={handleSubmit} sx={{ mr: 2 }}>
+            Save & Continue
+          </Button>
+          <Button variant="contained" onClick={handleNext}>
+            Next
+          </Button>
+        </Box>
       </Box>
     </>
   );

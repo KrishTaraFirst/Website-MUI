@@ -8,9 +8,13 @@ import AddCustomer from './AddCustomer'; // Import the AddCustomer component
 import CustomerList from './CustomerList';
 import Factory from '@/utils/Factory';
 import { Box } from '@mui/material';
-export default function TabTwo({ getCustomersData, customers, businessDetails, onNext, handleBack }) {
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useRouter } from 'next/navigation';
+
+export default function TabTwo({ getCustomersData, customers, businessDetails, handleNext, handleBack }) {
   const [open, setOpen] = useState(false);
   const [type, setType] = useState('');
+  const router = useRouter();
 
   const handleOpen = () => {
     setOpen(true);
@@ -51,14 +55,27 @@ export default function TabTwo({ getCustomersData, customers, businessDetails, o
           />
         </Grid2>
       </Grid2>
-      {/* <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Button variant="outlined" onClick={handleBack} sx={{ mt: 3 }}>
-          Back
+
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBackIcon />}
+          onClick={() => {
+            router.back();
+          }}
+        >
+          Back to Dashboard
         </Button>
-        <Button variant="contained" onClick={onNext} sx={{ mt: 3 }}>
-          Next
-        </Button>
-      </Box> */}
+
+        <Box>
+          <Button variant="contained" onClick={handleBack} sx={{ mr: 2 }}>
+            Back
+          </Button>
+          <Button variant="contained" onClick={handleNext}>
+            Next
+          </Button>
+        </Box>
+      </Box>
     </>
   );
 }

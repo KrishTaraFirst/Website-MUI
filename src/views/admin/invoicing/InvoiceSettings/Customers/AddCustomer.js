@@ -18,7 +18,7 @@ import Factory from '@/utils/Factory';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import Modal from '@/components/Modal';
 import { ModalSize } from '@/enum';
-
+import { CountriesList } from '@/utils/CountriesList';
 let gstTypes = [
   'Registered Business - Regular',
   'Registered Business - Composition',
@@ -59,7 +59,7 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
       gst_type: '',
       address_line1: '',
       address_line2: '',
-      country: 'IN',
+      country: 'India',
       state: '',
       postal_code: '',
       email: '',
@@ -91,12 +91,12 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
         .max(999999, 'Pincode must be at most 6 digits'),
 
       email: Yup.string().email('Invalid email format').required('Email is required'),
-      mobile_number: Yup.number()
-        .typeError('Mobile Number must be an integer')
-        .required('Mobile Number is required')
-        .integer('Mobile Number must be an integer')
-        .min(1000000000, 'Mobile Number must be 10 digits')
-        .max(9999999999, 'Mobile Number must be 10 digits'),
+      // mobile_number: Yup.number()
+      //   .typeError('Mobile Number must be an integer')
+      //   .required('Mobile Number is required')
+      //   .integer('Mobile Number must be an integer')
+      //   .min(1000000000, 'Mobile Number must be 10 digits')
+      //   .max(9999999999, 'Mobile Number must be 10 digits'),
 
       state: Yup.string().required('State is required'),
       country: Yup.string().required('Country is required'),
@@ -140,7 +140,7 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
         gst_type: selectedCustomer.gst_type || '',
         address_line1: selectedCustomer.address_line1 || '',
         address_line2: selectedCustomer.address_line2 || '',
-        country: selectedCustomer.country || 'IN',
+        country: selectedCustomer.country || '',
         state: selectedCustomer.state || '',
         postal_code: selectedCustomer.postal_code || '',
         email: selectedCustomer.email || '',
@@ -186,7 +186,7 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
                       <FormControlLabel value="No" control={<Radio />} label="No" />
                     </RadioGroup>
                   </FormControl>
-                ) : item.name === 'gst_type' || item.name === 'state' ? (
+                ) : item.name === 'gst_type' || item.name === 'state' || item.name === 'country' ? (
                   <>
                     <Typography sx={{ mb: 1 }}>
                       {item.label} {<span style={{ color: 'red' }}>*</span>}
@@ -195,7 +195,7 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
                       value={values[item.name]}
                       name={item.name}
                       onChange={(e, newValue) => setFieldValue(item.name, newValue)}
-                      options={item.name === 'gst_type' ? gstTypes : item.name === 'state' && indian_States_And_UTs}
+                      options={item.name === 'gst_type' ? gstTypes : item.name === 'state' ? indian_States_And_UTs : CountriesList}
                       error={touched[item.name] && Boolean(errors[item.name])}
                       helperText={touched[item.name] && errors[item.name]}
                     />
@@ -203,7 +203,7 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
                 ) : (
                   <>
                     <Typography sx={{ mb: 1 }}>
-                      {item.label} {item.name !== 'address_line2' && <span style={{ color: 'red' }}>*</span>}
+                      {item.label} {!['address_line2', 'mobile_number'].includes(item.name) && <span style={{ color: 'red' }}>*</span>}
                     </Typography>
 
                     <CustomInput
@@ -220,8 +220,7 @@ const AddCustomer = ({ type, setType, open, handleClose, selectedCustomer, busin
                       onBlur={handleBlur}
                       error={touched[item.name] && Boolean(errors[item.name])}
                       helperText={touched[item.name] && errors[item.name]}
-                      disabled={(item.name === 'gstin' && values.gst_registered === 'No') || item.name === 'country'}
-                      // textColor={type === 'edit' && '#776080'}
+                      disabled={item.name === 'gstin' && values.gst_registered === 'No'}
                     />
                   </>
                 )}

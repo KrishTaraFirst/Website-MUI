@@ -4,8 +4,12 @@ import { useTheme } from '@mui/material/styles';
 import { Tab, Tabs } from '@mui/material';
 import React, { useState } from 'react';
 import { Button, Box, Typography, Stack } from '@mui/material';
+import { usePathname, useRouter } from 'next/navigation';
 
 import EarningsComponent from './Earnings';
+import HomeCard from '@/components/cards/HomeCard';
+import MainCard from '@/components/MainCard';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 /***************************  NAVIGATION - TABS  ***************************/
 
@@ -25,6 +29,7 @@ TabPanel.propTypes = {
 const SalaryComponnetTabs = ({ type }) => {
   const [activeTab, setActiveTab] = useState(0); // State to manage active tab
   const theme = useTheme(); // Getting the theme
+  const router = useRouter();
 
   // Function to handle tab changes
   const handleTabChange = (_event, newTabIndex) => setActiveTab(newTabIndex);
@@ -48,24 +53,37 @@ const SalaryComponnetTabs = ({ type }) => {
     setActiveTab((prev) => (prev < 3 ? prev - 1 : prev));
   };
   return (
-    <Box>
-      <Typography textAlign="center" variant="h5">
-        Salary Components
-      </Typography>
-      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-        <Tabs value={activeTab} onChange={handleTabChange} aria-label="Statutory Components Tabs">
-          {tabLabels.map((label, index) => (
-            <Tab key={index} label={label} {...a11yProps(index)} />
-          ))}
-        </Tabs>
-      </Box>
+    // <Box>
+    //   <Typography textAlign="center" variant="h5">
+    //     Salary Components
+    //   </Typography>
+    //   <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+    //     <Tabs value={activeTab} onChange={handleTabChange} aria-label="Statutory Components Tabs">
+    //       {tabLabels.map((label, index) => (
+    //         <Tab key={index} label={label} {...a11yProps(index)} />
+    //       ))}
+    //     </Tabs>
+    //   </Box>
 
-      <TabPanel value={activeTab} index={0}>
-        <EarningsComponent handleNext={handleNext} />
-      </TabPanel>
-      {/* <TabPanel value={activeTab} index={1}>
-      </TabPanel> */}
-    </Box>
+    //   <TabPanel value={activeTab} index={0}>
+    //     <EarningsComponent handleNext={handleNext} />
+    //   </TabPanel>
+    // </Box>
+    <HomeCard title="Salary Components" tagline="Create and manage different locations of Your Organization.">
+      <MainCard>
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+          <Tabs value={activeTab} onChange={handleTabChange} aria-label="Statutory Components Tabs">
+            {tabLabels.map((label, index) => (
+              <Tab key={index} label={label} {...a11yProps(index)} />
+            ))}
+          </Tabs>
+        </Box>
+
+        <TabPanel value={activeTab} index={0}>
+          <EarningsComponent handleNext={handleNext} />
+        </TabPanel>
+      </MainCard>
+    </HomeCard>
   );
 };
 
