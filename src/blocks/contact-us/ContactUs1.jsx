@@ -6,13 +6,13 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid2';
 import Stack from '@mui/material/Stack';
-import Box from '@mui/material/Box';
+import { Box, Autocomplete, TextField } from '@mui/material';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import { BASE_URL } from 'constants';
 import axios from '@/utils/axios';
-
 // @third-party
 import { motion } from 'framer-motion';
+import dayjs from 'dayjs'; // For date formatting
 
 // @project
 import ButtonAnimationWrapper from '@/components/ButtonAnimationWrapper';
@@ -25,7 +25,7 @@ import { SECTION_COMMON_PY } from '@/utils/constant';
 
 // @types
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // @mui
 import { useTheme } from '@mui/material/styles';
@@ -170,9 +170,59 @@ function ErrorMessage({ message }) {
 }
 
 /***************************  CONTACT US - FORM 2  ***************************/
+const getNext30MinuteInterval = () => {
+  const now = new Date();
+  let hour = now.getHours();
+  let minutes = now.getMinutes();
 
+  // If the current time is before 10 AM, set it to 10:00 AM
+  if (hour < 10) {
+    return '10:00 AM';
+  }
+  // If it's after 6 PM, no valid time available today
+  if (hour >= 18) {
+    return '';
+  }
+
+  let nextMinutes = minutes < 30 ? 30 : 0;
+  let nextHour = hour + (nextMinutes === 0 ? 1 : 0);
+
+  // Ensure the next hour does not exceed 6 PM
+  if (nextHour >= 18) {
+    return '';
+  }
+
+  const period = nextHour < 12 ? 'AM' : 'PM';
+  let displayHour = nextHour % 12 || 12;
+  return `${displayHour}:${String(nextMinutes).padStart(2, '0')} ${period}`;
+};
+
+const generateTimeOptions = (selectedDate) => {
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinutes = now.getMinutes();
+  let options = [];
+  for (let hour = 10; hour < 19; hour++) {
+    for (let minute of [0, 30]) {
+      const period = hour < 12 ? 'AM' : 'PM';
+      let displayHour = hour % 12 || 12;
+      const formattedTime = `${displayHour}:${String(minute).padStart(2, '0')} ${period}`;
+
+      if (selectedDate && dayjs(selectedDate).isAfter(dayjs(), 'day')) {
+        options.push(formattedTime); // Allow all times for future dates
+      } else if (selectedDate && dayjs(selectedDate).isSame(dayjs(), 'day')) {
+        if (hour > currentHour || (hour === currentHour && minute > currentMinutes)) {
+          options.push(formattedTime);
+        }
+      }
+    }
+  }
+  return options;
+};
 function ContactUsForm2() {
   const theme = useTheme();
+  const [timeOptions, setTimeOptions] = useState(generateTimeOptions());
+
   const { showSnackbar } = useSnackbar();
   const today = new Date().toISOString().split('T')[0];
 
@@ -196,9 +246,28 @@ function ContactUsForm2() {
     setValue
   } = useForm({ defaultValues: { dialcode: '+91' } });
 
+  const selectedDate = watch('date');
+
+  useEffect(() => {
+    const options = generateTimeOptions(selectedDate);
+    setTimeOptions(options);
+
+    // Set default time when date changes
+    if (options.length > 0) {
+      const defaultTime =
+        selectedDate && dayjs(selectedDate).isAfter(dayjs(), 'day')
+          ? '10:00 AM' // Default to start of day for future dates
+          : getNext30MinuteInterval(); // Default to next available 30-min interval today
+      setValue('time', defaultTime);
+    }
+  }, [selectedDate, setValue]);
+
+  useEffect(() => {
+    setTimeOptions(generateTimeOptions(selectedDate));
+  }, [selectedDate]);
+
   // Handle form submission
   const onSubmit = async (data) => {
-    console.log(data);
     try {
       const url = `/user_management/consultation`;
       const payload = { ...data, name: data.firstName, mobile_number: data.phone };
@@ -221,7 +290,7 @@ function ContactUsForm2() {
             <Stack sx={{ gap: 0.5 }}>
               <FieldLabel name="Date" />
               <OutlinedInput
-                {...register('date')}
+                {...register('date', { required: 'Please select a date first' })}
                 placeholder="Date"
                 slotProps={{ input: { 'aria-label': 'Date', min: today } }}
                 fullWidth
@@ -233,7 +302,7 @@ function ContactUsForm2() {
             </Stack>
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <Stack sx={{ gap: 0.5 }}>
+            {/* <Stack sx={{ gap: 0.5 }}>
               <FieldLabel name="Time" />
               <OutlinedInput
                 {...register('time')}
@@ -243,6 +312,33 @@ function ContactUsForm2() {
                 fullWidth
                 notched
                 error={errors.time && Boolean(errors.time)}
+              />
+              {errors.time?.message && <ErrorMessage message={errors.time?.message} />}
+            </Stack> */}
+            <Stack sx={{ gap: 0.5 }}>
+              <FieldLabel name="Time" />
+              <Controller
+                name="time"
+                control={control}
+                defaultValue=""
+                rules={{ required: 'Time is required' }}
+                render={({ field }) => (
+                  <Autocomplete
+                    {...field}
+                    options={timeOptions.length === 0 ? ['Please select date first'] : timeOptions}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label=""
+                        variant="outlined"
+                        error={!!errors.time}
+                        fullWidth
+                        helperText={errors.time?.message}
+                      />
+                    )}
+                    onChange={(_, newValue) => field.onChange(newValue)}
+                  />
+                )}
               />
               {errors.time?.message && <ErrorMessage message={errors.time?.message} />}
             </Stack>
