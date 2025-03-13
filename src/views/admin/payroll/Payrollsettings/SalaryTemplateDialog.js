@@ -35,13 +35,17 @@ const validationSchema = Yup.object({
   description: Yup.string().required('Description is required'),
   annual_ctc: Yup.number().required('Annual CTC is required').positive('Annual CTC must be a positive number')
 });
-
+const initialEarnings = [
+  { component_name: 'Basic', calculation_type: 'Fixed', monthly: 0, annually: 0, calculation: 50 },
+  { component_name: 'Fixed Allowance', calculation_type: 'Fixed', monthly: 0, annually: 0, calculation: 0 }
+];
 function SalaryTemplateDialog({}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [earningsData, setEarningsData] = useState([]);
-  const [payrollid, setPayrollId] = useState(null); // Payroll ID fetched from URL
+  const [payrollid, setPayrollId] = useState(null);
+  const [template_id, setTemplate_id] = useState(null);
   const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
@@ -50,7 +54,12 @@ function SalaryTemplateDialog({}) {
       setPayrollId(id);
     }
   }, [searchParams]);
-
+  useEffect(() => {
+    const id = searchParams.get('template_id');
+    if (id) {
+      setTemplate_id(id);
+    }
+  }, [searchParams]);
   // Initial fields for template
   const fields = [
     { name: 'template_name', label: 'Template Name' },
@@ -67,54 +76,20 @@ function SalaryTemplateDialog({}) {
   // Formik initialization
   const formik = useFormik({
     initialValues: {
-      payroll: '',
       template_name: '',
       description: '',
       annual_ctc: '',
-      earnings: [
-        // {
-        //   component_name: 'Basic',
-        //   calculation_type: 'Fixed',
-        //   monthly: 0,
-        //   annually: 0,
-        //   calculation: 50
-        // },
-        // {
-        //   component_name: 'Fixed Allowance',
-        //   calculation_type: 'Fixed',
-        //   monthly: 0,
-        //   annually: 0,
-        //   calculation: 0
-        // }
-      ],
-      gross_salary: {
-        monthly: '',
-        annually: ''
-      },
+      earnings: [...initialEarnings],
+      gross_salary: { monthly: '', annually: '' },
       benefits: [
-        {
-          component_name: '',
-          calculation_type: '',
-          monthly: '',
-          annually: ''
-        }
+        { component_name: 'EPF', calculation: '12% of Restricted wage', monthly: '', annually: '', calculation_type: 0 },
+        { component_name: 'EDIL', calculation: '0.5% of Restricted wage', monthly: '', annually: '', calculation_type: 0 },
+        { component_name: 'EPF admin charges', calculation: '0.5% of Restricted wage', monthly: '', annually: '', calculation_type: 0 },
+        { component_name: 'ESI', calculation: '3.25% of Restricted wage', monthly: '', annually: '', calculation_type: 0 }
       ],
-      total_ctc: {
-        monthly: '',
-        annually: ''
-      },
-      deductions: [
-        {
-          component_name: '',
-          calculation_type: '',
-          monthly: '',
-          annually: ''
-        }
-      ],
-      net_salary: {
-        monthly: '',
-        annually: ''
-      }
+      total_ctc: { monthly: '', annually: '' },
+      deductions: [{ component_name: '', calculation_type: '', monthly: '', annually: '' }],
+      net_salary: { monthly: '', annually: '' }
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -123,14 +98,16 @@ function SalaryTemplateDialog({}) {
         showSnackbar(values.errorMessage, 'error');
         return; // Prevent form submission
       }
-      // let url = `/payroll/salary-templates`;
-      // const { res } = await Factory('delete', url, {});
-      // if (res.status_cd === 1) {
-      //   showSnackbar(JSON.stringify(res.data), 'error');
-      // } else {
-      //   showSnackbar('Record Deleted Successfully', 'success');
-      //   fetch_salary_templates();
-      // }
+      let postData = { ...values };
+      postData.payroll = payrollid;
+      let url = `/payroll/salary-templates`;
+      const { res } = await Factory('post', url, postData);
+      console.log(res);
+      if (res.status_cd === 1) {
+        showSnackbar(JSON.stringify(res.data), 'error');
+      } else {
+        router.back();
+      }
     }
   });
 
@@ -331,12 +308,28 @@ function SalaryTemplateDialog({}) {
       setEarningsData(res.data);
     }
   };
+  const fetch_individual_salary_templates = async (id) => {
+    if (!id) return;
 
+    const url = `/payroll/salary-templates/${id}`;
+    const { res, error } = await Factory('get', url, {});
+
+    console.log(res.data);
+    if (res?.status_cd === 0) {
+      setValues(res?.data);
+    } else {
+    }
+  };
   useEffect(() => {
     if (payrollid) {
       getEarnings_Details(payrollid);
     }
   }, [payrollid]);
+  useEffect(() => {
+    if (template_id) {
+      fetch_individual_salary_templates(template_id);
+    }
+  }, [template_id]);
   const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, resetForm, setFieldValue } = formik;
   // console.log(values.earnings);
 
@@ -490,12 +483,69 @@ function SalaryTemplateDialog({}) {
                     </TableCell>
                   </TableRow>
 
-                  <TableRow sx={{}}>
+                  <TableRow>
                     <TableCell
                       colSpan={2}
                       sx={{ fontWeight: 'bold' }} // Rounded on the left
                     >
                       Gross Salary
+                    </TableCell>
+                    <TableCell>
+                      <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.monthly || 0), 0)}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.annually || 0), 0)}</Typography>
+                    </TableCell>
+                    <TableCell sx={{ borderRadius: '0 16px 16px 0' }}></TableCell>
+                  </TableRow>
+
+                  <TableRow>
+                    <TableCell colSpan={5} sx={{ fontWeight: 'bold' }}>
+                      <Typography variant="subtitle1"> Benefits </Typography>
+                    </TableCell>
+                  </TableRow>
+
+                  {values.benefits.map((item, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{item.component_name}</TableCell>
+                      <TableCell>{item.calculation}</TableCell>
+                      <TableCell>
+                        <CustomInput
+                          value={item.monthly}
+                          onChange={(e) => {
+                            handleEarningsChange(index, 'calculation_type', e.target.value);
+                            recalculate(); // Call recalculate on change
+                          }}
+                          fullWidth
+                          sx={{ maxWidth: 80, textAlign: 'center' }}
+                          inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        {' '}
+                        <CustomInput
+                          value={item.annually}
+                          onChange={(e) => {
+                            handleEarningsChange(index, 'calculation_type', e.target.value);
+                            recalculate(); // Call recalculate on change
+                          }}
+                          fullWidth
+                          sx={{ maxWidth: 80, textAlign: 'center' }}
+                          inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <ListItemButton sx={{ color: '#d32f2f' }}>
+                          <ListItemIcon>
+                            <IconTrash size={16} style={{ color: '#d32f2f' }} />
+                          </ListItemIcon>
+                        </ListItemButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  <TableRow sx={{ backgroundColor: '#f6f2fc', margin: '20px' }}>
+                    <TableCell colSpan={2} sx={{ fontWeight: 'bold' }}>
+                      Total CTC
                     </TableCell>
                     <TableCell>
                       <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.monthly || 0), 0)}</Typography>

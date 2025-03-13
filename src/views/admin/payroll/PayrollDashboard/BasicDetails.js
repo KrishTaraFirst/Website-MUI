@@ -26,7 +26,7 @@ const employeeFields = [
   { name: 'designation', label: 'Designation' },
   { name: 'department', label: 'Department' }
 ];
-function BasicDetails() {
+function BasicDetails({ employeeMasterData }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false); // State for loader
 
@@ -45,7 +45,7 @@ function BasicDetails() {
   }, [searchParams]);
   const validationSchema = Yup.object({
     first_name: Yup.string().required('First Name is required'),
-    middle_name: Yup.string(),
+    // middle_name: Yup.string(),
     last_name: Yup.string().required('Last Name is required'),
     associate_id: Yup.string().required('Employee ID is required'),
     doj: Yup.date().required('Date of Joining is required'),
@@ -85,11 +85,11 @@ function BasicDetails() {
     },
     validationSchema,
     onSubmit: async (values) => {
-      console.log(values);
       setLoading(true);
       const postData = { ...values };
       postData.payroll = Number(payrollid);
-      const url = `/employees`;
+      postData.gender = values.gender.toLowerCase();
+      const url = `/payroll/employees`;
       const { res, error } = await Factory('post', url, postData);
       setLoading(false);
       if (res.status_cd === 0) {
@@ -229,6 +229,7 @@ function BasicDetails() {
       fetchDepartments();
     }
   }, [payrollid]);
+  console.log(employeeMasterData);
   const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, resetForm, setFieldValue } = formik;
   return (
     <Box sx={{ mt: 2 }}>

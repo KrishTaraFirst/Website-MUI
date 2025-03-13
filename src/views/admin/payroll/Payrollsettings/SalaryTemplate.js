@@ -25,7 +25,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 function SalaryTemplate() {
   const [openDialog, setOpenDialog] = useState(false); // State to manage dialog visibility
-  const [designations, setDesignations] = useState([]); // State to store designations data
+  const [salary_teamplates_data, setSalary_teamplates_data] = useState([]); // State to store salary_teamplates_data data
   const [payrollid, setPayrollId] = useState(null); // Payroll ID fetched from URL
   const [postType, setPostType] = useState(''); // Payroll ID fetched from URL
   const [selectedRecord, setSelectedRecord] = useState(null);
@@ -50,22 +50,22 @@ function SalaryTemplate() {
   const fetch_salary_templates = async () => {
     if (!payrollid) return; // If there's no payroll id, exit early
 
-    const url = `/payroll/salary-templates/${payrollid}`;
+    const url = `/payroll/salary-templates?payroll_id=${payrollid}`;
     const { res, error } = await Factory('get', url, {});
 
     if (res?.status_cd === 0 && Array.isArray(res?.data)) {
-      setDesignations(res?.data); // Successfully set work locations
+      setSalary_teamplates_data(res?.data); // Successfully set work locations
     } else {
-      setDesignations([]);
+      setSalary_teamplates_data([]);
     }
   };
-  const handleEdit = (designation) => {
+  const handleEdit = (item) => {
     setPostType('edit');
-    setSelectedRecord(designation);
-    handleOpenDialog();
+    setSelectedRecord(item);
+    router.push(`/payrollsetup/create-salary-template?template_id=${item.id}`);
   };
-  const handleDelete = async (designation) => {
-    let url = `/payroll/designations/${designation.id}/`;
+  const handleDelete = async (item) => {
+    let url = `/payroll/salary-templates/${item.id}`;
     const { res } = await Factory('delete', url, {});
     if (res.status_cd === 1) {
       showSnackbar(JSON.stringify(res.data), 'error');
@@ -79,6 +79,7 @@ function SalaryTemplate() {
   useEffect(() => {
     if (payrollid !== null) fetch_salary_templates();
   }, [payrollid]);
+  console.log(salary_teamplates_data);
   return (
     <HomeCard
       title="Salary Template"
@@ -97,41 +98,16 @@ function SalaryTemplate() {
           >
             Create New
           </Button>
-          {/* <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => {
-              // setPostType('post');
-              // handleOpenDialog();
-            }}
-            sx={{ marginBottom: 2 }}
-          >
-            Import
-          </Button> */}
         </Stack>
       )}
     >
       <Grid2 container spacing={{ xs: 2, sm: 3 }}>
         <Grid2 size={12}>
-          {openDialog === true && (
-            // <SalaryTemplateDialog
-            //   open={openDialog}
-            //   handleClose={handleCloseDialog}
-            //   handleOpenDialog={handleOpenDialog}
-            //   selectedRecord={selectedRecord}
-            //   type={postType}
-            //   setType={setPostType}
-            //   fetch_salary_templates={fetch_salary_templates}
-            // />
-            <></>
-          )}
-        </Grid2>
-
-        <Grid2 size={12}>
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
                 <TableRow>
+                  <TableCell>S.No</TableCell>
                   <TableCell>Template Name</TableCell>
                   <TableCell>Description</TableCell>
                   <TableCell>Status</TableCell>
@@ -139,36 +115,37 @@ function SalaryTemplate() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {/* {designations.length === 0 ? (
+                {salary_teamplates_data.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} sx={{ height: 300 }}>
                       <EmptyTable msg="No Designations available" />
                     </TableCell>
                   </TableRow>
                 ) : (
-                  designations.map((designation, index) => (
-                    <TableRow key={designation.id}>
+                  salary_teamplates_data.map((item, index) => (
+                    <TableRow key={item.id}>
                       <TableCell>{index + 1}</TableCell>
-                      <TableCell>{designation.designation_name}</TableCell>
-                      <TableCell>{designation.numOfEmployees || 0}</TableCell>
+                      <TableCell>{item.template_name}</TableCell>
+                      <TableCell>{item.description}</TableCell>
+                      <TableCell>{item.template_name}</TableCell>
+
                       <TableCell>
                         <ActionCell
-                          row={designation} // Pass the customer row data
-                          onEdit={() => handleEdit(designation)} // Edit handler
-                          onDelete={() => handleDelete(designation)} // Delete handler
+                          row={item} // Pass the customer row data
+                          onEdit={() => handleEdit(item)} // Edit handler
+                          onDelete={() => handleDelete(item)} // Delete handler
                           open={openDialog}
-                          onClose={handleCloseDialog}
                           deleteDialogData={{
                             title: 'Delete Record',
                             heading: 'Are you sure you want to delete this Record?',
-                            description: `This action will remove ${designation.name} from the list.`,
+                            description: `This action will remove ${item.template_name} from the list.`,
                             successMessage: 'Record has been deleted.'
                           }}
                         />
                       </TableCell>
                     </TableRow>
                   ))
-                )} */}
+                )}
               </TableBody>
             </Table>
           </TableContainer>
