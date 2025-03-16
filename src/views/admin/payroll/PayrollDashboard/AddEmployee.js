@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Stepper, Step, StepLabel, Button, Typography, Box, Stack } from '@mui/material';
 import BasicDetails from './BasicDetails';
 import SalaryDetails from './SalaryDetails';
@@ -7,12 +7,25 @@ import PersonalDetails from './PersonalDetails';
 import PaymentInformation from './PaymentInformation';
 import MainCard from '@/components/MainCard';
 import HomeCard from '@/components/cards/HomeCard';
+import { useSearchParams } from 'next/navigation';
+import Factory from '@/utils/Factory';
+import { useSnackbar } from '@/components/CustomSnackbar';
 
-const StepperComponent = () => {
+const StepperComponent = ({ employeeMasterData }) => {
   const [activeStep, setActiveStep] = useState(0);
+  const [loading, setLoading] = useState(false); // State for loader
 
   const steps = ['Basic Details', 'Salary Details', 'Personal Details', 'Payment Information'];
+  const [payrollid, setPayrollId] = useState(null);
+  const searchParams = useSearchParams();
+  const { showSnackbar } = useSnackbar();
 
+  useEffect(() => {
+    const id = searchParams.get('payrollid');
+    if (id) {
+      setPayrollId(id);
+    }
+  }, [searchParams]);
   const handleNext = () => {
     if (activeStep < steps.length - 1) {
       setActiveStep(activeStep + 1);
@@ -33,13 +46,13 @@ const StepperComponent = () => {
   const renderStepContent = (step) => {
     switch (step) {
       case 0:
-        return <BasicDetails />;
+        return <BasicDetails employeeMasterData={employeeMasterData} />;
       case 1:
-        return <SalaryDetails />;
+        return <SalaryDetails employeeMasterData={employeeMasterData} />;
       case 2:
-        return <PersonalDetails />;
+        return <PersonalDetails employeeMasterData={employeeMasterData} />;
       case 3:
-        return <PaymentInformation />;
+        return <PaymentInformation employeeMasterData={employeeMasterData} />;
       default:
         return <div>Unknown Step</div>;
     }

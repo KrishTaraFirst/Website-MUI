@@ -17,8 +17,6 @@ import useCurrentUser from '@/hooks/useCurrentUser';
 export default function PayrollDashboard({ setPayrollSetup }) {
   const { userData } = useCurrentUser();
 
-  let businessId = userData.user_type === 'Business' ? userData?.business_affiliated[0]?.id : userData.businesssDetails.business[0].id;
-
   const router = useRouter();
   const pathname = usePathname();
   const [loading, setLoading] = useState(false);
@@ -63,7 +61,7 @@ export default function PayrollDashboard({ setPayrollSetup }) {
       get_business_details();
     }
   }, [userData.id]);
-  console.log(userData);
+  console.log(pathname);
 
   return loading ? (
     <Loader />
