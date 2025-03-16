@@ -30,7 +30,7 @@ const PayrollSetup = () => {
     { nameKey: 'Set up Statutory Components', path: '/set_up_statutory_components', completed: false },
     { nameKey: 'Set up Salary Components', path: '/set_up_salary_components', completed: false },
     { nameKey: 'Set up Salary Template', path: '/set_up_salary_template', completed: false },
-    { nameKey: 'Set up Employee Master', path: '/employee_list', completed: false },
+    { nameKey: 'Set up Employee Master', path: '/set_up_employee_master', completed: false },
     { nameKey: 'Set up Pay & Schedule', path: '/pay_schedule', completed: false },
     { nameKey: 'Leave & Attendance', path: '/leave_and_attendance', completed: false }
   ]);

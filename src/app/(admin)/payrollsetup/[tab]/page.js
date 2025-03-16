@@ -12,8 +12,8 @@ const Designations = dynamic(() => import('@/views/admin/payroll/Payrollsettings
 const StatuitoryComponents = dynamic(() => import('@/views/admin/payroll/Payrollsettings/StatuitoryComponents'));
 const SalaryComponents = dynamic(() => import('@/views/admin/payroll/Payrollsettings/SalaryComponents'));
 const SalaryTemplate = dynamic(() => import('@/views/admin/payroll/Payrollsettings/SalaryTemplate'));
-const AddEmployee = dynamic(() => import('@/views/admin/payroll/PayrollDashboard/AddEmployee'));
-const EmployeeList = dynamic(() => import('@/views/admin/payroll/PayrollDashboard/EmployeeList'));
+const EmployeeMasterData = dynamic(() => import('@/views/admin/payroll/Payrollsettings/EmployeeMasterData'));
+const AddEmployee = dynamic(() => import('@/views/admin/payroll/Payrollsettings/EmployeeMasterData/AddEmployee'));
 
 const PaySchedule = dynamic(() => import('@/views/admin/payroll/Payrollsettings/PaySchedule'));
 const LeaveAttendance = dynamic(() => import('@/views/admin/payroll/Payrollsettings/LeaveAttendance'));
@@ -40,7 +40,7 @@ export default async function Dashboard({ params }) {
       ) : ['set_up_salary_template'].includes(tab) ? (
         <SalaryTemplate tab={tab} />
       ) : ['set_up_employee_master'].includes(tab) ? (
-        <AddEmployee tab={tab} />
+        <EmployeeMasterData tab={tab} />
       ) : ['pay_schedule'].includes(tab) ? (
         <PaySchedule tab={tab} />
       ) : ['leave_and_attendance'].includes(tab) ? (
@@ -52,7 +52,7 @@ export default async function Dashboard({ params }) {
       ) : ['payroll_business_profileSetup'].includes(tab) ? (
         <BusinessProfileSetup tab={tab} />
       ) : ['employee_list'].includes(tab) ? (
-        <EmployeeList tab={tab} />
+        <EmployeeMasterData tab={tab} />
       ) : (
         <PayrollComponent tab={tab} />
       )}

@@ -26,7 +26,7 @@ const employeeFields = [
   { name: 'designation', label: 'Designation' },
   { name: 'department', label: 'Department' }
 ];
-function BasicDetails({ employeeMasterData }) {
+function BasicDetails({ employeeData }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false); // State for loader
 
@@ -89,8 +89,8 @@ function BasicDetails({ employeeMasterData }) {
       const postData = { ...values };
       postData.payroll = Number(payrollid);
       postData.gender = values.gender.toLowerCase();
-      const url = `/payroll/employees`;
-      const { res, error } = await Factory('post', url, postData);
+      const url = employeeData.id ? `/payroll/employees/${employeeData.id}` : `/payroll/employees`;
+      const { res, error } = await Factory(employeeData.id ? 'put' : 'post', url, postData);
       setLoading(false);
       if (res.status_cd === 0) {
         showSnackbar('Data Saved Successfully', 'success');
@@ -229,8 +229,30 @@ function BasicDetails({ employeeMasterData }) {
       fetchDepartments();
     }
   }, [payrollid]);
-  console.log(employeeMasterData);
+  console.log(employeeData);
   const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, resetForm, setFieldValue } = formik;
+  useEffect(() => {
+    if (employeeData) {
+      setValues((prev) => ({
+        ...prev,
+        first_name: employeeData.first_name,
+        middle_name: employeeData.middle_name,
+        last_name: employeeData.last_name,
+        associate_id: employeeData.associate_id,
+        doj: employeeData.doj,
+        work_email: employeeData.work_email,
+        mobile_number: employeeData.mobile_number,
+        gender: employeeData.gender,
+        work_location: employeeData.workLocation,
+        designation: employeeData.designation_name,
+        department: employeeData.department_name,
+        enable_portal_access: employeeData.enable_portal_access,
+        epf_enabled: employeeData.epf_enabled,
+        esi_enabled: employeeData.esi_enabled,
+        statutory_components: { ...employeeData.statutory_components }
+      }));
+    }
+  }, [employeeData]);
   return (
     <Box sx={{ mt: 2 }}>
       <form onSubmit={handleSubmit}>
