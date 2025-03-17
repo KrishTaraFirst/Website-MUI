@@ -93,7 +93,6 @@ function SalaryTemplateDialog({}) {
     },
     validationSchema,
     onSubmit: async (values) => {
-      console.log(values);
       if (values.errorMessage) {
         showSnackbar(values.errorMessage, 'error');
         return; // Prevent form submission
@@ -102,7 +101,6 @@ function SalaryTemplateDialog({}) {
       postData.payroll = payrollid;
       let url = `/payroll/salary-templates`;
       const { res } = await Factory('post', url, postData);
-      console.log(res);
       if (res.status_cd === 1) {
         showSnackbar(JSON.stringify(res.data), 'error');
       } else {
@@ -121,7 +119,6 @@ function SalaryTemplateDialog({}) {
     const { res, error } = await Factory('get', url, {});
 
     if (res.status_cd !== 0) {
-      console.error('Error fetching earnings data:', res);
       return;
     }
     const selectedItem = res.data;
@@ -131,7 +128,6 @@ function SalaryTemplateDialog({}) {
       component_name: selectedItem.component_name,
       calculation_type: selectedItem.calculation_type.type
     };
-    console.log(selectedItem);
 
     // Get the updated CTC value
     const annualCtc = parseFloat(values.annual_ctc);
@@ -141,7 +137,6 @@ function SalaryTemplateDialog({}) {
 
     // Recalculate earnings
     const calculatedValues = calculateEarnings(updatedEarnings[index], annualCtc, basicSalary);
-    // console.log(calculatedValues);
 
     updatedEarnings[index].monthly = calculatedValues.monthly;
     updatedEarnings[index].annually = calculatedValues.annually;
@@ -194,7 +189,6 @@ function SalaryTemplateDialog({}) {
         annually: 0
       };
     }
-    console.log(earning);
     switch (earning.component_name) {
       case 'Basic':
         const basicPercentage = earning.calculation; // Assume it's the percentage of CTC for Basic
@@ -314,7 +308,6 @@ function SalaryTemplateDialog({}) {
     const url = `/payroll/salary-templates/${id}`;
     const { res, error } = await Factory('get', url, {});
 
-    console.log(res.data);
     if (res?.status_cd === 0) {
       setValues(res?.data);
     } else {
@@ -331,8 +324,6 @@ function SalaryTemplateDialog({}) {
     }
   }, [template_id]);
   const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, resetForm, setFieldValue } = formik;
-  // console.log(values.earnings);
-
   return (
     <HomeCard title="New Salary Template" tagline="Set up your organization before starting payroll">
       <MainCard>

@@ -58,13 +58,11 @@ function EmployeeList() {
 
   const handleEdit = (item) => {
     setSelectedRecord(item);
-    router.push(`/payrollsetup/add-employee?employee_id=${item.id}`);
+    router.push(`/payrollsetup/add-employee?employee_id=${encodeURIComponent(item.id)}&payrollid=${encodeURIComponent(payrollid)}`);
   };
   const handleDelete = async (item) => {
-    // console.log(item);
     // let url = `/payroll/work-locations/delete/${item.id}/`;
     // const { res } = await Factory('delete', url, {});
-    // console.log(res);
     // if (res.status_cd === 1) {
     //   showSnackbar(JSON.stringify(res.data), 'error');
     // } else {

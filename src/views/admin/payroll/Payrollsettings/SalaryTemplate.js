@@ -79,7 +79,6 @@ function SalaryTemplate() {
   useEffect(() => {
     if (payrollid !== null) fetch_salary_templates();
   }, [payrollid]);
-  console.log(salary_teamplates_data);
   return (
     <HomeCard
       title="Salary Template"

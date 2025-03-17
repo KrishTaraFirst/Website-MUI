@@ -33,16 +33,20 @@ function BasicDetails({ employeeData }) {
   const searchParams = useSearchParams();
   const { showSnackbar } = useSnackbar();
   const [payrollid, setPayrollId] = useState(null);
+  const [employeeId, setEmployeeId] = useState(null);
+
   const [workLocations, setWorkLocations] = useState([]); // Stores the list of work locations
   const [designations, setDesignations] = useState([]); // State to store designations data
   const [departments, setDepartments] = useState([]); // State to store departments data
 
   useEffect(() => {
     const id = searchParams.get('payrollid');
-    if (id) {
-      setPayrollId(id);
-    }
+    const empId = searchParams.get('employee_id');
+
+    if (id) setPayrollId(id);
+    if (empId) setEmployeeId(empId);
   }, [searchParams]);
+
   const validationSchema = Yup.object({
     first_name: Yup.string().required('First Name is required'),
     // middle_name: Yup.string(),
@@ -71,9 +75,10 @@ function BasicDetails({ employeeData }) {
       designation: '',
       department: '',
       enable_portal_access: false,
-      epf_enabled: false,
-      esi_enabled: false,
       statutory_components: {
+        epf_enabled: false,
+        esi_enabled: false,
+        professional_tax: false,
         employee_provident_fund: {
           pf_account_number: '',
           uan: ''
@@ -102,19 +107,19 @@ function BasicDetails({ employeeData }) {
   const renderFields = (fields) => {
     return fields.map((field) => (
       <Grid2 key={field.name} size={{ xs: 12, sm: 6, md: 4 }}>
-        <Typography variant="body2" sx={{ mb: 0.5 }}>
+        <Typography variant="subtitle2" sx={{ color: 'grey.800', mb: 0.5 }}>
           {field.label}
         </Typography>
         {field.name === 'gender' || field.name === 'work_location' || field.name === 'designation' || field.name === 'department' ? (
           <CustomAutocomplete
             value={
               field.name === 'work_location'
-                ? workLocations.find((location) => location.location_id === values.work_location)?.location_name
+                ? workLocations?.find((location) => location?.id === values?.work_location) || null
                 : field.name === 'designation'
-                  ? designations.find((designation) => designation.designation_id === values.designation)?.designation_name
+                  ? designations.find((designation) => designation.id === values.designation) || null
                   : field.name === 'department'
-                    ? departments.find((department) => department.dept_id === values.department)?.dept_name
-                    : values[field.name]
+                    ? departments.find((department) => department.id === values.department) || null
+                    : (values[field.name] ?? null)
             }
             onChange={(e, newValue) => {
               // Extract only the correct field value (location_name, designation_name, or dept_name)
@@ -161,7 +166,8 @@ function BasicDetails({ employeeData }) {
             views={['year', 'month', 'day']}
             value={dayjs(values[field.name]) || null}
             onChange={(newDate) => {
-              setFieldValue(field.name, newDate);
+              const formattedDate = dayjs(newDate).format('YYYY-MM-DD');
+              setFieldValue(field.name, formattedDate);
             }}
             sx={{
               width: '100%',
@@ -229,8 +235,8 @@ function BasicDetails({ employeeData }) {
       fetchDepartments();
     }
   }, [payrollid]);
-  console.log(employeeData);
   const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, resetForm, setFieldValue } = formik;
+
   useEffect(() => {
     if (employeeData) {
       setValues((prev) => ({
@@ -242,13 +248,11 @@ function BasicDetails({ employeeData }) {
         doj: employeeData.doj,
         work_email: employeeData.work_email,
         mobile_number: employeeData.mobile_number,
-        gender: employeeData.gender,
-        work_location: employeeData.workLocation,
-        designation: employeeData.designation_name,
-        department: employeeData.department_name,
+        gender: employeeData.gender.charAt(0).toUpperCase() + employeeData.gender.slice(1),
+        work_location: employeeData.work_location,
+        designation: employeeData.designation,
+        department: employeeData.department,
         enable_portal_access: employeeData.enable_portal_access,
-        epf_enabled: employeeData.epf_enabled,
-        esi_enabled: employeeData.esi_enabled,
         statutory_components: { ...employeeData.statutory_components }
       }));
     }
@@ -281,48 +285,93 @@ function BasicDetails({ employeeData }) {
         </Typography>
         <FormGroup sx={{ mt: 1 }}>
           <FormControlLabel
-            control={<Checkbox checked={values.epf_enabled} onChange={(e) => setFieldValue('epf_enabled', e.target.checked)} />}
+            control={
+              <Checkbox
+                checked={values.statutory_components.epf_enabled}
+                onChange={(e) => {
+                  let checked = e.target.checked;
+                  if (!checked) {
+                    setFieldValue('statutory_components.employee_provident_fund.pf_account_number', '');
+                    setFieldValue('statutory_components.employee_provident_fund.uan', '');
+                  }
+                  setFieldValue('statutory_components.epf_enabled', checked);
+                }}
+              />
+            }
             label="Employees Provident Fund"
           />
-          <Grid2 container spacing={2} sx={{ mt: 1, ml: 3 }}>
-            <Grid2 size={{ xs: 12, sm: 6 }}>
-              <Typography sx={{ mb: 1 }}>PF Account Number</Typography>
-              <TextField
-                fullWidth
-                value={values.statutory_components.employee_provident_fund.pf_account_number}
-                onChange={(e) => setFieldValue('statutory_components.employee_provident_fund.pf_account_number', e.target.value)}
-                onBlur={handleBlur}
-              />
+          {values.statutory_components.epf_enabled && (
+            <Grid2 container spacing={2} sx={{ mt: 1, ml: 3 }}>
+              <Grid2 size={{ xs: 12, sm: 6 }}>
+                <Typography variant="subtitle2" sx={{ color: 'grey.800', mb: 0.5 }}>
+                  PF Account Number
+                </Typography>
+                <TextField
+                  fullWidth
+                  value={values.statutory_components.employee_provident_fund.pf_account_number}
+                  onChange={(e) => setFieldValue('statutory_components.employee_provident_fund.pf_account_number', e.target.value)}
+                  onBlur={handleBlur}
+                />
+              </Grid2>
+              <Grid2 size={{ xs: 12, sm: 6 }}>
+                <Typography variant="subtitle2" sx={{ color: 'grey.800', mb: 0.5 }}>
+                  PF Account Number
+                </Typography>
+                <TextField
+                  fullWidth
+                  value={values.statutory_components.employee_provident_fund.uan || ''}
+                  onChange={(e) => setFieldValue('statutory_components.employee_provident_fund.uan', e.target.value)}
+                  onBlur={handleBlur}
+                />
+              </Grid2>
             </Grid2>
-            <Grid2 size={{ xs: 12, sm: 6 }}>
-              <Typography sx={{ mb: 1 }}>UAN</Typography>
+          )}
 
-              <TextField
-                fullWidth
-                value={values.statutory_components.employee_provident_fund.uan || ''}
-                onChange={(e) => setFieldValue('statutory_components.employee_provident_fund.uan', e.target.value)}
-                onBlur={handleBlur}
-              />
-            </Grid2>
-          </Grid2>
-        </FormGroup>
-
-        <FormGroup>
           <FormControlLabel
-            control={<Checkbox checked={values.esi_enabled} onChange={(e) => setFieldValue('esi_enabled', e.target.checked)} />}
+            control={
+              <Checkbox
+                checked={values.statutory_components.esi_enabled}
+                onChange={(e) => {
+                  let checked = e.target.checked;
+                  if (!checked) {
+                    setFieldValue('statutory_components.employee_state_insurance.esi_number', '');
+                  }
+                  setFieldValue('statutory_components.esi_enabled', checked);
+                }}
+              />
+            }
             label="Employee State Insurance"
           />
-          <Grid2 container spacing={2} sx={{ mt: 1, ml: 3 }}>
-            <Grid2 size={{ xs: 12, sm: 6 }}>
-              <Typography sx={{ mb: 1 }}>ESI Number</Typography>
-              <TextField
-                fullWidth
-                value={values.statutory_components.employee_state_insurance.esi_number}
-                onChange={(e) => setFieldValue('statutory_components.employee_state_insurance.esi_number', e.target.value)}
-                onBlur={handleBlur}
-              />
+          {values.statutory_components.esi_enabled && (
+            <Grid2 container spacing={2} sx={{ mt: 1, ml: 3 }}>
+              <Grid2 size={{ xs: 12, sm: 6 }}>
+                <Typography variant="subtitle2" sx={{ color: 'grey.800', mb: 0.5 }}>
+                  ESI Number
+                </Typography>
+                <TextField
+                  fullWidth
+                  value={values.statutory_components.employee_state_insurance.esi_number}
+                  onChange={(e) => setFieldValue('statutory_components.employee_state_insurance.esi_number', e.target.value)}
+                  onBlur={handleBlur}
+                />
+              </Grid2>
             </Grid2>
-          </Grid2>
+          )}
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={values.statutory_components.professional_tax}
+                onChange={(e) => {
+                  let checked = e.target.checked;
+                  if (!checked) {
+                    setFieldValue('statutory_components.professional_tax', '');
+                  }
+                  setFieldValue('statutory_components.professional_tax', checked);
+                }}
+              />
+            }
+            label="Professional tax"
+          />
         </FormGroup>
 
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 2, gap: 2 }}>

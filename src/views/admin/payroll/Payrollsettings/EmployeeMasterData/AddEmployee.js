@@ -4,7 +4,7 @@ import { Stepper, Step, StepLabel, Button, Typography, Box, Stack } from '@mui/m
 import BasicDetails from './BasicDetails';
 import SalaryDetails from './SalaryDetails';
 import PersonalDetails from './PersonalDetails';
-import PaymentInformation from '../../payrollDashboard/PaymentInformation';
+import PaymentInformation from '../../Payrollsettings/EmployeeMasterData/PaymentInformation';
 import MainCard from '@/components/MainCard';
 import HomeCard from '@/components/cards/HomeCard';
 import { useSearchParams } from 'next/navigation';
@@ -13,7 +13,7 @@ import { useSnackbar } from '@/components/CustomSnackbar';
 import { useRouter, usePathname } from 'next/navigation';
 
 const StepperComponent = () => {
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setActiveStep] = useState(2);
   const [loading, setLoading] = useState(false); // State for loader
   const router = useRouter();
 
@@ -80,7 +80,7 @@ const StepperComponent = () => {
     if (employeeId) {
       fetch_employee_data(employeeId);
     }
-  }, [employeeId]);
+  }, [employeeId, activeStep]);
   return (
     <Box sx={{ width: '100%' }}>
       <HomeCard title="Employee Master Data" tagline="Create and manage Deatils.">
