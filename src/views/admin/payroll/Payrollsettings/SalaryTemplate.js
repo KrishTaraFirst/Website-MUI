@@ -22,6 +22,7 @@ import { useSearchParams } from 'next/navigation';
 import ActionCell from '@/utils/ActionCell';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import { usePathname, useRouter } from 'next/navigation';
+import MainCard from '@/components/MainCard';
 
 function SalaryTemplate() {
   const [openDialog, setOpenDialog] = useState(false); // State to manage dialog visibility
@@ -100,66 +101,68 @@ function SalaryTemplate() {
         </Stack>
       )}
     >
-      <Grid2 container spacing={{ xs: 2, sm: 3 }}>
-        <Grid2 size={12}>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>S.No</TableCell>
-                  <TableCell>Template Name</TableCell>
-                  <TableCell>Description</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {salary_teamplates_data.length === 0 ? (
+      <MainCard>
+        <Grid2 container spacing={{ xs: 2, sm: 3 }}>
+          <Grid2 size={12}>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
                   <TableRow>
-                    <TableCell colSpan={5} sx={{ height: 300 }}>
-                      <EmptyTable msg="No Designations available" />
-                    </TableCell>
+                    <TableCell>S.No</TableCell>
+                    <TableCell>Template Name</TableCell>
+                    <TableCell>Description</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Actions</TableCell>
                   </TableRow>
-                ) : (
-                  salary_teamplates_data.map((item, index) => (
-                    <TableRow key={item.id}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>{item.template_name}</TableCell>
-                      <TableCell>{item.description}</TableCell>
-                      <TableCell>{item.template_name}</TableCell>
-
-                      <TableCell>
-                        <ActionCell
-                          row={item} // Pass the customer row data
-                          onEdit={() => handleEdit(item)} // Edit handler
-                          onDelete={() => handleDelete(item)} // Delete handler
-                          open={openDialog}
-                          deleteDialogData={{
-                            title: 'Delete Record',
-                            heading: 'Are you sure you want to delete this Record?',
-                            description: `This action will remove ${item.template_name} from the list.`,
-                            successMessage: 'Record has been deleted.'
-                          }}
-                        />
+                </TableHead>
+                <TableBody>
+                  {salary_teamplates_data.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} sx={{ height: 300 }}>
+                        <EmptyTable msg="No Designations available" />
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                  ) : (
+                    salary_teamplates_data.map((item, index) => (
+                      <TableRow key={item.id}>
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell>{item.template_name}</TableCell>
+                        <TableCell>{item.description}</TableCell>
+                        <TableCell>{item.template_name}</TableCell>
+
+                        <TableCell>
+                          <ActionCell
+                            row={item} // Pass the customer row data
+                            onEdit={() => handleEdit(item)} // Edit handler
+                            onDelete={() => handleDelete(item)} // Delete handler
+                            open={openDialog}
+                            deleteDialogData={{
+                              title: 'Delete Record',
+                              heading: 'Are you sure you want to delete this Record?',
+                              description: `This action will remove ${item.template_name} from the list.`,
+                              successMessage: 'Record has been deleted.'
+                            }}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Grid2>
         </Grid2>
-      </Grid2>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
-        <Button
-          variant="outlined"
-          onClick={() => {
-            router.back();
-          }}
-        >
-          Back to Dashboard
-        </Button>
-      </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
+          <Button
+            variant="outlined"
+            onClick={() => {
+              router.back();
+            }}
+          >
+            Back to Dashboard
+          </Button>
+        </Box>
+      </MainCard>
     </HomeCard>
   );
 }

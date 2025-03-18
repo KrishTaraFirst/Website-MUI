@@ -37,8 +37,8 @@ const validationSchema = Yup.object({
   annual_ctc: Yup.number().required('Annual CTC is required').positive('Annual CTC must be a positive number')
 });
 const initialEarnings = [
-  { component_name: 'Basic', calculation_type: 'Fixed', monthly: 0, annually: 0, calculation: 50 },
-  { component_name: 'Fixed Allowance', calculation_type: 'Fixed', monthly: 0, annually: 0, calculation: 0 }
+  { component_name: 'Basic', calculation_type: 'Fixed', monthly: 0, annually: 0, calculation: 50 }
+  // { component_name: 'Fixed Allowance', calculation_type: 'Fixed', monthly: 0, annually: 0, calculation: 0 }
 ];
 function SalaryTemplateDialog({}) {
   const router = useRouter();
@@ -67,13 +67,6 @@ function SalaryTemplateDialog({}) {
     { name: 'description', label: 'Description' }
   ];
 
-  const employer_contributions = [
-    { type: 'EPF', calculation: '12% of Restricted wage', monthly: '', annually: '' },
-    { type: 'EDIL', calculation: '0.5% of Restricted wage', monthly: '', annually: '' },
-    { type: 'EPF admin charges', calculation: '0.5% of Restricted wage', monthly: '', annually: '' },
-    { type: 'EWSI', calculation: '3.25% of Restricted wage', monthly: '', annually: '' }
-  ];
-
   // Formik initialization
   const formik = useFormik({
     initialValues: {
@@ -82,14 +75,9 @@ function SalaryTemplateDialog({}) {
       annual_ctc: '',
       earnings: [...initialEarnings],
       gross_salary: { monthly: '', annually: '' },
-      benefits: [
-        { component_name: 'EPF', calculation: '12% of Restricted wage', monthly: '', annually: '', calculation_type: 0 },
-        { component_name: 'EDIL', calculation: '0.5% of Restricted wage', monthly: '', annually: '', calculation_type: 0 },
-        { component_name: 'EPF admin charges', calculation: '0.5% of Restricted wage', monthly: '', annually: '', calculation_type: 0 },
-        { component_name: 'ESI', calculation: '3.25% of Restricted wage', monthly: '', annually: '', calculation_type: 0 }
-      ],
+      benefits: [],
       total_ctc: { monthly: '', annually: '' },
-      deductions: [{ component_name: '', calculation_type: '', monthly: '', annually: '' }],
+      deductions: [],
       net_salary: { monthly: '', annually: '' }
     },
     validationSchema,
@@ -314,6 +302,92 @@ function SalaryTemplateDialog({}) {
     } else {
     }
   };
+  const fetch_preview = async () => {
+    let postData = { ...values };
+    postData.payroll = payrollid;
+    postData.earnings = [
+      ...postData.earnings,
+
+      { component_name: 'Fixed Allowance', calculation_type: 'Fixed', monthly: 0, annually: 0, calculation: 0 }
+    ];
+    const url = `/payroll/calculate-payroll`;
+    const { res, error } = await Factory('post', url, postData);
+    if (values.errorMessage) {
+      showSnackbar(values.errorMessage, 'error');
+      return; // Prevent form submission
+    }
+    if (res?.status_cd === 0) {
+      setValues(res?.data);
+    } else {
+    }
+  };
+  const fetch_salary_template_data = async (id) => {
+    if (!id) return;
+
+    const url = `/payroll/salary-benefits-details/${id}`;
+    const { res, error } = await Factory('get', url, {});
+
+    if (res?.status_cd === 0) {
+      setValues((prev) => {
+        const benefits = [];
+        const deductions = [];
+
+        if (res.data.epf_details.is_disabled === false) {
+          if (res.data.epf_details.include_employer_contribution_in_ctc === true) {
+            benefits.push({
+              component_name: 'EPF',
+              calculation_type: res.data.epf_details.employer_contribution_rate,
+              monthly: '',
+              annually: ''
+            });
+          }
+          if (res.data.epf_details.employer_edil_contribution_in_ctc === true) {
+            benefits.push({
+              component_name: 'EDIL',
+              calculation_type: '0.5% of Restricted wage',
+              monthly: 0,
+              annually: 0
+            });
+          }
+          if (res.data.epf_details.admin_charge_in_ctc === true) {
+            benefits.push({
+              component_name: 'EPF admin charges	',
+              calculation_type: '0.5% of Restricted wage',
+              monthly: 0,
+              annually: 0
+            });
+          }
+          if (res.data.esi_details.is_disabled === false && res.data.esi_details.include_employer_contribution_in_ctc === true) {
+            benefits.push({
+              component_name: 'ESI',
+              calculation_type: '3.25 % of Restricted wage',
+              monthly: 0,
+              annually: 0
+            });
+          }
+          /// deductions
+          if (res.data.epf_details.is_disabled === false) {
+            deductions.push({
+              component_name: 'EPF Employee Contribution',
+              calculation_type: res.data.epf_details.employee_contribution_rate,
+              monthly: 0,
+              annually: 0
+            });
+          }
+          if (res.data.esi_details.is_disabled === false) {
+            deductions.push({
+              component_name: 'ESI Employee contribution',
+              calculation_type: '0.75 % of Restricted wage',
+              monthly: 0,
+              annually: 0
+            });
+          }
+        }
+        return { ...prev, benefits, deductions };
+      });
+    }
+  };
+
   useEffect(() => {
     if (payrollid) {
       getEarnings_Details(payrollid);
@@ -322,10 +396,11 @@ function SalaryTemplateDialog({}) {
   useEffect(() => {
     if (template_id) {
       fetch_individual_salary_templates(template_id);
+    } else {
+      fetch_salary_template_data(payrollid);
     }
-  }, [template_id]);
+  }, [template_id, payrollid]);
   const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, resetForm, setFieldValue } = formik;
-  console.log(earningsData);
   return (
     <HomeCard title="New Salary Template" tagline="Set up your organization before starting payroll">
       <MainCard>
@@ -342,7 +417,7 @@ function SalaryTemplateDialog({}) {
                 <Box style={{ paddingBottom: '5px' }}>
                   <Typography variant="subtitle1">Annual CTC</Typography>
                 </Box>
-                <Box sx={{ display: 'flex' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <CustomInput
                     fullWidth
                     name="annual_ctc"
@@ -353,11 +428,6 @@ function SalaryTemplateDialog({}) {
                       // recalculate(); // Trigger recalculation when CTC changes
                     }}
                     onBlur={() => recalculate()} // Recalculate when focus is lost
-                    // onKeyDown={(e) => {
-                    //   if (e.key === 'Enter') {
-                    //     recalculate(); // Trigger recalculation when Enter key is pressed
-                    //   }
-                    // }}
                     error={touched.annual_ctc && Boolean(errors.annual_ctc)}
                     helperText={touched.annual_ctc && errors.annual_ctc}
                     InputProps={{
@@ -370,7 +440,7 @@ function SalaryTemplateDialog({}) {
                     }}
                   />
 
-                  <Typography variant="body1" sx={{ whiteSpace: 'nowrap', ml: 1, textAlign: 'center' }}>
+                  <Typography variant="body1" sx={{ whiteSpace: 'nowrap', ml: 1 }}>
                     Per Year
                   </Typography>
                 </Box>
@@ -382,35 +452,52 @@ function SalaryTemplateDialog({}) {
               <Table size="small" sx={{ fontSize: '0.875rem' }}>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Salary Components</TableCell>
-                    <TableCell>Calculation Type</TableCell>
-                    <TableCell>Monthly</TableCell>
-                    <TableCell>Annually</TableCell>
-                    <TableCell>Action</TableCell>
+                    <TableCell>
+                      <Typography>Salary Components</Typography>{' '}
+                    </TableCell>
+                    <TableCell>
+                      <Typography>Calculation Type</Typography>{' '}
+                    </TableCell>
+                    <TableCell>
+                      <Typography>Monthly</Typography>{' '}
+                    </TableCell>
+                    <TableCell>
+                      <Typography>Annually</Typography>{' '}
+                    </TableCell>
+                    <TableCell>
+                      <Typography>Action</Typography>{' '}
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   <TableRow>
                     <TableCell colSpan={5}>
-                      <Typography variant="subtitle1"> Earnings </Typography>
+                      <Typography variant="subtitle1" sx={{ color: 'primary.main' }}>
+                        {' '}
+                        Earnings{' '}
+                      </Typography>
                     </TableCell>
                   </TableRow>
                   {values.earnings.map((earning, index) => (
                     <TableRow key={index}>
                       <TableCell>
-                        <CustomAutocomplete
-                          options={earningsData.map((item) => item.component_name)}
-                          value={earning.component_name || ''}
-                          renderInput={(params) => <TextField {...params} />}
-                          onChange={(e, newValue) =>
-                            handleEarningsChange(
-                              earningsData.find((item) => item.component_name === newValue),
-                              index,
-                              'component_name',
-                              newValue
-                            )
-                          }
-                        />
+                        {earning.component_name === 'Basic' ? (
+                          <Typography>Basic</Typography>
+                        ) : (
+                          <CustomAutocomplete
+                            options={earningsData.map((item) => item.component_name)}
+                            value={earning.component_name || ''}
+                            renderInput={(params) => <TextField {...params} />}
+                            onChange={(e, newValue) =>
+                              handleEarningsChange(
+                                earningsData.find((item) => item.component_name === newValue),
+                                index,
+                                'component_name',
+                                newValue
+                              )
+                            }
+                          />
+                        )}
                       </TableCell>
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -452,11 +539,7 @@ function SalaryTemplateDialog({}) {
                       <TableCell>{earning.monthly}</TableCell>
                       <TableCell>{earning.annually}</TableCell>
                       <TableCell>
-                        <ListItemButton sx={{ color: '#d32f2f' }} onClick={() => handleDeleteEarnings(index)}>
-                          <ListItemIcon>
-                            <IconTrash size={16} style={{ color: '#d32f2f' }} />
-                          </ListItemIcon>
-                        </ListItemButton>
+                        <Button size="small" color="error" startIcon={<IconTrash size={16} />}></Button>{' '}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -476,77 +559,95 @@ function SalaryTemplateDialog({}) {
                     </TableCell>
                   </TableRow>
 
-                  <TableRow>
-                    <TableCell
-                      colSpan={2}
-                      sx={{ fontWeight: 'bold' }} // Rounded on the left
-                    >
-                      Gross Salary
+                  <TableRow sx={{ backgroundColor: '#f6f2fc' }}>
+                    <TableCell>
+                      <Typography variant="subtitle2"> Gross Salary </Typography>
+                      <Button
+                        onClick={() => {
+                          fetch_preview();
+                        }}
+                      >
+                        System Calculated Components' Total (Preview)
+                      </Button>
                     </TableCell>
+                    <TableCell></TableCell>
+
                     <TableCell>
                       <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.monthly || 0), 0)}</Typography>
                     </TableCell>
                     <TableCell>
                       <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.annually || 0), 0)}</Typography>
                     </TableCell>
-                    <TableCell sx={{ borderRadius: '0 16px 16px 0' }}></TableCell>
+                    <TableCell></TableCell>
                   </TableRow>
 
                   <TableRow>
-                    <TableCell colSpan={5} sx={{ fontWeight: 'bold' }}>
-                      <Typography variant="subtitle1"> Benefits </Typography>
+                    <TableCell colSpan={5}>
+                      <Typography variant="subtitle1" sx={{ color: 'primary.main' }}>
+                        {' '}
+                        Benefits{' '}
+                      </Typography>
                     </TableCell>
                   </TableRow>
 
-                  {values.benefits.map((item, index) => (
+                  {values?.benefits.map((item, index) => (
                     <TableRow key={index}>
                       <TableCell>{item.component_name}</TableCell>
-                      <TableCell>{item.calculation}</TableCell>
+                      <TableCell>{item.calculation_type}</TableCell>
+                      <TableCell>{item.monthly}</TableCell>
+                      <TableCell>{item.annually}</TableCell>
                       <TableCell>
-                        <CustomInput
-                          value={item.monthly}
-                          onChange={(e) => {
-                            handleEarningsChange(index, 'calculation_type', e.target.value);
-                            recalculate(); // Call recalculate on change
-                          }}
-                          fullWidth
-                          sx={{ maxWidth: 80, textAlign: 'center' }}
-                          inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        {' '}
-                        <CustomInput
-                          value={item.annually}
-                          onChange={(e) => {
-                            handleEarningsChange(index, 'calculation_type', e.target.value);
-                            recalculate(); // Call recalculate on change
-                          }}
-                          fullWidth
-                          sx={{ maxWidth: 80, textAlign: 'center' }}
-                          inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <ListItemButton sx={{ color: '#d32f2f' }}>
-                          <ListItemIcon>
-                            <IconTrash size={16} style={{ color: '#d32f2f' }} />
-                          </ListItemIcon>
-                        </ListItemButton>
+                        <Button size="small" color="error" startIcon={<IconTrash size={16} />}></Button>{' '}
                       </TableCell>
                     </TableRow>
                   ))}
                   <TableRow sx={{ backgroundColor: '#f6f2fc', margin: '20px' }}>
-                    <TableCell colSpan={2} sx={{ fontWeight: 'bold' }}>
-                      Total CTC
+                    <TableCell>
+                      <Typography variant="subtitle2"> Total CTC </Typography>
+                    </TableCell>
+                    <TableCell></TableCell>
+
+                    <TableCell>
+                      <Typography>{values.total_ctc.monthly}</Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.monthly || 0), 0)}</Typography>
+                      <Typography>{values.total_ctc.annually}</Typography>
+                    </TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell colSpan={6}>
+                      <Typography variant="subtitle1" sx={{ color: 'primary.main' }}>
+                        {' '}
+                        Deductions{' '}
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+
+                  {values?.deductions.map((item, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{item.component_name}</TableCell>
+                      <TableCell>{item.calculation_type}</TableCell>
+                      <TableCell>{item.monthly}</TableCell>
+                      <TableCell>{item.annually}</TableCell>
+                      <TableCell>
+                        <Button size="small" color="error" startIcon={<IconTrash size={16} />}></Button>{' '}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  <TableRow sx={{ backgroundColor: '#f6f2fc', margin: '20px' }}>
+                    <TableCell>
+                      <Typography variant="subtitle2"> Net Salary (Take Home) </Typography>
+                    </TableCell>
+                    <TableCell></TableCell>
+
+                    <TableCell>
+                      <Typography>{values.net_salary.monthly}</Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.annually || 0), 0)}</Typography>
+                      <Typography>{values.net_salary.annually}</Typography>
                     </TableCell>
-                    <TableCell sx={{ borderRadius: '0 16px 16px 0' }}></TableCell>
+                    <TableCell></TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
