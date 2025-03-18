@@ -11,9 +11,10 @@ import { useSearchParams } from 'next/navigation';
 import Factory from '@/utils/Factory';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import { useRouter, usePathname } from 'next/navigation';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const StepperComponent = () => {
-  const [activeStep, setActiveStep] = useState(2);
+  const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false); // State for loader
   const router = useRouter();
 
@@ -84,15 +85,14 @@ const StepperComponent = () => {
   return (
     <Box sx={{ width: '100%' }}>
       <HomeCard title="Employee Master Data" tagline="Create and manage Deatils.">
+        <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 1 }}>
+          {steps.map((label, index) => (
+            <Step key={index}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
         <MainCard>
-          <Stepper activeStep={activeStep} alternativeLabel>
-            {steps.map((label, index) => (
-              <Step key={index}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-
           <Box>
             {activeStep === steps.length ? (
               <Box>
@@ -104,19 +104,25 @@ const StepperComponent = () => {
                 {/* <Typography variant="h6">{`You are on ${steps[activeStep]}`}</Typography> */}
                 {renderStepContent(activeStep)}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => {
-                      if (activeStep === 0) {
-                        router.back();
-                      } else {
-                        handleBack();
-                      }
-                    }}
-                  >
-                    Back
-                  </Button>
+                  <Box>
+                    <Button variant="outlined" onClick={() => router.back()} sx={{ mr: 2 }} startIcon={<ArrowBackIcon />}>
+                      Back to Dashboard
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        if (activeStep === 0) {
+                          router.back();
+                        } else {
+                          handleBack();
+                        }
+                      }}
+                    >
+                      Back
+                    </Button>
+                  </Box>
+
                   <Button variant="contained" color="primary" onClick={handleNext} disabled={activeStep === steps.length - 1}>
                     Next
                   </Button>

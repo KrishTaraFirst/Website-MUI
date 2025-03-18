@@ -198,7 +198,7 @@ function PersonalDetails({ employeeData }) {
             {renderFields(employeeFields)}
           </Grid2>
 
-          <Grid2 item xs={12}>
+          <Grid2 size={{ xs: 12 }}>
             <Typography variant="h6" sx={{ mt: 2 }}>
               Address Details
             </Typography>

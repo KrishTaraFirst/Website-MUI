@@ -62,7 +62,7 @@ function SalaryTemplate() {
   const handleEdit = (item) => {
     setPostType('edit');
     setSelectedRecord(item);
-    router.push(`/payrollsetup/create-salary-template?template_id=${item.id}`);
+    router.push(`/payrollsetup/create-salary-template?template_id=${item.id}&payrollid=${payrollid}`);
   };
   const handleDelete = async (item) => {
     let url = `/payroll/salary-templates/${item.id}`;

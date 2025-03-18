@@ -122,7 +122,6 @@ function BasicDetails({ employeeData }) {
                     : (values[field.name] ?? null)
             }
             onChange={(e, newValue) => {
-              // Extract only the correct field value (location_name, designation_name, or dept_name)
               const valueToSet =
                 field.name === 'work_location'
                   ? newValue
@@ -154,7 +153,6 @@ function BasicDetails({ employeeData }) {
             error={touched[field.name] && Boolean(errors[field.name])}
             helperText={touched[field.name] && errors[field.name]}
             sx={{ width: '100%' }}
-            // Conditionally add getOptionLabel for work_location
             {...(field.name === 'work_location'
               ? { getOptionLabel: (option) => option?.location_name || '' }
               : field.name === 'designation'
@@ -375,9 +373,6 @@ function BasicDetails({ employeeData }) {
         </FormGroup>
 
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 2, gap: 2 }}>
-          <Button variant="outlined" onClick={() => router.back()}>
-            Back to Dashboard
-          </Button>
           <Button variant="contained" color="primary" type="submit">
             Submit
           </Button>
