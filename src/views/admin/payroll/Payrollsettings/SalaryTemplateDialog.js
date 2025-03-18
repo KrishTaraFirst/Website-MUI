@@ -29,6 +29,7 @@ import { useSearchParams } from 'next/navigation';
 import Factory from '@/utils/Factory';
 import MainCard from '@/components/MainCard';
 import { useSnackbar } from '@/components/CustomSnackbar';
+import { CoPresentOutlined } from '@mui/icons-material';
 
 const validationSchema = Yup.object({
   template_name: Yup.string().required('Template Name is required'),
@@ -324,6 +325,7 @@ function SalaryTemplateDialog({}) {
     }
   }, [template_id]);
   const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, resetForm, setFieldValue } = formik;
+  console.log(earningsData);
   return (
     <HomeCard title="New Salary Template" tagline="Set up your organization before starting payroll">
       <MainCard>
