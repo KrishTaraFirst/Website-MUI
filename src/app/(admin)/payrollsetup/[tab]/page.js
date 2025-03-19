@@ -11,13 +11,13 @@ const Departments = dynamic(() => import('@/views/admin/payroll/Payrollsettings/
 const Designations = dynamic(() => import('@/views/admin/payroll/Payrollsettings/Designations'));
 const StatuitoryComponents = dynamic(() => import('@/views/admin/payroll/Payrollsettings/StatuitoryComponents'));
 const SalaryComponents = dynamic(() => import('@/views/admin/payroll/Payrollsettings/SalaryComponents'));
-const SalaryTemplate = dynamic(() => import('@/views/admin/payroll/Payrollsettings/SalaryTemplate'));
+const SalaryTemplateList = dynamic(() => import('@/views/admin/payroll/Payrollsettings/SalaryTemplateList'));
 const EmployeeMasterData = dynamic(() => import('@/views/admin/payroll/Payrollsettings/EmployeeMasterData/Index'));
 const AddEmployee = dynamic(() => import('@/views/admin/payroll/Payrollsettings/EmployeeMasterData/AddEmployee'));
 
 const PaySchedule = dynamic(() => import('@/views/admin/payroll/Payrollsettings/PaySchedule'));
 const LeaveAttendance = dynamic(() => import('@/views/admin/payroll/Payrollsettings/LeaveAttendance'));
-const SalaryTemplateDialog = dynamic(() => import('@/views/admin/payroll/Payrollsettings/SalaryTemplateDialog'));
+const SalaryTemplate = dynamic(() => import('@/views/admin/payroll/Payrollsettings/SalaryTemplate'));
 const BusinessProfileSetup = dynamic(() => import('@/views/admin/payroll/Payrollsettings/BusinessProfileSetup'));
 
 export default async function Dashboard({ params }) {
@@ -38,7 +38,7 @@ export default async function Dashboard({ params }) {
       ) : ['set_up_salary_components'].includes(tab) ? (
         <SalaryComponents tab={tab} />
       ) : ['set_up_salary_template'].includes(tab) ? (
-        <SalaryTemplate tab={tab} />
+        <SalaryTemplateList tab={tab} />
       ) : ['set_up_employee_master'].includes(tab) ? (
         <EmployeeMasterData tab={tab} />
       ) : ['pay_schedule'].includes(tab) ? (
@@ -48,7 +48,7 @@ export default async function Dashboard({ params }) {
       ) : ['add-employee'].includes(tab) ? (
         <AddEmployee tab={tab} />
       ) : ['create-salary-template'].includes(tab) ? (
-        <SalaryTemplateDialog tab={tab} />
+        <SalaryTemplate tab={tab} />
       ) : ['payroll_business_profileSetup'].includes(tab) ? (
         <BusinessProfileSetup tab={tab} />
       ) : (
