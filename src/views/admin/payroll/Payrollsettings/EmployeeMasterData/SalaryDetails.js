@@ -83,33 +83,37 @@ function SalaryDetails({ employeeData }) {
       }
     }
   });
-
+  // console.log(salary_teamplates_data);
   const renderFields = (fields) => {
     return fields.map((field) => (
       <Grid2 key={field.name} size={{ xs: 12, sm: 6 }}>
         {field.name === 'salary_template' ? (
-          employeeData.employee_salary[employeeData.employee_salary.length] === 0 ? (
-            <>
-              <Typography variant="subtitle2" sx={{ color: 'grey.800', mb: 0.5 }}>
-                {field.label}
-              </Typography>
-
-              <CustomAutocomplete
-                value={values[field.name]}
-                options={salary_teamplates_data.map((item) => item.template_name)}
-                onChange={(e, newValue) => {
-                  const selectedOption = salary_teamplates_data.find((item) => item.template_name === newValue);
-
-                  setFieldValue('template_name', newValue);
-                  setFieldValue('annual_ctc', selectedOption?.annual_ctc || '');
-                  setFieldValue('description', selectedOption?.description || '');
-                  setFieldValue('earnings', selectedOption?.earnings || []);
-                  setFieldValue('benefits', selectedOption?.benefits || []);
-                  setFieldValue('deductions', selectedOption?.deductions || []);
-                }}
-              />
-            </>
-          ) : null
+          <>
+            {employeeData.employee_salary.length === 0 && (
+              <>
+                <Typography variant="subtitle2" sx={{ color: 'grey.800', mb: 0.5 }}>
+                  {field.label}
+                </Typography>
+                <CustomAutocomplete
+                  value={values[field.name]}
+                  options={salary_teamplates_data.map((item) => item.template_name)}
+                  onChange={(e, newValue) => {
+                    const selectedOption = salary_teamplates_data.find((item) => item.template_name === newValue);
+                    console.log(selectedOption);
+                    setFieldValue('template_name', newValue);
+                    setFieldValue('annual_ctc', selectedOption?.annual_ctc || 0);
+                    setFieldValue('description', selectedOption?.description || '');
+                    setFieldValue('earnings', selectedOption?.earnings || []);
+                    setFieldValue('benefits', selectedOption?.benefits || []);
+                    setFieldValue('deductions', selectedOption?.deductions || []);
+                    setFieldValue('total_ctc', selectedOption?.total_ctc || { monthly: '', annually: '' });
+                    setFieldValue('gross_salary', selectedOption?.gross_salary || { monthly: '', annually: '' });
+                    setFieldValue('net_salary', selectedOption?.net_salary || { monthly: '', annually: '' });
+                  }}
+                />
+              </>
+            )}
+          </>
         ) : (
           <>
             <Typography variant="subtitle2" sx={{ color: 'grey.800', mb: 0.5 }}>

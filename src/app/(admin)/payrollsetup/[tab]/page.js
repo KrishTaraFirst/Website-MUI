@@ -19,6 +19,7 @@ const PaySchedule = dynamic(() => import('@/views/admin/payroll/Payrollsettings/
 const LeaveAttendance = dynamic(() => import('@/views/admin/payroll/Payrollsettings/LeaveAttendance'));
 const SalaryTemplate = dynamic(() => import('@/views/admin/payroll/Payrollsettings/SalaryTemplate'));
 const BusinessProfileSetup = dynamic(() => import('@/views/admin/payroll/Payrollsettings/BusinessProfileSetup'));
+const EmployeeDashboard = dynamic(() => import('@/views/admin/payroll/Payrollsettings/EmployeeDashboard'));
 
 export default async function Dashboard({ params }) {
   const { tab } = await params;
@@ -51,6 +52,8 @@ export default async function Dashboard({ params }) {
         <SalaryTemplate tab={tab} />
       ) : ['payroll_business_profileSetup'].includes(tab) ? (
         <BusinessProfileSetup tab={tab} />
+      ) : ['employee-dashboard'].includes(tab) ? (
+        <EmployeeDashboard tab={tab} />
       ) : (
         <PayrollComponent tab={tab} />
       )}
@@ -72,7 +75,8 @@ export async function generateStaticParams() {
     'leave_and_attendance',
     'add-employee',
     'create-salary-template',
-    'payroll_business_profileSetup'
+    'payroll_business_profileSetup',
+    'employee-dashboard'
   ];
 
   return response.map((tab) => ({

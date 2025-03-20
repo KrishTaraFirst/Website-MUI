@@ -115,9 +115,9 @@ function Designations() {
           >
             Add Designation
           </Button>
-          <Button variant="outlined" color="primary" sx={{ marginBottom: 2 }} disabled>
+          {/* <Button variant="outlined" color="primary" sx={{ marginBottom: 2 }} disabled>
             Import
-          </Button>
+          </Button> */}
         </Stack>
       )}
     >

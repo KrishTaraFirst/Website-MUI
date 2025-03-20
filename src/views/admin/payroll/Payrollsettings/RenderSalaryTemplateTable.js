@@ -299,6 +299,7 @@ export default function RenderSalaryTemplateTable({ values, setFieldValue, setVa
       getEarnings_Details(payrollid);
     }
   }, [payrollid]);
+  console.log(values);
   return (
     <TableContainer component={Paper}>
       <Table size="small" sx={{ fontSize: '0.875rem' }}>

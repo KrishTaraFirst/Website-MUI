@@ -94,8 +94,8 @@ function BasicDetails({ employeeData }) {
       const postData = { ...values };
       postData.payroll = Number(payrollid);
       postData.gender = values.gender.toLowerCase();
-      const url = employeeData.id ? `/payroll/employees/${employeeData.id}` : `/payroll/employees`;
-      const { res, error } = await Factory(employeeData.id ? 'put' : 'post', url, postData);
+      const url = employeeData?.id ? `/payroll/employees/${employeeData?.id}` : `/payroll/employees`;
+      const { res, error } = await Factory(employeeData?.id ? 'put' : 'post', url, postData);
       setLoading(false);
       if (res.status_cd === 0) {
         showSnackbar('Data Saved Successfully', 'success');

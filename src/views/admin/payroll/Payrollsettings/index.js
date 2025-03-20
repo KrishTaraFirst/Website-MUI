@@ -35,13 +35,6 @@ const PayrollSetup = () => {
     { nameKey: 'Leave & Attendance', path: '/leave_and_attendance', completed: false }
   ]);
 
-  useEffect(() => {
-    const id = searchParams.get('payrollid');
-    if (id) {
-      setPayrollId(id);
-    }
-  }, [searchParams]);
-
   const totalSteps = steps.length;
   const completedSteps = steps.filter((step) => step.completed).length;
   const completionPercentage = Math.round((completedSteps / totalSteps) * 100);
@@ -195,7 +188,8 @@ const PayrollSetup = () => {
                         variant="outlined"
                         sx={{
                           color: step.completed ? '#4CAF50' : '#4A90E2',
-                          fontWeight: step.completed ? 500 : 400
+                          fontWeight: step.completed ? 500 : 400,
+                          border: `1px solid ${step.completed ? '#4CAF50' : '#4A90E2'}`
                         }}
                         onClick={() => {
                           const routeBase = `/payrollsetup${step.path}`;
