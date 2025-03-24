@@ -61,7 +61,6 @@ export default function PayrollDashboard({ setPayrollSetup }) {
       get_business_details();
     }
   }, [userData.id]);
-  console.log(businessDetails);
   return loading ? (
     <Loader />
   ) : (

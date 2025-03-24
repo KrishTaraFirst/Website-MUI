@@ -16,6 +16,8 @@ import AdhocReimbursements from './AdhocReimbursements';
 import { useSearchParams } from 'next/navigation';
 import { usePathname, useRouter } from 'next/navigation';
 import RenderDialog from './RenderDialog';
+import Factory from '@/utils/Factory';
+
 /***************************  NAVIGATION - TABS  ***************************/
 
 // TabPanel component to render the content for each tab
@@ -36,6 +38,9 @@ const PayrollWorkflows = ({ type }) => {
   const theme = useTheme(); // Getting the theme
   const [openDialog, setOpenDialog] = useState(false);
   const [payrollid, setPayrollId] = useState(null); // Payroll ID fetched from URL
+  const [loading, setLoading] = useState(false);
+  const [employeeMasterData, setEmployeeMasterData] = useState([]);
+
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -64,17 +69,46 @@ const PayrollWorkflows = ({ type }) => {
     'Salary Revisions',
     'Adhoc Reimbursements'
   ];
-  const handleNext = () => {
-    setActiveTab((prev) => (prev < 3 ? prev + 1 : prev));
-  };
-  const handleBack = () => {
-    setActiveTab((prev) => (prev < 3 ? prev - 1 : prev));
-  };
-  const departmentFields = [
-    { name: 'dept_name', label: 'Department Name' },
-    { name: 'dept_code', label: 'Department Code' },
-    { name: 'description', label: 'Description' }
+  const handleNext = () => {};
+  const handleBack = () => {};
+  const exits_fields = [
+    { name: 'employee', label: 'Employee Name' },
+    { name: 'department', label: 'Department' },
+    { name: 'designation', label: 'Designation' },
+    { name: 'doe', label: 'Exit Date' },
+    { name: 'exit_reason', label: 'Reason for Exit' },
+    // { name: 'regular_pay_schedule', label: false },
+    // { name: 'specify_date', label: null },
+    { name: 'notes', label: 'Notes' }
   ];
+  const fieldMappings = {
+    // 'New Joiners': newJoinersFields,
+    Exits: exits_fields
+    // Attendance: attendanceFields,
+    // 'Loans & Advances': loansFields,
+    // 'Bonus & Incentives': bonusFields,
+    // 'Salary Revisions': salaryRevisionFields,
+    // 'Adhoc Reimbursements': reimbursementsFields
+  };
+
+  const selectedFields = fieldMappings[tabLabels[activeTab]] || [];
+  const fetch_employee_master_data = async () => {
+    setLoading(true);
+    const url = `/payroll/employees?payroll_id=${payrollid}`;
+    const { res, error } = await Factory('get', url, {});
+    setLoading(false);
+    if (res?.status_cd === 0) {
+      setEmployeeMasterData(res?.data); // Successfully set work locations
+    } else {
+      setEmployeeMasterData([]);
+      showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
+    }
+  };
+  useEffect(() => {
+    if (payrollid) {
+      fetch_employee_master_data();
+    }
+  }, [payrollid]);
   return (
     <HomeCard
       title="Employee Dashboard"
@@ -131,7 +165,17 @@ const PayrollWorkflows = ({ type }) => {
           <NewJoiners handleNext={handleNext} />
         </TabPanel>
         <TabPanel value={activeTab} index={1}>
-          <Exits handleNext={handleNext} handleBack={handleBack} />
+          <Exits
+            handleNext={handleNext}
+            handleBack={handleBack}
+            from={tabLabels[activeTab]}
+            openDialog={openDialog}
+            setOpenDialog={setOpenDialog}
+            fields={selectedFields}
+            loading={loading}
+            setLoading={setLoading}
+            employeeMasterData={employeeMasterData}
+          />
         </TabPanel>
         <TabPanel value={activeTab} index={2}>
           <Attendance handleNext={handleNext} handleBack={handleBack} />
@@ -153,7 +197,9 @@ const PayrollWorkflows = ({ type }) => {
           <AdhocReimbursements handleNext={handleNext} handleBack={handleBack} />
         </TabPanel>
       </MainCard>
-      {openDialog && <RenderDialog openDialog={openDialog} setOpenDialog={setOpenDialog} fields={departmentFields} />}{' '}
+      {/* {openDialog && (
+       
+      )} */}
     </HomeCard>
   );
 };
