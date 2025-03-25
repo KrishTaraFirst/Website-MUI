@@ -9,13 +9,14 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import Factory from '@/utils/Factory';
 
-export default function RenderSalaryTemplateTable({ values, setFieldValue, setValues }) {
+export default function RenderSalaryTemplateTable({ values, setFieldValue, setValues, setOnBlurrrReaclculate }) {
   const [earningsData, setEarningsData] = useState([]);
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [payrollid, setPayrollId] = useState(null);
   const [template_id, setTemplate_id] = useState(null);
+  const [onBlurrRecalculate, setOnBlurrRecalculate] = useState(false);
   const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
@@ -39,18 +40,18 @@ export default function RenderSalaryTemplateTable({ values, setFieldValue, setVa
       return res.data;
     }
   };
-  const handleEarningsChange = async (item, index, field, newValue) => {
+  const handleEarningsChange = async (selectedEarning, index, field, componentName) => {
     let updatedEarnings = [...values.earnings];
-    updatedEarnings[index][field] = newValue;
+    updatedEarnings[index][field] = componentName;
 
-    if (!item || !item.id) return;
+    if (!selectedEarning || !selectedEarning.id) return;
 
-    const selectedItem = await get_individual_componnet_data(item.id);
+    const selectedItemData = await get_individual_componnet_data(selectedEarning.id);
     updatedEarnings[index] = {
       ...updatedEarnings[index],
-      calculation: selectedItem.calculation_type.value,
-      component_name: selectedItem.component_name,
-      calculation_type: selectedItem.calculation_type.type
+      calculation: selectedItemData.calculation_type.value,
+      component_name: selectedItemData.component_name,
+      calculation_type: selectedItemData.calculation_type.type
     };
 
     // Get the updated CTC value
@@ -59,34 +60,18 @@ export default function RenderSalaryTemplateTable({ values, setFieldValue, setVa
     // We calculate the basic salary based on the earnings array, where Basic Salary is always a part of it
     const basicSalary = parseFloat(updatedEarnings.find((earning) => earning.component_name === 'Basic')?.annually || 0);
 
-    // Recalculate earnings
     const calculatedValues = calculateEarnings(updatedEarnings[index], annualCtc, basicSalary);
 
     updatedEarnings[index].monthly = calculatedValues.monthly;
     updatedEarnings[index].annually = calculatedValues.annually;
 
-    // Recalculate Fixed Allowance
-
-    // Update Formik state
     setFieldValue('earnings', updatedEarnings);
   };
-  const handleAddEarnings = () => {
-    setFieldValue('earnings', [
-      ...values.earnings,
-      { component_name: '', calculation: 0, monthly: 0, annually: 0 } // Default values
-    ]);
-  };
-  const handleDeleteItem = (key, index) => {
-    if (key === 'earnings') {
-      const newEarnings = values.earnings.filter((_, i) => i !== index);
-      setFieldValue('earnings', newEarnings);
-    }
-  };
+
   const calculateEarnings = (earning, annualCtc, basicSalary) => {
     let monthlyAmount = 0;
     let annualAmount = 0;
 
-    // Check if annual CTC is a valid number and not empty
     if (isNaN(annualCtc) || annualCtc === '') {
       // If CTC is invalid, return 0 for both monthly and annually
       return {
@@ -94,6 +79,8 @@ export default function RenderSalaryTemplateTable({ values, setFieldValue, setVa
         annually: 0
       };
     }
+    // console.log(basicSalary);
+    // console.log((basicSalary * Number(earning.calculation)) / 100);
     switch (earning.component_name) {
       case 'Basic':
         const basicPercentage = earning.calculation; // Assume it's the percentage of CTC for Basic
@@ -123,16 +110,15 @@ export default function RenderSalaryTemplateTable({ values, setFieldValue, setVa
         annualAmount = earning.calculation * 12;
         monthlyAmount = earning.calculation;
         break;
-      case 'EPF':
-      case 'EDIL':
-      case 'EPF admin charges':
-      case 'EWSI':
-        const percentage = parseFloat(earning.calculation.split('%')[0]);
-        annualAmount = (annualCtc * percentage) / 100;
-        monthlyAmount = annualAmount / 12;
-        break;
-
       default:
+        if (earning.calculation_type === 'Percentage of Basic') {
+          const percentage = earning.calculation; // Assume it's the percentage of Basic Salary for HRA
+          annualAmount = (basicSalary * percentage) / 100;
+          monthlyAmount = annualAmount / 12;
+        } else if (earning.calculation_type === 'Flat Amount') {
+          annualAmount = earning.calculation * 12;
+          monthlyAmount = earning.calculation;
+        }
         break;
     }
 
@@ -155,6 +141,19 @@ export default function RenderSalaryTemplateTable({ values, setFieldValue, setVa
     });
     setFieldValue('earnings', updatedEarnings);
   };
+  useEffect(() => {}, []);
+  const handleAddEarnings = () => {
+    setFieldValue('earnings', [
+      ...values.earnings,
+      { component_name: '', calculation: 0, monthly: 0, annually: 0 } // Default values
+    ]);
+  };
+  const handleDeleteItem = (key, index) => {
+    if (key === 'earnings') {
+      const newEarnings = values.earnings.filter((_, i) => i !== index);
+      setFieldValue('earnings', newEarnings);
+    }
+  };
   const getEarnings_Details = async (id) => {
     setLoading(true);
     const url = `/payroll/earnings?payroll_id=${id}`;
@@ -166,23 +165,24 @@ export default function RenderSalaryTemplateTable({ values, setFieldValue, setVa
       const basicComponent = res.data.find((item) => item.component_name === 'Basic');
 
       const selectedItem = await get_individual_componnet_data(basicComponent.id);
-
+      console.log(values);
       setValues((prev) => {
         return {
           ...prev,
           earnings: prev.earnings.map((earning, index) =>
             index === 0
               ? {
+                  ...earning,
                   component_name: selectedItem.component_name,
                   calculation_type: selectedItem.calculation_type.type,
-                  calculation: selectedItem?.calculation_type?.value,
-                  monthly: 0,
-                  annually: 0
+                  calculation: selectedItem?.calculation_type?.value
                 }
               : earning
           )
         };
       });
+
+      console.log(values);
     }
   };
   const fetch_preview = async () => {
@@ -286,7 +286,9 @@ export default function RenderSalaryTemplateTable({ values, setFieldValue, setVa
       });
     }
   };
-
+  useEffect(() => {
+    recalculate();
+  }, [values.annual_ctc]);
   useEffect(() => {
     if (template_id) {
       fetch_individual_salary_templates(template_id);
@@ -299,7 +301,6 @@ export default function RenderSalaryTemplateTable({ values, setFieldValue, setVa
       getEarnings_Details(payrollid);
     }
   }, [payrollid]);
-  console.log(values);
   return (
     <TableContainer component={Paper}>
       <Table size="small" sx={{ fontSize: '0.875rem' }}>

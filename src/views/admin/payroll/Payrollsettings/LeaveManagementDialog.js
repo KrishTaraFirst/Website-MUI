@@ -61,10 +61,10 @@ export default function LeaveManagementDialog({ open, handleClose, selectedRecor
       pro_rate_leave_balance_of_new_joinees_based_on_doj: false,
       carry_forward_unused_leaves: false,
       reset_leave_balance: false,
-      reset_leave_balance_type: '',
-      max_carry_forward_days: '',
+      reset_leave_balance_type: null,
+      max_carry_forward_days: null,
       encash_remaining_leaves: false,
-      encashment_days: ''
+      encashment_days: null
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -76,6 +76,7 @@ export default function LeaveManagementDialog({ open, handleClose, selectedRecor
       if (res?.status_cd === 0) {
         showSnackbar(postType === 'post' ? 'Data Saved Successfully' : 'Data Updated Successfully', 'success');
         handleClose();
+        resetForm();
         fetchLeaveManagementData();
       } else {
         showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
@@ -95,12 +96,12 @@ export default function LeaveManagementDialog({ open, handleClose, selectedRecor
         <Typography variant="body2" sx={{ mb: 1 }}>
           {field.label}
         </Typography>
-        {field.label === 'Select Type' ? (
+        {field.label === 'Select Type' || field.label === 'Name of the Leave' ? (
           <CustomAutocomplete
             value={values[field.name]}
             name={field.name}
             onChange={(e, newValue) => setFieldValue(field.name, newValue)}
-            options={['Paid', 'Un Paid']}
+            options={field.label === 'Select Type' ? ['Paid', 'Un Paid'] : ['Casual Leave', 'Sick Leave', 'Earned leave']}
             error={touched[field.name] && Boolean(errors[field.name])}
             helperText={touched[field.name] && errors[field.name]}
             sx={{ width: '100%' }}

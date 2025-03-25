@@ -2,8 +2,18 @@ import React, { useState } from 'react';
 import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Paper, Stack, Pagination } from '@mui/material';
 import Loader from '@/components/PageLoader';
 import EmptyTable from '@/components/third-party/table/EmptyTable';
+import ActionCell from '@/utils/ActionCell';
 
-export default function RenderTable({ headerData, tableData = [], loading, body_keys }) {
+export default function RenderTable({
+  headerData,
+  tableData = [],
+  loading,
+  body_keys,
+  handleEdit,
+  handleDelete,
+  openDialog,
+  handleCloseDialog
+}) {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 5;
 
@@ -12,7 +22,7 @@ export default function RenderTable({ headerData, tableData = [], loading, body_
   };
 
   const paginatedData = tableData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
-  // console.log(paginatedData);
+
   return (
     <Stack spacing={3}>
       {loading ? (
@@ -29,12 +39,13 @@ export default function RenderTable({ headerData, tableData = [], loading, body_
                     {item}
                   </TableCell>
                 ))}
+                <TableCell sx={{ whiteSpace: 'nowrap', fontWeight: 'bold' }}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {paginatedData.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={headerData.length} sx={{ height: 300 }}>
+                  <TableCell colSpan={headerData.length + 1} sx={{ height: 300 }}>
                     <EmptyTable msg="No Data available" />
                   </TableCell>
                 </TableRow>
@@ -44,6 +55,21 @@ export default function RenderTable({ headerData, tableData = [], loading, body_
                     {body_keys.map((key, idx) => (
                       <TableCell key={idx}>{item[key] || '—'}</TableCell>
                     ))}
+                    <TableCell>
+                      <ActionCell
+                        row={item}
+                        onEdit={() => handleEdit(item)}
+                        onDelete={() => handleDelete(item)}
+                        open={openDialog}
+                        onClose={handleCloseDialog}
+                        deleteDialogData={{
+                          title: 'Delete Record',
+                          heading: 'Are you sure you want to delete this Record?',
+                          description: `This action will remove ${item.dept_name} from the list.`,
+                          successMessage: 'Record has been deleted.'
+                        }}
+                      />
+                    </TableCell>
                   </TableRow>
                 ))
               )}

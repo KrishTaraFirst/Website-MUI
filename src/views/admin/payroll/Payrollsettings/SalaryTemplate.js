@@ -63,14 +63,18 @@ function SalaryTemplate({}) {
     },
     validationSchema,
     onSubmit: async (values) => {
+      setLoading(true);
       if (values.errorMessage) {
         showSnackbar(values.errorMessage, 'error');
         return; // Prevent form submission
       }
       let postData = { ...values };
       postData.payroll = payrollid;
-      let url = `/payroll/salary-templates`;
-      const { res } = await Factory('post', url, postData);
+      let url = template_id ? `/payroll/salary-templates/${template_id}` : `/payroll/salary-templates`;
+      let method = template_id ? 'put' : 'post';
+      const { res } = await Factory(method, url, postData);
+      setLoading(false);
+
       if (res.status_cd === 1) {
         showSnackbar(JSON.stringify(res.data), 'error');
       } else {

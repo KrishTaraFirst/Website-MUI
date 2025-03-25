@@ -1,20 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import {
-  Button,
-  Box,
-  Stack,
-  Typography,
-  Divider,
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  FormGroup,
-  Checkbox
-} from '@mui/material';
+import { Button, Box, Stack, Typography, Divider, FormControl, FormLabel, FormControlLabel, FormGroup, Checkbox } from '@mui/material';
 import Grid2 from '@mui/material/Grid2'; // Import Grid2 from MUI system
 import CustomInput from '@/utils/CustomInput';
 import Factory from '@/utils/Factory';
@@ -26,7 +13,16 @@ import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import dayjs from 'dayjs';
 import CustomDatePicker from '@/utils/CustomDateInput';
 
-export default function RenderDialog({ from, openDialog, fields, setOpenDialog, setLoading, employeeMasterData, setExitsData }) {
+export default function RenderDialog({
+  from,
+  openDialog,
+  fields,
+  setOpenDialog,
+  setLoading,
+  employeeMasterData,
+  selectedRecord,
+  fetch_exits_Data
+}) {
   const { showSnackbar } = useSnackbar();
   const searchParams = useSearchParams();
   const [payrollid, setPayrollId] = useState(null); // Payroll ID fetched from URL
@@ -40,41 +36,115 @@ export default function RenderDialog({ from, openDialog, fields, setOpenDialog, 
   }, [searchParams]);
 
   // Formik validation schema
-  const validationSchema = Yup.object({});
+  const getInitialValues = () => {
+    switch (from) {
+      case 'Exits':
+        return {
+          employee: '',
+          doe: '',
+          department: '',
+          designation: '',
+          exit_reason: '',
+          regular_pay_schedule: true,
+          specify_date: null,
+          notes: ''
+        };
+      case 'Hiring':
+        return {
+          employee: '',
+          join_date: '',
+          department: '',
+          designation: '',
+          probation_period: '',
+          regular_pay_schedule: true,
+          specify_date: null,
+          notes: ''
+        };
+      // Add more cases for different scenarios (e.g., Transfers)
+      default:
+        return {
+          employee: '',
+          doe: '',
+          department: '',
+          designation: '',
+          regular_pay_schedule: true,
+          specify_date: null,
+          notes: ''
+        };
+    }
+  };
 
-  // Initialize Formik with initial values and validation schema
-  let initialValues = {};
+  // Define the validation schema dynamically based on the 'from' prop
+  const getValidationSchema = () => {
+    switch (from) {
+      case 'Exits':
+        return Yup.object({
+          employee: Yup.string().required('Employee is required'),
+          doe: Yup.string().required('Date of exit is required'),
+          exit_reason: Yup.string().required('Exit reason is required'),
+          notes: Yup.string().nullable(),
+          regular_pay_schedule: Yup.boolean().required()
+          // specify_date: Yup.date()
+          //   .nullable()
+          //   .when('regular_pay_schedule', {
+          //     is: false,
+          //     then: Yup.date().required('Specify date is required when regular pay schedule is unchecked')
+          //   })
+        });
+      case 'Hiring':
+        return Yup.object({
+          employee: Yup.string().required('Employee is required'),
+          join_date: Yup.string().required('Join date is required'),
+          probation_period: Yup.string().required('Probation period is required'),
+          notes: Yup.string().nullable(),
+          regular_pay_schedule: Yup.boolean().required(),
+          specify_date: Yup.date()
+            .nullable()
+            .when('regular_pay_schedule', {
+              is: false,
+              then: Yup.date().required('Specify date is required when regular pay schedule is unchecked')
+            })
+        });
+      // Add more validation cases for different scenarios (e.g., Transfers)
+      default:
+        return Yup.object({
+          employee: Yup.string().required('Employee is required'),
+          doe: Yup.string().required('Date is required'),
+          notes: Yup.string().nullable(),
+          regular_pay_schedule: Yup.boolean().required(),
+          specify_date: Yup.date()
+            .nullable()
+            .when('regular_pay_schedule', {
+              is: false,
+              then: Yup.date().required('Specify date is required when regular pay schedule is unchecked')
+            })
+        });
+    }
+  };
 
-  if (from === 'Exits') {
-    initialValues = {
-      employee: '',
-      doe: '',
-      exit_reason: '',
-      regular_pay_schedule: true,
-      specify_date: null,
-      notes: ''
-    };
-  }
+  // Initialize Formik with dynamic initial values and validation schema
   const formik = useFormik({
-    initialValues: initialValues,
-    validationSchema: validationSchema,
+    initialValues: getInitialValues(),
+    validationSchema: getValidationSchema(),
     onSubmit: async (values) => {
-      setLoading(true);
-      const url = `/payroll/employee-exit`;
-      let postData = { ...values };
-      postData.employee = console.log(postData);
-      const { res, error } = await Factory('post', url, postData);
-      setLoading(false);
-      if (res.status_cd === 0) {
-        setExitsData(res.data || []);
-        setOpenDialog(false);
-      } else {
-        showSnackbar(JSON.stringify(res.data.data), 'error');
+      console.log(selectedRecord);
+      if (from === 'Exits') {
+        setLoading(true);
+        let url = selectedRecord?.id ? `/payroll/employee-exit/${selectedRecord?.id}` : `/payroll/employee-exit`;
+        let method = selectedRecord?.id ? 'put' : 'Post';
+        let postData = { ...values };
+        const { res, error } = await Factory(method, url, postData);
+        setLoading(false);
+        if (res.status_cd === 0) {
+          fetch_exits_Data();
+          setOpenDialog(false);
+        } else {
+          showSnackbar(JSON.stringify(res.data.data), 'error');
+        }
       }
     }
   });
 
-  // Render each field dynamically
   const renderFields = (fields) => {
     return fields.map((field) => (
       <Grid2 key={field.name} size={{ xs: 12, sm: 6 }}>
@@ -114,7 +184,7 @@ export default function RenderDialog({ from, openDialog, fields, setOpenDialog, 
             error={touched[field.name] && Boolean(errors[field.name])}
             helperText={touched[field.name] && errors[field.name]}
             size="small"
-            inputFormat="YYYY-MM-DD" // Display in YYYY-MM-DD format
+            inputFormat="DD-MM-YYYY"
           />
         ) : (
           <CustomInput
@@ -134,7 +204,14 @@ export default function RenderDialog({ from, openDialog, fields, setOpenDialog, 
     ));
   };
   const { values, setValues, handleChange, errors, touched, handleSubmit, handleBlur, resetForm, setFieldValue } = formik;
-  console.log(values);
+
+  useEffect(() => {
+    if (selectedRecord !== null) {
+      setValues(() => ({
+        ...selectedRecord
+      }));
+    }
+  }, [selectedRecord]);
   return (
     <Modal
       open={openDialog}
@@ -189,10 +266,10 @@ export default function RenderDialog({ from, openDialog, fields, setOpenDialog, 
                   <CustomDatePicker
                     name="specify_date"
                     views={['year', 'month', 'day']}
-                    value={values.specify_date ? dayjs(values.specify_date, 'DD-MM-YYYY') : null}
+                    value={values.specify_date ? dayjs(values.specify_date, 'YYYY-MM-DD') : null}
                     onChange={(newDate) => {
                       if (newDate) {
-                        setFieldValue('specify_date', newDate.format('DD-MM-YYYY'));
+                        setFieldValue('specify_date', newDate.format('YYYY-MM-DD'));
                       } else {
                         setFieldValue('specify_date', null); // Reset if no date selected
                       }
