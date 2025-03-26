@@ -14,7 +14,7 @@ import {
   Box
 } from '@mui/material';
 import Factory from '@/utils/Factory';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useSnackbar } from '@/components/CustomSnackbar';
 
 import RenderTable from './RenderTable';
@@ -34,15 +34,18 @@ function NewJoiners() {
   const [loading, setLoading] = useState(false);
   const [newJoinersData, setNewJoinersData] = useState([]);
   const { showSnackbar } = useSnackbar();
-
+  const router = useRouter();
   const searchParams = useSearchParams();
-
   useEffect(() => {
     const id = searchParams.get('payrollid');
     if (id) {
       setPayrollId(id);
     }
   }, [searchParams]);
+
+  const handleEdit = async (item) => {
+    router.push(`/payrollsetup/add-employee?employee_id=${encodeURIComponent(item.id)}&payrollid=${encodeURIComponent(payrollid)}`);
+  };
 
   const fetch_newJoiners_Data = async () => {
     setLoading(true);
@@ -61,7 +64,7 @@ function NewJoiners() {
       fetch_newJoiners_Data();
     }
   }, [payrollid]);
-  return <RenderTable headerData={headerData} tableData={newJoinersData} loading={loading} body_keys={body_keys} />;
+  return <RenderTable headerData={headerData} tableData={newJoinersData} loading={loading} body_keys={body_keys} handleEdit={handleEdit} />;
 }
 
 export default NewJoiners;

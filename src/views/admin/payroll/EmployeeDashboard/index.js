@@ -94,7 +94,7 @@ export default function index() {
               {productsData.map((item, index) => (
                 <Grid2 key={index} xs={12} sm={6} md={4}>
                   <Card sx={{ minHeight: '100px', maxHeight: '100px' }}>
-                    <CardActionArea onClick={() => router.push(`/payroll${item.href}?payrollid=${payrollid}`)}>
+                    <CardActionArea onClick={() => router.push(`/payroll${item.href}?payrollid=${payrollid}&tabValue=${index}`)}>
                       <CardContent>
                         <Stack direction="row" alignItems="center" spacing={1}>
                           <Typography variant="h6">{item.title}</Typography>

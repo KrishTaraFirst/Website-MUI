@@ -357,22 +357,22 @@ export default function RenderSalaryTemplateTable({ values, setFieldValue, setVa
               </TableCell>
               <TableCell>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  {(earning.component_name === 'HRA' || earning.component_name === 'Basic') && (
-                    <CustomInput
-                      value={earning.calculation}
-                      fullWidth
-                      sx={{ maxWidth: 80, textAlign: 'center' }}
-                      inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                      onChange={(e) => {
-                        const newValue = Number(e.target.value);
-                        handleEarningsChange(earning, index, 'calculation', newValue);
-                        setFieldValue(`earnings[${index}].calculation`, newValue);
-                      }}
-                      onBlur={() => {
-                        recalculate();
-                      }}
-                    />
-                  )}
+                  {/* {(earning.component_name === 'HRA' || earning.component_name === 'Basic') && ( */}
+                  <CustomInput
+                    value={earning.calculation}
+                    fullWidth
+                    sx={{ maxWidth: 80, textAlign: 'center' }}
+                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                    onChange={(e) => {
+                      const newValue = Number(e.target.value);
+                      handleEarningsChange(earning, index, 'calculation', newValue);
+                      setFieldValue(`earnings[${index}].calculation`, newValue);
+                    }}
+                    onBlur={() => {
+                      recalculate();
+                    }}
+                  />
+                  {/* )} */}
                   <Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>
                     {earning.component_name === 'Basic'
                       ? '% of CTC'
@@ -382,7 +382,7 @@ export default function RenderSalaryTemplateTable({ values, setFieldValue, setVa
                           ? 'Remaining Balance'
                           : earning.component_name === 'Conveyance Allowance'
                             ? earning.calculation
-                            : ''}
+                            : earning.calculation_type}
                   </Typography>
                 </Box>
               </TableCell>

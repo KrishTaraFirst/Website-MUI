@@ -5,29 +5,31 @@ import Factory from '@/utils/Factory';
 import { useSearchParams } from 'next/navigation';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import RenderDialog from './RenderDialog';
+import { months } from '@/utils/MonthsList';
 
-export default function LoansAndAdvances({ employeeMasterData, from, openDialog, fields, setOpenDialog }) {
+export default function Attendance({ employeeMasterData, from, openDialog, fields, setOpenDialog }) {
   const headerData = [
     'Employee Name',
-    'Department',
-    'Designation',
-    'Type',
-    'Amount',
-    'EMI',
-    'End Month',
-    'Pending Balance',
-    'Current Deduction'
+    'LOP',
+    // 'Absent',
+    'Paid Leaves',
+    'Week Offs',
+    'Holidays',
+    // 'OT',
+    'Total Days',
+    'Present Days',
+    'Payable Days'
   ];
+
   const body_keys = [
     'employee_name',
-    'department',
-    'designation',
-    'loan_type',
-    'amount',
-    'emi_amount',
-    'end_month',
-    'pending_balance',
-    'current_month_deduction'
+    'loss_of_pay',
+    'earned_leaves',
+    'week_offs',
+    'holidays',
+    'total_days_of_month',
+    'present_days',
+    'payable_days'
   ];
   const [payrollid, setPayrollId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -47,7 +49,7 @@ export default function LoansAndAdvances({ employeeMasterData, from, openDialog,
 
   const getData = async () => {
     setLoading(true);
-    const url = `/payroll/payroll-advance-summary?payroll_id=${payrollid}`;
+    const url = `/payroll/employee_attendance_filtered?payroll_id=${payrollid}&financial_year=2024-2025&month=3`;
     const { res, error } = await Factory('get', url, {});
     setLoading(false);
     if (res.status_cd === 0) {
@@ -57,17 +59,26 @@ export default function LoansAndAdvances({ employeeMasterData, from, openDialog,
     }
   };
   const handleEdit = async (item) => {
-    let url = `/payroll/advance-loans/${item.id}`;
+    let url = `/payroll/employee-attendance/${item.id}`;
     const { res } = await Factory('get', url, {});
+    console.log(res);
     if (res.status_cd === 1) {
       showSnackbar(JSON.stringify(res.data), 'error');
     } else {
+      // Replace the month number with the month name
+      if (res.data.month) {
+        const monthNumber = parseInt(res.data.month, 10);
+        if (!isNaN(monthNumber) && monthNumber >= 1 && monthNumber <= 12) {
+          res.data.month = months[monthNumber - 1];
+        }
+      }
+
       setSelectedRecord(res.data);
       setOpenDialog(true);
     }
   };
   const handleDelete = async (item) => {
-    let url = `/payroll/advance-loans/${item.id}`;
+    let url = `/payroll/employee-exit/${item.id}`;
     const { res } = await Factory('delete', url, {});
     if (res.status_cd === 1) {
       showSnackbar(JSON.stringify(res.data), 'error');

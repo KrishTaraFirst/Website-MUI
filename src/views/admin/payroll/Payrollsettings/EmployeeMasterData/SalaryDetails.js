@@ -25,6 +25,7 @@ import { useSearchParams } from 'next/navigation';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import RenderSalaryTemplateTable from '../RenderSalaryTemplateTable';
+import { useSnackbar } from '@/components/CustomSnackbar';
 
 const validationSchema = Yup.object({
   // template_name: Yup.string().required('Template Name is required'),
@@ -37,6 +38,7 @@ function SalaryDetails({ employeeData }) {
   const [payrollid, setPayrollId] = useState(null);
   const [salary_teamplates_data, setSalary_teamplates_data] = useState([]);
   const searchParams = useSearchParams();
+  const { showSnackbar } = useSnackbar();
 
   const fields = [
     { name: 'salary_template', label: 'Salary Template' },
@@ -69,17 +71,18 @@ function SalaryDetails({ employeeData }) {
       // }
       let postData = { ...values };
       postData.employee = employeeData?.id;
-      let method = employeeData.employee_salary[employeeData.employee_salary.length - 1]?.id ? 'put' : 'post';
+      let method = employeeData.employee_salary[employeeData?.employee_salary?.length - 1]?.id ? 'put' : 'post';
 
-      const url = employeeData.employee_salary[employeeData.employee_salary.length - 1]?.id
-        ? `/payroll/employee-salary/${employeeData.employee_salary[employeeData.employee_salary.length - 1]?.id}`
+      const url = employeeData.employee_salary[employeeData?.employee_salary?.length - 1]?.id
+        ? `/payroll/employee-salary/${employeeData.employee_salary[employeeData?.employee_salary?.length - 1]?.id}`
         : `/payroll/employee-salary`;
 
       const { res } = await Factory(method, url, postData);
+      console.log(res);
       if (res.status_cd === 1) {
         showSnackbar(JSON.stringify(res.data), 'error');
       } else {
-        // router.back();
+        showSnackbar('Data Saved Successfully', 'success');
       }
     }
   });
@@ -89,7 +92,7 @@ function SalaryDetails({ employeeData }) {
       <Grid2 key={field.name} size={{ xs: 12, sm: 6 }}>
         {field.name === 'salary_template' ? (
           <>
-            {employeeData.employee_salary.length === 0 && (
+            {employeeData?.employee_salary?.length === 0 && (
               <>
                 <Typography variant="subtitle2" sx={{ color: 'grey.800', mb: 0.5 }}>
                   {field.label}
@@ -153,7 +156,7 @@ function SalaryDetails({ employeeData }) {
 
   useEffect(() => {
     if (employeeData?.employee_salary?.length > 0) {
-      let lastSalary = employeeData.employee_salary[employeeData.employee_salary.length - 1];
+      let lastSalary = employeeData.employee_salary[employeeData?.employee_salary?.length - 1];
       setValues((prev) => ({
         ...prev,
         ...lastSalary

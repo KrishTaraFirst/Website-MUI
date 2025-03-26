@@ -31,7 +31,7 @@ export default function Exits({ employeeMasterData, from, openDialog, fields, se
   ];
   const [payrollid, setPayrollId] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [exitsData, setExitsData] = useState([]);
+  const [data, setData] = useState([]);
   const [selectedRecord, setSelectedRecord] = useState(null);
 
   const { showSnackbar } = useSnackbar();
@@ -45,14 +45,13 @@ export default function Exits({ employeeMasterData, from, openDialog, fields, se
     }
   }, [searchParams]);
 
-  const fetch_exits_Data = async () => {
+  const getData = async () => {
     setLoading(true);
     const url = `/payroll/payroll-exit-settlement?payroll_id=${payrollid}`;
     const { res, error } = await Factory('get', url, {});
     setLoading(false);
-    console.log(res);
     if (res.status_cd === 0) {
-      setExitsData(res.data || []);
+      setData(res.data || []);
     } else {
       showSnackbar(JSON.stringify(res.data.data), 'error');
     }
@@ -74,19 +73,19 @@ export default function Exits({ employeeMasterData, from, openDialog, fields, se
       showSnackbar(JSON.stringify(res.data), 'error');
     } else {
       showSnackbar('Record Deleted Successfully', 'success');
-      fetch_exits_Data();
+      getData();
     }
   };
   useEffect(() => {
     if (payrollid) {
-      fetch_exits_Data();
+      getData();
     }
   }, [payrollid]);
   return (
     <>
       <RenderTable
         headerData={headerData}
-        tableData={exitsData}
+        tableData={data}
         handleEdit={handleEdit}
         handleDelete={handleDelete}
         body_keys={body_keys}
@@ -99,10 +98,10 @@ export default function Exits({ employeeMasterData, from, openDialog, fields, se
         setOpenDialog={setOpenDialog}
         fields={fields}
         selectedRecord={selectedRecord}
-        setExitsData={setExitsData}
+        setData={setData}
         setLoading={setLoading}
         employeeMasterData={employeeMasterData}
-        fetch_exits_Data={fetch_exits_Data}
+        getData={getData}
       />
     </>
   );

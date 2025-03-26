@@ -53,7 +53,7 @@ export default function RenderTable({
                 paginatedData.map((item, index) => (
                   <TableRow key={index}>
                     {body_keys.map((key, idx) => (
-                      <TableCell key={idx}>{item[key] || '—'}</TableCell>
+                      <TableCell key={idx}>{item[key]}</TableCell>
                     ))}
                     <TableCell>
                       <ActionCell

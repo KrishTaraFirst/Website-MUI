@@ -12,17 +12,8 @@ import { ModalSize } from '@/enum';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import dayjs from 'dayjs';
 import CustomDatePicker from '@/utils/CustomDateInput';
-
-export default function RenderDialog({
-  from,
-  openDialog,
-  fields,
-  setOpenDialog,
-  setLoading,
-  employeeMasterData,
-  selectedRecord,
-  fetch_exits_Data
-}) {
+import { months } from '@/utils/MonthsList';
+export default function RenderDialog({ from, openDialog, fields, setOpenDialog, setLoading, employeeMasterData, selectedRecord, getData }) {
   const { showSnackbar } = useSnackbar();
   const searchParams = useSearchParams();
   const [payrollid, setPayrollId] = useState(null); // Payroll ID fetched from URL
@@ -49,18 +40,31 @@ export default function RenderDialog({
           specify_date: null,
           notes: ''
         };
-      case 'Hiring':
+      case 'Attendance':
         return {
           employee: '',
-          join_date: '',
+          financial_year: '',
+          month: '',
+          total_days_of_month: '',
+          holidays: '',
+          week_offs: '',
+          present_days: '',
+          balance_days: '',
+          casual_leaves: '',
+          sick_leaves: '',
+          earned_leaves: '',
+          loss_of_pay: ''
+        };
+      case 'Loans & Advances':
+        return {
+          employee: '',
           department: '',
           designation: '',
-          probation_period: '',
-          regular_pay_schedule: true,
-          specify_date: null,
-          notes: ''
+          loan_type: ' ',
+          amount: '',
+          no_of_months: '',
+          start_month: ''
         };
-      // Add more cases for different scenarios (e.g., Transfers)
       default:
         return {
           employee: '',
@@ -82,8 +86,8 @@ export default function RenderDialog({
           employee: Yup.string().required('Employee is required'),
           doe: Yup.string().required('Date of exit is required'),
           exit_reason: Yup.string().required('Exit reason is required'),
-          notes: Yup.string().nullable(),
-          regular_pay_schedule: Yup.boolean().required()
+          notes: Yup.string().required('Exit reason is required'),
+          regular_pay_schedule: Yup.string().required('Exit reason is required')
           // specify_date: Yup.date()
           //   .nullable()
           //   .when('regular_pay_schedule', {
@@ -91,19 +95,29 @@ export default function RenderDialog({
           //     then: Yup.date().required('Specify date is required when regular pay schedule is unchecked')
           //   })
         });
-      case 'Hiring':
+
+      case 'Attendance':
+        return Yup.object({
+          employee: Yup.string().required('This Field is required'),
+          financial_year: Yup.string().required('This Field is required'),
+          month: Yup.string().required('This Field is required'),
+          total_days_of_month: Yup.string().required('This Field is required'),
+          holidays: Yup.string().required('This Field is required'),
+          week_offs: Yup.string().required('This Field is required'),
+          present_days: Yup.string().required('This Field is required'),
+          balance_days: Yup.string().required('This Field is required'),
+          casual_leaves: Yup.string().required('This Field is required'),
+          sick_leaves: Yup.string().required('This Field is required'),
+          earned_leaves: Yup.string().required('This Field is required'),
+          loss_of_pay: Yup.string().required('This Field is required')
+        });
+      case 'Loans & Advances':
         return Yup.object({
           employee: Yup.string().required('Employee is required'),
-          join_date: Yup.string().required('Join date is required'),
-          probation_period: Yup.string().required('Probation period is required'),
-          notes: Yup.string().nullable(),
-          regular_pay_schedule: Yup.boolean().required(),
-          specify_date: Yup.date()
-            .nullable()
-            .when('regular_pay_schedule', {
-              is: false,
-              then: Yup.date().required('Specify date is required when regular pay schedule is unchecked')
-            })
+          loan_type: Yup.string().required('Loan Type is required'),
+          amount: Yup.string().required('Amount is required'),
+          no_of_months: Yup.string().required('No of Months is required'),
+          start_month: Yup.string().required('Start Month is required')
         });
       // Add more validation cases for different scenarios (e.g., Transfers)
       default:
@@ -127,7 +141,6 @@ export default function RenderDialog({
     initialValues: getInitialValues(),
     validationSchema: getValidationSchema(),
     onSubmit: async (values) => {
-      console.log(selectedRecord);
       if (from === 'Exits') {
         setLoading(true);
         let url = selectedRecord?.id ? `/payroll/employee-exit/${selectedRecord?.id}` : `/payroll/employee-exit`;
@@ -136,7 +149,38 @@ export default function RenderDialog({
         const { res, error } = await Factory(method, url, postData);
         setLoading(false);
         if (res.status_cd === 0) {
-          fetch_exits_Data();
+          showSnackbar('Data Saved Successfully', 'success');
+          getData();
+          setOpenDialog(false);
+        } else {
+          showSnackbar(JSON.stringify(res.data.data), 'error');
+        }
+      }
+      if (from === 'Attendance') {
+        setLoading(true);
+        let url = selectedRecord?.id ? `/payroll/employee-attendance/1${selectedRecord?.id}` : `/payroll/employee-attendance`;
+        let method = selectedRecord?.id ? 'put' : 'Post';
+        let postData = { ...values };
+        const { res, error } = await Factory(method, url, postData);
+        setLoading(false);
+        if (res.status_cd === 0) {
+          showSnackbar('Data Saved Successfully', 'success');
+          getData();
+          setOpenDialog(false);
+        } else {
+          showSnackbar(JSON.stringify(res.data.data), 'error');
+        }
+      }
+      if (from === 'Loans & Advances') {
+        setLoading(true);
+        let url = selectedRecord?.id ? `/payroll/advance-loans/${selectedRecord?.id}` : `/payroll/advance-loans`;
+        let method = selectedRecord?.id ? 'put' : 'Post';
+        let postData = { ...values };
+        const { res, error } = await Factory(method, url, postData);
+        setLoading(false);
+        if (res.status_cd === 0) {
+          showSnackbar('Data Saved Successfully', 'success');
+          getData();
           setOpenDialog(false);
         } else {
           showSnackbar(JSON.stringify(res.data.data), 'error');
@@ -166,8 +210,25 @@ export default function RenderDialog({
             error={touched[field.name] && Boolean(errors[field.name])}
             helperText={touched[field.name] && errors[field.name]}
             size="small"
+            disabled={from === 'Attendance' && field.name === 'employee'}
           />
-        ) : field.name === 'doe' ? (
+        ) : field.name === 'loan_type' ? (
+          <CustomAutocomplete
+            value={values[field.name] || ''}
+            onChange={(e, newValue) => {
+              setFieldValue(field.name, newValue);
+            }}
+            options={
+              field.name === 'loan_type'
+                ? ['Personal Loan', 'Home Loan']
+                : field.name === 'financial_year'
+                  ? ['2021-22', '2022-23', '2023-24', '2024-25', '2025-26']
+                  : months
+            }
+            // getOptionLabel={(option) => option?.location_name || ''}
+            sx={{ width: '100%' }}
+          />
+        ) : field.name === 'doe' || field.name === 'start_month' ? (
           <CustomDatePicker
             views={['year', 'month', 'day']}
             value={values[field.name] ? dayjs(values[field.name], 'YYYY-MM-DD') : null}
@@ -197,7 +258,16 @@ export default function RenderDialog({
             onBlur={handleBlur}
             error={touched[field.name] && Boolean(errors[field.name])}
             helperText={touched[field.name] && errors[field.name]}
-            disabled={field.name === 'designation' || field.name === 'department'}
+            disabled={
+              field.name === 'designation' ||
+              field.name === 'department' ||
+              field.name === 'financial_year' ||
+              field.name === 'month' ||
+              field.name === 'total_days_of_month' ||
+              field.name === 'holidays' ||
+              field.name === 'present_days' ||
+              field.name === 'week_offs'
+            }
           />
         )}
       </Grid2>

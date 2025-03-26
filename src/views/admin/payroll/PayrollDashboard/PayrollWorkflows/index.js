@@ -8,7 +8,7 @@ import { IconBolt } from '@tabler/icons-react';
 import MainCard from '@/components/MainCard';
 import NewJoiners from './NewJoiners';
 import Exits from './Exits';
-import Attendance from './Attendance';
+import Attendance from './Attndance';
 import LoansAndAdvances from './LoansAndAdvances';
 import BonusAndIncentives from './BonusAndIncentives';
 import SalaryRevisions from './SalaryRevisions';
@@ -63,7 +63,7 @@ const PayrollWorkflows = ({ type }) => {
   const tabLabels = [
     'New Joiners',
     'Exits',
-    'Attandance',
+    'Attendance',
     'Loans & Advances',
     'Bonus & Incentives',
     'Salary Revisions',
@@ -71,6 +71,7 @@ const PayrollWorkflows = ({ type }) => {
   ];
   const handleNext = () => {};
   const handleBack = () => {};
+
   const exits_fields = [
     { name: 'employee', label: 'Employee Name' },
     { name: 'department', label: 'Department' },
@@ -81,11 +82,35 @@ const PayrollWorkflows = ({ type }) => {
     // { name: 'specify_date', label: null },
     { name: 'notes', label: 'Notes' }
   ];
+  const attandance_fields = [
+    { name: 'employee', label: 'Employee Name' },
+    { name: 'financial_year', label: 'Financial Year' },
+    { name: 'month', label: 'Month' },
+    { name: 'total_days_of_month', label: 'Total Days of Month' },
+    { name: 'holidays', label: 'Holidays' },
+    { name: 'week_offs', label: 'Week Offs' },
+    { name: 'present_days', label: 'Present Days' },
+    { name: 'balance_days', label: 'Balance Days' },
+    { name: 'casual_leaves', label: 'Casual Leaves' },
+    { name: 'sick_leaves', label: 'Sick Leaves' },
+    { name: 'earned_leaves', label: 'Earned Leaves' },
+    { name: 'loss_of_pay', label: 'Loss of Pay' }
+  ];
+
+  const loans_and_advances_fields = [
+    { name: 'employee', label: 'Employee Name' },
+    { name: 'department', label: 'Department' },
+    { name: 'designation', label: 'Designation' },
+    { name: 'loan_type', label: 'Loan Type' },
+    { name: 'amount', label: 'Amount' },
+    { name: 'no_of_months', label: 'No of Months' },
+    { name: 'start_month', label: 'Start Month' }
+  ];
   const fieldMappings = {
     // 'New Joiners': newJoinersFields,
-    Exits: exits_fields
-    // Attendance: attendanceFields,
-    // 'Loans & Advances': loansFields,
+    Exits: exits_fields,
+    Attendance: attandance_fields,
+    'Loans & Advances': loans_and_advances_fields
     // 'Bonus & Incentives': bonusFields,
     // 'Salary Revisions': salaryRevisionFields,
     // 'Adhoc Reimbursements': reimbursementsFields
@@ -178,11 +203,31 @@ const PayrollWorkflows = ({ type }) => {
           />
         </TabPanel>
         <TabPanel value={activeTab} index={2}>
-          <Attendance handleNext={handleNext} handleBack={handleBack} />
+          <Attendance
+            handleNext={handleNext}
+            handleBack={handleBack}
+            from={tabLabels[activeTab]}
+            openDialog={openDialog}
+            setOpenDialog={setOpenDialog}
+            fields={selectedFields}
+            loading={loading}
+            setLoading={setLoading}
+            employeeMasterData={employeeMasterData}
+          />
         </TabPanel>
 
         <TabPanel value={activeTab} index={3}>
-          <LoansAndAdvances handleNext={handleNext} handleBack={handleBack} />
+          <LoansAndAdvances
+            handleNext={handleNext}
+            handleBack={handleBack}
+            from={tabLabels[activeTab]}
+            openDialog={openDialog}
+            setOpenDialog={setOpenDialog}
+            fields={selectedFields}
+            loading={loading}
+            setLoading={setLoading}
+            employeeMasterData={employeeMasterData}
+          />
         </TabPanel>
 
         <TabPanel value={activeTab} index={4}>

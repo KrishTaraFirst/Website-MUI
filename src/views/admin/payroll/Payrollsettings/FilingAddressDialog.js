@@ -87,7 +87,6 @@ export default function FilingAddressDialog({ filingAddressDialog, setFilingAddr
                     value={selctedLocation}
                     name="filingAddress"
                     onChange={(e, newValue) => {
-                      console.log(newValue);
                       setSelctedLocation(newValue || {});
                     }}
                     options={workLocations}
