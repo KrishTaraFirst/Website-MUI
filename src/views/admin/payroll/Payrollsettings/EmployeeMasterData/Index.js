@@ -99,7 +99,7 @@ function EmployeeList() {
           tagline="Create and manage Employees of Your Organization."
           CustomElement={() => (
             <Stack direction="row" sx={{ gap: 2 }}>
-              <Button variant="contained" onClick={() => router.push(`/payrollsetup/add-employee`)}>
+              <Button variant="contained" onClick={() => router.push(`/payrollsetup/add-employee?payrollid=${payrollid}`)}>
                 Add Employee
               </Button>
             </Stack>
@@ -133,7 +133,7 @@ function EmployeeList() {
                         paginatedData?.map((item, index) => (
                           <TableRow key={item.id}>
                             <TableCell>{item.id}</TableCell>
-                            <TableCell>{item.first_name + '' + item.last_name}</TableCell>
+                            <TableCell>{item.first_name + ' ' + item.last_name}</TableCell>
                             <TableCell>{item.department_name}</TableCell>
                             <TableCell>{item.designation_name}</TableCell>
                             <TableCell>{item.work_email}</TableCell>

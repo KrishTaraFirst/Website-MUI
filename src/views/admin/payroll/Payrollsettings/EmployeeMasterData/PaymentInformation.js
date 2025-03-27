@@ -33,9 +33,7 @@ function PaymentInformation({ employeeData }) {
     { name: 'bank_name', label: 'Bank Name' },
     { name: 'account_number', label: 'Account Number' },
     { name: 'ifsc_code', label: 'IFSC Code' },
-    { name: 'branch_name', label: 'Branch Name' },
-    { name: 'upi_id', label: 'UPI ID' }
-    // { name: 'is_active', label: 'Is Active' }
+    { name: 'branch_name', label: 'Branch Name' }
   ];
 
   const validationSchema = Yup.object({
@@ -55,10 +53,6 @@ function PaymentInformation({ employeeData }) {
 
     branch_name: Yup.string().required('Branch Name is required').max(100, 'Branch Name cannot exceed 100 characters'),
 
-    // upi_id: Yup.string()
-    //   .nullable()
-    //   .matches(/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/, 'Invalid UPI ID format'),
-
     is_active: Yup.boolean().required('Status is required')
   });
 
@@ -69,7 +63,6 @@ function PaymentInformation({ employeeData }) {
       account_number: '',
       ifsc_code: '',
       branch_name: '',
-      upi_id: null,
       is_active: true
     },
     validationSchema,
@@ -77,11 +70,10 @@ function PaymentInformation({ employeeData }) {
       setLoading(true);
       const postData = { ...values, payroll: Number(payrollid) };
       postData.employee = employeeData.id;
-      let method = employeeData?.employee_bank_details[0]?.id ? 'put' : 'post';
+      let method = employeeData?.employee_bank_details?.id ? 'put' : 'post';
       let url =
-        method === 'post'
-          ? `/payroll/employee-bank-details`
-          : `/payroll/employee-bank-details/${employeeData?.employee_bank_details[0]?.id}`;
+        method === 'post' ? `/payroll/employee-bank-details` : `/payroll/employee-bank-details/${employeeData?.employee_bank_details?.id}`;
+
       const { res } = await Factory(method, url, postData);
 
       if (res.status_cd === 0) {
@@ -126,12 +118,12 @@ function PaymentInformation({ employeeData }) {
     });
   };
   const { values, setValues, setFieldValue, handleChange, errors, touched, handleSubmit, handleBlur } = formik;
-
+  console.log(employeeData);
   useEffect(() => {
-    if (employeeData && employeeData.employee_bank_details) {
+    if (employeeData?.employee_bank_details && Object.keys(employeeData.employee_bank_details).length > 0) {
       setValues((prev) => ({
         ...prev,
-        ...employeeData.employee_bank_details[0]
+        ...employeeData.employee_bank_details
       }));
     }
   }, [employeeData]);

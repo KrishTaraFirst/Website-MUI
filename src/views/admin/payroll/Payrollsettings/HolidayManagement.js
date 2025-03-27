@@ -16,6 +16,7 @@ import {
   Pagination
 } from '@mui/material';
 import { IconPlus } from '@tabler/icons-react';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import HolidayManagementDialog from './HolidayManagementDialog';
 import ActionCell from '@/utils/ActionCell';

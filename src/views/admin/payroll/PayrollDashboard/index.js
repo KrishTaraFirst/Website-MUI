@@ -61,8 +61,6 @@ export default function PayrollDashboard({ setPayrollSetup }) {
       get_business_details();
     }
   }, [userData.id]);
-  console.log(pathname);
-
   return loading ? (
     <Loader />
   ) : (
@@ -81,7 +79,20 @@ export default function PayrollDashboard({ setPayrollSetup }) {
           <Button variant="outlined" onClick={() => router.push(`/payrollsetup`)} startIcon={<IconSettings2 size={18} />}>
             Payroll Settings
           </Button>
-          <Button variant="contained" onClick={() => router.push(`${pathname}/add-employee`)} startIcon={<IconSparkles size={16} />}>
+          <Button
+            variant="outlined"
+            onClick={() => router.push(`/payroll/employee-dashboard?payrollid=${businessDetails?.payroll_id}`)}
+            startIcon={<IconSettings2 size={18} />}
+          >
+            Employee Dashboard
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              router.push(`/payrollsetup/add-employee?payrollid=${businessDetails?.payroll_id}`);
+            }}
+            startIcon={<IconSparkles size={16} />}
+          >
             Add Employee
           </Button>
         </Stack>
