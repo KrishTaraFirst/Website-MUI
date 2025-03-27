@@ -17,6 +17,7 @@ import { useSearchParams } from 'next/navigation';
 import { usePathname, useRouter } from 'next/navigation';
 import RenderDialog from './RenderDialog';
 import Factory from '@/utils/Factory';
+import { useSnackbar } from '@/components/CustomSnackbar';
 
 /***************************  NAVIGATION - TABS  ***************************/
 
@@ -40,6 +41,8 @@ const PayrollWorkflows = ({ type }) => {
   const [payrollid, setPayrollId] = useState(null); // Payroll ID fetched from URL
   const [loading, setLoading] = useState(false);
   const [employeeMasterData, setEmployeeMasterData] = useState([]);
+  const [attendanceData, setAttendanceData] = useState([]); // Holds attendance data
+  const { showSnackbar } = useSnackbar();
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -129,6 +132,18 @@ const PayrollWorkflows = ({ type }) => {
       showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
     }
   };
+
+  const fetchAttendanceData = async () => {
+    setLoading(true);
+    const url = `/payroll/employee_attendance_current_month_automate?payroll_id=${payrollid}`;
+    const { res, error } = await Factory('post', url, {});
+    setLoading(false);
+    if (res.status_cd === 0) {
+      setAttendanceData(res.data || []);
+    } else {
+      showSnackbar(JSON.stringify(res.data.data), 'error');
+    }
+  };
   useEffect(() => {
     if (payrollid) {
       fetch_employee_master_data();
@@ -140,18 +155,30 @@ const PayrollWorkflows = ({ type }) => {
       tagline="Payroll Workflow"
       CustomElement={() => (
         <Stack direction="row" sx={{ gap: 2 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              if (tabLabels[activeTab] === 'New Joiners') {
-                router.push(`/payrollsetup/add-employee?payrollid=${payrollid}`);
-              }
-              setOpenDialog(true);
-            }}
-          >
-            {`Add ${tabLabels[activeTab]}`}
-          </Button>
+          {tabLabels[activeTab] === 'Attendance' ? (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={async () => {
+                fetchAttendanceData();
+              }}
+            >
+              Genrate Attendance
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                if (tabLabels[activeTab] === 'New Joiners') {
+                  router.push(`/payrollsetup/add-employee?payrollid=${payrollid}`);
+                }
+                setOpenDialog(true);
+              }}
+            >
+              {`Add ${tabLabels[activeTab]}`}
+            </Button>
+          )}
         </Stack>
       )}
     >
@@ -213,6 +240,8 @@ const PayrollWorkflows = ({ type }) => {
             loading={loading}
             setLoading={setLoading}
             employeeMasterData={employeeMasterData}
+            attendanceData={attendanceData} // Pass the fetched data as a prop
+            fetchAttendanceData={fetchAttendanceData}
           />
         </TabPanel>
 

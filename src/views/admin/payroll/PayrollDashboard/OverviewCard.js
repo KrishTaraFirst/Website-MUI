@@ -1,7 +1,8 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { getRadiusStyles } from '@/utils/getRadiusStyles';
+import { months } from '@/utils/MonthsList';
 
 // @mui
 import { useTheme } from '@mui/material/styles';
@@ -47,7 +48,7 @@ export function applyBorderWithRadius(radius, theme) {
   };
 }
 
-export default function Services() {
+export default function Services({ payrollId }) {
   const theme = useTheme();
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
@@ -119,7 +120,15 @@ export default function Services() {
   useEffect(() => {
     getServicesList();
   }, []);
-
+  const handleMonthChange = useCallback(
+    (event, newValue) => {
+      const monthNumber = months.indexOf(newValue) + 1;
+      if (newValue) {
+        router.push(`/payroll/employee-dashboard?payrollid=${payrollId}&month=${monthNumber}`);
+      }
+    },
+    [router]
+  );
   return (
     <Stack sx={{ gap: 3 }}>
       <MainCard>
@@ -164,9 +173,10 @@ export default function Services() {
       </MainCard>
       <Box sx={{ float: 'right', width: 300 }}>
         <CustomAutocomplete
-          value={'Previous Month'}
-          onChange={(event, newValue) => {}}
-          options={['Previous Month', 'December', 'October', 'November']}
+          value={null} // Set initial value to null
+          onChange={handleMonthChange}
+          options={['Please select', ...months]} // Add "Please select" as first option
+          placeholder="Select Month"
         />
       </Box>
       <Grid

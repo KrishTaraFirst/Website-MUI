@@ -7,7 +7,15 @@ import { useSnackbar } from '@/components/CustomSnackbar';
 import RenderDialog from './RenderDialog';
 import { months } from '@/utils/MonthsList';
 
-export default function Attendance({ employeeMasterData, from, openDialog, fields, setOpenDialog }) {
+export default function Attendance({
+  employeeMasterData,
+  from,
+  openDialog,
+  fields,
+  setOpenDialog,
+  attendanceData, // Receive the attendance data as a prop
+  fetchAttendanceData //
+}) {
   const headerData = [
     'Employee Name',
     'LOP',
@@ -35,6 +43,7 @@ export default function Attendance({ employeeMasterData, from, openDialog, field
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [month, setMonth] = useState(null);
 
   const { showSnackbar } = useSnackbar();
 
@@ -46,10 +55,15 @@ export default function Attendance({ employeeMasterData, from, openDialog, field
       setPayrollId(id);
     }
   }, [searchParams]);
-
+  useEffect(() => {
+    let monthNumber = searchParams.get('month');
+    if (monthNumber) {
+      setMonth(monthNumber);
+    }
+  }, [searchParams]);
   const getData = async () => {
     setLoading(true);
-    const url = `/payroll/employee_attendance_filtered?payroll_id=${payrollid}&financial_year=2024-2025&month=3`;
+    const url = `/payroll/employee_attendance_filtered?payroll_id=${payrollid}&financial_year=2024-2025&month=${month}`;
     const { res, error } = await Factory('get', url, {});
     setLoading(false);
     if (res.status_cd === 0) {
@@ -61,7 +75,6 @@ export default function Attendance({ employeeMasterData, from, openDialog, field
   const handleEdit = async (item) => {
     let url = `/payroll/employee-attendance/${item.id}`;
     const { res } = await Factory('get', url, {});
-    console.log(res);
     if (res.status_cd === 1) {
       showSnackbar(JSON.stringify(res.data), 'error');
     } else {
@@ -92,6 +105,12 @@ export default function Attendance({ employeeMasterData, from, openDialog, field
       getData();
     }
   }, [payrollid]);
+  useEffect(() => {
+    if (payrollid) {
+      setData(attendanceData);
+      getData();
+    }
+  }, [attendanceData, fetchAttendanceData]);
   return (
     <>
       <RenderTable

@@ -158,9 +158,12 @@ export default function RenderDialog({ from, openDialog, fields, setOpenDialog, 
       }
       if (from === 'Attendance') {
         setLoading(true);
-        let url = selectedRecord?.id ? `/payroll/employee-attendance/1${selectedRecord?.id}` : `/payroll/employee-attendance`;
+        let url = selectedRecord?.id ? `/payroll/employee-attendance/${selectedRecord?.id}` : `/payroll/employee-attendance`;
         let method = selectedRecord?.id ? 'put' : 'Post';
-        let postData = { ...values };
+        const monthNumber = months.indexOf(values.month) + 1;
+
+        let postData = { ...values, month: monthNumber };
+
         const { res, error } = await Factory(method, url, postData);
         setLoading(false);
         if (res.status_cd === 0) {
@@ -251,7 +254,7 @@ export default function RenderDialog({ from, openDialog, fields, setOpenDialog, 
           <CustomInput
             fullWidth
             name={field.name}
-            value={values[field.name] || ''}
+            value={values[field.name]}
             multiline={field.name === 'notes'}
             minRows={field.name === 'notes' && 4}
             onChange={handleChange}

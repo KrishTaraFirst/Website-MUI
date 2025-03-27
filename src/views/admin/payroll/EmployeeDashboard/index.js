@@ -69,6 +69,7 @@ export default function index() {
   const { user, tokens, logout } = useAuth();
   const router = useRouter();
   const [payrollid, setPayrollId] = useState(null); // Payroll ID fetched from URL
+  const [month, setMonth] = useState(null);
 
   const searchParams = useSearchParams();
 
@@ -77,6 +78,12 @@ export default function index() {
     const id = searchParams.get('payrollid');
     if (id) {
       setPayrollId(id);
+    }
+  }, [searchParams]);
+  useEffect(() => {
+    let monthNumber = searchParams.get('month');
+    if (monthNumber) {
+      setMonth(monthNumber);
     }
   }, [searchParams]);
   return (
@@ -94,7 +101,9 @@ export default function index() {
               {productsData.map((item, index) => (
                 <Grid2 key={index} xs={12} sm={6} md={4}>
                   <Card sx={{ minHeight: '100px', maxHeight: '100px' }}>
-                    <CardActionArea onClick={() => router.push(`/payroll${item.href}?payrollid=${payrollid}&tabValue=${index}`)}>
+                    <CardActionArea
+                      onClick={() => router.push(`/payroll${item.href}?payrollid=${payrollid}&tabValue=${index}&month=${month}`)}
+                    >
                       <CardContent>
                         <Stack direction="row" alignItems="center" spacing={1}>
                           <Typography variant="h6">{item.title}</Typography>

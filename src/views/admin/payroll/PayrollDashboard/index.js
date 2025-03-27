@@ -99,7 +99,7 @@ export default function PayrollDashboard({ setPayrollSetup }) {
       </Stack>
       <Grid2 container spacing={{ xs: 2, md: 3 }}>
         <Grid2 size={{ xs: 12 }}>
-          <OverviewCard />
+          <OverviewCard payrollId={businessDetails?.payroll_id} />
         </Grid2>
       </Grid2>
     </Stack>
