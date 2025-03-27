@@ -10,6 +10,7 @@ import FirmForm from './firm';
 import useCurrentUser from '@/hooks/useCurrentUser';
 import { useRouter, usePathname } from 'next/navigation';
 import { APP_DEFAULT_PATH } from '@/config';
+
 const user_type = {
   individual: 'Individual',
   firm: 'CA',
@@ -28,6 +29,7 @@ const UserType = () => {
   const handleTabChange = (event, newValue) => {
     setSelectedIndex(newValue); // Set the selected tab index
   };
+
   useEffect(() => {
     // const isUserTypeNull = userData.user_type === null;
     // const isUserTypeValidAndKycFalse = userData.user_type !== null && userData.user_kyc === false;
@@ -82,6 +84,7 @@ const UserType = () => {
       </>
     );
   };
+
   return (
     <>
       {/* <Dialog

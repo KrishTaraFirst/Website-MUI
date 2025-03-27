@@ -18,7 +18,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Box from '@mui/material/Box';
 
 // @project
-import MenuPopper from './MenuPopper';
+import MenuPopper from './MenuDrawer';
 
 import { MegaMenu1, MegaMenu2, MegaMenu3, MegaMenu4, MegaMenu5, MegaMenu6 } from '@/blocks/mega-menu';
 
