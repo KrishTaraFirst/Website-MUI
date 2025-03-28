@@ -181,8 +181,6 @@ export default function RenderSalaryTemplateTable({ values, setFieldValue, setVa
           )
         };
       });
-
-      console.log(values);
     }
   };
   const fetch_preview = async () => {

@@ -80,13 +80,6 @@ export default function PayrollDashboard({ setPayrollSetup }) {
             Payroll Settings
           </Button>
           <Button
-            variant="outlined"
-            onClick={() => router.push(`/payroll/employee-dashboard?payrollid=${businessDetails?.payroll_id}`)}
-            startIcon={<IconSettings2 size={18} />}
-          >
-            Employee Dashboard
-          </Button>
-          <Button
             variant="contained"
             onClick={() => {
               router.push(`/payrollsetup/add-employee?payrollid=${businessDetails?.payroll_id}`);
