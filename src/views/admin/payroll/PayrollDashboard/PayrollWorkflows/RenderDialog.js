@@ -60,7 +60,7 @@ export default function RenderDialog({ from, openDialog, fields, setOpenDialog, 
           employee: '',
           department: '',
           designation: '',
-          loan_type: ' ',
+          loan_type: '',
           amount: '',
           no_of_months: '',
           start_month: ''
@@ -115,10 +115,18 @@ export default function RenderDialog({ from, openDialog, fields, setOpenDialog, 
         return Yup.object({
           employee: Yup.string().required('Employee is required'),
           loan_type: Yup.string().required('Loan Type is required'),
-          amount: Yup.string().required('Amount is required'),
-          no_of_months: Yup.string().required('No of Months is required'),
+          amount: Yup.number()
+            .typeError('Amount must be a number') // Handles non-numeric input errors
+            .positive('Amount must be positive') // Ensures only positive values
+            .required('Amount is required'),
+          no_of_months: Yup.number()
+            .typeError('No of Months must be a number')
+            .positive('No of Months must be positive')
+            .integer('No of Months must be an integer')
+            .required('No of Months is required'),
           start_month: Yup.string().required('Start Month is required')
         });
+
       // Add more validation cases for different scenarios (e.g., Transfers)
       default:
         return Yup.object({
@@ -217,19 +225,31 @@ export default function RenderDialog({ from, openDialog, fields, setOpenDialog, 
           />
         ) : field.name === 'loan_type' ? (
           <CustomAutocomplete
-            value={values[field.name] || ''}
+            value={values[field.name] || null}
             onChange={(e, newValue) => {
               setFieldValue(field.name, newValue);
             }}
             options={
               field.name === 'loan_type'
-                ? ['Personal Loan', 'Home Loan']
+                ? [
+                    'Personal Loan',
+                    'Emergency Loan',
+                    'Salary Advance',
+                    'Transportation Loan',
+                    'Auto Loan',
+                    'Home Loan',
+                    'Education Loan',
+                    '401(k) or Retirement Plan Loan',
+                    'Season Ticket Loan',
+                    'Stock Option Loan'
+                  ]
                 : field.name === 'financial_year'
                   ? ['2021-22', '2022-23', '2023-24', '2024-25', '2025-26']
                   : months
             }
-            // getOptionLabel={(option) => option?.location_name || ''}
             sx={{ width: '100%' }}
+            error={touched[field.name] && Boolean(errors[field.name])}
+            helperText={touched[field.name] && errors[field.name]}
           />
         ) : field.name === 'doe' || field.name === 'start_month' ? (
           <CustomDatePicker
@@ -237,7 +257,6 @@ export default function RenderDialog({ from, openDialog, fields, setOpenDialog, 
             value={values[field.name] ? dayjs(values[field.name], 'YYYY-MM-DD') : null}
             onChange={(newDate) => {
               if (newDate) {
-                // Save the date in 'YYYY-MM-DD' format to Formik
                 setFieldValue(field.name, newDate.format('YYYY-MM-DD'));
               } else {
                 setFieldValue(field.name, ''); // Clear the date if none is selected

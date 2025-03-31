@@ -11,7 +11,7 @@ import MainCard from '@/components/MainCard';
 import OverviewCard from './OverviewCard';
 import PayrollSummary from './PayrollSummary';
 import Grid2 from '@mui/material/Grid2';
-import { Box, Stack, Typography, CardActionArea, CardContent } from '@mui/material';
+import { Box, Stack, Typography, CardActionArea, CardContent, Card } from '@mui/material';
 
 const PRODUCTS_DATA = [
   { title: 'New Joiners', href: '/payroll-workflows' },
@@ -78,49 +78,57 @@ export default function Index() {
               Payroll Workflows
             </Typography>
             <MainCard>
-              <Grid2 container spacing={2}>
+              <Grid2 container spacing={1}>
+                {' '}
                 {PRODUCTS_DATA.map((item, index) => (
-                  <Grid2 key={index} size={{ xs: 12, sm: 6, md: 3, lg: 3 }}>
-                    <MainCard
+                  <Grid2 key={index} size={{ xs: 12, sm: 6, md: 3, lg: 2.4 }}>
+                    <Card
                       sx={{
-                        minHeight: '80px',
-                        minWidth: '100%',
+                        height: '60px', // Reduced from 80px to 60px
+                        width: '100%',
                         display: 'flex',
                         flexDirection: 'column',
-                        justifyContent: 'space-between',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                        justifyContent: 'center', // Changed to center for tighter fit
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.05)', // Slightly smaller shadow
                         transition: 'transform 0.2s, box-shadow 0.2s',
                         '&:hover': {
-                          transform: 'translateY(-4px)',
-                          boxShadow: '0 6px 16px rgba(0,0,0,0.1)'
-                        }
+                          transform: 'translateY(-2px)', // Reduced hover lift
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                          cursor: 'pointer'
+                        },
+                        borderRadius: '6px', // Slightly smaller radius
+                        overflow: 'hidden'
                       }}
+                      onClick={() => handleCardClick(item.href, index)}
                     >
-                      <CardActionArea
-                        onClick={() => handleCardClick(item.href, index)}
-                        sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
-                      >
-                        <CardContent>
-                          <Stack spacing={1}>
-                            <Typography variant="h6" color="text.primary" fontWeight="medium">
-                              {item.title}
-                            </Typography>
-                            {item.value && (
-                              <Stack direction="row" alignItems="center" spacing={1}>
-                                <Typography variant="h5" color="primary" fontWeight="bold">
-                                  {item.value}
-                                </Typography>
-                                {item.compare && (
-                                  <Typography variant="body2" color="text.secondary">
-                                    {item.compare}
-                                  </Typography>
-                                )}
-                              </Stack>
-                            )}
-                          </Stack>
-                        </CardContent>
-                      </CardActionArea>
-                    </MainCard>
+                      <CardContent sx={{ p: 1 }}>
+                        {' '}
+                        <Stack
+                          direction="column"
+                          spacing={0} // Removed spacing entirely
+                          alignItems="center"
+                          justifyContent="center"
+                          sx={{ height: '100%' }}
+                        >
+                          <Typography
+                            variant="subtitle2"
+                            color="text.primary"
+                            fontWeight="medium"
+                            textAlign="center"
+                            sx={{
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              display: '-webkit-box',
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: 'vertical',
+                              lineHeight: 1.2 // Tighter line height
+                            }}
+                          >
+                            {item.title}
+                          </Typography>
+                        </Stack>
+                      </CardContent>
+                    </Card>
                   </Grid2>
                 ))}
               </Grid2>

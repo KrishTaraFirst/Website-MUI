@@ -1,143 +1,133 @@
 'use client';
 
+// @mui
+import { useTheme } from '@mui/material/styles';
+import Grid from '@mui/material/Grid2';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+
+//react
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useSnackbar } from '@/components/CustomSnackbar';
-import { useAuth } from '@/contexts/AuthContext';
-import useCurrentUser from '@/hooks/useCurrentUser';
-import Factory from '@/utils/Factory';
-import HomeCard from '@/components/cards/HomeCard';
+import { useRouter, usePathname } from 'next/navigation';
+
+// @project
 import MainCard from '@/components/MainCard';
-import OverviewCard from './OverviewCard';
-import PayrollSummary from './PayrollSummary';
-import Grid2 from '@mui/material/Grid2';
-import { Box, Stack, Typography, CardActionArea, CardContent } from '@mui/material';
+import { getRadiusStyles } from '@/utils/getRadiusStyles';
 
-const PRODUCTS_DATA = [
-  { title: 'New Joiners', href: '/payroll-workflows' },
-  { title: 'Exits', href: '/invoicing' },
-  { title: 'Attendance', href: '#' },
-  { title: 'Loans & Advances', href: '#' },
-  { title: 'Bonus & Incentives', href: '#' },
-  { title: 'Salary Revisions', href: '#' },
-  { title: 'Adhoc Reimbursements', href: '#' }
-];
+// @assets
+import { IconArrowDown, IconArrowUp } from '@tabler/icons-react';
+import { Button } from '@mui/material';
 
-export default function Index() {
-  const { showSnackbar } = useSnackbar();
-  const { userData } = useCurrentUser();
-  const { user, tokens, logout } = useAuth();
-  const router = useRouter();
-  const searchParams = useSearchParams();
+/***************************  CARDS - BORDER WITH RADIUS  ***************************/
 
-  const [clientListData] = useState({});
-  const [payrollId, setPayrollId] = useState(null);
-  const [month, setMonth] = useState(null);
-  const [payrollSummaryData, setPayrollSummaryData] = useState([]);
-
-  // Sync payrollId from search params
-  useEffect(() => {
-    const id = searchParams.get('payrollid');
-    if (id) setPayrollId(id);
-  }, [searchParams]);
-
-  // Sync month from search params
-  useEffect(() => {
-    const monthNumber = searchParams.get('month');
-    if (monthNumber) setMonth(monthNumber);
-  }, [searchParams]);
-
-  // Fetch payroll summary data
-  const fetchPayrollSummary = async () => {
-    const url = `/payroll/calculate-employee-monthly-salary?payroll_id=${payrollId}&month=3&financial_year=2024-2025`;
-    const { res } = await Factory('get', url, {});
-    if (res.status_cd === 0) {
-      setPayrollSummaryData(res.data || []);
-    } else {
-      showSnackbar(JSON.stringify(res.data.data), 'error');
+export function applyBorderWithRadius(radius, theme) {
+  return {
+    overflow: 'hidden',
+    '--Grid-borderWidth': '1px',
+    borderTop: 'var(--Grid-borderWidth) solid',
+    borderLeft: 'var(--Grid-borderWidth) solid',
+    borderColor: 'divider',
+    '& > div': {
+      overflow: 'hidden',
+      borderRight: 'var(--Grid-borderWidth) solid',
+      borderBottom: 'var(--Grid-borderWidth) solid',
+      borderColor: 'divider',
+      [theme.breakpoints.down('md')]: {
+        '&:nth-of-type(1)': getRadiusStyles(radius, 'topLeft'),
+        '&:nth-of-type(2)': getRadiusStyles(radius, 'topRight'),
+        '&:nth-of-type(3)': getRadiusStyles(radius, 'bottomLeft'),
+        '&:nth-of-type(4)': getRadiusStyles(radius, 'bottomRight')
+      },
+      [theme.breakpoints.up('md')]: {
+        '&:first-of-type': getRadiusStyles(radius, 'topLeft', 'bottomLeft'),
+        '&:last-of-type': getRadiusStyles(radius, 'topRight', 'bottomRight')
+      }
     }
   };
+}
+
+/***************************   OVERVIEW CARD -DATA  ***************************/
+
+/***************************   OVERVIEW - CARDS  ***************************/
+
+export default function OverviewCard({ clientListData }) {
+  const theme = useTheme();
+  const router = useRouter();
+  const chipDefaultProps = { color: 'success', variant: 'text', size: 'small' };
+  const [overviewData, setOverviewData] = useState([]);
 
   useEffect(() => {
-    if (payrollId) fetchPayrollSummary();
-  }, [payrollId]);
+    let overview = [
+      {
+        title: 'Period : Jan 25',
+        href: 'business',
+        value: '23,876',
+        compare: 'Tagline content',
+        buttonLable: 'View',
+        size: 4,
+        chip: {
+          label: '24.5%',
+          avatar: <IconArrowUp />
+        }
+      },
+      {
+        title: 'Total Users',
+        href: 'pending',
+        value: clientListData.pending || 0,
+        size: 4,
+        compare: 'Tagline content',
+        data: clientListData.in_progress_data || [],
+        buttonLable: 'View',
+        chip: {
+          label: '20.5%',
+          avatar: <IconArrowUp />
+        }
+      },
+      {
+        title: 'New Users',
+        href: '#',
+        value: clientListData.pending || 0,
+        size: 4,
+        compare: 'Tagline content',
+        data: clientListData.in_progress_data || [],
+        buttonLable: 'View',
+        chip: {
+          label: '20.5%',
+          avatar: <IconArrowUp />
+        }
+      }
+    ];
+    setOverviewData([...overview]);
+  }, [clientListData]);
 
-  const handleCardClick = (href, index) => {
-    router.push(`/payroll${href}?payrollid=${payrollId}&tabValue=${index}&month=${month}`);
+  const handleChange = (val) => {
+    router.push(`corporate-admin//${val}`);
   };
 
   return (
-    <HomeCard title="Employee Dashboard" tagline="Know Your Monthly Payroll Details">
-      <Box sx={{ pb: 3 }}>
-        <Grid2 container spacing={{ xs: 2, md: 3 }}>
-          <Grid2 size={12}>
-            <OverviewCard clientListData={clientListData} />
-          </Grid2>
-          <Grid2 size={12}>
-            <Typography variant="h6" sx={{ mb: 1 }}>
-              Payroll Workflows
-            </Typography>
-            <MainCard>
-              <Grid2 container spacing={2}>
-                {PRODUCTS_DATA.map((item, index) => (
-                  <Grid2 key={index} size={{ xs: 12, sm: 6, md: 3, lg: 3 }}>
-                    <MainCard
-                      sx={{
-                        height: '80px', // Fixed small height
-                        width: '200px', // Fixed small width
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'space-between',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                        transition: 'transform 0.2s, box-shadow 0.2s',
-                        '&:hover': {
-                          transform: 'translateY(-4px)',
-                          boxShadow: '0 6px 16px rgba(0,0,0,0.1)'
-                        }
-                      }}
-                    >
-                      <CardActionArea
-                        onClick={() => handleCardClick(item.href, index)}
-                        sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
-                      >
-                        <CardContent sx={{ p: 1 }}>
-                          {' '}
-                          {/* Reduced padding for small size */}
-                          <Stack spacing={0.5}>
-                            <Typography variant="subtitle1" color="text.primary" fontWeight="medium">
-                              {item.title}
-                            </Typography>
-                            {item.value && (
-                              <Stack direction="row" alignItems="center" spacing={1}>
-                                <Typography variant="h6" color="primary" fontWeight="bold">
-                                  {item.value}
-                                </Typography>
-                                {item.compare && (
-                                  <Typography variant="body2" color="text.secondary">
-                                    {item.compare}
-                                  </Typography>
-                                )}
-                              </Stack>
-                            )}
-                          </Stack>
-                        </CardContent>
-                      </CardActionArea>
-                    </MainCard>
-                  </Grid2>
-                ))}
-              </Grid2>
-            </MainCard>
-          </Grid2>
-          <Grid2 size={12}>
-            <Typography variant="h6" sx={{ mt: 1 }}>
-              Payroll Summary
-            </Typography>
-          </Grid2>
-          <Grid2 size={12}>
-            <PayrollSummary payrollSummaryData={payrollSummaryData} />
-          </Grid2>
-        </Grid2>
-      </Box>
-    </HomeCard>
+    <Grid container sx={{ borderRadius: 4, boxShadow: theme.customShadows.section, ...applyBorderWithRadius(16, theme) }}>
+      {overviewData.map((item, index) => (
+        <Grid key={index} size={{ xs: 6, sm: 6, md: item.size }}>
+          <MainCard sx={{ border: 'none', borderRadius: 0, boxShadow: 'none' }}>
+            <Stack sx={{ gap: 2 }}>
+              <Stack direction="column" sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <Typography variant="subtitle1">Period: Jan 25</Typography>
+              </Stack>
+              <Stack sx={{ gap: 0.5 }}>
+                <Stack direction="column" sx={{ gap: 1, alignItems: 'center' }}>
+                  <Typography variant="h4">2515</Typography>
+                  <Typography variant="h4">CTC</Typography>
+                  {/* <Chip {...{ ...chipDefaultProps, ...item.chip }} /> */}
+                </Stack>
+                <Typography variant="caption" color="grey.700">
+                  {item.compare}
+                </Typography>
+              </Stack>
+            </Stack>
+          </MainCard>
+        </Grid>
+      ))}
+    </Grid>
   );
 }

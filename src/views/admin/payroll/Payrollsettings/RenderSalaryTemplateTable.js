@@ -1,6 +1,20 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button } from '@mui/material';
+import {
+  Box,
+  TextField,
+  Typography,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Button,
+  Tooltip,
+  Stack
+} from '@mui/material';
 import CustomInput from '@/utils/CustomInput';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import { IconTrash } from '@tabler/icons-react';
@@ -8,14 +22,16 @@ import { useSearchParams } from 'next/navigation';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import Factory from '@/utils/Factory';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
-export default function RenderSalaryTemplateTable({ values, setFieldValue, setValues, setOnBlurrrReaclculate }) {
+export default function RenderSalaryTemplateTable({ values, setFieldValue, setValues, enablePreviewButton, setEnablePreviewButton }) {
   const [earningsData, setEarningsData] = useState([]);
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [payrollid, setPayrollId] = useState(null);
   const [template_id, setTemplate_id] = useState(null);
+  const [viewPreview, setViewPreview] = useState(false);
   const [onBlurrRecalculate, setOnBlurrRecalculate] = useState(false);
   const { showSnackbar } = useSnackbar();
 
@@ -66,6 +82,7 @@ export default function RenderSalaryTemplateTable({ values, setFieldValue, setVa
     updatedEarnings[index].annually = calculatedValues.annually;
 
     setFieldValue('earnings', updatedEarnings);
+    setEnablePreviewButton(true);
   };
 
   const calculateEarnings = (earning, annualCtc, basicSalary) => {
@@ -141,13 +158,7 @@ export default function RenderSalaryTemplateTable({ values, setFieldValue, setVa
     });
     setFieldValue('earnings', updatedEarnings);
   };
-  useEffect(() => {}, []);
-  const handleAddEarnings = () => {
-    setFieldValue('earnings', [
-      ...values.earnings,
-      { component_name: '', calculation: 0, monthly: 0, annually: 0 } // Default values
-    ]);
-  };
+
   const handleDeleteItem = (key, index) => {
     if (key === 'earnings') {
       const newEarnings = values.earnings.filter((_, i) => i !== index);
@@ -204,6 +215,7 @@ export default function RenderSalaryTemplateTable({ values, setFieldValue, setVa
     }
     if (res?.status_cd === 0) {
       setValues(res?.data);
+      setViewPreview(true);
     } else {
     }
   };
@@ -299,6 +311,12 @@ export default function RenderSalaryTemplateTable({ values, setFieldValue, setVa
       getEarnings_Details(payrollid);
     }
   }, [payrollid]);
+  const handleAddEarnings = () => {
+    setFieldValue('earnings', [
+      ...values.earnings,
+      { component_name: '', calculation: 0, monthly: 0, annually: 0 } // Default values
+    ]);
+  };
   return (
     <TableContainer component={Paper}>
       <Table size="small" sx={{ fontSize: '0.875rem' }}>
@@ -437,95 +455,107 @@ export default function RenderSalaryTemplateTable({ values, setFieldValue, setVa
             <TableCell></TableCell>
           </TableRow>
 
-          <TableRow sx={{ backgroundColor: '#f6f2fc' }}>
-            <TableCell>
-              <Typography variant="subtitle2"> Gross Salary </Typography>
-              <Button
-                onClick={() => {
-                  fetch_preview();
-                }}
-              >
-                System Calculated Components' Total (Preview)
-              </Button>
+          <TableRow sx={{ backgroundColor: '#ede7f6', borderRadius: 2 }}>
+            <TableCell sx={{ padding: 2 }}>
+              <Stack direction="row" alignItems="center" spacing={1}>
+                {enablePreviewButton && (
+                  <>
+                    <Button onClick={fetch_preview} variant="contained" color="primary" sx={{ borderRadius: 2, textTransform: 'none' }}>
+                      Preview
+                    </Button>
+                    <Tooltip title="System Calculated Components' Total" placement="right" arrow>
+                      <InfoOutlinedIcon sx={{ fontSize: 18, color: 'gray', cursor: 'pointer' }} />
+                    </Tooltip>
+                  </>
+                )}
+                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'primary.dark' }}>
+                  Gross Salary
+                </Typography>
+              </Stack>
             </TableCell>
-            <TableCell></TableCell>
+
+            <TableCell sx={{ padding: 2 }}></TableCell>
 
             <TableCell>
-              <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.monthly.toFixed(2) || 0), 0)}</Typography>
+              <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.monthly || 0), 0).toFixed(2)}</Typography>
             </TableCell>
             <TableCell>
-              <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.annually.toFixed(2) || 0), 0)}</Typography>
+              <Typography>{values.earnings.reduce((sum, earning) => sum + parseFloat(earning.annually || 0), 0).toFixed(2)}</Typography>
             </TableCell>
             <TableCell></TableCell>
           </TableRow>
-          <TableRow>
-            <TableCell colSpan={5}>
-              <Typography variant="subtitle1" sx={{ color: 'primary.main' }}>
-                {' '}
-                Benefits{' '}
-              </Typography>
-            </TableCell>
-          </TableRow>
 
-          {values?.benefits.map((item, index) => (
-            <TableRow key={index}>
-              <TableCell>{item.component_name}</TableCell>
-              <TableCell>{item.calculation_type}</TableCell>
-              <TableCell>{Number(item?.monthly || 0).toFixed(2)}</TableCell>
-              <TableCell>{Number(item?.annually || 0).toFixed(2)}</TableCell>
-              <TableCell>
-                <Button size="small" color="error" startIcon={<IconTrash size={16} />}></Button>{' '}
-              </TableCell>
-            </TableRow>
-          ))}
-          <TableRow sx={{ backgroundColor: '#f6f2fc', margin: '20px' }}>
-            <TableCell>
-              <Typography variant="subtitle2"> Total CTC </Typography>
-            </TableCell>
-            <TableCell></TableCell>
+          {viewPreview && (
+            <>
+              {' '}
+              <TableRow>
+                <TableCell colSpan={5}>
+                  <Typography variant="subtitle1" sx={{ color: 'primary.main' }}>
+                    {' '}
+                    Benefits{' '}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+              {values?.benefits.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>{item.component_name}</TableCell>
+                  <TableCell>{item.calculation_type}</TableCell>
+                  <TableCell>{Number(item?.monthly || 0).toFixed(2)}</TableCell>
+                  <TableCell>{Number(item?.annually || 0).toFixed(2)}</TableCell>
+                  <TableCell>
+                    <Button size="small" color="error" startIcon={<IconTrash size={16} />}></Button>{' '}
+                  </TableCell>
+                </TableRow>
+              ))}
+              <TableRow sx={{ backgroundColor: '#f6f2fc', margin: '20px' }}>
+                <TableCell>
+                  <Typography variant="subtitle2"> Total CTC </Typography>
+                </TableCell>
+                <TableCell></TableCell>
 
-            <TableCell>
-              <Typography>{Number(values.total_ctc?.monthly || 0).toFixed(2)}</Typography>
-            </TableCell>
-            <TableCell>
-              <Typography>{Number(values.total_ctc?.annually || 0).toFixed(2)}</Typography>
-            </TableCell>
-            <TableCell></TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell colSpan={6}>
-              <Typography variant="subtitle1" sx={{ color: 'primary.main' }}>
-                {' '}
-                Deductions{' '}
-              </Typography>
-            </TableCell>
-          </TableRow>
+                <TableCell>
+                  <Typography>{Number(values.total_ctc?.monthly || 0).toFixed(2)}</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography>{Number(values.total_ctc?.annually || 0).toFixed(2)}</Typography>
+                </TableCell>
+                <TableCell></TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell colSpan={6}>
+                  <Typography variant="subtitle1" sx={{ color: 'primary.main' }}>
+                    {' '}
+                    Deductions{' '}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+              {values?.deductions.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>{item.component_name}</TableCell>
+                  <TableCell>{item.calculation_type}</TableCell>
+                  <TableCell>{item.monthly}</TableCell>
+                  <TableCell>{item.annually}</TableCell>
+                  <TableCell>
+                    <Button size="small" color="error" startIcon={<IconTrash size={16} />}></Button>{' '}
+                  </TableCell>
+                </TableRow>
+              ))}
+              <TableRow sx={{ backgroundColor: '#f6f2fc', margin: '20px' }}>
+                <TableCell>
+                  <Typography variant="subtitle2"> Net Salary (Take Home) </Typography>
+                </TableCell>
+                <TableCell></TableCell>
 
-          {values?.deductions.map((item, index) => (
-            <TableRow key={index}>
-              <TableCell>{item.component_name}</TableCell>
-              <TableCell>{item.calculation_type}</TableCell>
-              <TableCell>{item.monthly}</TableCell>
-              <TableCell>{item.annually}</TableCell>
-              <TableCell>
-                <Button size="small" color="error" startIcon={<IconTrash size={16} />}></Button>{' '}
-              </TableCell>
-            </TableRow>
-          ))}
-          <TableRow sx={{ backgroundColor: '#f6f2fc', margin: '20px' }}>
-            <TableCell>
-              <Typography variant="subtitle2"> Net Salary (Take Home) </Typography>
-            </TableCell>
-            <TableCell></TableCell>
-
-            <TableCell>
-              <Typography>{Number(values.net_salary?.monthly || 0).toFixed(2)}</Typography>
-            </TableCell>
-            <TableCell>
-              <Typography>{Number(values.net_salary?.annually || 0).toFixed(2)}</Typography>
-            </TableCell>
-            <TableCell></TableCell>
-          </TableRow>
+                <TableCell>
+                  <Typography>{Number(values.net_salary?.monthly || 0).toFixed(2)}</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography>{Number(values.net_salary?.annually || 0).toFixed(2)}</Typography>
+                </TableCell>
+                <TableCell></TableCell>
+              </TableRow>
+            </>
+          )}
         </TableBody>
       </Table>
     </TableContainer>

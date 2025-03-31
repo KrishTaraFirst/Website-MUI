@@ -4,17 +4,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers';
 import TextField from '@mui/material/TextField';
 
-const CustomDatePicker = ({
-  label,
-  value,
-  onChange,
-  error,
-  helperText,
-  width = '100%', // Default width is 100% if not provided
-  size = 'small', // Default size is "small"
-  onBlur,
-  ...params
-}) => {
+const CustomDatePicker = ({ label, value, onChange, error, helperText, width = '100%', size = 'small', onBlur, ...params }) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
@@ -22,16 +12,15 @@ const CustomDatePicker = ({
         value={value}
         onChange={onChange}
         format="DD-MM-YYYY"
-        onBlur={onBlur} // Triggering onBlur from Formik here
-        renderInput={(props) => (
-          <TextField
-            {...props}
-            error={error}
-            helperText={helperText}
-            size={size} // Ensure the size is passed to the TextField
-            sx={{ width }} // Apply the width using the sx prop
-          />
-        )}
+        onBlur={onBlur}
+        slotProps={{
+          textField: {
+            error: Boolean(error), // Ensure boolean conversion
+            helperText: helperText,
+            size: size,
+            sx: { width }
+          }
+        }}
         {...params}
       />
     </LocalizationProvider>

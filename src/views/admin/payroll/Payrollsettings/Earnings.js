@@ -43,11 +43,9 @@ const validationSchema = Yup.object({
   component_type: Yup.string().required('Type is required')
 });
 
-function EarningsComponent({ handleNext, handleBack }) {
-  const [open, setOpen] = useState(false);
+function EarningsComponent({ handleNext, handleBack, open, setOpen, postType, setPostType }) {
   const [earningsData, setEarningsData] = useState([]);
   const router = useRouter();
-  const [postType, setPostType] = useState('');
   const [loading, setLoading] = useState(false);
   const [payrollid, setPayrollId] = useState(null);
   const searchParams = useSearchParams();
@@ -156,19 +154,7 @@ function EarningsComponent({ handleNext, handleBack }) {
       ) : (
         <Box>
           <Grid2 size={12}>
-            <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <Button
-                  variant="contained"
-                  onClick={() => {
-                    setPostType('post');
-                    setOpen(true);
-                  }}
-                >
-                  Add Component
-                </Button>
-              </Stack>
-            </Box>
+            <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', mb: 2 }}></Box>
             <TableContainer component={Paper}>
               <Table>
                 <TableHead>
@@ -244,9 +230,9 @@ function EarningsComponent({ handleNext, handleBack }) {
               >
                 Back to Dashboard
               </Button>
-              <Button size="small" variant="contained" onClick={handleNext}>
+              {/* <Button size="small" variant="contained" onClick={handleNext}>
                 Next
-              </Button>
+              </Button> */}
             </Box>
           </Grid2>
 
