@@ -1,18 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Table,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Paper,
-  Button,
-  Stack,
-  Grid2,
-  Pagination,
-  Box
-} from '@mui/material';
 import Factory from '@/utils/Factory';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSnackbar } from '@/components/CustomSnackbar';
@@ -56,6 +42,8 @@ function NewJoiners() {
     if (res.status_cd === 0) {
       setNewJoinersData(res.data || []);
     } else {
+      setNewJoinersData([]);
+
       showSnackbar(JSON.stringify(res.data.data), 'error');
     }
   };

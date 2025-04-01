@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Paper, Stack, Pagination } from '@mui/material';
 import Loader from '@/components/PageLoader';
 import EmptyTable from '@/components/third-party/table/EmptyTable';
@@ -6,8 +7,8 @@ import ActionCell from '@/utils/ActionCell';
 
 export default function RenderTable({
   headerData,
-  tableData = [],
-  loading,
+  tableData = [], // Default to empty array
+  loading = false,
   body_keys,
   handleEdit,
   handleDelete,
@@ -21,7 +22,8 @@ export default function RenderTable({
     setCurrentPage(value);
   };
 
-  const paginatedData = tableData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+  const safeTableData = Array.isArray(tableData) ? tableData : [];
+  const paginatedData = safeTableData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
   return (
     <Stack spacing={3}>
@@ -65,7 +67,7 @@ export default function RenderTable({
                         deleteDialogData={{
                           title: 'Delete Record',
                           heading: 'Are you sure you want to delete this Record?',
-                          description: `This action will remove ${item.dept_name} from the list.`,
+                          description: `This action will remove ${item.dept_name || 'this item'} from the list.`,
                           successMessage: 'Record has been deleted.'
                         }}
                       />
@@ -78,11 +80,23 @@ export default function RenderTable({
         </TableContainer>
       )}
 
-      {tableData.length > 0 && (
+      {safeTableData.length > 0 && (
         <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'center', px: { xs: 0.5, sm: 2.5 }, py: 1.5 }}>
-          <Pagination count={Math.ceil(tableData.length / rowsPerPage)} page={currentPage} onChange={handlePageChange} />
+          <Pagination count={Math.ceil(safeTableData.length / rowsPerPage)} page={currentPage} onChange={handlePageChange} />
         </Stack>
       )}
     </Stack>
   );
 }
+
+// PropTypes for type checking
+RenderTable.propTypes = {
+  headerData: PropTypes.arrayOf(PropTypes.string).isRequired,
+  tableData: PropTypes.array, // Enforce array type
+  loading: PropTypes.bool,
+  body_keys: PropTypes.arrayOf(PropTypes.string).isRequired,
+  handleEdit: PropTypes.func,
+  handleDelete: PropTypes.func,
+  openDialog: PropTypes.bool,
+  handleCloseDialog: PropTypes.func
+};

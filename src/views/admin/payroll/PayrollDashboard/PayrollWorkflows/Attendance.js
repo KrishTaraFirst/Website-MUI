@@ -13,7 +13,7 @@ export default function Attendance({
   openDialog,
   fields,
   setOpenDialog,
-  attendanceData, // Receive the attendance data as a prop
+  attendanceData,
   fetchAttendanceData //
 }) {
   const headerData = [

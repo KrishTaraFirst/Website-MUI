@@ -1,29 +1,25 @@
 'use client';
 import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTheme } from '@mui/material/styles';
 import { Box, Tab, Tabs, Typography, Stack, Avatar, Button } from '@mui/material';
-import HomeCard from '@/components/cards/HomeCard';
 import { IconBolt } from '@tabler/icons-react';
+import HomeCard from '@/components/cards/HomeCard';
 import MainCard from '@/components/MainCard';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useSnackbar } from '@/components/CustomSnackbar';
 import NewJoiners from './NewJoiners';
 import Exits from './Exits';
-import Attendance from './Attndance';
+import Attendance from './Attendance';
 import LoansAndAdvances from './LoansAndAdvances';
 import BonusAndIncentives from './BonusAndIncentives';
 import SalaryRevisions from './SalaryRevisions';
 import AdhocReimbursements from './AdhocReimbursements';
-import { useSearchParams } from 'next/navigation';
-import { usePathname, useRouter } from 'next/navigation';
-import RenderDialog from './RenderDialog';
 import Factory from '@/utils/Factory';
-import { useSnackbar } from '@/components/CustomSnackbar';
 
-/***************************  NAVIGATION - TABS  ***************************/
-
-// TabPanel component to render the content for each tab
+// TabPanel Component
 const TabPanel = ({ children, value, index }) => (
-  <div role="tabpanel" hidden={value !== index} id={`simple-tabpanel-${index}`} aria-labelledby={`simple-tab-${index}`}>
+  <div role="tabpanel" hidden={value !== index} id={`tabpanel-${index}`} aria-labelledby={`tab-${index}`}>
     {value === index && <Box sx={{ pt: 2.5 }}>{children}</Box>}
   </div>
 );
@@ -34,99 +30,20 @@ TabPanel.propTypes = {
   index: PropTypes.number.isRequired
 };
 
-const PayrollWorkflows = ({ type }) => {
-  const [activeTab, setActiveTab] = useState(0); // State to manage active tab
-  const theme = useTheme(); // Getting the theme
-  const [openDialog, setOpenDialog] = useState(false);
-  const [payrollid, setPayrollId] = useState(null); // Payroll ID fetched from URL
+// Custom Hook for Payroll Data
+const usePayrollData = (payrollId) => {
   const [loading, setLoading] = useState(false);
   const [employeeMasterData, setEmployeeMasterData] = useState([]);
-  const [attendanceData, setAttendanceData] = useState([]); // Holds attendance data
+  const [attendanceData, setAttendanceData] = useState([]);
   const { showSnackbar } = useSnackbar();
 
-  const searchParams = useSearchParams();
-  const router = useRouter();
-
-  useEffect(() => {
-    const id = searchParams.get('payrollid');
-    if (id) {
-      setPayrollId(id);
-    }
-  }, [searchParams]);
-  const handleTabChange = (_event, newTabIndex) => setActiveTab(newTabIndex);
-
-  // Accessibility props for tabs
-  const a11yProps = (index) => ({
-    value: index,
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`
-  });
-
-  // Tab labels
-  const tabLabels = [
-    'New Joiners',
-    'Exits',
-    'Attendance',
-    'Loans & Advances',
-    'Bonus & Incentives',
-    'Salary Revisions',
-    'Adhoc Reimbursements'
-  ];
-  const handleNext = () => {};
-  const handleBack = () => {};
-
-  const exits_fields = [
-    { name: 'employee', label: 'Employee Name' },
-    { name: 'department', label: 'Department' },
-    { name: 'designation', label: 'Designation' },
-    { name: 'doe', label: 'Exit Date' },
-    { name: 'exit_reason', label: 'Reason for Exit' },
-    // { name: 'regular_pay_schedule', label: false },
-    // { name: 'specify_date', label: null },
-    { name: 'notes', label: 'Notes' }
-  ];
-  const attandance_fields = [
-    { name: 'employee', label: 'Employee Name' },
-    { name: 'financial_year', label: 'Financial Year' },
-    { name: 'month', label: 'Month' },
-    { name: 'total_days_of_month', label: 'Total Days of Month' },
-    { name: 'holidays', label: 'Holidays' },
-    { name: 'week_offs', label: 'Week Offs' },
-    { name: 'present_days', label: 'Present Days' },
-    { name: 'balance_days', label: 'Balance Days' },
-    { name: 'casual_leaves', label: 'Casual Leaves' },
-    { name: 'sick_leaves', label: 'Sick Leaves' },
-    { name: 'earned_leaves', label: 'Earned Leaves' },
-    { name: 'loss_of_pay', label: 'Loss of Pay' }
-  ];
-
-  const loans_and_advances_fields = [
-    { name: 'employee', label: 'Employee Name' },
-    { name: 'department', label: 'Department' },
-    { name: 'designation', label: 'Designation' },
-    { name: 'loan_type', label: 'Loan Type' },
-    { name: 'amount', label: 'Amount' },
-    { name: 'no_of_months', label: 'No of Months' },
-    { name: 'start_month', label: 'Start Month' }
-  ];
-  const fieldMappings = {
-    // 'New Joiners': newJoinersFields,
-    Exits: exits_fields,
-    Attendance: attandance_fields,
-    'Loans & Advances': loans_and_advances_fields
-    // 'Bonus & Incentives': bonusFields,
-    // 'Salary Revisions': salaryRevisionFields,
-    // 'Adhoc Reimbursements': reimbursementsFields
-  };
-
-  const selectedFields = fieldMappings[tabLabels[activeTab]] || [];
-  const fetch_employee_master_data = async () => {
+  const fetchEmployeeMasterData = async () => {
     setLoading(true);
-    const url = `/payroll/employees?payroll_id=${payrollid}`;
+    const url = `/payroll/employees?payroll_id=${payrollId}`;
     const { res, error } = await Factory('get', url, {});
     setLoading(false);
     if (res?.status_cd === 0) {
-      setEmployeeMasterData(res?.data); // Successfully set work locations
+      setEmployeeMasterData(res.data);
     } else {
       setEmployeeMasterData([]);
       showSnackbar(JSON.stringify(res?.data?.data || error), 'error');
@@ -135,50 +52,111 @@ const PayrollWorkflows = ({ type }) => {
 
   const fetchAttendanceData = async () => {
     setLoading(true);
-    const url = `/payroll/employee_attendance_current_month_automate?payroll_id=${payrollid}`;
+    const url = `/payroll/employee_attendance_current_month_automate?payroll_id=${payrollId}`;
     const { res, error } = await Factory('post', url, {});
     setLoading(false);
-    if (res.status_cd === 0) {
+    if (res?.status_cd === 0) {
       setAttendanceData(res.data || []);
     } else {
-      showSnackbar(JSON.stringify(res.data.data), 'error');
+      showSnackbar(JSON.stringify(res.data?.data || error), 'error');
     }
   };
+
   useEffect(() => {
-    if (payrollid) {
-      fetch_employee_master_data();
+    if (payrollId) fetchEmployeeMasterData();
+  }, [payrollId]);
+
+  return { loading, employeeMasterData, attendanceData, fetchAttendanceData };
+};
+
+// Main Component
+const PayrollWorkflows = ({ type }) => {
+  const [activeTab, setActiveTab] = useState(0);
+  const [openDialog, setOpenDialog] = useState(false);
+  const theme = useTheme();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const payrollId = searchParams.get('payrollid');
+  const { loading, employeeMasterData, attendanceData, fetchAttendanceData } = usePayrollData(payrollId);
+
+  // Tab Configuration
+  const tabs = useMemo(
+    () => [
+      { label: 'New Joiners', component: NewJoiners, fields: [] },
+      {
+        label: 'Exits',
+        component: Exits,
+        fields: [
+          { name: 'employee', label: 'Employee Name' },
+          { name: 'department', label: 'Department' },
+          { name: 'designation', label: 'Designation' },
+          { name: 'doe', label: 'Exit Date' },
+          { name: 'exit_reason', label: 'Reason for Exit' },
+          { name: 'notes', label: 'Notes' }
+        ]
+      },
+      {
+        label: 'Attendance',
+        component: Attendance,
+        fields: [
+          { name: 'employee', label: 'Employee Name' },
+          { name: 'financial_year', label: 'Financial Year' },
+          { name: 'month', label: 'Month' },
+          { name: 'total_days_of_month', label: 'Total Days of Month' },
+          { name: 'holidays', label: 'Holidays' },
+          { name: 'week_offs', label: 'Week Offs' },
+          { name: 'present_days', label: 'Present Days' },
+          { name: 'balance_days', label: 'Balance Days' },
+          { name: 'casual_leaves', label: 'Casual Leaves' },
+          { name: 'sick_leaves', label: 'Sick Leaves' },
+          { name: 'earned_leaves', label: 'Earned Leaves' },
+          { name: 'loss_of_pay', label: 'Loss of Pay' }
+        ]
+      },
+      {
+        label: 'Loans & Advances',
+        component: LoansAndAdvances,
+        fields: [
+          { name: 'employee', label: 'Employee Name' },
+          { name: 'department', label: 'Department' },
+          { name: 'designation', label: 'Designation' },
+          { name: 'loan_type', label: 'Loan Type' },
+          { name: 'amount', label: 'Amount' },
+          { name: 'no_of_months', label: 'No of Months' },
+          { name: 'start_month', label: 'Start Month' }
+        ]
+      },
+      { label: 'Bonus & Incentives', component: BonusAndIncentives, fields: [] },
+      { label: 'Salary Revisions', component: SalaryRevisions, fields: [] },
+      { label: 'Adhoc Reimbursements', component: AdhocReimbursements, fields: [] }
+    ],
+    []
+  );
+
+  const handleTabChange = (_, newValue) => setActiveTab(newValue);
+
+  const handleButtonClick = () => {
+    if (tabs[activeTab].label === 'Attendance') {
+      fetchAttendanceData();
+    } else if (tabs[activeTab].label === 'New Joiners') {
+      router.push(`/payrollsetup/add-employee?payrollid=${payrollId}`);
+    } else {
+      setOpenDialog(true);
     }
-  }, [payrollid]);
+  };
+
+  const renderButtonLabel = () => (tabs[activeTab].label === 'Attendance' ? 'Generate Attendance' : `Add ${tabs[activeTab].label}`);
+
   return (
     <HomeCard
       title="Employee Dashboard"
       tagline="Payroll Workflow"
       CustomElement={() => (
         <Stack direction="row" sx={{ gap: 2 }}>
-          {tabLabels[activeTab] === 'Attendance' ? (
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={async () => {
-                fetchAttendanceData();
-              }}
-            >
-              Genrate Attendance
-            </Button>
-          ) : (
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                if (tabLabels[activeTab] === 'New Joiners') {
-                  router.push(`/payrollsetup/add-employee?payrollid=${payrollid}`);
-                }
-                setOpenDialog(true);
-              }}
-            >
-              {`Add ${tabLabels[activeTab]}`}
-            </Button>
-          )}
+          <Button variant="contained" color="primary" onClick={handleButtonClick}>
+            {renderButtonLabel()}
+          </Button>
         </Stack>
       )}
     >
@@ -190,90 +168,38 @@ const PayrollWorkflows = ({ type }) => {
           sx={{ borderBottom: '1px solid #e9e9e9' }}
           onChange={handleTabChange}
         >
-          {tabLabels.map((label, index) => (
+          {tabs.map((tab, index) => (
             <Tab
+              key={`tab-${index}`}
               label={
                 <Stack direction="row" sx={{ alignItems: 'center' }}>
                   <Avatar variant="rounded" sx={{ mr: 1, bgcolor: 'grey.300', width: 32, height: 30 }}>
                     <IconBolt color={theme.palette.text.primary} />
                   </Avatar>
-                  <Typography variant="subtitle1">{label}</Typography>
+                  <Typography variant="subtitle1">{tab.label}</Typography>
                 </Stack>
               }
-              // label={label}
-              key={'Tab' + index}
-              {...a11yProps(index)}
-              sx={{
-                fontSize: '1rem',
-                textTransform: 'none',
-                p: 1,
-                py: 2
-              }}
+              value={index}
+              sx={{ fontSize: '1rem', textTransform: 'none', p: 1, py: 2 }}
             />
           ))}
         </Tabs>
 
-        <TabPanel value={activeTab} index={0}>
-          <NewJoiners handleNext={handleNext} />
-        </TabPanel>
-        <TabPanel value={activeTab} index={1}>
-          <Exits
-            handleNext={handleNext}
-            handleBack={handleBack}
-            from={tabLabels[activeTab]}
-            openDialog={openDialog}
-            setOpenDialog={setOpenDialog}
-            fields={selectedFields}
-            loading={loading}
-            setLoading={setLoading}
-            employeeMasterData={employeeMasterData}
-          />
-        </TabPanel>
-        <TabPanel value={activeTab} index={2}>
-          <Attendance
-            handleNext={handleNext}
-            handleBack={handleBack}
-            from={tabLabels[activeTab]}
-            openDialog={openDialog}
-            setOpenDialog={setOpenDialog}
-            fields={selectedFields}
-            loading={loading}
-            setLoading={setLoading}
-            employeeMasterData={employeeMasterData}
-            attendanceData={attendanceData} // Pass the fetched data as a prop
-            fetchAttendanceData={fetchAttendanceData}
-          />
-        </TabPanel>
-
-        <TabPanel value={activeTab} index={3}>
-          <LoansAndAdvances
-            handleNext={handleNext}
-            handleBack={handleBack}
-            from={tabLabels[activeTab]}
-            openDialog={openDialog}
-            setOpenDialog={setOpenDialog}
-            fields={selectedFields}
-            loading={loading}
-            setLoading={setLoading}
-            employeeMasterData={employeeMasterData}
-          />
-        </TabPanel>
-
-        <TabPanel value={activeTab} index={4}>
-          <BonusAndIncentives handleNext={handleNext} handleBack={handleBack} />
-        </TabPanel>
-
-        <TabPanel value={activeTab} index={5}>
-          <SalaryRevisions handleNext={handleNext} handleBack={handleBack} />
-        </TabPanel>
-
-        <TabPanel value={activeTab} index={6}>
-          <AdhocReimbursements handleNext={handleNext} handleBack={handleBack} />
-        </TabPanel>
+        {tabs.map((tab, index) => (
+          <TabPanel key={`panel-${index}`} value={activeTab} index={index}>
+            <tab.component
+              from={tab.label}
+              openDialog={openDialog}
+              setOpenDialog={setOpenDialog}
+              fields={tab.fields}
+              loading={loading}
+              employeeMasterData={employeeMasterData}
+              attendanceData={tab.label === 'Attendance' ? attendanceData : undefined}
+              fetchAttendanceData={tab.label === 'Attendance' ? fetchAttendanceData : undefined}
+            />
+          </TabPanel>
+        ))}
       </MainCard>
-      {/* {openDialog && (
-       
-      )} */}
     </HomeCard>
   );
 };

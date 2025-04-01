@@ -78,7 +78,7 @@ export default function PayrollSummary({ payrollSummaryData = [] }) {
             <TableBody>
               {paginatedData?.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} sx={{ height: 300 }}>
+                  <TableCell colSpan={TABLE_HEADERS.length} sx={{ height: 300 }}>
                     <EmptyTable msg="No work locations available" />
                   </TableCell>
                 </TableRow>
