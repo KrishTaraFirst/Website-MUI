@@ -1,6 +1,7 @@
 'use client';
 import { usePathname, useRouter } from 'next/navigation';
-
+import { useSelector, useDispatch } from 'react-redux';
+import { setPayrollId } from '@/store/slices/payrollSlice';
 import Factory from '@/utils/Factory';
 import { useState, useEffect } from 'react';
 
@@ -14,9 +15,12 @@ import Loader from '@/components/PageLoader';
 import useCurrentUser from '@/hooks/useCurrentUser';
 /***************************  ANALYTICS - OVERVIEW  ***************************/
 
-export default function PayrollDashboard({ setPayrollSetup }) {
+export default function PayrollDashboard() {
   const { userData } = useCurrentUser();
+  const payrollId = useSelector((state) => state);
+  const dispatch = useDispatch();
 
+  console.log(payrollId);
   const router = useRouter();
   const pathname = usePathname();
   const [loading, setLoading] = useState(false);
@@ -27,22 +31,23 @@ export default function PayrollDashboard({ setPayrollSetup }) {
     setLoading(true);
     const url = `/payroll/payroll-setup-status?business_id=${id}`;
     const { res, error } = await Factory('get', url, {});
+
     if (res?.status_cd === 0) {
       if (res.data.payroll_setup === false) {
         router.push(`/payrollsetup`);
         setLoading(false);
       } else {
         setBusinessDetails(res?.data);
+        dispatch(setPayrollId(res.data.payroll_id));
         setLoading(false);
       }
     } else {
       setBusinessDetails({});
       setLoading(false);
       showSnackbar(JSON.stringify(res?.data?.error), 'error');
-
-      // router.push('/    'payroll_business_profileSetup'');
     }
   };
+
   let get_business_details = async () => {
     setLoading(true);
     let userId = userData.dashboardChange === false ? userData.id : userData.businesssDetails.id;
@@ -61,6 +66,7 @@ export default function PayrollDashboard({ setPayrollSetup }) {
       get_business_details();
     }
   }, [userData.id]);
+
   return loading ? (
     <Loader />
   ) : (

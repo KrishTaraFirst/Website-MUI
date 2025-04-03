@@ -1,23 +1,19 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import Payrollsettings from './Payrollsettings';
-import PayrollDashboard from './payrollDashboard';
+import PayrollDashboard from './PayrollDashboard';
 import useCurrentUser from '@/hooks/useCurrentUser';
 import Factory from '@/utils/Factory';
 
 import Loader from '@/components/PageLoader';
-{
-  /* <Loader /> */
-}
+
 function PayrollPage() {
   const { userData } = useCurrentUser();
 
   const [PayrollSetup, setPayrollSetup] = useState(false);
-  console.log('hhhh');
   const getData = async () => {
     const url = `/user_management/businesses-by-client/?user_id=${userData.id}`;
     const { res, error } = await Factory('get', url, {});
-    console.log(res);
     // if (res?.status_cd === 0) {
     //   setPayrollDetails(res?.data);
     // } else {
