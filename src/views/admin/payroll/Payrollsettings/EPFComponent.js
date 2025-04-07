@@ -128,7 +128,6 @@ function EpfComponent({ handleNext }) {
       {loading ? (
         <Loader />
       ) : (
-        // <MainCard sx={{ maxWidth: 800, margin: '0 auto', padding: 2 }}>
         <Grid2 container spacing={2}>
           <Grid2 size={12}>
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', textAlign: 'center' }}>
@@ -483,7 +482,6 @@ function EpfComponent({ handleNext }) {
             }
           />
         </Grid2>
-        // </MainCard>
       )}
     </>
   );

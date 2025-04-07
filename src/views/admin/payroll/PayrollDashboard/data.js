@@ -3,24 +3,24 @@ export const quickaccessCards = [
     name: 'Create New Request',
     title: 'Create New Request',
     count: '',
-    icon: ''
+    icon: 'IconPlus'
   },
   {
     name: 'Pending',
     title: 'Pending',
-    icon: '',
+    icon: 'IconClock',
     count: 0
   },
   {
     name: 'In - Progress',
     title: 'In - Progress',
-    icon: '',
+    icon: 'IconProgress',
     count: 0
   },
   {
     name: 'Completed',
     title: 'Completed',
-    icon: '',
+    icon: 'IconCheck',
     count: 0
   }
 ];
@@ -29,49 +29,49 @@ export const ServicesData = [
   {
     id: 1,
     title: 'Gross',
-    icon: '',
+    icon: 'IconCurrencyDollar',
     href: 'itr'
   },
   {
     id: 2,
     title: 'EPF',
-    icon: '',
+    icon: 'IconBuildingBank',
     href: 'networth'
   },
   {
     id: 3,
     title: 'ESI',
-    icon: ' ',
+    icon: 'IconStethoscope',
     href: 'business-proof'
   },
   {
     id: 4,
     title: 'PT',
-    icon: '',
+    icon: 'IconBuilding',
     href: 'loans'
   },
   {
     id: 5,
     title: 'TDS',
-    icon: '',
+    icon: 'IconReceipt',
     href: 'visa-fund'
   },
   {
     id: 6,
     title: 'Others',
-    icon: '',
+    icon: 'IconDots',
     href: 'forex-payments'
   },
   {
     id: 7,
     title: 'Total',
-    icon: '',
+    icon: 'IconSum',
     href: 'insurance'
   },
   {
     id: 8,
     title: 'Net',
-    icon: '',
+    icon: 'IconCalculator',
     href: 'travel-booking'
   }
 ];

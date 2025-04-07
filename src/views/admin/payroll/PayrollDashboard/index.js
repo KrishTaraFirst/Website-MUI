@@ -17,12 +17,8 @@ import useCurrentUser from '@/hooks/useCurrentUser';
 
 export default function PayrollDashboard() {
   const { userData } = useCurrentUser();
-  const payrollId = useSelector((state) => state);
-  const dispatch = useDispatch();
 
-  console.log(payrollId);
   const router = useRouter();
-  const pathname = usePathname();
   const [loading, setLoading] = useState(false);
   const [businessDetails, setBusinessDetails] = useState({});
   const { showSnackbar } = useSnackbar();
@@ -38,7 +34,6 @@ export default function PayrollDashboard() {
         setLoading(false);
       } else {
         setBusinessDetails(res?.data);
-        dispatch(setPayrollId(res.data.payroll_id));
         setLoading(false);
       }
     } else {
@@ -48,16 +43,21 @@ export default function PayrollDashboard() {
     }
   };
 
-  let get_business_details = async () => {
+  const get_business_details = async () => {
     setLoading(true);
-    let userId = userData.dashboardChange === false ? userData.id : userData.businesssDetails.id;
+
+    const userId = userData.dashboardChange ? userData.businesssDetails.id : userData.id;
+
     const url = `/user_management/businesses-by-client/?user_id=${userId}`;
     const { res, error } = await Factory('get', url, {});
+
     if (res?.status_cd === 0) {
       getData(res.data.id);
     } else {
-      showSnackbar(JSON.stringify(res?.data?.error), 'error');
+      showSnackbar(JSON.stringify(res?.data?.error || 'Unknown error'), 'error');
     }
+
+    setLoading(false);
   };
   useEffect(() => {
     if (userData.business_exists === false) {
@@ -85,13 +85,13 @@ export default function PayrollDashboard() {
           <Button variant="outlined" onClick={() => router.push(`/payrollsetup`)} startIcon={<IconSettings2 size={18} />}>
             Payroll Settings
           </Button>
-          <Button
+          {/* <Button
             variant="outlined"
             onClick={() => router.push(`/payroll/employee-dashboard?payrollid=${businessDetails?.payroll_id}`)}
             startIcon={<IconSettings2 size={18} />}
           >
             Employee Dashboard
-          </Button>
+          </Button> */}
           <Button
             variant="contained"
             onClick={() => {

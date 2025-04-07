@@ -5,7 +5,7 @@ import { getRadiusStyles } from '@/utils/getRadiusStyles';
 import { months } from '@/utils/MonthsList';
 
 // @mui
-import { useTheme } from '@mui/material/styles';
+import { useTheme, alpha } from '@mui/material/styles';
 import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
@@ -16,37 +16,10 @@ import { ServicesData } from './data';
 import Factory from '@/utils/Factory';
 import { ServicesRoute } from './data';
 import { IconArrowDown, IconArrowUp } from '@tabler/icons-react';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Paper, Divider } from '@mui/material';
 import PayrollSummary from './PayrollSummary';
 import CustomAutocomplete from '@/utils/CustomAutocomplete';
-
-// @project
 import MainCard from '@/components/MainCard';
-export function applyBorderWithRadius(radius, theme) {
-  return {
-    overflow: 'hidden',
-    '--Grid-borderWidth': '1px',
-    borderTop: 'var(--Grid-borderWidth) solid',
-    borderLeft: 'var(--Grid-borderWidth) solid',
-    borderColor: 'divider',
-    '& > div': {
-      overflow: 'hidden',
-      borderRight: 'var(--Grid-borderWidth) solid',
-      borderBottom: 'var(--Grid-borderWidth) solid',
-      borderColor: 'divider',
-      [theme.breakpoints.down('md')]: {
-        '&:nth-of-type(1)': getRadiusStyles(radius, 'topLeft'),
-        '&:nth-of-type(2)': getRadiusStyles(radius, 'topRight'),
-        '&:nth-of-type(3)': getRadiusStyles(radius, 'bottomLeft'),
-        '&:nth-of-type(4)': getRadiusStyles(radius, 'bottomRight')
-      },
-      [theme.breakpoints.up('md')]: {
-        '&:first-of-type': getRadiusStyles(radius, 'topLeft', 'bottomLeft'),
-        '&:last-of-type': getRadiusStyles(radius, 'topRight', 'bottomRight')
-      }
-    }
-  };
-}
 
 export default function Services({ payrollId }) {
   const theme = useTheme();
@@ -66,8 +39,11 @@ export default function Services({ payrollId }) {
         buttonLable: 'View Details',
         chip: {
           label: '24.5%',
-          avatar: <IconArrowUp />
-        }
+          avatar: <IconArrowUp />,
+          color: 'success'
+        },
+        icon: '👥',
+        color: '#4CAF50'
       },
       {
         title: 'EPF',
@@ -76,8 +52,11 @@ export default function Services({ payrollId }) {
         buttonLable: 'View Details',
         chip: {
           label: '20.5%',
-          avatar: <IconArrowUp />
-        }
+          avatar: <IconArrowUp />,
+          color: 'success'
+        },
+        icon: '💰',
+        color: '#2196F3'
       },
       {
         title: 'ESI',
@@ -88,7 +67,9 @@ export default function Services({ payrollId }) {
           label: '20.5%',
           color: 'error',
           avatar: <IconArrowDown />
-        }
+        },
+        icon: '🏥',
+        color: '#FF9800'
       },
       {
         title: 'TDS',
@@ -97,8 +78,11 @@ export default function Services({ payrollId }) {
         buttonLable: 'View Details',
         chip: {
           label: '24.5%',
-          avatar: <IconArrowUp />
-        }
+          avatar: <IconArrowUp />,
+          color: 'success'
+        },
+        icon: '📊',
+        color: '#9C27B0'
       },
       {
         title: 'Professional Tax',
@@ -107,8 +91,11 @@ export default function Services({ payrollId }) {
         buttonLable: 'View Details',
         chip: {
           label: '24.5%',
-          avatar: <IconArrowUp />
-        }
+          avatar: <IconArrowUp />,
+          color: 'success'
+        },
+        icon: '📝',
+        color: '#F44336'
       }
     ];
     setOverviewData(overview);
@@ -123,7 +110,7 @@ export default function Services({ payrollId }) {
   const handleMonthChange = useCallback(
     (event, newValue) => {
       const monthNumber = months.indexOf(newValue) + 1;
-      if (newValue) {
+      if (payrollId) {
         router.push(`/payroll/employee-dashboard?payrollid=${payrollId}&month=${monthNumber}`);
       }
     },
@@ -131,76 +118,232 @@ export default function Services({ payrollId }) {
   );
 
   return (
-    <Stack sx={{ gap: 3 }}>
+    <Stack sx={{ gap: 4 }}>
       <MainCard>
         <Stack sx={{ gap: 3 }}>
-          <Stack direction="row" sx={{ alignItems: 'end', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-            <Stack sx={{ gap: 0.5 }}>
-              <Typography variant="h4" sx={{ fontWeight: 400 }}>
+          <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
+            <Stack sx={{ gap: 1 }}>
+              <Typography variant="h4" sx={{ fontWeight: 600, color: 'primary.main' }}>
                 Current Payroll
               </Typography>
-              <Typography variant="caption" sx={{ color: 'grey.700' }}>
+              <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
                 Dec 25th 2024
               </Typography>
             </Stack>
+            <Box sx={{ width: { xs: '100%', sm: 300 } }}>
+              <CustomAutocomplete
+                value={null}
+                onChange={handleMonthChange}
+                options={['Please select', ...months]}
+                placeholder="Select Month"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                  }
+                }}
+              />
+            </Box>
           </Stack>
           <Grid container spacing={{ xs: 2, md: 3 }}>
             {ServicesData.map((card, idx) => (
               <Grid key={idx} size={{ xs: 12, sm: 6, md: 3 }}>
-                <MainCard sx={{ p: 1.5, bgcolor: 'grey.50', boxShadow: 'none' }}>
-                  <Stack sx={{ gap: 3 }}>
-                    <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Stack sx={{ gap: 0.25 }}>
-                        <Typography variant="subtitle1">{card.title}</Typography>
-                        <Typography variant="h5">2520</Typography>
-                      </Stack>
-                      <IconButton
-                        onClick={() => {
-                          router.push(`/visa-services/${ServicesRoute[card.service_name]}?id=${card.id}`);
+                <Paper
+                  elevation={0}
+                  sx={{
+                    height: '100%', // Changed back to 100% to prevent content cutoff
+                    borderRadius: 2,
+                    overflow: 'hidden',
+                    transition: 'all 0.3s ease',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: (theme) => `0 8px 24px ${alpha(theme.palette.primary.main, 0.15)}`,
+                      borderColor: 'primary.main',
+                      cursor: 'pointer'
+                    }
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      height: '100%',
+                      p: 2,
+                      position: 'relative',
+                      overflow: 'hidden'
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: 0,
+                        right: 0,
+                        width: '100px',
+                        height: '100px',
+                        opacity: 0.1,
+                        transform: 'translate(30%, -30%) rotate(30deg)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      <IconArrowNarrowRight size={40} />
+                    </Box>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        mb: 1.5
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: 40,
+                          height: 40,
+                          borderRadius: '50%',
+                          bgcolor: alpha(theme.palette.primary.main, 0.1),
+                          color: 'primary.main',
+                          mr: 2
                         }}
-                        variant="outlined"
-                        color="secondary"
-                        sx={{ bgcolor: 'background.default' }}
                       >
                         <IconArrowNarrowRight size={20} />
-                      </IconButton>
-                    </Stack>
-                  </Stack>
-                </MainCard>
+                      </Box>
+                      <Typography
+                        variant="subtitle1"
+                        fontWeight="600"
+                        sx={{
+                          color: 'text.primary',
+                          fontSize: '0.95rem',
+                          mr: 4
+                        }}
+                      >
+                        {card.title}
+                      </Typography>
+                      <Typography
+                        variant="h5"
+                        sx={{
+                          fontWeight: 600,
+                          color: 'primary.main'
+                        }}
+                      >
+                        2520
+                      </Typography>
+                    </Box>
+                    <Divider sx={{ my: 1.5 }} />
+
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{
+                        fontSize: '0.8rem',
+                        lineHeight: 1.4
+                      }}
+                    >
+                      Manage {card.title.toLowerCase()} related payroll processes and workflows
+                    </Typography>
+                  </Box>
+                </Paper>
               </Grid>
             ))}
           </Grid>
         </Stack>
       </MainCard>
-      <Box sx={{ float: 'right', width: 300 }}>
-        <CustomAutocomplete
-          value={null} // Set initial value to null
-          onChange={handleMonthChange}
-          options={['Please select', ...months]} // Add "Please select" as first option
-          placeholder="Select Month"
-        />
-      </Box>
-      <Grid
-        container
-        sx={{ borderRadius: 4, boxShadow: theme.customShadows.section, ...applyBorderWithRadius(16, theme), flexWrap: 'nowrap' }}
-      >
-        {overviewData.map((item, index) => (
-          <Grid key={index} size={{ xs: 6, sm: 6, md: 3 }}>
-            <MainCard sx={{ border: 'none', borderRadius: 0, boxShadow: 'none' }}>
-              <Stack>
-                <Stack direction="column" sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                  <Typography variant="subtitle1">{item.title}</Typography>
-                  <Typography variant="h4">{item.value}</Typography>
 
-                  <Button color="primary" onClick={() => handleChange(item.href)}>
-                    {item.buttonLable}
-                  </Button>
-                </Stack>
-              </Stack>
-            </MainCard>
-          </Grid>
-        ))}
-      </Grid>
+      <MainCard>
+        <Grid container spacing={2}>
+          {overviewData.map((item, index) => (
+            <Grid key={index} xs={3} sx={{ flexGrow: 1 }}>
+              <Paper
+                elevation={0}
+                sx={{
+                  height: '100%',
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  p: 2,
+                  transition: 'all 0.3s ease',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  cursor: 'pointer',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: (theme) => `0 8px 24px ${alpha(theme.palette.primary.main, 0.15)}`,
+                    borderColor: 'primary.main'
+                  }
+                }}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '100%',
+                    p: 2.5,
+                    position: 'relative',
+                    overflow: 'hidden'
+                  }}
+                >
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '4px',
+                      bgcolor: item.color || 'primary.main',
+                      opacity: 0.8
+                    }}
+                  />
+
+                  <Stack sx={{ gap: 1.5, position: 'relative', zIndex: 1 }}>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        fontWeight: 600,
+                        color: 'text.primary',
+                        fontSize: '0.95rem',
+                        textAlign: 'center'
+                      }}
+                    >
+                      {item.title}
+                    </Typography>
+
+                    <Typography
+                      variant="h4"
+                      sx={{
+                        fontWeight: 600,
+                        color: 'text.primary',
+                        mb: 1,
+                        textAlign: 'center'
+                      }}
+                    >
+                      {item.value}
+                    </Typography>
+
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => handleChange(item.href)}
+                      sx={{
+                        mt: 1,
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontWeight: 500
+                      }}
+                    >
+                      {item.buttonLable}
+                    </Button>
+                  </Stack>
+                </Box>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
+      </MainCard>
+
       <PayrollSummary />
     </Stack>
   );

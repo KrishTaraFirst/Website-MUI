@@ -28,7 +28,6 @@ TabPanel.propTypes = {
 
 const SalaryComponnetTabs = ({ type }) => {
   const [activeTab, setActiveTab] = useState(0); // State to manage active tab
-  const theme = useTheme(); // Getting the theme
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [postType, setPostType] = useState('');
