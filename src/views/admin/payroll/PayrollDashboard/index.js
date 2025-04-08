@@ -4,15 +4,20 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setPayrollId } from '@/store/slices/payrollSlice';
 import Factory from '@/utils/Factory';
 import { useState, useEffect } from 'react';
+import CustomAutocomplete from '@/utils/CustomAutocomplete';
 
 // @project
 import { useSnackbar } from '@/components/CustomSnackbar';
 import OverviewCard from './OverviewCard';
-import { Button, Stack, Typography, Grid2 } from '@mui/material';
+import PayrollStatusSummary from './PayrollStatusSummary';
+
+import PayrollMonthwise from './PayrollMonthwise';
+import { Button, Stack, Typography, Grid2, TextField } from '@mui/material';
 import { IconSparkles, IconSettings2 } from '@tabler/icons-react';
 import HomeCard from '@/components/cards/HomeCard';
 import Loader from '@/components/PageLoader';
 import useCurrentUser from '@/hooks/useCurrentUser';
+import { generateFinancialYears } from '@/utils/FinancialYearsList';
 /***************************  ANALYTICS - OVERVIEW  ***************************/
 
 export default function PayrollDashboard() {
@@ -21,6 +26,9 @@ export default function PayrollDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [businessDetails, setBusinessDetails] = useState({});
+  const [financialYear, setFinancialYear] = useState(null);
+
+  const financialYearOptions = generateFinancialYears();
   const { showSnackbar } = useSnackbar();
 
   const getData = async (id) => {
@@ -34,6 +42,7 @@ export default function PayrollDashboard() {
         setLoading(false);
       } else {
         setBusinessDetails(res?.data);
+        // console.log('res.data', res.data);
         setLoading(false);
       }
     } else {
@@ -45,12 +54,10 @@ export default function PayrollDashboard() {
 
   const get_business_details = async () => {
     setLoading(true);
-
     const userId = userData.dashboardChange ? userData.businesssDetails.id : userData.id;
-
     const url = `/user_management/businesses-by-client/?user_id=${userId}`;
     const { res, error } = await Factory('get', url, {});
-
+    console.log(res.data);
     if (res?.status_cd === 0) {
       getData(res.data.id);
     } else {
@@ -66,32 +73,39 @@ export default function PayrollDashboard() {
       get_business_details();
     }
   }, [userData.id]);
+  useEffect(() => {
+    const getCurrentFinancialYear = () => {
+      const today = new Date();
+      const month = today.getMonth() + 1; // 1-based month
+      const year = today.getFullYear();
+
+      const fyStart = month >= 4 ? year : year - 1; // April is the cutoff
+      const fyEnd = fyStart + 1; // last 2 digits of next year
+
+      // % 100
+      return `${fyStart}-${String(fyEnd).padStart(2, '0')}`;
+    };
+    setFinancialYear(getCurrentFinancialYear());
+  }, []);
 
   return loading ? (
     <Loader />
   ) : (
-    <Stack sx={{ gap: 3 }}>
-      <Stack direction="row" sx={{ alignItems: 'end', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-        <Stack direction="column" sx={{ gap: 0.5 }}>
-          <Typography variant="h4" sx={{ fontWeight: 400 }}>
-            Payroll
-          </Typography>
+    <HomeCard
+      title={`Payroll for ${businessDetails?.nameOfBusiness}`}
+      tagline="Create and manage different departments of Your organization."
+      CustomElement={() => (
+        <Stack direction="row" sx={{ gap: 2 }}>
+          <CustomAutocomplete
+            options={financialYearOptions}
+            value={financialYear}
+            onChange={(e, val) => {
+              setFinancialYear(val); // <-- update the state
+            }}
+            sx={{ minWidth: 200, maxWidth: 200 }}
+            renderInput={(params) => <TextField {...params} label="Select Financial Year" />}
+          />
 
-          <Typography variant="caption" sx={{ color: 'grey.700' }}>
-            Some text tagline regarding Payroll.
-          </Typography>
-        </Stack>
-        <Stack direction="row" sx={{ gap: 1.5 }}>
-          <Button variant="outlined" onClick={() => router.push(`/payrollsetup`)} startIcon={<IconSettings2 size={18} />}>
-            Payroll Settings
-          </Button>
-          {/* <Button
-            variant="outlined"
-            onClick={() => router.push(`/payroll/employee-dashboard?payrollid=${businessDetails?.payroll_id}`)}
-            startIcon={<IconSettings2 size={18} />}
-          >
-            Employee Dashboard
-          </Button> */}
           <Button
             variant="contained"
             onClick={() => {
@@ -101,13 +115,27 @@ export default function PayrollDashboard() {
           >
             Add Employee
           </Button>
+          <Button variant="outlined" onClick={() => router.push(`/payrollsetup`)} startIcon={<IconSettings2 size={18} />}>
+            Payroll Settings
+          </Button>
         </Stack>
-      </Stack>
+      )}
+    >
       <Grid2 container spacing={{ xs: 2, md: 3 }}>
         <Grid2 size={{ xs: 12 }}>
-          <OverviewCard payrollId={businessDetails?.payroll_id} />
+          <PayrollMonthwise payrollId={businessDetails?.payroll_id} financialYear={financialYear} />
+        </Grid2>
+
+        <Grid2 size={{ xs: 12 }}>
+          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+            Payroll Status Summary
+          </Typography>
+          <PayrollStatusSummary payrollId={businessDetails?.payroll_id} financialYear={financialYear} />
+        </Grid2>
+        <Grid2 size={{ xs: 12 }}>
+          <OverviewCard payrollId={businessDetails?.payroll_id} financialYear={financialYear} />
         </Grid2>
       </Grid2>
-    </Stack>
+    </HomeCard>
   );
 }

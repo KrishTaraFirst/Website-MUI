@@ -28,52 +28,52 @@ export const quickaccessCards = [
 export const ServicesData = [
   {
     id: 1,
-    title: 'Gross',
-    icon: 'IconCurrencyDollar',
-    href: 'itr'
+    title: 'Employees on Your Rolls',
+    key: 'total_employees'
   },
+
   {
     id: 2,
-    title: 'EPF',
-    icon: 'IconBuildingBank',
-    href: 'networth'
+    title: 'Total CTC',
+    key: 'total_ctc'
   },
   {
     id: 3,
-    title: 'ESI',
-    icon: 'IconStethoscope',
-    href: 'business-proof'
+    title: 'Gross Salaries',
+    key: 'gross'
   },
   {
     id: 4,
-    title: 'PT',
-    icon: 'IconBuilding',
-    href: 'loans'
+    title: 'Total Deductions',
+    key: 'total_deductions'
   },
   {
     id: 5,
-    title: 'TDS',
-    icon: 'IconReceipt',
-    href: 'visa-fund'
+    title: 'Net Pay',
+    key: 'net_pay'
   },
   {
     id: 6,
-    title: 'Others',
-    icon: 'IconDots',
-    href: 'forex-payments'
+    title: 'Total EPF Payable',
+    key: 'epf_total'
   },
   {
     id: 7,
-    title: 'Total',
-    icon: 'IconSum',
-    href: 'insurance'
+    title: 'ESI Payable',
+    key: 'esi_total'
   },
   {
     id: 8,
-    title: 'Net',
-    icon: 'IconCalculator',
-    href: 'travel-booking'
+    title: 'PT Payable',
+    key: 'pt_total'
+  },
+  {
+    id: 8,
+    title: 'TDS',
+    key: 'tds_total'
   }
+  // { title: 'New Joinees', key: 'total_new_joinees' },
+  // { title: 'Exits', key: 'total_exits' }
 ];
 
 export const ServicesRoute = {

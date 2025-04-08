@@ -87,16 +87,32 @@ export default function DetailedPayroll({ payrollId, month }) {
               ) : (
                 paginatedData?.map((item, index) => (
                   <TableRow key={item.employee || index}>
+                    <TableCell>{item.employee_id}</TableCell>
                     <TableCell>{item.employee_name}</TableCell>
-                    <TableCell>{item.gross_salary}</TableCell>
+                    <TableCell>{item.department}</TableCell>
+                    <TableCell>{item.designation}</TableCell>
+                    <TableCell>{item.total_days_of_month}</TableCell>
+                    <TableCell>{item.loss_of_pay}</TableCell>
                     <TableCell>{item.paid_days}</TableCell>
+                    <TableCell>{item.ctc}</TableCell>
+                    <TableCell>{item.gross_salary}</TableCell>
                     <TableCell>{item.earned_salary}</TableCell>
+                    <TableCell>{item.basic_salary}</TableCell>
+                    <TableCell>{item.hra}</TableCell>
+                    <TableCell>{item.special_allowance}</TableCell>
+                    <TableCell>{item.bonus}</TableCell>
+                    <TableCell>{item.other_earnings}</TableCell>
                     <TableCell>{item.benefits_total}</TableCell>
                     <TableCell>{item.deductions['Employee Deductions']}</TableCell>
-                    <TableCell>{item.deductions['Taxes']}</TableCell>
-                    <TableCell>{item.recovery}</TableCell>
-                    <TableCell>{item.reimbursement}</TableCell>
+                    <TableCell>{item.pf}</TableCell>
+                    <TableCell>{item.esi}</TableCell>
+                    <TableCell>{item.pt}</TableCell>
+                    <TableCell>{item.tds}</TableCell>
+                    <TableCell>{item.pt}</TableCell>
+                    <TableCell>{item.pt}</TableCell>
+                    <TableCell>{item.deductions['Total']}</TableCell>
                     <TableCell>{item.net_salary}</TableCell>
+                    <TableCell>{item.status}</TableCell>
                     <TableCell
                       style={{ cursor: 'pointer', textDecoration: 'underline', color: '#007bff' }}
                       onClick={() => {
