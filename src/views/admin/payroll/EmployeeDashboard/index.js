@@ -24,12 +24,12 @@ import { months } from '@/utils/MonthsList';
 
 const PRODUCTS_DATA = [
   { title: 'New Joiners', href: '/payroll-workflows', icon: <PersonAddIcon />, color: '#4CAF50' },
-  { title: 'Exits', href: '/invoicing', icon: <ExitToAppIcon />, color: '#F44336' },
-  { title: 'Attendance', href: '#', icon: <EventNoteIcon />, color: '#2196F3' },
-  { title: 'Loans & Advances', href: '#', icon: <AccountBalanceWalletIcon />, color: '#FF9800' },
-  { title: 'Bonus & Incentives', href: '#', icon: <EmojiEventsIcon />, color: '#9C27B0' },
-  { title: 'Salary Revisions', href: '#', icon: <UpdateIcon />, color: '#009688' },
-  { title: 'Other Deductions', href: '#', icon: <ReceiptIcon />, color: '#673AB7' }
+  { title: 'Exits', href: '/payroll-workflows', icon: <ExitToAppIcon />, color: '#F44336' },
+  { title: 'Attendance', href: '/payroll-workflows', icon: <EventNoteIcon />, color: '#2196F3' },
+  { title: 'Loans & Advances', href: '/payroll-workflows', icon: <AccountBalanceWalletIcon />, color: '#FF9800' },
+  { title: 'Bonus & Incentives', href: '/payroll-workflows', icon: <EmojiEventsIcon />, color: '#9C27B0' },
+  { title: 'Salary Revisions', href: '/payroll-workflows', icon: <UpdateIcon />, color: '#009688' },
+  { title: 'Other Deductions', href: '/payroll-workflows', icon: <ReceiptIcon />, color: '#673AB7' }
 ];
 const TabPanel = ({ children, value, index }) => (
   <div role="tabpanel" hidden={value !== index} id={`simple-tabpanel-${index}`} aria-labelledby={`simple-tab-${index}`}>
@@ -98,7 +98,7 @@ export default function Index() {
   }, [payrollId]);
 
   const handleCardClick = (href, index) => {
-    router.push(`/payroll${href}?payrollid=${payrollId}&tabValue=${index}&month=${month}`);
+    router.push(`/payroll${href}?payrollid=${payrollId}&tabValue=${index}&month=${month}&financial_year=2024-2025`);
   };
   return (
     <HomeCard title={`Payroll for the month of ${months[month - 1]}`} tagline="Explore your monthly payroll details">

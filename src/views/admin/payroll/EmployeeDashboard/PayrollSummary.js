@@ -25,8 +25,10 @@ export default function PayrollSummary({ payrollSummaryData = [] }) {
   const rowsPerPage = 5;
   const { showSnackbar } = useSnackbar();
 
-  const totalPages = Math.ceil(payrollSummaryData.length / rowsPerPage);
-  const paginatedData = payrollSummaryData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+  const totalPages = Math.ceil(Array.isArray(payrollSummaryData) ? payrollSummaryData.length / rowsPerPage : 0);
+  const paginatedData = Array.isArray(payrollSummaryData)
+    ? payrollSummaryData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+    : [];
 
   const handlePageChange = (event, newPage) => {
     setCurrentPage(newPage);

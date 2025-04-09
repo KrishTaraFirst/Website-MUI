@@ -9,23 +9,21 @@ const MONTHS = ['April', 'May', 'June', 'July', 'August', 'September', 'October'
 const TABLE_HEADERS = ['CTC', 'Status', 'Action'];
 
 export default function PayrollStatusSummary({ payrollId, financialYear }) {
-  const [financial_year_summary, setFinancial_year_summary] = useState([]);
+  const [financialYearSummary, setFinancial_year_summary] = useState([]);
   const [loading, setLoading] = useState(false);
   const { showSnackbar } = useSnackbar();
 
   const get_financialYearData = async (year) => {
     setLoading(true);
-    let url = `/payroll/payroll_financial-year-financial_year_summary?payroll_id=${payrollId}&financial_year=${financialYear}`;
+    let url = `/payroll/payroll_financial-year-summary?payroll_id=${payrollId}&financial_year=${financialYear}`;
     const { res, error } = await Factory('get', url, {});
     setLoading(false);
-
     if (res?.status_cd === 0) {
-      setFinancial_year_summary(res.data);
+      setFinancial_year_summary(Array.isArray(res.data.financial_year_summary) ? res.data.financial_year_summary : []);
     } else {
       showSnackbar(JSON.stringify(res?.data?.error), 'error');
     }
   };
-  console.log(financialYear);
   useEffect(() => {
     if (payrollId && financialYear) {
       get_financialYearData();
@@ -51,7 +49,7 @@ export default function PayrollStatusSummary({ payrollId, financialYear }) {
                 <TableRow key={rowIndex}>
                   <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>{header}</TableCell>
                   {MONTHS.map((month, colIndex) => {
-                    const data = financial_year_summary.find((item) => item.month === month) || {};
+                    const data = financialYearSummary.find((item) => item.month === month) || {};
                     if (header === 'CTC') {
                       return <TableCell key={colIndex}>{data.ctc || '-'}</TableCell>;
                     } else if (header === 'Status') {

@@ -103,7 +103,7 @@ export default function PayrollDashboard() {
               setFinancialYear(val); // <-- update the state
             }}
             sx={{ minWidth: 200, maxWidth: 200 }}
-            renderInput={(params) => <TextField {...params} label="Select Financial Year" />}
+            renderInput={(params) => <TextField {...params} placeholder="Select Financial Year" />}
           />
 
           <Button

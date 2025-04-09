@@ -7,15 +7,7 @@ import { useSnackbar } from '@/components/CustomSnackbar';
 import RenderDialog from './RenderDialog';
 import { months } from '@/utils/MonthsList';
 
-export default function Attendance({
-  employeeMasterData,
-  from,
-  openDialog,
-  fields,
-  setOpenDialog,
-  attendanceData,
-  fetchAttendanceData //
-}) {
+export default function Attendance({ employeeMasterData, from, openDialog, fields, setOpenDialog, attendanceData, fetchAttendanceData }) {
   const headerData = [
     'Employee Name',
     'LOP',
@@ -104,13 +96,11 @@ export default function Attendance({
     if (payrollid) {
       getData();
     }
-  }, [payrollid]);
-  useEffect(() => {
-    if (payrollid) {
-      setData(attendanceData);
-      getData();
-    }
-  }, [attendanceData, fetchAttendanceData]);
+  }, [
+    payrollid
+    // fetchAttendanceData
+  ]);
+
   return (
     <>
       <RenderTable

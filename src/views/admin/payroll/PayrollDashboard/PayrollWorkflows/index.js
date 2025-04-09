@@ -14,7 +14,7 @@ import Attendance from './Attendance';
 import LoansAndAdvances from './LoansAndAdvances';
 import BonusAndIncentives from './BonusAndIncentives';
 import SalaryRevisions from './SalaryRevisions';
-import AdhocReimbursements from './AdhocReimbursements';
+import OtherDeductions from './OtherDeductions';
 import Factory from '@/utils/Factory';
 
 // TabPanel Component
@@ -78,6 +78,7 @@ const PayrollWorkflows = ({ type }) => {
   const router = useRouter();
 
   const payrollId = searchParams.get('payrollid');
+
   const { loading, employeeMasterData, attendanceData, fetchAttendanceData } = usePayrollData(payrollId);
 
   // Tab Configuration
@@ -127,9 +128,21 @@ const PayrollWorkflows = ({ type }) => {
           { name: 'start_month', label: 'Start Month' }
         ]
       },
-      { label: 'Bonus & Incentives', component: BonusAndIncentives, fields: [] },
+      {
+        label: 'Bonus & Incentives',
+        component: BonusAndIncentives,
+        fields: [
+          { name: 'employee', label: 'Employee Name' },
+          { name: 'department', label: 'Department' },
+          { name: 'designation', label: 'Designation' },
+          { name: 'bonus_type', label: 'Bonus Type' },
+          { name: 'amount', label: 'Amount' },
+          { name: 'month', label: 'Month' },
+          { name: 'financial_year', label: 'Financial Year' }
+        ]
+      },
       { label: 'Salary Revisions', component: SalaryRevisions, fields: [] },
-      { label: 'Adhoc Reimbursements', component: AdhocReimbursements, fields: [] }
+      { label: 'Other Deductions', component: OtherDeductions, fields: [] }
     ],
     []
   );
@@ -147,6 +160,10 @@ const PayrollWorkflows = ({ type }) => {
   };
 
   const renderButtonLabel = () => (tabs[activeTab].label === 'Attendance' ? 'Generate Attendance' : `Add ${tabs[activeTab].label}`);
+  useEffect(() => {
+    const tabValue = searchParams.get('tabValue');
+    if (tabValue) setActiveTab(Number(tabValue));
+  }, [searchParams]);
 
   return (
     <HomeCard

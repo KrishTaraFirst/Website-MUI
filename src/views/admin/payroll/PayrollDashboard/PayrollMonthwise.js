@@ -16,7 +16,8 @@ import MainCard from '@/components/MainCard';
 export default function PayrollMonthwise({ payrollId, financialYear }) {
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // JS Date month is 0-indexed, so we add 1 to get the correct month number
+  console.log(new Date());
   const [monthWiseData, setMonthWiseData] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -25,10 +26,12 @@ export default function PayrollMonthwise({ payrollId, financialYear }) {
       showSnackbar('Please select a month', 'error');
       return;
     }
-    const monthNumber = months.indexOf(newValue) + 1;
+
+    const monthNumber = months.indexOf(newValue); // This gives 0-indexed month
     setSelectedMonth(monthNumber);
-    get_payrollMonthData(monthNumber);
+    get_payrollMonthData(monthNumber + 1); // Convert to 1-indexed when making API call
   };
+
   const get_payrollMonthData = async (monthNumber) => {
     if (!monthNumber) return;
 
@@ -96,7 +99,7 @@ export default function PayrollMonthwise({ payrollId, financialYear }) {
                   size="small"
                   onClick={() => {
                     if (payrollId) {
-                      router.push(`/payroll/employee-dashboard?payrollid=${payrollId}&month=${months.indexOf(selectedMonth) + 1}`);
+                      router.push(`/payroll/employee-dashboard?payrollid=${payrollId}&month=${selectedMonth}`);
                     }
                   }}
                 >
