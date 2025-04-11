@@ -8,7 +8,7 @@ import useCurrentUser from '@/hooks/useCurrentUser';
 import Factory from '@/utils/Factory';
 import HomeCard from '@/components/cards/HomeCard';
 import MainCard from '@/components/MainCard';
-import OverviewCard from './OverviewCard';
+import MonthWiseDashboard from './MonthWiseDashboard';
 import PayrollSummary from './PayrollSummary';
 import DetailedPayroll from './DetailedPayroll';
 import Grid2 from '@mui/material/Grid2';
@@ -21,6 +21,7 @@ import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import UpdateIcon from '@mui/icons-material/Update';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import { months } from '@/utils/MonthsList';
+import PayrollMonthwise from '../PayrollDashboard/PayrollMonthwise';
 
 const PRODUCTS_DATA = [
   { title: 'New Joiners', href: '/payroll-workflows', icon: <PersonAddIcon />, color: '#4CAF50' },
@@ -49,6 +50,7 @@ export default function Index() {
 
   const [payrollId, setPayrollId] = useState(null);
   const [month, setMonth] = useState(null);
+  const [financialYear, setFinancialYear] = useState(null);
   const [payrollSummaryData, setPayrollSummaryData] = useState([]);
   const [activeTab, setActiveTab] = useState(0); // State to manage active tab
 
@@ -81,10 +83,14 @@ export default function Index() {
     const monthNumber = searchParams.get('month');
     if (monthNumber) setMonth(monthNumber);
   }, [searchParams]);
+  useEffect(() => {
+    const financialYear = searchParams.get('financialYear');
+    if (financialYear) setFinancialYear(financialYear);
+  }, [searchParams]);
 
   // Fetch payroll summary data
   const fetchPayrollSummary = async () => {
-    const url = `/payroll/calculate-employee-monthly-salary?payroll_id=${payrollId}&month=${month}&financial_year=2024-2025`;
+    const url = `/payroll/calculate-employee-monthly-salary?payroll_id=${payrollId}&month=${month}&financial_year=${financialYear}`;
     const { res } = await Factory('get', url, {});
     if (res.status_cd === 0) {
       setPayrollSummaryData(res.data || []);
@@ -101,12 +107,13 @@ export default function Index() {
     router.push(`/payroll${href}?payrollid=${payrollId}&tabValue=${index}&month=${month}&financial_year=2024-2025`);
   };
   return (
-    <HomeCard title={`Payroll for the month of ${months[month - 1]}`} tagline="Explore your monthly payroll details">
+    <HomeCard title={`Monthly Payroll Dashboard ${months[month - 1]}`} tagline="Explore your monthly payroll details">
       {' '}
       <Box sx={{ pb: 3 }}>
         <Grid2 container spacing={{ xs: 2, md: 3 }}>
           <Grid2 size={12}>
-            <OverviewCard />
+            {/* <MonthWiseDashboard /> */}
+            <PayrollMonthwise payrollId={payrollId} financialYear={financialYear} />
           </Grid2>
           <Grid2 size={12}>
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>

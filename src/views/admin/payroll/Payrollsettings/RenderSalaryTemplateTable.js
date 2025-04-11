@@ -487,11 +487,9 @@ export default function RenderSalaryTemplateTable({ values, setFieldValue, setVa
 
           {viewPreview && (
             <>
-              {' '}
               <TableRow>
                 <TableCell colSpan={5}>
                   <Typography variant="subtitle1" sx={{ color: 'primary.main' }}>
-                    {' '}
                     Benefits{' '}
                   </Typography>
                 </TableCell>

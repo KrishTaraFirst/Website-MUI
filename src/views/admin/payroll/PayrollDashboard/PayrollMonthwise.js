@@ -16,8 +16,7 @@ import MainCard from '@/components/MainCard';
 export default function PayrollMonthwise({ payrollId, financialYear }) {
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // JS Date month is 0-indexed, so we add 1 to get the correct month number
-  console.log(new Date());
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()); // JS Date month is 0-indexed, so we add 1 to get the correct month number
   const [monthWiseData, setMonthWiseData] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -49,7 +48,7 @@ export default function PayrollMonthwise({ payrollId, financialYear }) {
 
   useEffect(() => {
     if (payrollId && financialYear) {
-      get_payrollMonthData(selectedMonth + 1); // JS Date month is 0-indexed
+      get_payrollMonthData(selectedMonth); // JS Date month is 0-indexed
     }
   }, [payrollId, financialYear]);
 
@@ -99,7 +98,9 @@ export default function PayrollMonthwise({ payrollId, financialYear }) {
                   size="small"
                   onClick={() => {
                     if (payrollId) {
-                      router.push(`/payroll/employee-dashboard?payrollid=${payrollId}&month=${selectedMonth}`);
+                      router.push(
+                        `/payroll/employee-dashboard?payrollid=${payrollId}&month=${selectedMonth}&financialYear=${financialYear}`
+                      );
                     }
                   }}
                 >
@@ -151,7 +152,8 @@ export default function PayrollMonthwise({ payrollId, financialYear }) {
                           color: 'primary.main'
                         }}
                       >
-                        {monthWiseData ? (monthWiseData[card.key] ?? 0) : 0}
+                        {/* {monthWiseData ? (monthWiseData[card.key] ?? 0) : 0} */}
+                        {monthWiseData ? Number(monthWiseData[card.key] ?? 0).toLocaleString() : '0'}
                       </Typography>
                     </Box>
                     <Divider sx={{ my: 1.5 }} />
@@ -199,7 +201,9 @@ export default function PayrollMonthwise({ payrollId, financialYear }) {
                   }}
                 >
                   <Typography variant="h5" textAlign="center" sx={{ fontWeight: 600, color: 'primary.main' }}>
-                    {monthWiseData ? (monthWiseData.total_new_joinees ?? 0) : 0} / {monthWiseData ? (monthWiseData.total_exits ?? 0) : 0}
+                    {/* {monthWiseData ? (monthWiseData.total_new_joinees ?? 0) : 0} / {monthWiseData ? (monthWiseData.total_exits ?? 0) : 0} */}
+                    {monthWiseData ? Number(monthWiseData.total_new_joinees ?? 0).toLocaleString() : '0'} /{' '}
+                    {monthWiseData ? Number(monthWiseData.total_exits ?? 0).toLocaleString() : '0'}
                   </Typography>
 
                   <Divider sx={{ my: 1.5 }} />

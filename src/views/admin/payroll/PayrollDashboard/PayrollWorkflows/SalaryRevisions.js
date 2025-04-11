@@ -7,18 +7,8 @@ import { useSnackbar } from '@/components/CustomSnackbar';
 import RenderDialog from './RenderDialog';
 
 export default function SalaryRevisions({ employeeMasterData, from, openDialog, fields, setOpenDialog }) {
-  const headerData = [
-    'Employee Name',
-    'Department',
-    'Designation',
-    'Type',
-    'Amount',
-    'EMI',
-    'End Month',
-    'Pending Balance',
-    'Current Deduction'
-  ];
-  const body_keys = ['employee', 'department', 'designation', 'bonus_type', 'amount', 'month', 'financial_year'];
+  const headerData = ['Employee Name', 'Department', 'Designation', 'Current CTC', 'Last Revision', 'Revised CTC'];
+  const body_keys = ['employee_name', 'department', 'designation', 'current_ctc', 'created_on', 'revised_ctc'];
   const [payrollid, setPayrollId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -51,7 +41,7 @@ export default function SalaryRevisions({ employeeMasterData, from, openDialog, 
     setLoading(true);
     const year = financialYear.split('-')[1];
     console.log(year);
-    const url = `/payroll/bonus-incentives/by-payroll-month?payroll_id=${payrollid}&month=${month}&year=${year}`;
+    const url = `/payroll/employee-salaries?payroll_id=${payrollid}&month=${month}&year=${year}`;
     const { res, error } = await Factory('get', url, {});
     setLoading(false);
     if (res.status_cd === 0) {
@@ -88,6 +78,7 @@ export default function SalaryRevisions({ employeeMasterData, from, openDialog, 
   return (
     <>
       <RenderTable
+        from={from}
         headerData={headerData}
         tableData={data}
         handleEdit={handleEdit}

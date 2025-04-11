@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Paper, Stack, Pagination } from '@mui/material';
+import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Paper, Stack, Pagination, Button } from '@mui/material';
 import Loader from '@/components/PageLoader';
 import EmptyTable from '@/components/third-party/table/EmptyTable';
 import ActionCell from '@/utils/ActionCell';
+import { usePathname, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 export default function RenderTable({
   headerData,
@@ -13,15 +15,24 @@ export default function RenderTable({
   handleEdit,
   handleDelete,
   openDialog,
-  handleCloseDialog
+  handleCloseDialog,
+  from
 }) {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 5;
-
+  console.log(from);
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
-
+  const [payrollid, setPayrollId] = useState(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const id = searchParams.get('payrollid');
+    if (id) {
+      setPayrollId(id);
+    }
+  }, [searchParams]);
   const safeTableData = Array.isArray(tableData) ? tableData : [];
   const paginatedData = safeTableData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
@@ -58,19 +69,29 @@ export default function RenderTable({
                       <TableCell key={idx}>{item[key]}</TableCell>
                     ))}
                     <TableCell>
-                      <ActionCell
-                        row={item}
-                        onEdit={() => handleEdit(item)}
-                        onDelete={() => handleDelete(item)}
-                        open={openDialog}
-                        onClose={handleCloseDialog}
-                        deleteDialogData={{
-                          title: 'Delete Record',
-                          heading: 'Are you sure you want to delete this Record?',
-                          description: `This action will remove ${item.dept_name || 'this item'} from the list.`,
-                          successMessage: 'Record has been deleted.'
-                        }}
-                      />
+                      {from === 'Salary Revisions' ? (
+                        <Button
+                          onClick={() => {
+                            router.push(`/payrollsetup/add-employee?employee_id=${item.id}&payrollid=${payrollid}&tabValue=1`);
+                          }}
+                        >
+                          Edit pay Structure
+                        </Button>
+                      ) : (
+                        <ActionCell
+                          row={item}
+                          onEdit={() => handleEdit(item)}
+                          onDelete={() => handleDelete(item)}
+                          open={openDialog}
+                          onClose={handleCloseDialog}
+                          deleteDialogData={{
+                            title: 'Delete Record',
+                            heading: 'Are you sure you want to delete this Record?',
+                            description: `This action will remove ${item.dept_name || 'this item'} from the list.`,
+                            successMessage: 'Record has been deleted.'
+                          }}
+                        />
+                      )}
                     </TableCell>
                   </TableRow>
                 ))

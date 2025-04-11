@@ -39,6 +39,7 @@ function SalaryDetails({ employeeData }) {
   const [salary_teamplates_data, setSalary_teamplates_data] = useState([]);
   const searchParams = useSearchParams();
   const { showSnackbar } = useSnackbar();
+  const [enablePreviewButton, setEnablePreviewButton] = useState(false);
 
   const fields = [
     { name: 'salary_template', label: 'Salary Template' },
@@ -171,7 +172,13 @@ function SalaryDetails({ employeeData }) {
           {renderFields(fields)}
         </Grid2>
 
-        <RenderSalaryTemplateTable values={values} setValues={setValues} setFieldValue={setFieldValue} />
+        <RenderSalaryTemplateTable
+          values={values}
+          setValues={setValues}
+          setFieldValue={setFieldValue}
+          enablePreviewButton={enablePreviewButton}
+          setEnablePreviewButton={setEnablePreviewButton}
+        />
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
           <Button variant="contained" color="primary" type="submit">

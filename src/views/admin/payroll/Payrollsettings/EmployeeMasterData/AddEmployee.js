@@ -32,6 +32,12 @@ const StepperComponent = () => {
     }
   }, [searchParams]);
   useEffect(() => {
+    const tabValue = searchParams.get('tabValue');
+    if (tabValue) {
+      setActiveStep(Number(tabValue));
+    }
+  }, [searchParams]);
+  useEffect(() => {
     const id = searchParams.get('employee_id');
     if (id) {
       setEmployeeId(id);

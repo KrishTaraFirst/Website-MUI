@@ -6,14 +6,14 @@ import { useSnackbar } from '@/components/CustomSnackbar';
 import MainCard from '@/components/MainCard';
 
 const MONTHS = ['April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March'];
-const TABLE_HEADERS = ['CTC', 'Status', 'Action'];
+const TABLE_HEADERS = ['EPF', 'ESI', 'PT', 'TDS'];
 
-export default function PayrollStatusSummary({ payrollId, financialYear }) {
+export default function PayrollComplianceSummary({ payrollId, financialYear }) {
   const [financialYearSummary, setFinancial_year_summary] = useState([]);
   const [loading, setLoading] = useState(false);
   const { showSnackbar } = useSnackbar();
 
-  const get_financialYearData = async () => {
+  const get_financialYearData = async (year) => {
     setLoading(true);
     let url = `/payroll/payroll_financial-year-summary?payroll_id=${payrollId}&financial_year=${financialYear}`;
     const { res, error } = await Factory('get', url, {});
@@ -24,15 +24,11 @@ export default function PayrollStatusSummary({ payrollId, financialYear }) {
       showSnackbar(JSON.stringify(res?.data?.error), 'error');
     }
   };
-
-  // useEffect to fetch data based on payrollId and financialYear changes
   useEffect(() => {
-    // Only fetch data if both payrollId and financialYear are provided
-    if (payrollId && financialYear && financialYearSummary.length === 0) {
+    if (payrollId && financialYear) {
       get_financialYearData();
     }
-  }, [payrollId, financialYear]); // run when payrollId or financialYear changes
-
+  }, [payrollId, financialYear]);
   return (
     <Stack direction="column" spacing={2}>
       <MainCard>
@@ -54,40 +50,14 @@ export default function PayrollStatusSummary({ payrollId, financialYear }) {
                   <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>{header}</TableCell>
                   {MONTHS.map((month, colIndex) => {
                     const data = financialYearSummary.find((item) => item.month === month) || {};
-                    if (header === 'CTC') {
+                    if (header === 'EPF') {
                       return <TableCell key={colIndex}>{data.ctc || '-'}</TableCell>;
-                    } else if (header === 'Status') {
+                    } else if (header === 'ESI') {
                       return <TableCell key={colIndex}>{data.status || '-'}</TableCell>;
-                    } else if (header === 'Action') {
-                      return (
-                        <TableCell key={colIndex}>
-                          {data.action && data.action !== '-' ? (
-                            <>
-                              <span
-                                style={{
-                                  cursor: 'pointer',
-                                  textDecoration: 'underline',
-                                  color: '#007bff',
-                                  marginRight: 8
-                                }}
-                              >
-                                View
-                              </span>
-                              <span
-                                style={{
-                                  cursor: 'pointer',
-                                  textDecoration: 'underline',
-                                  color: '#007bff'
-                                }}
-                              >
-                                Download
-                              </span>
-                            </>
-                          ) : (
-                            '-'
-                          )}
-                        </TableCell>
-                      );
+                    } else if (header === 'PT') {
+                      return <TableCell key={colIndex}>{data.status || '-'}</TableCell>;
+                    } else if (header === 'TDS') {
+                      return <TableCell key={colIndex}>{data.status || '-'}</TableCell>;
                     }
                     return null;
                   })}

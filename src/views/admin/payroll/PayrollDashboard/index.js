@@ -10,6 +10,7 @@ import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import { useSnackbar } from '@/components/CustomSnackbar';
 import OverviewCard from './OverviewCard';
 import PayrollStatusSummary from './PayrollStatusSummary';
+import PayrollComplianceSummary from './PayrollComplianceSummary';
 
 import PayrollMonthwise from './PayrollMonthwise';
 import { Button, Stack, Typography, Grid2, TextField } from '@mui/material';
@@ -57,7 +58,6 @@ export default function PayrollDashboard() {
     const userId = userData.dashboardChange ? userData.businesssDetails.id : userData.id;
     const url = `/user_management/businesses-by-client/?user_id=${userId}`;
     const { res, error } = await Factory('get', url, {});
-    console.log(res.data);
     if (res?.status_cd === 0) {
       getData(res.data.id);
     } else {
@@ -100,7 +100,7 @@ export default function PayrollDashboard() {
             options={financialYearOptions}
             value={financialYear}
             onChange={(e, val) => {
-              setFinancialYear(val); // <-- update the state
+              setFinancialYear(val);
             }}
             sx={{ minWidth: 200, maxWidth: 200 }}
             renderInput={(params) => <TextField {...params} placeholder="Select Financial Year" />}
@@ -131,6 +131,12 @@ export default function PayrollDashboard() {
             Payroll Status Summary
           </Typography>
           <PayrollStatusSummary payrollId={businessDetails?.payroll_id} financialYear={financialYear} />
+        </Grid2>
+        <Grid2 size={{ xs: 12 }}>
+          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+            Payroll Compliance Summary
+          </Typography>
+          <PayrollComplianceSummary payrollId={businessDetails?.payroll_id} financialYear={financialYear} />
         </Grid2>
         <Grid2 size={{ xs: 12 }}>
           <OverviewCard payrollId={businessDetails?.payroll_id} financialYear={financialYear} />
