@@ -65,7 +65,6 @@ export default function CorporateEntity() {
   const [clientListData, setClientListData] = useState({});
   const { showSnackbar } = useSnackbar();
   const { userData } = useCurrentUser();
-  console.log(userData);
   const { user, tokens, logout } = useAuth();
 
   // const getClientsData = async () => {

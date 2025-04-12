@@ -29,6 +29,7 @@ function SalaryTemplate({}) {
   const [payrollid, setPayrollId] = useState(null);
   const [template_id, setTemplate_id] = useState(null);
   const { showSnackbar } = useSnackbar();
+  const [enablePreviewButton, setEnablePreviewButton] = useState(false);
 
   useEffect(() => {
     const id = searchParams.get('payrollid');
@@ -127,6 +128,7 @@ function SalaryTemplate({}) {
                     onChange={(e) => {
                       const annualCtc = e.target.value;
                       setFieldValue('annual_ctc', annualCtc);
+                      setEnablePreviewButton(true);
                     }}
                     // onBlur={() => recalculate()}
                     error={touched.annual_ctc && Boolean(errors.annual_ctc)}
@@ -147,7 +149,13 @@ function SalaryTemplate({}) {
                 </Box>
               </Grid2>
             </Grid2>
-            <RenderSalaryTemplateTable values={values} setValues={setValues} setFieldValue={setFieldValue} />
+            <RenderSalaryTemplateTable
+              values={values}
+              setValues={setValues}
+              setFieldValue={setFieldValue}
+              enablePreviewButton={enablePreviewButton}
+              setEnablePreviewButton={setEnablePreviewButton}
+            />
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
               <Button variant="outlined" onClick={() => router.back()}>
                 Back

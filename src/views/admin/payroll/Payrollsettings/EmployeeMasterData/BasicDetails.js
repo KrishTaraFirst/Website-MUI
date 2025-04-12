@@ -313,7 +313,7 @@ function BasicDetails({ employeeData }) {
               </Grid2>
               <Grid2 size={{ xs: 12, sm: 6 }}>
                 <Typography variant="subtitle2" sx={{ color: 'grey.800', mb: 0.5 }}>
-                  PF Account Number
+                  UAN Number
                 </Typography>
                 <TextField
                   fullWidth

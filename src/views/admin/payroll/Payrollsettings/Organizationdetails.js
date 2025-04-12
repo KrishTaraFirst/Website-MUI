@@ -106,7 +106,7 @@ function Organizationdetails({ tab }) {
     org_address_city: Yup.string().required('City is required'),
     org_address_pincode: Yup.string()
       .required('Pincode is required')
-      .matches(/^[0-9]{6}$/, 'Invalid Pincode format. It must be exactly 6 digits.')
+      .matches(/^[0-9]{6}$/, 'Invalid Pincode format. It must be exactly 6 digits Number.')
   });
 
   const formik = useFormik({

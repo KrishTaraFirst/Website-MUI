@@ -1,19 +1,11 @@
 import PropTypes from 'prop-types';
-
-// @styles
 import './globals.css';
-
-// @project
 import branding from '@/branding.json';
 import ProviderWrapper from './ProviderWrapper';
+import ReduxProvider from '../providers/ReduxProvider';
 
-// @types
-
-/***************************  METADATA - MAIN  ***************************/
-
-// Configures the viewport settings for the application.
 export const viewport = {
-  userScalable: false // Disables user scaling of the viewport.
+  userScalable: false
 };
 
 export const metadata = {
@@ -21,13 +13,13 @@ export const metadata = {
   description: `${branding.brandName} Finance and Solutions`
 };
 
-/***************************  LAYOUT - ROOT  ***************************/
-
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <ProviderWrapper>{children}</ProviderWrapper>
+        <ReduxProvider>
+          <ProviderWrapper>{children}</ProviderWrapper>
+        </ReduxProvider>
       </body>
     </html>
   );

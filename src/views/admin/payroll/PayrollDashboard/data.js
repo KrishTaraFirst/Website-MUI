@@ -3,24 +3,24 @@ export const quickaccessCards = [
     name: 'Create New Request',
     title: 'Create New Request',
     count: '',
-    icon: ''
+    icon: 'IconPlus'
   },
   {
     name: 'Pending',
     title: 'Pending',
-    icon: '',
+    icon: 'IconClock',
     count: 0
   },
   {
     name: 'In - Progress',
     title: 'In - Progress',
-    icon: '',
+    icon: 'IconProgress',
     count: 0
   },
   {
     name: 'Completed',
     title: 'Completed',
-    icon: '',
+    icon: 'IconCheck',
     count: 0
   }
 ];
@@ -28,52 +28,52 @@ export const quickaccessCards = [
 export const ServicesData = [
   {
     id: 1,
-    title: 'Gross',
-    icon: '',
-    href: 'itr'
+    title: 'Employees on Your Rolls',
+    key: 'total_employees'
   },
+
   {
     id: 2,
-    title: 'EPF',
-    icon: '',
-    href: 'networth'
+    title: 'Total CTC',
+    key: 'total_ctc'
   },
   {
     id: 3,
-    title: 'ESI',
-    icon: ' ',
-    href: 'business-proof'
+    title: 'Gross Salaries',
+    key: 'gross'
   },
   {
     id: 4,
-    title: 'PT',
-    icon: '',
-    href: 'loans'
+    title: 'Total Deductions',
+    key: 'total_deductions'
   },
   {
     id: 5,
-    title: 'TDS',
-    icon: '',
-    href: 'visa-fund'
+    title: 'Net Pay',
+    key: 'net_pay'
   },
   {
     id: 6,
-    title: 'Others',
-    icon: '',
-    href: 'forex-payments'
+    title: 'Total EPF Payable',
+    key: 'epf_total'
   },
   {
     id: 7,
-    title: 'Total',
-    icon: '',
-    href: 'insurance'
+    title: 'ESI Payable',
+    key: 'esi_total'
   },
   {
     id: 8,
-    title: 'Net',
-    icon: '',
-    href: 'travel-booking'
+    title: 'PT Payable',
+    key: 'pt_total'
+  },
+  {
+    id: 8,
+    title: 'TDS',
+    key: 'tds_total'
   }
+  // { title: 'New Joinees', key: 'total_new_joinees' },
+  // { title: 'Exits', key: 'total_exits' }
 ];
 
 export const ServicesRoute = {

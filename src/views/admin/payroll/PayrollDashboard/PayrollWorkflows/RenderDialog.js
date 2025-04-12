@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Button, Box, Stack, Typography, Divider, FormControl, FormLabel, FormControlLabel, FormGroup, Checkbox } from '@mui/material';
+import { Button, Box, Stack, Typography, FormControl, FormLabel, FormControlLabel, FormGroup, Checkbox, TextField } from '@mui/material';
 import Grid2 from '@mui/material/Grid2'; // Import Grid2 from MUI system
 import CustomInput from '@/utils/CustomInput';
 import Factory from '@/utils/Factory';
@@ -13,10 +13,13 @@ import CustomAutocomplete from '@/utils/CustomAutocomplete';
 import dayjs from 'dayjs';
 import CustomDatePicker from '@/utils/CustomDateInput';
 import { months } from '@/utils/MonthsList';
+import { generateFinancialYears } from '@/utils/FinancialYearsList';
+
 export default function RenderDialog({ from, openDialog, fields, setOpenDialog, setLoading, employeeMasterData, selectedRecord, getData }) {
   const { showSnackbar } = useSnackbar();
   const searchParams = useSearchParams();
   const [payrollid, setPayrollId] = useState(null); // Payroll ID fetched from URL
+  const financialYearOptions = generateFinancialYears();
 
   // Update payroll ID from search params
   useEffect(() => {
@@ -60,10 +63,18 @@ export default function RenderDialog({ from, openDialog, fields, setOpenDialog, 
           employee: '',
           department: '',
           designation: '',
-          loan_type: ' ',
+          loan_type: '',
           amount: '',
           no_of_months: '',
           start_month: ''
+        };
+      case 'Bonus & Incentives':
+        return {
+          employee: '',
+          bonus_type: '',
+          amount: '',
+          month: '',
+          financial_year: ''
         };
       default:
         return {
@@ -115,10 +126,29 @@ export default function RenderDialog({ from, openDialog, fields, setOpenDialog, 
         return Yup.object({
           employee: Yup.string().required('Employee is required'),
           loan_type: Yup.string().required('Loan Type is required'),
-          amount: Yup.string().required('Amount is required'),
-          no_of_months: Yup.string().required('No of Months is required'),
+          amount: Yup.number()
+            .typeError('Amount must be a number') // Handles non-numeric input errors
+            .positive('Amount must be positive') // Ensures only positive values
+            .required('Amount is required'),
+          no_of_months: Yup.number()
+            .typeError('No of Months must be a number')
+            .positive('No of Months must be positive')
+            .integer('No of Months must be an integer')
+            .required('No of Months is required'),
           start_month: Yup.string().required('Start Month is required')
         });
+      case 'Bonus & Incentives':
+        return Yup.object({
+          employee: Yup.string().required('Employee is required'),
+          bonus_type: Yup.string().required('Bonus Type is required'),
+          amount: Yup.number()
+            .typeError('Amount must be a number') // Handles non-numeric input errors
+            .positive('Amount must be positive') // Ensures only positive values
+            .required('Amount is required'),
+          financial_year: Yup.string().required('Financial Year is required'),
+          month: Yup.string().required('Month is required')
+        });
+
       // Add more validation cases for different scenarios (e.g., Transfers)
       default:
         return Yup.object({
@@ -141,6 +171,7 @@ export default function RenderDialog({ from, openDialog, fields, setOpenDialog, 
     initialValues: getInitialValues(),
     validationSchema: getValidationSchema(),
     onSubmit: async (values) => {
+      console.log(from);
       if (from === 'Exits') {
         setLoading(true);
         let url = selectedRecord?.id ? `/payroll/employee-exit/${selectedRecord?.id}` : `/payroll/employee-exit`;
@@ -158,9 +189,12 @@ export default function RenderDialog({ from, openDialog, fields, setOpenDialog, 
       }
       if (from === 'Attendance') {
         setLoading(true);
-        let url = selectedRecord?.id ? `/payroll/employee-attendance/1${selectedRecord?.id}` : `/payroll/employee-attendance`;
+        let url = selectedRecord?.id ? `/payroll/employee-attendance/${selectedRecord?.id}` : `/payroll/employee-attendance`;
         let method = selectedRecord?.id ? 'put' : 'Post';
-        let postData = { ...values };
+        const monthNumber = months.indexOf(values.month) + 1;
+
+        let postData = { ...values, month: monthNumber };
+
         const { res, error } = await Factory(method, url, postData);
         setLoading(false);
         if (res.status_cd === 0) {
@@ -174,6 +208,21 @@ export default function RenderDialog({ from, openDialog, fields, setOpenDialog, 
       if (from === 'Loans & Advances') {
         setLoading(true);
         let url = selectedRecord?.id ? `/payroll/advance-loans/${selectedRecord?.id}` : `/payroll/advance-loans`;
+        let method = selectedRecord?.id ? 'put' : 'Post';
+        let postData = { ...values };
+        const { res, error } = await Factory(method, url, postData);
+        setLoading(false);
+        if (res.status_cd === 0) {
+          showSnackbar('Data Saved Successfully', 'success');
+          getData();
+          setOpenDialog(false);
+        } else {
+          showSnackbar(JSON.stringify(res.data.data), 'error');
+        }
+      }
+      if (from === 'Bonus & Incentives') {
+        setLoading(true);
+        let url = selectedRecord?.id ? `/payroll/bonus-incentives/${selectedRecord?.id}` : `/payroll/bonus-incentives`;
         let method = selectedRecord?.id ? 'put' : 'Post';
         let postData = { ...values };
         const { res, error } = await Factory(method, url, postData);
@@ -212,21 +261,50 @@ export default function RenderDialog({ from, openDialog, fields, setOpenDialog, 
             size="small"
             disabled={from === 'Attendance' && field.name === 'employee'}
           />
-        ) : field.name === 'loan_type' ? (
+        ) : field.name === 'loan_type' || field.name === 'bonus_type' || field.name === 'month' ? (
           <CustomAutocomplete
-            value={values[field.name] || ''}
+            value={field.name === 'month' ? months[values[field.name] - 1] || null : values[field.name] || null}
             onChange={(e, newValue) => {
-              setFieldValue(field.name, newValue);
+              if (field.name === 'month') {
+                setFieldValue(field.name, months.indexOf(newValue) + 1);
+              } else {
+                setFieldValue(field.name, newValue);
+              }
             }}
             options={
               field.name === 'loan_type'
-                ? ['Personal Loan', 'Home Loan']
+                ? [
+                    'Personal Loan',
+                    'Emergency Loan',
+                    'Salary Advance',
+                    'Transportation Loan',
+                    'Auto Loan',
+                    'Home Loan',
+                    'Education Loan',
+                    '401(k) or Retirement Plan Loan',
+                    'Season Ticket Loan',
+                    'Stock Option Loan'
+                  ]
                 : field.name === 'financial_year'
                   ? ['2021-22', '2022-23', '2023-24', '2024-25', '2025-26']
-                  : months
+                  : field.name === 'bonus_type'
+                    ? [
+                        'Performance Bonus',
+                        'Annual Bonus',
+                        'Festival Bonus',
+                        'Referral Bonus',
+                        'Joining Bonus',
+                        'Retention Bonus',
+                        'Spot Bonus',
+                        'Incentive Bonus',
+                        'Holiday Bonus',
+                        'Project Completion Bonus'
+                      ]
+                    : months
             }
-            // getOptionLabel={(option) => option?.location_name || ''}
             sx={{ width: '100%' }}
+            error={touched[field.name] && Boolean(errors[field.name])}
+            helperText={touched[field.name] && errors[field.name]}
           />
         ) : field.name === 'doe' || field.name === 'start_month' ? (
           <CustomDatePicker
@@ -234,7 +312,6 @@ export default function RenderDialog({ from, openDialog, fields, setOpenDialog, 
             value={values[field.name] ? dayjs(values[field.name], 'YYYY-MM-DD') : null}
             onChange={(newDate) => {
               if (newDate) {
-                // Save the date in 'YYYY-MM-DD' format to Formik
                 setFieldValue(field.name, newDate.format('YYYY-MM-DD'));
               } else {
                 setFieldValue(field.name, ''); // Clear the date if none is selected
@@ -247,11 +324,29 @@ export default function RenderDialog({ from, openDialog, fields, setOpenDialog, 
             size="small"
             inputFormat="DD-MM-YYYY"
           />
+        ) : field.name === 'financial_year' ? (
+          <CustomAutocomplete
+            value={values[field.name]}
+            name={field.name}
+            options={financialYearOptions}
+            onChange={(e, newValue) => {
+              setFieldValue(field.name, newValue);
+            }}
+            sx={{ minWidth: 200, maxWidth: 200 }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder="Select Financial Year"
+                error={touched[field.name] && Boolean(errors[field.name])}
+                helperText={touched[field.name] && errors[field.name]}
+              />
+            )}
+          />
         ) : (
           <CustomInput
             fullWidth
             name={field.name}
-            value={values[field.name] || ''}
+            value={values[field.name]}
             multiline={field.name === 'notes'}
             minRows={field.name === 'notes' && 4}
             onChange={handleChange}
@@ -262,7 +357,7 @@ export default function RenderDialog({ from, openDialog, fields, setOpenDialog, 
               field.name === 'designation' ||
               field.name === 'department' ||
               field.name === 'financial_year' ||
-              field.name === 'month' ||
+              // field.name === 'month' ||
               field.name === 'total_days_of_month' ||
               field.name === 'holidays' ||
               field.name === 'present_days' ||
@@ -282,6 +377,7 @@ export default function RenderDialog({ from, openDialog, fields, setOpenDialog, 
       }));
     }
   }, [selectedRecord]);
+  console.log(errors);
   return (
     <Modal
       open={openDialog}

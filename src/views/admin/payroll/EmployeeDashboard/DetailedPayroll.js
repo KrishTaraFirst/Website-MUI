@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Paper, Stack, Pagination, Button } from '@mui/material';
 import EmptyTable from '@/components/third-party/table/EmptyTable';
 import MainCard from '@/components/MainCard';
@@ -8,59 +8,59 @@ import { BASE_URL } from 'constants';
 import axios from 'axios';
 
 const TABLE_HEADERS = [
-  'Employee',
-  'Gross',
+  'Employee Id',
+  'Name',
+  'Department',
+  'Designation',
+  'Total Days',
+  'LOP',
   'Paid Days',
+  'CTC',
+  'Actual Gross',
   'Earned Gross',
-  'Benefits',
+  'Basic',
+  'HRA',
+  'Special Allowances',
+  'Bonus/Incentives',
+  'Other Earnings',
+  'Total Earnings',
   'Deductions',
-  'Taxes',
-  'Recovery',
-  'Reimbursement',
-  'NP'
+  'PF',
+  'ESI',
+  'PT',
+  'TDS',
+  'Loans/Advances',
+  'Other Deductions',
+  'Total Decutions',
+  'Net Pay',
+  'Status'
 ];
 
-export default function PayrollSummary({ payrollSummaryData = [] }) {
+export default function DetailedPayroll({ payrollId, month }) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [detailedSummary, setDetailedSummary] = useState([]);
   const rowsPerPage = 5;
   const { showSnackbar } = useSnackbar();
 
-  const totalPages = Math.ceil(Array.isArray(payrollSummaryData) ? payrollSummaryData.length / rowsPerPage : 0);
-  const paginatedData = Array.isArray(payrollSummaryData)
-    ? payrollSummaryData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
-    : [];
+  const totalPages = Math.ceil(detailedSummary.length / rowsPerPage);
+  const paginatedData = detailedSummary.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
   const handlePageChange = (event, newPage) => {
     setCurrentPage(newPage);
   };
-
-  const viewPayslip = async (employee_id, month, financial_year) => {
-    try {
-      const tokens = JSON.parse(localStorage.getItem('auth-user'));
-      const response = await axios.get(
-        `${BASE_URL}/payroll/employee-monthly-salary-template?employee_id=${employee_id}&month=${month}&financial_year=${financial_year}&year=${new Date().getFullYear()}`,
-        {
-          responseType: 'arraybuffer',
-          headers: {
-            Authorization: `Bearer ${tokens.access_token}`
-          }
-        }
-      );
-      if (response.data.byteLength > 0) {
-        const blob = new Blob([response.data], { type: 'application/pdf' });
-        const url = URL.createObjectURL(blob);
-        window.open(url, '_blank');
-        setTimeout(() => {
-          URL.revokeObjectURL(url);
-        }, 10000);
-      } else {
-        showSnackbar('Invalid response from server', 'error');
-      }
-    } catch (error) {
-      console.error('Error fetching PDF:', error);
-      showSnackbar('Invalid response from server', 'error');
+  const fetchDetailedSummary = async () => {
+    const url = `/payroll/detail_employee_payroll_salary?payroll_id=${payrollId}&month=${month}&financial_year=2024-2025`;
+    const { res } = await Factory('get', url, {});
+    if (res.status_cd === 0) {
+      setDetailedSummary(res.data || []);
+    } else {
+      showSnackbar(JSON.stringify(res.data.data), 'error');
     }
   };
+
+  useEffect(() => {
+    if (payrollId) fetchDetailedSummary();
+  }, [payrollId]);
 
   return (
     <MainCard>
@@ -87,16 +87,32 @@ export default function PayrollSummary({ payrollSummaryData = [] }) {
               ) : (
                 paginatedData?.map((item, index) => (
                   <TableRow key={item.employee || index}>
+                    <TableCell>{item.employee_id}</TableCell>
                     <TableCell>{item.employee_name}</TableCell>
-                    <TableCell>{item.gross_salary}</TableCell>
+                    <TableCell>{item.department}</TableCell>
+                    <TableCell>{item.designation}</TableCell>
+                    <TableCell>{item.total_days_of_month}</TableCell>
+                    <TableCell>{item.loss_of_pay}</TableCell>
                     <TableCell>{item.paid_days}</TableCell>
+                    <TableCell>{item.ctc}</TableCell>
+                    <TableCell>{item.gross_salary}</TableCell>
                     <TableCell>{item.earned_salary}</TableCell>
+                    <TableCell>{item.basic_salary}</TableCell>
+                    <TableCell>{item.hra}</TableCell>
+                    <TableCell>{item.special_allowance}</TableCell>
+                    <TableCell>{item.bonus}</TableCell>
+                    <TableCell>{item.other_earnings}</TableCell>
                     <TableCell>{item.benefits_total}</TableCell>
                     <TableCell>{item.deductions['Employee Deductions']}</TableCell>
-                    <TableCell>{item.deductions['Taxes']}</TableCell>
-                    <TableCell>{item.recovery}</TableCell>
-                    <TableCell>{item.reimbursement}</TableCell>
+                    <TableCell>{item.pf}</TableCell>
+                    <TableCell>{item.esi}</TableCell>
+                    <TableCell>{item.pt}</TableCell>
+                    <TableCell>{item.tds}</TableCell>
+                    <TableCell>{item.pt}</TableCell>
+                    <TableCell>{item.pt}</TableCell>
+                    <TableCell>{item.deductions['Total']}</TableCell>
                     <TableCell>{item.net_salary}</TableCell>
+                    <TableCell>{item.status}</TableCell>
                     <TableCell
                       style={{ cursor: 'pointer', textDecoration: 'underline', color: '#007bff' }}
                       onClick={() => {
@@ -111,7 +127,7 @@ export default function PayrollSummary({ payrollSummaryData = [] }) {
             </TableBody>
           </Table>
         </TableContainer>
-        {payrollSummaryData.length > 0 && (
+        {detailedSummary.length > 0 && (
           <Stack direction="row" justifyContent="center" alignItems="center" sx={{ px: { xs: 0.5, sm: 2.5 }, py: 1.5 }}>
             <Pagination count={totalPages} page={currentPage} onChange={handlePageChange} color="primary" />
           </Stack>
